@@ -1,0 +1,49 @@
+/*
+ Copyright 2014 WonderPush
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+#ifdef __OBJC__
+#import <Foundation/Foundation.h>
+#import <SystemConfiguration/SystemConfiguration.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+#endif
+
+#if STATIC_BUILD
+#define SDK_VERSION @"iOS-1.0.9.0"
+#endif
+
+#define PRODUCTION_API_URL @"https://api.wonderpush.com/v1/"
+
+#define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
+#define USER_DEFAULTS_CLIENT_ID_KEY @"__wonderpush_client_id"
+
+#define USER_DEFAULTS_EVENT_RECEIVED_HISTORY @"__wonderpush_event_received_history"
+#define USER_DEFAULTS_DEVICE_TOKEN_KEY @"__wonderpush_device_token"
+#define USER_DEFAULTS_ACCESS_TOKEN_IS_ANONYMOUS_KEY @"__wonderpush_access_token_is_anonymous"
+#define USER_DEFAULTS_USER_ID_KEY @"__wonderpush_userid"
+#define USER_DEFAULTS_INSTALLATION_ID @"_wonderpush_installationId"
+#define USER_DEFAULTS_SID_KEY @"__wonderpush_sid"
+#define USER_DEFAULTS_REQUEST_VAULT_QUEUE @"__wonderpush_request_vault"
+#define RETRY_INTERVAL 10.0f
+#define ITUNES_APP_URL_FORMAT @"https://itunes.apple.com/us/app/calcfast/id%@?mt=8"
+#define WEB_CALLBACK_RESOURCE @"web/callback"
+
+#define EVENT_RECEIVED_HISTORY_SIZE 5
+
+#if WP_DEBUG
+# define WPLog NSLog
+#else
+# define WPLog(...)
+#endif
