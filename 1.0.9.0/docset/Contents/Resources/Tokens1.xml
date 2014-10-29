@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Classes/WonderPush.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/cl/WonderPush</TokenIdentifier>
+			<Abstract type="html">WonderPush is your main interface to the WonderPush SDK.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+            
+			
+			<NodeRef refid="1"/>
+		</Token>
+		
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setClientId:secret:</TokenIdentifier>
+			<Abstract type="html">Initializes the WonderPush SDK.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (void)setClientId:(id)clientId secret:(id)secret</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>clientId</Name>
+					<Abstract type="html">Your WonderPush client id</Abstract>
+				</Parameter><Parameter>
+					<Name>secret</Name>
+					<Abstract type="html">Your WonderPush client secret</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setClientId:secret:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setUserId:</TokenIdentifier>
+			<Abstract type="html">Sets the user id, used to identify a single identity across multiple devices, and to correctly identify multiple users on a single device.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (void)setUserId:(id)userId</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>userId</Name>
+					<Abstract type="html">The user id, unique to your application. Use nil for anonymous users.
+     You are strongly encouraged to use your own unique internal identifier.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setUserId:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setNotificationEnabled:</TokenIdentifier>
+			<Abstract type="html">Activates or deactivates the push notification on the device (if the user accepts) and registers the device token with WondePush.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (void)setNotificationEnabled:(id)enabled</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>enabled</Name>
+					<Abstract type="html">The new activation state of push notifications.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setNotificationEnabled:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/handleApplicationLaunchWithOption:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)handleApplicationLaunchWithOption:(id)launchOptions</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>launchOptions</Name>
+					<Abstract type="html">The launch options.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/handleApplicationLaunchWithOption:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/handleDidReceiveRemoteNotification:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)handleDidReceiveRemoteNotification:(id)userInfo</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>userInfo</Name>
+					<Abstract type="html">The userInfo provided by the system.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/handleDidReceiveRemoteNotification:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/didRegisterForRemoteNotificationsWithDeviceToken:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (void)didRegisterForRemoteNotificationsWithDeviceToken:(id)deviceToken</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>deviceToken</Name>
+					<Abstract type="html">The device token provided by the system.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/didRegisterForRemoteNotificationsWithDeviceToken:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/handleNotification:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)handleNotification:(id)notificationUserInfo</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>notificationUserInfo</Name>
+					<Abstract type="html">The UILocalNotification userInfo member.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/handleNotification:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/handleNotificationReceivedInBackground:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (void)handleNotificationReceivedInBackground:(id)userInfo</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>userInfo</Name>
+					<Abstract type="html">The userInfo provided by the system.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/handleNotificationReceivedInBackground:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/putInstallationCustomProperties:</TokenIdentifier>
+			<Abstract type="html">Updates the custom properties attached to the current installation object stored by WonderPush.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (void)putInstallationCustomProperties:(id)customProperties</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>customProperties</Name>
+					<Abstract type="html">The partial object containing only the properties to update.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/putInstallationCustomProperties:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/trackEvent:withData:</TokenIdentifier>
+			<Abstract type="html">Send an event to be tracked to WonderPush.</Abstract>
+			<DeclaredIn>WonderPush_public.h</DeclaredIn>
+			
+			<Declaration>+ (void)trackEvent:(id)type withData:(id)data</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>type</Name>
+					<Abstract type="html">The event type, or name. Event types starting with an @ character are reserved.</Abstract>
+				</Parameter><Parameter>
+					<Name>data</Name>
+					<Abstract type="html">A dictionary containing custom properties to be attached to the event.
+     Prefer using a few custom properties over a plethora of event type variants.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/trackEvent:withData:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+        
+        
+	</File>
+</Tokens>
