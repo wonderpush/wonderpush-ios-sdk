@@ -92,25 +92,12 @@ static CLLocationManager *LocationManager = nil;
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
                                                           userInfo:nil];
-        [WonderPush setIsReachable:YES];
-        [WonderPush updateInstallationCoreProperties];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-
-    }];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {}];
     if (NO == isFetching) {
-
-        [self get:@"/network/ping" params:nil handler:^(WPResponse *response, NSError *error) {
-            if (nil == error) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
-                                                                    object:self
-                                                                  userInfo:nil];
-                [WonderPush setIsReachable:YES];
-                [WonderPush updateInstallationCoreProperties];
-                return;
-            }
-            [WonderPush setIsReachable:NO];
-
-        }];
+        [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
+                                                            object:self
+                                                          userInfo:nil];
+        [WonderPush updateInstallationCoreProperties];
     }
 }
 
@@ -119,9 +106,7 @@ static CLLocationManager *LocationManager = nil;
     NSError * err;
     NSData * jsonData = [NSJSONSerialization dataWithJSONObject:properties options:0 error:&err];
     NSString * propertiesString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    [self postEventually:installationEndPoint params:@{@"body":propertiesString, @"overwrite":[NSNumber numberWithBool:overwrite]} handler:^(WPResponse *response, NSError *error) {
-
-    }];
+    [self postEventually:installationEndPoint params:@{@"body":propertiesString, @"overwrite":[NSNumber numberWithBool:overwrite]} handler:^(WPResponse *response, NSError *error) {}];
 }
 
 + (void) putInstallationCustomProperties:(NSDictionary *) customProperties;
