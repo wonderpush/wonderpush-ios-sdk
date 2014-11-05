@@ -272,8 +272,6 @@ static NSMutableArray *tokenFetchedHandlers;
             WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
             [configuration setAccessToken:accessToken];
             configuration.sid = sid;
-//            NSString *userId =  [responseJson valueForKeyPath:@"data.userId"];
-//            configuration.userId = userId;
             configuration.installationId = [responseJson valueForKeyPath:@"data.installationId"];
 
             self.isFetchingAccessToken = NO;
@@ -282,7 +280,6 @@ static NSMutableArray *tokenFetchedHandlers;
 
             [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_USER_LOGED_IN
                                                                 object:self
-
                                                               userInfo:userInfo];
 
             [WonderPush updateInstallationCoreProperties];
@@ -414,14 +411,12 @@ static NSMutableArray *tokenFetchedHandlers;
                 WPLog(@"Invalid access token: %@", jsonError);
 
                 // null out the access token
-
                 WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-                configuration.sid = nil;
                 [configuration setAccessToken:nil];
-                configuration.userId = nil;
-                [configuration setStoredClientId:configuration.clientId];
-                // Retry in 60 secs
+                configuration.sid = nil;
+                configuration.installationId = nil;
 
+                // Retry in 60 secs
                 double delayInSeconds = RETRY_INTERVAL;
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){

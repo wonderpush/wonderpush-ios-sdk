@@ -99,7 +99,6 @@ static WPConfiguration *sharedConfiguration = nil;
         [defaults removeObjectForKey:USER_DEFAULTS_ACCESS_TOKEN_KEY];
 
     [defaults synchronize];
-
 }
 
 -(void) setStoredClientId:(NSString *)clientId;
@@ -114,7 +113,6 @@ static WPConfiguration *sharedConfiguration = nil;
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     return [defaults valueForKey:USER_DEFAULTS_CLIENT_ID_KEY];
-
 }
 
 
@@ -193,7 +191,7 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 
-#pragma mark - SID
+#pragma mark - USER ID
 
 -(NSString *) userId
 {
@@ -206,9 +204,12 @@ static WPConfiguration *sharedConfiguration = nil;
 
 -(void) setUserId:(NSString *) userId
 {
-    if (![userId isEqualToString:self.userId]) {
+    if (self.userId != userId // nil checks
+        || (userId != nil && ![userId isEqualToString:self.userId]))
+    {
         // unlogging
         self.accessToken = nil;
+        self.sid = nil;
     }
     _userId = userId;
 
@@ -220,6 +221,9 @@ static WPConfiguration *sharedConfiguration = nil;
         [defaults removeObjectForKey:USER_DEFAULTS_USER_ID_KEY];
     [defaults synchronize];
 }
+
+
+#pragma mark - SID
 
 - (NSString *)sid
 {

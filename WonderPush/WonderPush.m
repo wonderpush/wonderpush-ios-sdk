@@ -93,9 +93,12 @@ static CLLocationManager *LocationManager = nil;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     configuration.clientId = clientId;
     configuration.clientSecret = secret;
-    if (configuration.clientId != [configuration getStoredClientId]) {
+    if (configuration.clientId != [configuration getStoredClientId] // nil checks
+        || (configuration.clientId != nil && ![configuration.clientId isEqualToString: [configuration getStoredClientId]]))
+    {
+        [configuration setStoredClientId:clientId];
         // clientId changed reseting token
-        configuration.accessToken = nil;
+        [configuration setAccessToken:nil];
         configuration.sid = nil;
     }
     // Fetch anonymous access token right away
