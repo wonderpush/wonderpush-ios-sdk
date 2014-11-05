@@ -151,7 +151,7 @@
  Returns YES when the WP_NOTIFICATION_INITIALIZED is sent.
  @return The initialization state as a BOOL
  */
-+ (BOOL) isInitialized;
++ (BOOL) isReady;
 
 
 ///---------------------------------

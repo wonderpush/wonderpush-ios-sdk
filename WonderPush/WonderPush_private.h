@@ -26,7 +26,7 @@
 
 + (void) updateInstallationCoreProperties;
 
-+ (void) setIsInitialized:(BOOL)isInitialized;
++ (void) setIsReady:(BOOL)isReady;
 
 + (void) setIsReachable:(BOOL)isReachable;
 
