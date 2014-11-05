@@ -305,6 +305,15 @@ static NSMutableArray *tokenFetchedHandlers;
         if (nbRetry <= 0) {
             self.isFetchingAccessToken = NO;
             if (nil != failure) {
+                id json = ((WPJSONRequestOperation *) operation).responseJSON;
+                NSError *jsonError = [WPUtil errorFromJSON:json];
+                if (jsonError) {
+                    // Handle invalid credentials
+                    if (jsonError.code == WPErrorInvalidCredentials) {
+                        WPLog(@"Invalid client credentials: %@", jsonError);
+                        NSLog(@"Please check your WonderPush clientId and clientSecret!");
+                    }
+                }
                 failure(operation, error);
             }
             @synchronized(tokenFetchedHandlers) {
@@ -419,8 +428,14 @@ static NSMutableArray *tokenFetchedHandlers;
                     [self requestAuthenticated:request];
                 });
 
-            } else if (request.handler)
+            } else if (jsonError.code == WPErrorInvalidCredentials) {
+
+                WPLog(@"Invalid client credentials: %@", jsonError);
+                NSLog(@"Please check your WonderPush clientId and clientSecret!");
+
+            } else if (request.handler) {
                 request.handler(nil, jsonError);
+            }
 
         } else if (request.handler) {
             request.handler(nil, error);

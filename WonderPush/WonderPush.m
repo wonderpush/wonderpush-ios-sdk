@@ -77,12 +77,12 @@ static CLLocationManager *LocationManager = nil;
     if (clientId == nil) {
         invalidArgumentException = [NSException
                                     exceptionWithName:@"InvalidArgumentException"
-                                    reason:@"please set 'clientId' argument of [WonderPush setClientId:secret] method"
+                                    reason:@"Please set 'clientId' argument of [WonderPush setClientId:secret] method"
                                     userInfo:nil];
     } else if (secret == nil) {
         invalidArgumentException = [NSException
                                     exceptionWithName:@"InvalidArgumentException"
-                                    reason:@"please set 'secret' argument of [WonderPush setClientId:secret] method"
+                                    reason:@"Please set 'secret' argument of [WonderPush setClientId:secret] method"
                                     userInfo:nil];
     }
     if (invalidArgumentException != nil) {

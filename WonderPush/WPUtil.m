@@ -23,6 +23,7 @@
 
 
 NSString * const WPErrorDomain = @"WPErrorDomain";
+NSInteger const WPErrorInvalidCredentials = 11000;
 NSInteger const WPErrorInvalidAccessToken = 11003;
 
 @implementation WPUtil
