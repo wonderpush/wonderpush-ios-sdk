@@ -193,10 +193,10 @@ static NSMutableArray *tokenFetchedHandlers;
     if (self = [super init]) {
         self.jsonHttpClient = [[WPHTTPClient alloc] initWithBaseURL:url];
         [self.jsonHttpClient setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-            if (status == AFNetworkReachabilityStatusNotReachable) {
-                [WonderPush setIsReachable:YES];
-            } else {
+            if (status == AFNetworkReachabilityStatusNotReachable || status == AFNetworkReachabilityStatusUnknown) {
                 [WonderPush setIsReachable:NO];
+            } else {
+                [WonderPush setIsReachable:YES];
             }
 
         }];
