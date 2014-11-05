@@ -26,6 +26,8 @@
 
 + (void) updateInstallationCoreProperties;
 
++ (void) setIsInitialized:(BOOL)isInitialized;
+
 + (void) setIsReachable:(BOOL)isReachable;
 
 + (NSArray *) validLanguageCodes;

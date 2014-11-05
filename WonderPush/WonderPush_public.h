@@ -146,6 +146,13 @@
 
 + (void) initialize;
 
+/**
+ Returns whether the WonderPush SDK is ready to operate.
+ Returns YES when the WP_NOTIFICATION_INITIALIZED is sent.
+ @return The initialization state as a BOOL
+ */
++ (BOOL) isInitialized;
+
 
 ///---------------------------------
 /// @name Push Notification handling

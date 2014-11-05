@@ -29,6 +29,8 @@
 #import "CustomIOS7AlertView.h"
 
 
+static BOOL _isInitialized = NO;
+
 static BOOL _isReachable = NO;
 
 
@@ -43,6 +45,15 @@ static CLLocationManager *LocationManager = nil;
     dispatch_once(&onceToken, ^{
         LocationManager = [[CLLocationManager alloc] init];
     });
+}
+
++ (BOOL) isInitialized
+{
+    return _isInitialized;
+}
+
++ (void) setIsInitialized:(BOOL)isInitialized {
+    _isInitialized = isInitialized;
 }
 
 + (BOOL) isReachable
@@ -89,11 +100,13 @@ static CLLocationManager *LocationManager = nil;
     }
     // Fetch anonymous access token right away
     BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [self setIsInitialized:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
                                                           userInfo:nil];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {}];
     if (NO == isFetching) {
+        [self setIsInitialized:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
                                                           userInfo:nil];
