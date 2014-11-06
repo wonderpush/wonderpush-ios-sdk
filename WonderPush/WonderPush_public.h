@@ -25,6 +25,11 @@
 #define WP_NOTIFICATION_INITIALIZED @"_wonderpushInitialized"
 
 /**
+ Name of the notification that is sent using NSNotificationCenter when a user logs in
+ */
+#define WP_NOTIFICATION_USER_LOGED_IN @"_wonderpushUserLoggedIn"
+
+/**
  Key of the SID parameter for WP_NOTIFICATION_USER_LOGED_IN notification
  */
 #define WP_NOTIFICATION_USER_LOGED_IN_SID_KEY @"_wonderpushSID"
@@ -33,74 +38,6 @@
  Key of the Access Token parameter for WP_NOTIFICATION_USER_LOGED_IN notification
  */
 #define WP_NOTIFICATION_USER_LOGED_IN_ACCESS_TOKEN_KEY @"_wonderpushAccessToken"
-
-/**
- Name of the notification that is sent using NSNotificationCenter when a user logs in
- */
-#define WP_NOTIFICATION_USER_LOGED_IN @"_wonderpushUserLoggedIn"
-
-
-/**
- Key of the parameter used when a button of type 'method' is called
- */
-#define WP_REGISTERED_CALLBACK_PARAMETER_KEY @"_wonderpushCallbackParameter"
-
-
-/**
- Button of type link (opens the browser)
- */
-#define WP_ACTION_LINK @"link"
-
-/**
- Button of type map (opens the map application)
- */
-#define WP_ACTION_MAP_OPEN @"mapOpen"
-
-/**
- Button of type method (launch a notification using NSNotification)
- */
-#define WP_ACTION_METHOD_CALL @"method"
-
-/**
- Button of type rating (opens the itunes app on the current application)
- */
-#define WP_ACTION_RATING @"rating"
-
-/**
- Button of type track event (track a event on button click)
- */
-#define WP_ACTION_TRACK @"trackEvent"
-
-/**
- Key to set in your .plist file to allow rating button action
- */
-#define WP_ITUNES_APP_ID @"itunesAppID"
-
-
-/**
- Key of the WonderPush content in a push notification
- */
-#define WP_PUSH_NOTIFICATION_KEY @"_wp"
-
-/**
- Notification of type map
- */
-#define WP_PUSH_NOTIFICATION_SHOW_MAP @"map"
-
-/**
- Notification of type url
- */
-#define WP_PUSH_NOTIFICATION_SHOW_URL @"url"
-
-/**
- Notification of type text
- */
-#define WP_PUSH_NOTIFICATION_SHOW_TEXT @"text"
-
-/**
- Notification of type html
- */
-#define WP_PUSH_NOTIFICATION_SHOW_HTML @"html"
 
 
 /**
