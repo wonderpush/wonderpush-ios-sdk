@@ -7,37 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A16E33A719C886A700E4E158 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A16E33A619C886A700E4E158 /* Foundation.framework */; };
-		A16E33AE19C886A700E4E158 /* WonderPush.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33AD19C886A700E4E158 /* WonderPush.m */; };
-		A16E33E419C8871F00E4E158 /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33CE19C8871F00E4E158 /* AFHTTPClient.m */; };
-		A16E33E519C8871F00E4E158 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D019C8871F00E4E158 /* AFHTTPRequestOperation.m */; };
-		A16E33E619C8871F00E4E158 /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D219C8871F00E4E158 /* AFImageRequestOperation.m */; };
-		A16E33E719C8871F00E4E158 /* AFJSONRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D419C8871F00E4E158 /* AFJSONRequestOperation.m */; };
-		A16E33E819C8871F00E4E158 /* AFNetworkActivityIndicatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D619C8871F00E4E158 /* AFNetworkActivityIndicatorManager.m */; };
-		A16E33E919C8871F00E4E158 /* AFPropertyListRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D919C8871F00E4E158 /* AFPropertyListRequestOperation.m */; };
-		A16E33EA19C8871F00E4E158 /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33DB19C8871F00E4E158 /* AFURLConnectionOperation.m */; };
-		A16E33EB19C8871F00E4E158 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33DD19C8871F00E4E158 /* AFXMLRequestOperation.m */; };
-		A16E33EC19C8871F00E4E158 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33DF19C8871F00E4E158 /* UIImageView+AFNetworking.m */; };
-		A16E33ED19C8871F00E4E158 /* OpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33E219C8871F00E4E158 /* OpenUDID.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		A16E33F019C88EDB00E4E158 /* WPConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33EF19C88EDB00E4E158 /* WPConfiguration.m */; };
-		A16E33F519C97BE700E4E158 /* WPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33F219C97BE700E4E158 /* WPRequest.m */; };
-		A16E33F619C97BE700E4E158 /* WPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33F419C97BE700E4E158 /* WPResponse.m */; };
-		A16E33F919C97CFA00E4E158 /* WPUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33F819C97CFA00E4E158 /* WPUtil.m */; };
-		A189375119C997CA00F91DDD /* WPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A189375019C997CA00F91DDD /* WPClient.m */; };
-		A189375419C998D100F91DDD /* WPRequestVault.m in Sources */ = {isa = PBXBuildFile; fileRef = A189375319C998D100F91DDD /* WPRequestVault.m */; };
-		A189379E19C9E0C600F91DDD /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379D19C9E0C600F91DDD /* CoreTelephony.framework */; };
-		A18937A019C9E0D300F91DDD /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */; };
-		A18937A219C9E0D900F91DDD /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937A119C9E0D900F91DDD /* CoreLocation.framework */; };
-		A18937A419C9E0E800F91DDD /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937A319C9E0E800F91DDD /* MobileCoreServices.framework */; };
-		A18937A619C9E0F500F91DDD /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937A519C9E0F500F91DDD /* CoreFoundation.framework */; };
-		A18937B019CAEC0700F91DDD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937AF19CAEC0700F91DDD /* CoreGraphics.framework */; };
-		A18937B219CB018F00F91DDD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B119CB018F00F91DDD /* UIKit.framework */; };
-		A18937B919CB0E1F00F91DDD /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B819CB0E1F00F91DDD /* CoreBluetooth.framework */; };
-		A18937BD19CB340A00F91DDD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937BC19CB340A00F91DDD /* AVFoundation.framework */; };
-		A18937C119CB34B400F91DDD /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937C019CB34B400F91DDD /* CoreMotion.framework */; };
-		A1B5EF2A1A01080E0063B033 /* WonderPush_public.h in Headers */ = {isa = PBXBuildFile; fileRef = A1E3E0A319E425DB00A4EE09 /* WonderPush_public.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A1B8508C19D41F6700D1B6FB /* WPDialogButtonHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */; };
-		A1B8509019D4531500D1B6FB /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B8508F19D4531500D1B6FB /* CustomIOS7AlertView.m */; };
 		A1E3E08719E423A200A4EE09 /* WonderPush.h in Headers */ = {isa = PBXBuildFile; fileRef = A1E3E08619E423A200A4EE09 /* WonderPush.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A1E3E09819E423C700A4EE09 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937C019CB34B400F91DDD /* CoreMotion.framework */; };
 		A1E3E09919E423C700A4EE09 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937BC19CB340A00F91DDD /* AVFoundation.framework */; };
@@ -72,7 +41,6 @@
 
 /* Begin PBXFileReference section */
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
-		A16E33A319C886A700E4E158 /* libWonderPushStatic.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWonderPushStatic.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A16E33A619C886A700E4E158 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A16E33AA19C886A700E4E158 /* WonderPush-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WonderPush-Prefix.pch"; sourceTree = "<group>"; };
 		A16E33AD19C886A700E4E158 /* WonderPush.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPush.m; sourceTree = "<group>"; };
@@ -133,24 +101,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A16E33A019C886A700E4E158 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A18937C119CB34B400F91DDD /* CoreMotion.framework in Frameworks */,
-				A18937BD19CB340A00F91DDD /* AVFoundation.framework in Frameworks */,
-				A18937B919CB0E1F00F91DDD /* CoreBluetooth.framework in Frameworks */,
-				A18937B219CB018F00F91DDD /* UIKit.framework in Frameworks */,
-				A18937B019CAEC0700F91DDD /* CoreGraphics.framework in Frameworks */,
-				A18937A619C9E0F500F91DDD /* CoreFoundation.framework in Frameworks */,
-				A18937A419C9E0E800F91DDD /* MobileCoreServices.framework in Frameworks */,
-				A18937A219C9E0D900F91DDD /* CoreLocation.framework in Frameworks */,
-				A18937A019C9E0D300F91DDD /* SystemConfiguration.framework in Frameworks */,
-				A189379E19C9E0C600F91DDD /* CoreTelephony.framework in Frameworks */,
-				A16E33A719C886A700E4E158 /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A1E3E07E19E423A200A4EE09 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -186,7 +136,6 @@
 		A16E33A419C886A700E4E158 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A16E33A319C886A700E4E158 /* libWonderPushStatic.a */,
 				A1E3E08219E423A200A4EE09 /* WonderPush.framework */,
 			);
 			name = Products;
@@ -311,14 +260,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		A1B5EF291A0108000063B033 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A1B5EF2A1A01080E0063B033 /* WonderPush_public.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A1E3E07F19E423A200A4EE09 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -331,23 +272,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		A16E33A219C886A700E4E158 /* WonderPushStatic */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A16E33C619C886A700E4E158 /* Build configuration list for PBXNativeTarget "WonderPushStatic" */;
-			buildPhases = (
-				A16E339F19C886A700E4E158 /* Sources */,
-				A16E33A019C886A700E4E158 /* Frameworks */,
-				A1B5EF291A0108000063B033 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = WonderPushStatic;
-			productName = WonderPush;
-			productReference = A16E33A319C886A700E4E158 /* libWonderPushStatic.a */;
-			productType = "com.apple.product-type.library.static";
-		};
 		A1E3E08119E423A200A4EE09 /* WonderPush */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1E3E09219E423A300A4EE09 /* Build configuration list for PBXNativeTarget "WonderPush" */;
@@ -392,7 +316,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A16E33A219C886A700E4E158 /* WonderPushStatic */,
 				A1E3E08119E423A200A4EE09 /* WonderPush */,
 			);
 		};
@@ -409,32 +332,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A16E339F19C886A700E4E158 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A16E33EA19C8871F00E4E158 /* AFURLConnectionOperation.m in Sources */,
-				A16E33EC19C8871F00E4E158 /* UIImageView+AFNetworking.m in Sources */,
-				A16E33ED19C8871F00E4E158 /* OpenUDID.m in Sources */,
-				A16E33F019C88EDB00E4E158 /* WPConfiguration.m in Sources */,
-				A16E33EB19C8871F00E4E158 /* AFXMLRequestOperation.m in Sources */,
-				A189375419C998D100F91DDD /* WPRequestVault.m in Sources */,
-				A1B8509019D4531500D1B6FB /* CustomIOS7AlertView.m in Sources */,
-				A16E33F919C97CFA00E4E158 /* WPUtil.m in Sources */,
-				A16E33E619C8871F00E4E158 /* AFImageRequestOperation.m in Sources */,
-				A16E33E919C8871F00E4E158 /* AFPropertyListRequestOperation.m in Sources */,
-				A16E33F619C97BE700E4E158 /* WPResponse.m in Sources */,
-				A16E33E519C8871F00E4E158 /* AFHTTPRequestOperation.m in Sources */,
-				A16E33E819C8871F00E4E158 /* AFNetworkActivityIndicatorManager.m in Sources */,
-				A189375119C997CA00F91DDD /* WPClient.m in Sources */,
-				A16E33AE19C886A700E4E158 /* WonderPush.m in Sources */,
-				A16E33F519C97BE700E4E158 /* WPRequest.m in Sources */,
-				A16E33E719C8871F00E4E158 /* AFJSONRequestOperation.m in Sources */,
-				A16E33E419C8871F00E4E158 /* AFHTTPClient.m in Sources */,
-				A1B8508C19D41F6700D1B6FB /* WPDialogButtonHandler.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A1E3E07D19E423A200A4EE09 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -533,35 +430,6 @@
 			};
 			name = Release;
 		};
-		A16E33C719C886A700E4E158 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DSTROOT = /tmp/WonderPush.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "WonderPush/WonderPush-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"WP_DEBUG=1",
-					"STATIC_BUILD=1",
-					"$(inherited)",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		A16E33C819C886A700E4E158 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DSTROOT = /tmp/WonderPush.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "WonderPush/WonderPush-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "STATIC_BUILD=1";
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		A1E3E09319E423A300A4EE09 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -617,15 +485,6 @@
 			buildConfigurations = (
 				A16E33C419C886A700E4E158 /* Debug */,
 				A16E33C519C886A700E4E158 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A16E33C619C886A700E4E158 /* Build configuration list for PBXNativeTarget "WonderPushStatic" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A16E33C719C886A700E4E158 /* Debug */,
-				A16E33C819C886A700E4E158 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -20,10 +20,6 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #endif
 
-#if STATIC_BUILD
-#define SDK_VERSION @"iOS-1.0.9.0"
-#endif
-
 #define PRODUCTION_API_URL @"https://api.wonderpush.com/v1/"
 
 #define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
