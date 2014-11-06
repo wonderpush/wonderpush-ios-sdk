@@ -17,7 +17,7 @@
 #ifndef WonderPush_WonderPush_private_h
 #define WonderPush_WonderPush_private_h
 
-#import "WonderPush_public.h"
+#import "WonderPush.h"
 #import "WPResponse.h"
 
 

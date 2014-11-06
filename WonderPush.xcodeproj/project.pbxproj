@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1E3E08719E423A200A4EE09 /* WonderPush.h in Headers */ = {isa = PBXBuildFile; fileRef = A1E3E08619E423A200A4EE09 /* WonderPush.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A1E3E09819E423C700A4EE09 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937C019CB34B400F91DDD /* CoreMotion.framework */; };
 		A1E3E09919E423C700A4EE09 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937BC19CB340A00F91DDD /* AVFoundation.framework */; };
 		A1E3E09A19E423C700A4EE09 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B819CB0E1F00F91DDD /* CoreBluetooth.framework */; };
@@ -36,7 +35,7 @@
 		A1E3E0DF19E42B3F00A4EE09 /* WPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33F419C97BE700E4E158 /* WPResponse.m */; };
 		A1E3E0E019E42B3F00A4EE09 /* WPConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33EF19C88EDB00E4E158 /* WPConfiguration.m */; };
 		A1E3E0E119E42B3F00A4EE09 /* WonderPush.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33AD19C886A700E4E158 /* WonderPush.m */; };
-		A1E3E0E219E42B4800A4EE09 /* WonderPush_public.h in Headers */ = {isa = PBXBuildFile; fileRef = A1E3E0A319E425DB00A4EE09 /* WonderPush_public.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A1E3E0E219E42B4800A4EE09 /* WonderPush.h in Headers */ = {isa = PBXBuildFile; fileRef = A1E3E0A319E425DB00A4EE09 /* WonderPush.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -94,8 +93,7 @@
 		A1B8508F19D4531500D1B6FB /* CustomIOS7AlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomIOS7AlertView.m; path = CustomiOSAlertView/CustomIOS7AlertView.m; sourceTree = "<group>"; };
 		A1E3E08219E423A200A4EE09 /* WonderPush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WonderPush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1E3E08519E423A200A4EE09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A1E3E08619E423A200A4EE09 /* WonderPush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush.h; sourceTree = "<group>"; };
-		A1E3E0A319E425DB00A4EE09 /* WonderPush_public.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPush_public.h; sourceTree = "<group>"; };
+		A1E3E0A319E425DB00A4EE09 /* WonderPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPush.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,7 +123,6 @@
 				A16E33CC19C8871F00E4E158 /* AFNetworking */,
 				A16E33E019C8871F00E4E158 /* OpenUDID */,
 				A16E33A819C886A700E4E158 /* WonderPush */,
-				A1E3E08319E423A200A4EE09 /* WonderPushFramework */,
 				A16E33A519C886A700E4E158 /* Frameworks */,
 				A16E33A419C886A700E4E158 /* Products */,
 			);
@@ -174,7 +171,7 @@
 				A16E33F419C97BE700E4E158 /* WPResponse.m */,
 				A16E33EE19C88EDB00E4E158 /* WPConfiguration.h */,
 				A16E33EF19C88EDB00E4E158 /* WPConfiguration.m */,
-				A1E3E0A319E425DB00A4EE09 /* WonderPush_public.h */,
+				A1E3E0A319E425DB00A4EE09 /* WonderPush.h */,
 				A16E33AD19C886A700E4E158 /* WonderPush.m */,
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
 				A16E33A919C886A700E4E158 /* Supporting Files */,
@@ -185,6 +182,7 @@
 		A16E33A919C886A700E4E158 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A1E3E08519E423A200A4EE09 /* Info.plist */,
 				A16E33AA19C886A700E4E158 /* WonderPush-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -235,24 +233,6 @@
 			name = CustomiOSAlertView;
 			sourceTree = "<group>";
 		};
-		A1E3E08319E423A200A4EE09 /* WonderPushFramework */ = {
-			isa = PBXGroup;
-			children = (
-				A1E3E08619E423A200A4EE09 /* WonderPush.h */,
-				A1E3E08419E423A200A4EE09 /* Supporting Files */,
-			);
-			name = WonderPushFramework;
-			path = WonderPush;
-			sourceTree = "<group>";
-		};
-		A1E3E08419E423A200A4EE09 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				A1E3E08519E423A200A4EE09 /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -260,8 +240,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1E3E08719E423A200A4EE09 /* WonderPush.h in Headers */,
-				A1E3E0E219E42B4800A4EE09 /* WonderPush_public.h in Headers */,
+				A1E3E0E219E42B4800A4EE09 /* WonderPush.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
