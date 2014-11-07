@@ -6,16 +6,21 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		A1272C8D1A0CD19C005A11C1 /* Universal Framework */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = A1272C8E1A0CD19D005A11C1 /* Build configuration list for PBXAggregateTarget "Universal Framework" */;
+			buildPhases = (
+				A1272C911A0CD1AA005A11C1 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Universal Framework";
+			productName = "Universal Framework";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
-		A1E3E09819E423C700A4EE09 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937C019CB34B400F91DDD /* CoreMotion.framework */; };
-		A1E3E09919E423C700A4EE09 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937BC19CB340A00F91DDD /* AVFoundation.framework */; };
-		A1E3E09A19E423C700A4EE09 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B819CB0E1F00F91DDD /* CoreBluetooth.framework */; };
-		A1E3E09B19E423C700A4EE09 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B119CB018F00F91DDD /* UIKit.framework */; };
-		A1E3E09C19E423C700A4EE09 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937AF19CAEC0700F91DDD /* CoreGraphics.framework */; };
-		A1E3E09E19E423C700A4EE09 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937A319C9E0E800F91DDD /* MobileCoreServices.framework */; };
-		A1E3E09F19E423C700A4EE09 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937A119C9E0D900F91DDD /* CoreLocation.framework */; };
-		A1E3E0A019E423C700A4EE09 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */; };
-		A1E3E0A119E423C700A4EE09 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379D19C9E0C600F91DDD /* CoreTelephony.framework */; };
 		A1E3E0CF19E42B3E00A4EE09 /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B8508F19D4531500D1B6FB /* CustomIOS7AlertView.m */; };
 		A1E3E0D019E42B3E00A4EE09 /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33CE19C8871F00E4E158 /* AFHTTPClient.m */; };
 		A1E3E0D119E42B3E00A4EE09 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D019C8871F00E4E158 /* AFHTTPRequestOperation.m */; };
@@ -101,15 +106,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1E3E09819E423C700A4EE09 /* CoreMotion.framework in Frameworks */,
-				A1E3E09919E423C700A4EE09 /* AVFoundation.framework in Frameworks */,
-				A1E3E09A19E423C700A4EE09 /* CoreBluetooth.framework in Frameworks */,
-				A1E3E09B19E423C700A4EE09 /* UIKit.framework in Frameworks */,
-				A1E3E09C19E423C700A4EE09 /* CoreGraphics.framework in Frameworks */,
-				A1E3E09E19E423C700A4EE09 /* MobileCoreServices.framework in Frameworks */,
-				A1E3E09F19E423C700A4EE09 /* CoreLocation.framework in Frameworks */,
-				A1E3E0A019E423C700A4EE09 /* SystemConfiguration.framework in Frameworks */,
-				A1E3E0A119E423C700A4EE09 /* CoreTelephony.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +270,9 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = WonderPush;
 				TargetAttributes = {
+					A1272C8D1A0CD19C005A11C1 = {
+						CreatedOnToolsVersion = 6.1;
+					};
 					A1E3E08119E423A200A4EE09 = {
 						CreatedOnToolsVersion = 6.0.1;
 					};
@@ -292,6 +291,7 @@
 			projectRoot = "";
 			targets = (
 				A1E3E08119E423A200A4EE09 /* WonderPush */,
+				A1272C8D1A0CD19C005A11C1 /* Universal Framework */,
 			);
 		};
 /* End PBXProject section */
@@ -305,6 +305,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A1272C911A0CD1AA005A11C1 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+				"$(INSTALL_DIR)/Libraries/$(PROJECT_NAME).framework",
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nUNIVERSAL_OUTPUTFOLDER=${INSTALL_DIR}/Libraries\n\n# make sure the output directory exists\necho \"Output folder: ${UNIVERSAL_OUTPUTFOLDER}/\"\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 1. Build Device and Simulator versions\necho \"Building for iphoneos...\"\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\necho \"Building for iphonesimulator...\"\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphonesimulator BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\n\n# Step 2. Copy the framework structure to the universal folder\necho \"Copying base framework structure...\"\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Step 3. Create universal binary file using lipo and place the combined executable in the copied framework directory\necho \"Creating the universal binary...\"\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework/${PROJECT_NAME}\"\n\necho \"Done\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A1E3E07D19E423A200A4EE09 /* Sources */ = {
@@ -336,6 +354,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		A1272C8F1A0CD19D005A11C1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A1272C901A0CD19D005A11C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		A16E33C419C886A700E4E158 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -353,6 +385,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREFIX_HEADER = "WonderPush/WonderPush-Prefix.pch";
@@ -367,9 +400,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LINK_WITH_STANDARD_LIBRARIES = NO;
+				MACH_O_TYPE = mh_object;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -390,6 +426,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREFIX_HEADER = "WonderPush/WonderPush-Prefix.pch";
@@ -399,8 +436,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LINK_WITH_STANDARD_LIBRARIES = NO;
+				MACH_O_TYPE = mh_object;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -412,15 +452,10 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = WonderPush/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -436,14 +471,9 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				INFOPLIST_FILE = WonderPush/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -455,6 +485,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A1272C8E1A0CD19D005A11C1 /* Build configuration list for PBXAggregateTarget "Universal Framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1272C8F1A0CD19D005A11C1 /* Debug */,
+				A1272C901A0CD19D005A11C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		A16E339E19C886A700E4E158 /* Build configuration list for PBXProject "WonderPush" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
