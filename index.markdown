@@ -19,24 +19,8 @@ Download the latest release [on GitHub](https://github.com/wonderpush/wonderpush
 3. Setup your project
 =====================
 
-### Xcode version 6.0.1 or superior
-
-With this version of XCode you can use the .framework version of the WonderPush SDK.
-
 - Extract `WonderPush.framework` from the downloaded archive.
 - Drag and drop the `WonderPush.framework` file to your project.
-- Uncheck all add to targets checkboxes and click `Finish`.
-- Select your project in the project navigator.
-- Select your target then go to `General`.
-- Click on the plus under `Embedded Binaries`.
-- Select `WonderPush.framework` file and click `Add`.
-
-### Older versions:
-
-For the older versions of Xcode the WonderPush SDK is available as a static library.
-
-Drag and drop the `.a` and the `.h` files of the SDK to your project then add the following dependency as follow:
-
 - Select your project file in the project navigator.
 - On the top right side select `General`.
 - Scroll down to `Linked Frameworks and libraries` and click on the plus to add the following frameworks:
