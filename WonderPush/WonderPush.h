@@ -42,6 +42,11 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 #define WP_NOTIFICATION_USER_LOGED_IN_ACCESS_TOKEN_KEY @"_wonderpushAccessToken"
 
+/**
+ Key of the parameter used when a button of type `method` is called.
+ */
+#define WP_REGISTERED_CALLBACK_PARAMETER_KEY @"_wonderpushCallbackParameter"
+
 
 /**
  `WonderPush` is your main interface to the WonderPush SDK.

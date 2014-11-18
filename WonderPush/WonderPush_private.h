@@ -77,11 +77,6 @@
  */
 #define WP_PUSH_NOTIFICATION_SHOW_HTML @"html"
 
-/**
- Key of the parameter used when a button of type 'method' is called
- */
-#define WP_REGISTERED_CALLBACK_PARAMETER_KEY @"_wonderpushCallbackParameter"
-
 
 @interface WonderPush (private)
 
