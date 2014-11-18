@@ -361,11 +361,17 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *) notification
 {
-    NSString *type = [action valueForKey:@"type"];
+    NSString *type = [action objectForKey:@"type"];
     if ([type isEqualToString:WP_ACTION_TRACK])
     {
-        NSString *eventType = [action valueForKey:@"trackEvent"];
-        [WonderPush trackEvent:eventType withData:nil];
+        NSDictionary *event = [action objectForKey:@"event"];
+        if (event == nil)
+        {
+            return;
+        }
+        NSString *type = [event objectForKey:@"type"];
+        NSDictionary *custom = [event objectForKey:@"custom"];
+        [WonderPush trackEvent:type withData:custom];
     }
     if ([type isEqualToString:WP_ACTION_RATING])
     {
