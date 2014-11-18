@@ -127,6 +127,7 @@ static CLLocationManager *LocationManager = nil;
 
 + (void) putInstallationCustomProperties:(NSDictionary *) customProperties;
 {
+    if (!customProperties) return;
     [self updateInstallation:@{@"custom": customProperties} shouldOverwrite:NO];
 }
 
@@ -379,7 +380,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if ([type isEqualToString:WP_ACTION_METHOD_CALL])
     {
         NSString *methodName = [action objectForKey:@"method"];
-        NSString *methodParameter = [action objectForKey:@"methodArg"];
+        id methodParameter = [action objectForKey:@"methodArg"];
+        if (!methodParameter) methodParameter = [NSNull null];
         NSDictionary *parameters = @{WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter};
         [[NSNotificationCenter defaultCenter]  postNotificationName:methodName
                                                              object:self
@@ -401,13 +403,13 @@ static WPDialogButtonHandler *buttonHandler = nil;
         NSDictionary *place = [mapData objectForKey:@"place"];
         if (place == nil)
         {
-            return ;
+            return;
         }
 
         NSDictionary *point = [place objectForKey:@"point"];
         if (point == nil)
         {
-            return ;
+            return;
         }
         NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [[point objectForKey:@"lat"] doubleValue], [[point objectForKey:@"lon"] doubleValue]];
         WPLog(@"url: %@", url);
@@ -474,9 +476,12 @@ static WPDialogButtonHandler *buttonHandler = nil;
     {
         return NO;
     }
-    NSString *campagnId = [wonderpushData objectForKey:@"c"];
-    NSString *notificationId = [wonderpushData objectForKey:@"n"];
-    NSDictionary *notificationInformations = @{@"campaignId":campagnId, @"notificationId":notificationId};
+    id campagnId = [wonderpushData objectForKey:@"c"];
+    id notificationId = [wonderpushData objectForKey:@"n"];
+    if (!campagnId) campagnId = [NSNull null];
+    if (!notificationId) notificationId = [NSNull null];
+    NSDictionary *notificationInformations = @{@"campaignId":campagnId,
+                                               @"notificationId":notificationId};
 
     NSString *type = [wonderpushData objectForKey:@"type"];
     if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_TEXT])
@@ -976,15 +981,20 @@ static WPDialogButtonHandler *buttonHandler = nil;
         [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
     }
     NSDictionary *wpData = [[userInfo objectForKey:@"custom"] objectForKey:@"_wp"];
-    [WonderPush trackNotificationReceived:@{@"campaignId":[wpData objectForKey:@"c"], @"notificationId":[wpData objectForKey:@"n"]}];
+    id campaignId = [wpData objectForKey:@"c"];
+    id notificationId = [wpData objectForKey:@"n"];
+    if (!campaignId) campaignId = [NSNull null];
+    if (!notificationId) notificationId = [NSNull null];
+    [WonderPush trackNotificationReceived:@{@"campaignId":campaignId, @"notificationId":notificationId}];
 }
 
 + (void) trackNotificationReceived:(NSDictionary *) eventData
 {
 
-    NSString *notificationId = [eventData valueForKey:@"notificationId"];
+    id notificationId = [eventData objectForKey:@"notificationId"];
 
-    if ([[WPConfiguration sharedConfiguration] isInEventReceivedHistory:notificationId])
+    if (notificationId && notificationId != [NSNull null]
+        && [[WPConfiguration sharedConfiguration] isInEventReceivedHistory:notificationId])
     {
         return;
     }
@@ -1006,6 +1016,10 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) trackEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData
 {
+    if (type == nil)
+    {
+        return;
+    }
     NSString *eventEndPoint = @"/events";
     NSTimeInterval serverDate = [WPUtil getServerDate];
     long long date = [[NSNumber numberWithDouble:serverDate] longLongValue];
