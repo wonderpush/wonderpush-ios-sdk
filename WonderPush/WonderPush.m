@@ -395,7 +395,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
     if ([type isEqualToString:WP_ACTION_LINK])
     {
-        NSString *url = [action objectForKey:@"link"];
+        NSString *url = [action objectForKey:@"url"];
        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
     }
     if ([type isEqualToString:WP_ACTION_MAP_OPEN])
