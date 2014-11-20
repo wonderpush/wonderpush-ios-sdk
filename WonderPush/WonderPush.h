@@ -23,22 +23,22 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 
 /**
- Name of the notification that is sent using NSNotificationCenter when the sdk is initialized
+ Name of the notification that is sent using `NSNotificationCenter` when the SDK is initialized.
  */
 #define WP_NOTIFICATION_INITIALIZED @"_wonderpushInitialized"
 
 /**
- Name of the notification that is sent using NSNotificationCenter when a user logs in
+ Name of the notification that is sent using `NSNotificationCenter` when a user logs in.
  */
 #define WP_NOTIFICATION_USER_LOGED_IN @"_wonderpushUserLoggedIn"
 
 /**
- Key of the SID parameter for WP_NOTIFICATION_USER_LOGED_IN notification
+ Key of the SID parameter for `WP_NOTIFICATION_USER_LOGED_IN` notification.
  */
 #define WP_NOTIFICATION_USER_LOGED_IN_SID_KEY @"_wonderpushSID"
 
 /**
- Key of the Access Token parameter for WP_NOTIFICATION_USER_LOGED_IN notification
+ Key of the Access Token parameter for `WP_NOTIFICATION_USER_LOGED_IN` notification.
  */
 #define WP_NOTIFICATION_USER_LOGED_IN_ACCESS_TOKEN_KEY @"_wonderpushAccessToken"
 
