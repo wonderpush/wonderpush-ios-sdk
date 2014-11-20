@@ -19,7 +19,16 @@
 
 @implementation WPDialogButtonHandler
 
-@synthesize buttonConfiguration, notificationConfiguration;
+@synthesize buttonConfiguration, notificationConfiguration, showTime;
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.showTime = [[NSProcessInfo processInfo] systemUptime];
+    }
+    return self;
+}
 
 - (void)executeButtonActions:(NSArray *) actions
 {
@@ -31,6 +40,13 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     NSDictionary *clickedButton = [buttonConfiguration objectAtIndex:buttonIndex];
+
+    NSNumber *shownTime = [[NSNumber alloc] initWithLong:(long)(([[NSProcessInfo processInfo] systemUptime] - self.showTime) * 1000)];
+    [WonderPush trackInternalEvent:@"@NOTIFICATION_ACTION"
+                         eventData:@{@"buttonLabel":[clickedButton objectForKey:@"label"],
+                                     @"reactionTime":shownTime}
+                        customData:nil];
+
     NSArray *clickedButtonAction = [clickedButton objectForKey:@"actions"];
     [self executeButtonActions:clickedButtonAction];
     [WonderPush resetButtonHandler];
