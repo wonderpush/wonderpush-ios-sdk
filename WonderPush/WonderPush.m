@@ -134,10 +134,14 @@ static CLLocationManager *LocationManager = nil;
 + (NSString *) getSDKVersionNumber
 {
     NSString *result;
+#ifdef SDK_VERSION
+    return SDK_VERSION;
+#else
     // Note: Only valid for framework builds
     NSBundle *bundle = [NSBundle bundleWithIdentifier:@"com.wonderpush.WonderPush"];
     result = [NSString stringWithFormat:@"iOS-%@", [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
     return result;
+#endif
 }
 
 +(void) updateInstallationCoreProperties
