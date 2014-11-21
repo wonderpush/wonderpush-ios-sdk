@@ -210,7 +210,7 @@ static WPConfiguration *sharedConfiguration = nil;
 
 -(void) setUserId:(NSString *) userId
 {
-    if (self.userId != userId // nil checks
+    if ((userId == nil && self.userId != nil)
         || (userId != nil && ![userId isEqualToString:self.userId]))
     {
         // unlogging
