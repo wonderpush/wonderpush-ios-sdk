@@ -98,7 +98,7 @@ static CLLocationManager *LocationManager = nil;
     {
         [configuration setStoredClientId:clientId];
         // clientId changed reseting token
-        [configuration setAccessToken:nil];
+        configuration.accessToken = nil;
         configuration.sid = nil;
     }
     // Fetch anonymous access token right away

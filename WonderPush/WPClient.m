@@ -270,7 +270,7 @@ static NSMutableArray *tokenFetchedHandlers;
         // Do we have an accessToken and an SID ?
         if (sid && accessToken && sid.length && accessToken.length) {
             WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-            [configuration setAccessToken:accessToken];
+            configuration.accessToken = accessToken;
             configuration.sid = sid;
             configuration.installationId = [responseJson valueForKeyPath:@"data.installationId"];
 
@@ -412,7 +412,7 @@ static NSMutableArray *tokenFetchedHandlers;
 
                 // null out the access token
                 WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-                [configuration setAccessToken:nil];
+                configuration.accessToken = nil;
                 configuration.sid = nil;
                 configuration.installationId = nil;
 
