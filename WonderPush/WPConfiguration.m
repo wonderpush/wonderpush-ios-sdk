@@ -139,24 +139,30 @@ static WPConfiguration *sharedConfiguration = nil;
     return [[NSArray alloc] init];
 }
 
--(void) addToEventReceivedHistory:(NSString *) notificationId
+-(void) addToEventReceivedHistory:(NSString *) campaignId
 {
+    if (!campaignId)
+        return;
+
     NSArray *eventHistory = [self getEventReceivedHistory];
     NSMutableArray *editableHistory = [[NSMutableArray alloc] initWithArray:eventHistory];
     if ([editableHistory count] > EVENT_RECEIVED_HISTORY_SIZE) {
         [editableHistory removeObjectAtIndex:0];
     }
-    [editableHistory addObject:notificationId];
+    [editableHistory addObject:campaignId];
 
     [self setEventReceivedHistory:editableHistory];
 }
 
--(BOOL) isInEventReceivedHistory:(NSString *) notificationId
+-(BOOL) isInEventReceivedHistory:(NSString *) campaignId
 {
+    if (!campaignId)
+        return NO;
+
     NSArray *eventHistory = [self getEventReceivedHistory];
     for (NSString * notification in eventHistory)
     {
-        if ([notificationId isEqualToString:notification])
+        if ([campaignId isEqualToString:notification])
         {
             return YES;
         }

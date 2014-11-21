@@ -486,12 +486,11 @@ static WPDialogButtonHandler *buttonHandler = nil;
     {
         return NO;
     }
-    id campagnId = [wonderpushData objectForKey:@"c"];
+    id campagnId      = [wonderpushData objectForKey:@"c"];
     id notificationId = [wonderpushData objectForKey:@"n"];
-    if (!campagnId) campagnId = [NSNull null];
-    if (!notificationId) notificationId = [NSNull null];
-    NSDictionary *notificationInformations = @{@"campaignId":campagnId,
-                                               @"notificationId":notificationId};
+    NSMutableDictionary *notificationInformations = [NSMutableDictionary new];
+    if (campagnId)      notificationInformations[@"campaignId"]     = campagnId;
+    if (notificationId) notificationInformations[@"notificationId"] = notificationId;
 
     NSString *type = [wonderpushData objectForKey:@"type"];
     if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_TEXT])
@@ -991,27 +990,26 @@ static WPDialogButtonHandler *buttonHandler = nil;
         [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
     }
     NSDictionary *wpData = [[userInfo objectForKey:@"custom"] objectForKey:@"_wp"];
-    id campaignId = [wpData objectForKey:@"c"];
+    id campagnId      = [wpData objectForKey:@"c"];
     id notificationId = [wpData objectForKey:@"n"];
-    if (!campaignId) campaignId = [NSNull null];
-    if (!notificationId) notificationId = [NSNull null];
-    [WonderPush trackNotificationReceived:@{@"campaignId":campaignId, @"notificationId":notificationId}];
+    NSMutableDictionary *notificationInformations = [NSMutableDictionary new];
+    if (campagnId)      notificationInformations[@"campaignId"]     = campagnId;
+    if (notificationId) notificationInformations[@"notificationId"] = notificationId;
+    [WonderPush trackNotificationReceived:notificationInformations];
 }
 
 + (void) trackNotificationReceived:(NSDictionary *) eventData
 {
+    id campaignId = [eventData objectForKey:@"campaignId"];
 
-    id notificationId = [eventData objectForKey:@"notificationId"];
-
-    if (notificationId && notificationId != [NSNull null]
-        && [[WPConfiguration sharedConfiguration] isInEventReceivedHistory:notificationId])
+    if (campaignId && [[WPConfiguration sharedConfiguration] isInEventReceivedHistory:campaignId])
     {
         return;
     }
 
     [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:eventData customData:nil];
 
-    [[WPConfiguration sharedConfiguration] addToEventReceivedHistory:notificationId];
+    [[WPConfiguration sharedConfiguration] addToEventReceivedHistory:campaignId];
 }
 
 +(void) trackInternalEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData
