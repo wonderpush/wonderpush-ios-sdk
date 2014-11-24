@@ -91,6 +91,14 @@ Add the following methods:
         [WonderPush handleDidReceiveRemoteNotification:userInfo];
     }
 
+    - (void)applicationDidEnterBackground:(UIApplication *)application {
+        [WonderPush applicationDidEnterBackground:application];
+    }
+
+    - (void)applicationDidBecomeActive:(UIApplication *)application {
+        [WonderPush applicationDidBecomeActive:application];
+    }
+
 That's it you should now be able to receive push notifications from WonderPush.
 
 6. Handling background mode

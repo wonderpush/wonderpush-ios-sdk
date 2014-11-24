@@ -61,4 +61,10 @@
 
 -(BOOL) isInEventReceivedHistory:(NSString *) notificationId;
 
+-(void) addToQueuedNotifications:(NSDictionary *) notification;
+
+-(NSMutableArray *) getQueuedNotifications;
+
+-(void) clearQueuedNotifications;
+
 @end

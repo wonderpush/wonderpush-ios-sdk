@@ -258,4 +258,52 @@ static WPConfiguration *sharedConfiguration = nil;
     return [[self.baseURL absoluteString] rangeOfString:PRODUCTION_API_URL].location == NSNotFound;
 }
 
+
+#pragma mark - QUEUED NOTIFICATIONS
+
+-(void) addToQueuedNotifications:(NSDictionary *) notification
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    NSMutableArray *queuedNotifications = [self getQueuedNotifications];
+    [queuedNotifications addObject:notification];
+    NSError *error = NULL;
+    NSData *queuedNotificationsData = [NSJSONSerialization dataWithJSONObject:queuedNotifications options:0 error:&error];
+    if (error) {
+        WPLog(@"Error while serializing queued notifications: %@", error);
+        return;
+    }
+    NSString *queuedNotificationsJson = [[NSString alloc] initWithData:queuedNotificationsData encoding:NSUTF8StringEncoding];
+
+    [defaults setObject:queuedNotificationsJson forKey:USER_DEFAULTS_QUEUED_NOTIFICATIONS];
+    [defaults synchronize];
+}
+
+-(NSMutableArray *) getQueuedNotifications
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    NSString *queuedNotificationsJson = [defaults stringForKey:USER_DEFAULTS_QUEUED_NOTIFICATIONS];
+    if (queuedNotificationsJson != nil) {
+        NSData *queuedNotificationsData = [queuedNotificationsJson dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *error = NULL;
+        id queuedNotifications = [NSJSONSerialization JSONObjectWithData:queuedNotificationsData options:NSJSONReadingMutableContainers error:&error];
+        if (error) {
+            WPLog(@"Error while reading queued notifications: %@", error);
+        }
+        if (queuedNotifications) {
+            return queuedNotifications;
+        }
+    }
+    return [NSMutableArray new];
+}
+
+-(void) clearQueuedNotifications
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults removeObjectForKey:USER_DEFAULTS_QUEUED_NOTIFICATIONS];
+    [defaults synchronize];
+}
+
+
 @end

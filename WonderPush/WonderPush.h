@@ -15,6 +15,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
@@ -157,6 +158,29 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param userInfo The userInfo provided by the system.
  */
 + (void) handleNotificationReceivedInBackground:(NSDictionary *)userInfo;
+
+
+///-----------------------------------
+/// @name Application state monitoring
+///-----------------------------------
+
+/**
+ Forwards an application delegate to the SDK.
+
+ Method to call in your `applicationDidBecomeActive:` method of your `AppDelegate`.
+
+ @param application The application provided by the system.
+ */
++ (void) applicationDidBecomeActive:(UIApplication *)application;
+
+/**
+ Forwards an application delegate to the SDK.
+
+ Method to call in your `applicationDidEnterBackground:` method of your `AppDelegate`.
+
+ @param application The application provided by the system.
+ */
++ (void) applicationDidEnterBackground:(UIApplication *)application;
 
 
 ///-----------------------------------

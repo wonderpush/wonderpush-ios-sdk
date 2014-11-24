@@ -486,6 +486,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
     {
         return NO;
     }
+
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive)
+    {
+        // FIXME: Track notification received. Beware remote-notifications background mode!
+        WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+        [configuration addToQueuedNotifications:notificationDictionary];
+        return YES;
+    }
+
     id campagnId      = [wonderpushData objectForKey:@"c"];
     id notificationId = [wonderpushData objectForKey:@"n"];
     NSMutableDictionary *notificationInformations = [NSMutableDictionary new];
@@ -526,6 +535,30 @@ static WPDialogButtonHandler *buttonHandler = nil;
 {
     NSString *newToken = [deviceToken description];
     [WonderPush setDeviceToken:newToken];
+}
+
++ (void) applicationDidBecomeActive:(UIApplication *)application;
+{
+    // Show any queued notifications
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    NSArray *queuedNotifications = [configuration getQueuedNotifications];
+    for (NSDictionary *queuedNotification in queuedNotifications)
+    {
+        [self handleNotification:queuedNotification];
+    }
+    [configuration clearQueuedNotifications];
+}
+
++ (void) applicationDidEnterBackground:(UIApplication *)application
+{
+    // Send queued notifications as LocalNotifications
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    NSArray *queuedNotifications = [configuration getQueuedNotifications];
+    for (NSDictionary *queuedNotification in queuedNotifications)
+    {
+        [self handleNotificationReceivedInBackground:queuedNotification];
+    }
+    [configuration clearQueuedNotifications];
 }
 
 
