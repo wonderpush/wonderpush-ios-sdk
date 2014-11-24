@@ -33,6 +33,8 @@ static BOOL _isReady = NO;
 
 static BOOL _isReachable = NO;
 
+static NSTimeInterval _lastAppOpen = 0;
+
 
 @implementation WonderPush
 
@@ -539,6 +541,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) applicationDidBecomeActive:(UIApplication *)application;
 {
+    _lastAppOpen = [[NSProcessInfo processInfo] systemUptime];
+    [self trackInternalEvent:@"@APP_OPEN" eventData:nil customData:nil];
     // Show any queued notifications
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
@@ -551,6 +555,11 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) applicationDidEnterBackground:(UIApplication *)application
 {
+    [self trackInternalEvent:@"@APP_CLOSE"
+                   eventData:@{@"openedTime":(_lastAppOpen > 0
+                                              ? [NSNumber numberWithLong:floor(1000 * ([[NSProcessInfo processInfo] systemUptime] - _lastAppOpen))]
+                                              : [NSNull null])}
+                  customData:nil];
     // Send queued notifications as LocalNotifications
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
