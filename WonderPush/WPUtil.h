@@ -62,7 +62,7 @@
 
 + (NSError *)errorFromJSON:(id)json;
 
-+(NSTimeInterval) getServerDate;
++(long long) getServerDate;
 
 
 +(BOOL) currentApplicationIsInForeground;

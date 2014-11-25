@@ -369,8 +369,9 @@ static NSMutableArray *tokenFetchedHandlers;
     NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:request.params];
     [params setObject:[WPConfiguration sharedConfiguration].accessToken forKey:@"accessToken"];
     // The success handler
-    NSTimeInterval timeRequestStart = [[NSDate date] timeIntervalSince1970];
+    NSTimeInterval timeRequestStart = [[NSProcessInfo processInfo] systemUptime];
     void(^success)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id response) {
+        NSTimeInterval timeRequestStop = [[NSProcessInfo processInfo] systemUptime];
         if ([operation isKindOfClass:[WPJSONRequestOperation class]]) {
             WPJSONRequestOperation *jsonOperation = (WPJSONRequestOperation *)operation;
 
@@ -381,19 +382,34 @@ static NSMutableArray *tokenFetchedHandlers;
 
             } else {
 
-                NSTimeInterval requestTime = [[NSDate date] timeIntervalSince1970] - timeRequestStart;
                 WPResponse *response = [[WPResponse alloc] init];
                 response.object = jsonOperation.responseJSON;
-                NSNumber *serverTimeStamp = [((NSDictionary *)jsonOperation.responseJSON) objectForKey:@"_serverTime"];
-                WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+                NSNumber *_serverTime = [((NSDictionary *)jsonOperation.responseJSON) objectForKey:@"_serverTime"];
+                NSNumber *_serverTook = [((NSDictionary *)jsonOperation.responseJSON) objectForKey:@"_serverTook"];
 
-                if (serverTimeStamp != nil && (configuration.timeOffsetPrecision == 0 || requestTime < configuration.timeOffsetPrecision)) {
-                    NSTimeInterval systemUptime = floor([[NSProcessInfo processInfo] systemUptime]);
-                    configuration.timeOffset = [serverTimeStamp floatValue] - systemUptime;
-                    configuration.timeOffsetPrecision = requestTime;
+                if (_serverTime != nil) {
+                    NSTimeInterval serverTime = [_serverTime doubleValue] / 1000.;
+                    NSTimeInterval serverTook = 0;
+                    if (_serverTook)
+                        serverTook = [_serverTook doubleValue] / 1000.;
+                    NSTimeInterval uncertainty = (timeRequestStop - timeRequestStart - serverTook) / 2;
+                    NSTimeInterval offset = (serverTime + serverTook/2.) - (timeRequestStart + timeRequestStop)/2.;
+                    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+
+                    if (
+                        // Case 1: Lower uncertainty
+                        configuration.timeOffsetPrecision == 0 || uncertainty < configuration.timeOffsetPrecision
+                        // Case 2: Additional check for exceptional server-side time gaps
+                        || fabs(offset - configuration.timeOffset) > uncertainty + configuration.timeOffsetPrecision
+                    ) {
+                        configuration.timeOffset = offset;
+                        configuration.timeOffsetPrecision = uncertainty;
+                    }
                 }
+
                 if (request.handler)
                     request.handler(response, nil);
+
             }
         }
     };

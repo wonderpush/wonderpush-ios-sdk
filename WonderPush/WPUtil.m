@@ -189,15 +189,15 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
 
 #pragma mark - SERVER TIME
 
-+(NSTimeInterval) getServerDate
++(long long) getServerDate
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
 
     if (configuration.timeOffset == 0) {
-        return floor([[NSDate date] timeIntervalSince1970]*1000);
+        // Not synced, use device time
+        return (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
     }
-    NSTimeInterval systemUptime = floor([[NSProcessInfo processInfo] systemUptime]*1000);
-    return systemUptime + configuration.timeOffset;
+    return (long long) (([[NSProcessInfo processInfo] systemUptime] + configuration.timeOffset) * 1000);
 }
 
 
