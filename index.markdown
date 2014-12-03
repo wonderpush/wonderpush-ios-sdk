@@ -50,6 +50,14 @@ Add this code to the corresponding method of you Application delegate:
         return YES;
     }
 
+    - (void)applicationDidEnterBackground:(UIApplication *)application {
+        [WonderPush applicationDidEnterBackground:application];
+    }
+
+    - (void)applicationDidBecomeActive:(UIApplication *)application {
+        [WonderPush applicationDidBecomeActive:application];
+    }
+
 Replace:
 
 - **[YOUR_CLIENT_ID]** with your client id found in your [WonderPush dashboard](https://dashboard.wonderpush.com/), under the `Settings / Keys` menu.
@@ -57,8 +65,8 @@ Replace:
 - **[YOUR_CLIENT_ID]** with your client secret found in your [WonderPush dashboard](https://dashboard.wonderpush.com/), next to the client id as described above.
   Eg.: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.
 
-5. Handle remote notification
-=============================
+5. Handle remote notifications
+==============================
 
 First of all you have to set up your application as described in the [Configuring Push Notifications guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringPushNotifications/ConfiguringPushNotifications.html#//apple_ref/doc/uid/TP40012582-CH32-SW1).
 
@@ -91,12 +99,10 @@ Add the following methods:
         [WonderPush handleDidReceiveRemoteNotification:userInfo];
     }
 
-    - (void)applicationDidEnterBackground:(UIApplication *)application {
-        [WonderPush applicationDidEnterBackground:application];
-    }
-
-    - (void)applicationDidBecomeActive:(UIApplication *)application {
-        [WonderPush applicationDidBecomeActive:application];
+    // You may appreciate the following during development :-)
+    - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+    {
+        NSLog(@"Error: %@", error);
     }
 
 That's it you should now be able to receive push notifications from WonderPush.
@@ -113,12 +119,6 @@ In order to make WonderPush work in this case, two methods must be overloaded in
     - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
     {
         [WonderPush handleNotification:notification.userInfo];
-    }
-
-    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))handler
-    {
-        [WonderPush handleNotificationReceivedInBackground:userInfo];
-        handler(UIBackgroundFetchResultNewData
     }
 
 Your application now correctly receives push notifications.
