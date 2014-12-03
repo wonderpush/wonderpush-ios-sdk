@@ -492,6 +492,7 @@
 				A1272C901A0CD19D005A11C1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A16E339E19C886A700E4E158 /* Build configuration list for PBXProject "WonderPush" */ = {
 			isa = XCConfigurationList;
