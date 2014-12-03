@@ -177,6 +177,26 @@ Here is an example:
 
 Inactive users with non-empty carts could then easily be notified. Combined with a free delivery coupon for carts above a given amount, your conversion rate will improve still!
 
+### Reading custom key-value payload
+
+A notification can be added custom key-value pairs to it.
+In order to retrieve them, simply add one line of code in the appropriate methods of your application delegate as follow:
+
+    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+    {
+        [WonderPush handleDidReceiveRemoteNotification:userInfo];
+        // Get the custom payload
+        NSDictionary * custom = [userInfo objectForKey:@"custom"];
+    }
+
+    // If you use the remote-notification background mode
+    - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+    {
+        [WonderPush handleNotification:notification.userInfo];
+        // Get the custom payload
+        NSDictionary * custom = [notification.userInfo objectForKey:@"custom"];
+    }
+
 
 
 API Reference
