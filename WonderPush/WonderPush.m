@@ -1031,7 +1031,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
         notification.userInfo = userInfo;
         [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
     }
-    NSDictionary *wpData = [[userInfo objectForKey:@"custom"] objectForKey:@"_wp"];
+    NSDictionary *wpData = [[userInfo objectForKey:@"custom"] objectForKey:@"_wp"]; // _wp inside custom is the old format
+    if (!wpData)
+    {
+        wpData = [userInfo objectForKey:@"_wp"]; // _wp at root is the new format
+    }
+    if (!wpData)
+    {
+        // This notification is not targetted for WonderPush SDK consumption.
+        return;
+    }
     id campagnId      = [wpData objectForKey:@"c"];
     id notificationId = [wpData objectForKey:@"n"];
     NSMutableDictionary *notificationInformations = [NSMutableDictionary new];
