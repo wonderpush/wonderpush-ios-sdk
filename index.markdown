@@ -70,11 +70,18 @@ Replace:
 
 First of all you have to set up your application as described in the [Configuring Push Notifications guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringPushNotifications/ConfiguringPushNotifications.html#//apple_ref/doc/uid/TP40012582-CH32-SW1).
 
-Once you created your provisioning profile associated to a certificate on your computer you will have to export your certificate
+Once you created your provisioning profile associated to a certificate on your computer you will have to export your push notifications certificate
 in order to let WonderPush to send notification to your device:
 
-- Launch KeyChains
-- Select the newly created certificate associated to your appId.
+- Launch `KeyChain Access`
+- Select the newly created certificate associated to your appId.  
+  Its name should be `Apple Development/Production iOS Push Services: [your.app.id]`  
+  _If you don't see it_, make sure you have downloaded the iOS Push Service certificate Apple generated for your application:
+  - Log into the [member center](https://developer.apple.com/account/ios/certificate/certificateList.action) and choose `Certificates, Identifiers & Profiles` section.
+  - Under `Certificates`, click the certificate corresponding to your appId, of type either `APNs Development iOS` or `APNs Production iOS`.  
+    The development certificate is used for sending to the devices you develop with. The production certificate is used for applications distributed through the App Store or TestFlight.
+  - Click `Download`, and open the certificate with `Keychain Access`.
+- Make sure you see a matching private key when you expand the certificate item, but select only the certificate.
 - Click on `File / Export items`.
 - Do not enter any password.
 - Open a command line and go to the directory where you exported the certificate.
@@ -82,7 +89,7 @@ in order to let WonderPush to send notification to your device:
 
       openssl pkcs12 -nodes -clcerts -out [name].pem -in [previously explorted file].p12
 
-- Again, type no password when asked.
+- Again, type no password when prompted.
 
 Then go to your [WonderPush dashboard](https://dashboard.wonderpush.com/) and upload the certificate in the `Settings / Keys` page of your application management
 
