@@ -206,6 +206,13 @@ In order to retrieve them, simply add one line of code in the appropriate method
 
 
 
+Demo application
+----------------
+
+You can read an example integration by looking at the code of our [Demo Application, available on GitHub](https://github.com/wonderpush/wonderpush-ios-demo).
+
+
+
 API Reference
 -------------
 
