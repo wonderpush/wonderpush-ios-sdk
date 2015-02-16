@@ -168,7 +168,7 @@ Add the following methods:</p>
 If in doubt, click your project in the project navigator, select a target, go to the <code>Capabilities</code> tab, and under <code>Background modes</code>, see whether <code>Remote notifications</code> is checked.</p>
 
 <p>If your applications uses the Remote notification Background mode, the behaviour of the notification is not exactly the same.
-In order to make WonderPush work in this case, two methods must be overloaded in your application delegate as follow:</p>
+In order to make WonderPush work in this case, overload the following method in your application delegate as follows:</p>
 
 <pre><code>- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
