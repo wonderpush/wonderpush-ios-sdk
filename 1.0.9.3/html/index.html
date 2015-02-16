@@ -36,7 +36,7 @@
 						
 						<h2>WonderPush iOS SDK Guide</h2>
 
-<h1>1. Register your application in WonderPush</h1>
+<h1><a id="register-app-wonderpush"></a>1. Register your application in WonderPush</h1>
 
 <p>Log in or sign up on <a href="http://www.wonderpush.com">WonderPush</a>.</p>
 
@@ -45,11 +45,11 @@ Make sure to check <code>iOS</code> under the <code>Platforms</code> section.</p
 
 <p>Grab your <em>client id</em> and <em>client secret</em> under ther <code>Settings / Keys</code> menu.</p>
 
-<h1>2. Download the latest WonderPush SDK for iOS</h1>
+<h1><a id="download-sdk"></a>2. Download the latest WonderPush SDK for iOS</h1>
 
 <p>Download the latest release <a href="https://github.com/wonderpush/wonderpush-ios-sdk/releases/latest">on GitHub</a>.</p>
 
-<h1>3. Setup your project</h1>
+<h1><a id="setup-project"></a>3. Setup your project</h1>
 
 <ul>
 <li>Extract <code>WonderPush.framework</code> from the downloaded archive.</li>
@@ -73,7 +73,7 @@ Make sure to check <code>iOS</code> under the <code>Platforms</code> section.</p
 </ul>
 
 
-<h1>4. Initialize the SDK</h1>
+<h1><a id="initialize-sdk"></a>4. Initialize the SDK</h1>
 
 <p>Add this code to the corresponding method of you Application delegate:</p>
 
@@ -106,7 +106,7 @@ Eg.: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.</li>
 </ul>
 
 
-<h1>5. Handle remote notifications</h1>
+<h1><a id="remote-notifications"></a>5. Handle remote notifications</h1>
 
 <p>First of all you have to set up your application as described in the <a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringPushNotifications/ConfiguringPushNotifications.html#//apple_ref/doc/uid/TP40012582-CH32-SW1">Configuring Push Notifications guide</a>.</p>
 
@@ -162,7 +162,7 @@ Add the following methods:</p>
 
 <p>That&rsquo;s it you should now be able to receive push notifications from WonderPush.</p>
 
-<h1>6. Handling background mode</h1>
+<h1><a id="background-mode"></a>6. Handling background mode</h1>
 
 <p><em>Note:</em> If your application does not use the Remote notifications Background mode, you can safely skip this step.<br/>
 If in doubt, click your project in the project navigator, select a target, go to the <code>Capabilities</code> tab, and under <code>Background modes</code>, see whether <code>Remote notifications</code> is checked.</p>
@@ -178,9 +178,9 @@ In order to make WonderPush work in this case, overload the following method in 
 
 <p>Your application now correctly receives push notifications.</p>
 
-<h1>7. Using the SDK in your iOS application</h1>
+<h1><a id="using-sdk"></a>7. Using the SDK in your iOS application</h1>
 
-<h3>Track your first event</h3>
+<h3><a id="using-sdk--track-event"></a>Track your first event</h3>
 
 <p>The SDK automatically tracks genetic events. This is probably insufficient to help you analyze, segment and notify users properly.
 You will want to track events that make sense for your business, here is an simple example:</p>
@@ -192,7 +192,7 @@ You will want to track events that make sense for your business, here is an simp
 
 <p>Your notification strategy could be to incite to customization for the lazy users, whereas you could engage in a more personalized communication with the users you performed the <code>customized_interests</code> event.</p>
 
-<h3>Enriching the events</h3>
+<h3><a id="using-sdk--track-event-custom"></a>Enriching the events</h3>
 
 <p>Events can host a rich set of properties that WonderPush indexes to permit you to filter users based on finer criteria.
 To do so, simply give a JSON object as second parameter. Here is an example:</p>
@@ -209,7 +209,7 @@ To do so, simply give a JSON object as second parameter. Here is an example:</p>
 
 <p>You could choose to thank customer for every purchase, or you could take advantage of the purchase amount to give differentiated coupons to best buyers.</p>
 
-<h3>Tagging users</h3>
+<h3><a id="using-sdk--installation-properties"></a>Tagging users</h3>
 
 <p>Some information are better represented as properties on a user, rather than discrete events in a timeline.
 Here is an example:</p>
@@ -235,7 +235,7 @@ Here is an example:</p>
 
 <p>Inactive users with non-empty carts could then easily be notified. Combined with a free delivery coupon for carts above a given amount, your conversion rate will improve still!</p>
 
-<h3>Reading custom key-value payload</h3>
+<h3><a id="advanced--reading-custom-key-value-payload"></a>Reading custom key-value payload</h3>
 
 <p>A notification can be added custom key-value pairs to it.
 In order to retrieve them, simply add one line of code in the appropriate methods of your application delegate as follow:</p>
@@ -256,11 +256,11 @@ In order to retrieve them, simply add one line of code in the appropriate method
 }
 </code></pre>
 
-<h2>Demo application</h2>
+<h2><a id="demo-app"></a>Demo application</h2>
 
 <p>You can read an example integration by looking at the code of our <a href="https://github.com/wonderpush/wonderpush-ios-demo">Demo Application, available on GitHub</a>.</p>
 
-<h2>API Reference</h2>
+<h2><a id="reference"></a>API Reference</h2>
 
 <p>Take a look at the methods exposed by the <a href="Classes/WonderPush.html">WonderPush</a> class.</p>
 						
@@ -289,7 +289,7 @@ In order to retrieve them, simply add one line of code in the appropriate method
 				<div id="footer">
 					<hr />
 					<div class="footer-copyright">
-						<p><span class="copyright">&copy; 2014 WonderPush. All rights reserved. (Last updated: 2014-12-08)</span><br />
+						<p><span class="copyright">&copy; 2015 WonderPush. All rights reserved. (Last updated: 2015-02-16)</span><br />
 						
 						<span class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2 (build 963)</a>.</span></p>
 						
