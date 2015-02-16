@@ -478,12 +478,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
         return NO;
     }
 
-    NSDictionary *customField = [notificationDictionary objectForKey:@"custom"];
-    if (customField == nil)
-    {
-        return NO;
-    }
-    NSDictionary *wonderpushData = [customField objectForKey:WP_PUSH_NOTIFICATION_KEY];
+    NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
     if (wonderpushData == nil)
     {
         return NO;
@@ -1031,11 +1026,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
         notification.userInfo = userInfo;
         [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
     }
-    NSDictionary *wpData = [[userInfo objectForKey:@"custom"] objectForKey:@"_wp"]; // _wp inside custom is the old format
-    if (!wpData)
-    {
-        wpData = [userInfo objectForKey:@"_wp"]; // _wp at root is the new format
-    }
+    NSDictionary *wpData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
     if (!wpData)
     {
         // This notification is not targetted for WonderPush SDK consumption.
