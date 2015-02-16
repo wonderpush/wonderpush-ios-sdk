@@ -78,6 +78,12 @@
 #define WP_PUSH_NOTIFICATION_SHOW_HTML @"html"
 
 
+/**
+ Default notification button label
+ */
+#define WP_DEFAULT_BUTTON_LOCALIZED_LABEL NSLocalizedString(@"Close", nil)
+
+
 @interface WonderPush (private)
 
 + (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *) notification;

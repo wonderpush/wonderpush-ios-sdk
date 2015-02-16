@@ -236,7 +236,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
     else
     {
-        [dialog addButtonWithTitle:@"close"];
+        [dialog addButtonWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL];
     }
     [dialog show];
 }
@@ -295,7 +295,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
     else
     {
-        [alert setButtonTitles:@[@"close"]];
+        [alert setButtonTitles:@[WP_DEFAULT_BUTTON_LOCALIZED_LABEL]];
     }
     [alert show];
 }
@@ -357,7 +357,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
     else
     {
-        [alert setButtonTitles:@[@"close"]];
+        [alert setButtonTitles:@[WP_DEFAULT_BUTTON_LOCALIZED_LABEL]];
     }
     [alert show];
 }
