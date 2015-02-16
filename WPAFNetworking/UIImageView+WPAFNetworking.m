@@ -1,4 +1,4 @@
-// UIImageView+AFNetworking.m
+// UIImageView+WPAFNetworking.m
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -24,9 +24,9 @@
 #import <objc/runtime.h>
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-#import "UIImageView+AFNetworking.h"
+#import "UIImageView+WPAFNetworking.h"
 
-@interface AFImageCache : NSCache
+@interface WPAFImageCache : NSCache
 - (UIImage *)cachedImageForRequest:(NSURLRequest *)request;
 - (void)cacheImage:(UIImage *)image
         forRequest:(NSURLRequest *)request;
@@ -34,26 +34,26 @@
 
 #pragma mark -
 
-static char kAFImageRequestOperationObjectKey;
+static char kWPAFImageRequestOperationObjectKey;
 
-@interface UIImageView (_AFNetworking)
-@property (readwrite, nonatomic, strong, setter = af_setImageRequestOperation:) AFImageRequestOperation *af_imageRequestOperation;
+@interface UIImageView (_WPAFNetworking)
+@property (readwrite, nonatomic, strong, setter = af_setImageRequestOperation:) WPAFImageRequestOperation *af_imageRequestOperation;
 @end
 
-@implementation UIImageView (_AFNetworking)
+@implementation UIImageView (_WPAFNetworking)
 @dynamic af_imageRequestOperation;
 @end
 
 #pragma mark -
 
-@implementation UIImageView (AFNetworking)
+@implementation UIImageView (WPAFNetworking)
 
-- (AFHTTPRequestOperation *)af_imageRequestOperation {
-    return (AFHTTPRequestOperation *)objc_getAssociatedObject(self, &kAFImageRequestOperationObjectKey);
+- (WPAFHTTPRequestOperation *)af_imageRequestOperation {
+    return (WPAFHTTPRequestOperation *)objc_getAssociatedObject(self, &kWPAFImageRequestOperationObjectKey);
 }
 
-- (void)af_setImageRequestOperation:(AFImageRequestOperation *)imageRequestOperation {
-    objc_setAssociatedObject(self, &kAFImageRequestOperationObjectKey, imageRequestOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)af_setImageRequestOperation:(WPAFImageRequestOperation *)imageRequestOperation {
+    objc_setAssociatedObject(self, &kWPAFImageRequestOperationObjectKey, imageRequestOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 + (NSOperationQueue *)af_sharedImageRequestOperationQueue {
@@ -67,11 +67,11 @@ static char kAFImageRequestOperationObjectKey;
     return _af_imageRequestOperationQueue;
 }
 
-+ (AFImageCache *)af_sharedImageCache {
-    static AFImageCache *_af_imageCache = nil;
++ (WPAFImageCache *)af_sharedImageCache {
+    static WPAFImageCache *_af_imageCache = nil;
     static dispatch_once_t oncePredicate;
     dispatch_once(&oncePredicate, ^{
-        _af_imageCache = [[AFImageCache alloc] init];
+        _af_imageCache = [[WPAFImageCache alloc] init];
     });
 
     return _af_imageCache;
@@ -111,8 +111,8 @@ static char kAFImageRequestOperationObjectKey;
     } else {
         self.image = placeholderImage;
 
-        AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc] initWithRequest:urlRequest];
-        [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        WPAFImageRequestOperation *requestOperation = [[WPAFImageRequestOperation alloc] initWithRequest:urlRequest];
+        [requestOperation setCompletionBlockWithSuccess:^(WPAFHTTPRequestOperation *operation, id responseObject) {
             if ([urlRequest isEqual:[self.af_imageRequestOperation request]]) {
                 if (success) {
                     success(operation.request, operation.response, responseObject);
@@ -126,7 +126,7 @@ static char kAFImageRequestOperationObjectKey;
             }
 
             [[[self class] af_sharedImageCache] cacheImage:responseObject forRequest:urlRequest];
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        } failure:^(WPAFHTTPRequestOperation *operation, NSError *error) {
             if ([urlRequest isEqual:[self.af_imageRequestOperation request]]) {
                 if (failure) {
                     failure(operation.request, operation.response, error);
@@ -153,11 +153,11 @@ static char kAFImageRequestOperationObjectKey;
 
 #pragma mark -
 
-static inline NSString * AFImageCacheKeyFromURLRequest(NSURLRequest *request) {
+static inline NSString * WPAFImageCacheKeyFromURLRequest(NSURLRequest *request) {
     return [[request URL] absoluteString];
 }
 
-@implementation AFImageCache
+@implementation WPAFImageCache
 
 - (UIImage *)cachedImageForRequest:(NSURLRequest *)request {
     switch ([request cachePolicy]) {
@@ -168,14 +168,14 @@ static inline NSString * AFImageCacheKeyFromURLRequest(NSURLRequest *request) {
             break;
     }
 
-	return [self objectForKey:AFImageCacheKeyFromURLRequest(request)];
+	return [self objectForKey:WPAFImageCacheKeyFromURLRequest(request)];
 }
 
 - (void)cacheImage:(UIImage *)image
         forRequest:(NSURLRequest *)request
 {
     if (image && request) {
-        [self setObject:image forKey:AFImageCacheKeyFromURLRequest(request)];
+        [self setObject:image forKey:WPAFImageCacheKeyFromURLRequest(request)];
     }
 }
 

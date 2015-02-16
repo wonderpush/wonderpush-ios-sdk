@@ -1,4 +1,4 @@
-// AFImageRequestOperation.h
+// WPAFImageRequestOperation.h
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import "AFHTTPRequestOperation.h"
+#import "WPAFHTTPRequestOperation.h"
 
 #import <Availability.h>
 
@@ -32,11 +32,11 @@
 #endif
 
 /**
- `AFImageRequestOperation` is a subclass of `AFHTTPRequestOperation` for downloading and processing images.
+ `WPAFImageRequestOperation` is a subclass of `WPAFHTTPRequestOperation` for downloading and processing images.
 
  ## Acceptable Content Types
 
- By default, `AFImageRequestOperation` accepts the following MIME types, which correspond to the image formats supported by UIImage or NSImage:
+ By default, `WPAFImageRequestOperation` accepts the following MIME types, which correspond to the image formats supported by UIImage or NSImage:
 
  - `image/tiff`
  - `image/jpeg`
@@ -49,7 +49,7 @@
  - `image/x-xbitmap`
  - `image/x-win-bitmap`
  */
-@interface AFImageRequestOperation : AFHTTPRequestOperation
+@interface WPAFImageRequestOperation : WPAFHTTPRequestOperation
 
 /**
  An image constructed from the response data. If an error occurs during the request, `nil` will be returned, and the `error` property will be set to the error.
@@ -68,7 +68,7 @@
 #endif
 
 /**
- Creates and returns an `AFImageRequestOperation` object and sets the specified success callback.
+ Creates and returns an `WPAFImageRequestOperation` object and sets the specified success callback.
 
  @param urlRequest The request object to be loaded asynchronously during execution of the operation.
  @param success A block object to be executed when the request finishes successfully. This block has no return value and takes a single argument, the image created from the response data of the request.
@@ -84,7 +84,7 @@
 #endif
 
 /**
- Creates and returns an `AFImageRequestOperation` object and sets the specified success callback.
+ Creates and returns an `WPAFImageRequestOperation` object and sets the specified success callback.
 
  @param urlRequest The request object to be loaded asynchronously during execution of the operation.
  @param imageProcessingBlock A block object to be executed after the image request finishes successfully, but before the image is returned in the `success` block. This block takes a single argument, the image loaded from the response body, and returns the processed image.

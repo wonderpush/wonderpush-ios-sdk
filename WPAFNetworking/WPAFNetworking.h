@@ -1,4 +1,4 @@
-// AFNetworking.h
+// WPAFNetworking.h
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 // 
@@ -23,21 +23,21 @@
 #import <Foundation/Foundation.h>
 #import <Availability.h>
 
-#ifndef _AFNETWORKING_
-    #define _AFNETWORKING_
+#ifndef _WPAFNETWORKING_
+    #define _WPAFNETWORKING_
 
-    #import "AFURLConnectionOperation.h"
+    #import "WPAFURLConnectionOperation.h"
 
-    #import "AFHTTPRequestOperation.h"
-    #import "AFJSONRequestOperation.h"
-    #import "AFXMLRequestOperation.h"
-    #import "AFPropertyListRequestOperation.h"
-    #import "AFHTTPClient.h"
+    #import "WPAFHTTPRequestOperation.h"
+    #import "WPAFJSONRequestOperation.h"
+    #import "WPAFXMLRequestOperation.h"
+    #import "WPAFPropertyListRequestOperation.h"
+    #import "WPAFHTTPClient.h"
 
-    #import "AFImageRequestOperation.h"
+    #import "WPAFImageRequestOperation.h"
 
     #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-        #import "AFNetworkActivityIndicatorManager.h"
-        #import "UIImageView+AFNetworking.h"
+        #import "WPAFNetworkActivityIndicatorManager.h"
+        #import "UIImageView+WPAFNetworking.h"
     #endif
-#endif /* _AFNETWORKING_ */
+#endif /* _WPAFNETWORKING_ */

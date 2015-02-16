@@ -104,12 +104,12 @@ static CLLocationManager *LocationManager = nil;
         configuration.sid = nil;
     }
     // Fetch anonymous access token right away
-    BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(AFHTTPRequestOperation *operation, id responseObject) {
+    BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(WPAFHTTPRequestOperation *operation, id responseObject) {
         [self setIsReady:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
                                                           userInfo:nil];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {}];
+    } failure:^(WPAFHTTPRequestOperation *operation, NSError *error) {}];
     if (NO == isFetching) {
         [self setIsReady:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED

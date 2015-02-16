@@ -1,4 +1,4 @@
-// AFURLConnectionOperation.m
+// WPAFURLConnectionOperation.m
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -20,95 +20,95 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "AFURLConnectionOperation.h"
+#import "WPAFURLConnectionOperation.h"
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
 #import <UIKit/UIKit.h>
 #endif
 
 #if !__has_feature(objc_arc)
-#error AFNetworking must be built with ARC.
-// You can turn on ARC for only AFNetworking files by adding -fobjc-arc to the build phase for each of its files.
+#error WPAFNetworking must be built with ARC.
+// You can turn on ARC for only WPAFNetworking files by adding -fobjc-arc to the build phase for each of its files.
 #endif
 
 typedef enum {
-    AFOperationPausedState      = -1,
-    AFOperationReadyState       = 1,
-    AFOperationExecutingState   = 2,
-    AFOperationFinishedState    = 3,
-} _AFOperationState;
+    WPAFOperationPausedState      = -1,
+    WPAFOperationReadyState       = 1,
+    WPAFOperationExecutingState   = 2,
+    WPAFOperationFinishedState    = 3,
+} _WPAFOperationState;
 
-typedef signed short AFOperationState;
+typedef signed short WPAFOperationState;
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-typedef UIBackgroundTaskIdentifier AFBackgroundTaskIdentifier;
+typedef UIBackgroundTaskIdentifier WPAFBackgroundTaskIdentifier;
 #else
-typedef id AFBackgroundTaskIdentifier;
+typedef id WPAFBackgroundTaskIdentifier;
 #endif
 
-static NSString * const kAFNetworkingLockName = @"com.alamofire.networking.operation.lock";
+static NSString * const kWPAFNetworkingLockName = @"com.alamofire.networking.operation.lock";
 
-NSString * const AFNetworkingErrorDomain = @"AFNetworkingErrorDomain";
-NSString * const AFNetworkingOperationFailingURLRequestErrorKey = @"AFNetworkingOperationFailingURLRequestErrorKey";
-NSString * const AFNetworkingOperationFailingURLResponseErrorKey = @"AFNetworkingOperationFailingURLResponseErrorKey";
+NSString * const WPAFNetworkingErrorDomain = @"WPAFNetworkingErrorDomain";
+NSString * const WPAFNetworkingOperationFailingURLRequestErrorKey = @"WPAFNetworkingOperationFailingURLRequestErrorKey";
+NSString * const WPAFNetworkingOperationFailingURLResponseErrorKey = @"WPAFNetworkingOperationFailingURLResponseErrorKey";
 
-NSString * const AFNetworkingOperationDidStartNotification = @"com.alamofire.networking.operation.start";
-NSString * const AFNetworkingOperationDidFinishNotification = @"com.alamofire.networking.operation.finish";
+NSString * const WPAFNetworkingOperationDidStartNotification = @"com.alamofire.networking.operation.start";
+NSString * const WPAFNetworkingOperationDidFinishNotification = @"com.alamofire.networking.operation.finish";
 
-typedef void (^AFURLConnectionOperationProgressBlock)(NSUInteger bytes, long long totalBytes, long long totalBytesExpected);
-#ifndef _AFNETWORKING_PIN_SSL_CERTIFICATES_
-typedef BOOL (^AFURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock)(NSURLConnection *connection, NSURLProtectionSpace *protectionSpace);
+typedef void (^WPAFURLConnectionOperationProgressBlock)(NSUInteger bytes, long long totalBytes, long long totalBytesExpected);
+#ifndef _WPAFNETWORKING_PIN_SSL_CERTIFICATES_
+typedef BOOL (^WPAFURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock)(NSURLConnection *connection, NSURLProtectionSpace *protectionSpace);
 #endif
-typedef void (^AFURLConnectionOperationAuthenticationChallengeBlock)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge);
-typedef NSCachedURLResponse * (^AFURLConnectionOperationCacheResponseBlock)(NSURLConnection *connection, NSCachedURLResponse *cachedResponse);
-typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLConnection *connection, NSURLRequest *request, NSURLResponse *redirectResponse);
+typedef void (^WPAFURLConnectionOperationAuthenticationChallengeBlock)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge);
+typedef NSCachedURLResponse * (^WPAFURLConnectionOperationCacheResponseBlock)(NSURLConnection *connection, NSCachedURLResponse *cachedResponse);
+typedef NSURLRequest * (^WPAFURLConnectionOperationRedirectResponseBlock)(NSURLConnection *connection, NSURLRequest *request, NSURLResponse *redirectResponse);
 
-static inline NSString * AFKeyPathFromOperationState(AFOperationState state) {
+static inline NSString * WPAFKeyPathFromOperationState(WPAFOperationState state) {
     switch (state) {
-        case AFOperationReadyState:
+        case WPAFOperationReadyState:
             return @"isReady";
-        case AFOperationExecutingState:
+        case WPAFOperationExecutingState:
             return @"isExecuting";
-        case AFOperationFinishedState:
+        case WPAFOperationFinishedState:
             return @"isFinished";
-        case AFOperationPausedState:
+        case WPAFOperationPausedState:
             return @"isPaused";
         default:
             return @"state";
     }
 }
 
-static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperationState toState, BOOL isCancelled) {
+static inline BOOL WPAFStateTransitionIsValid(WPAFOperationState fromState, WPAFOperationState toState, BOOL isCancelled) {
     switch (fromState) {
-        case AFOperationReadyState:
+        case WPAFOperationReadyState:
             switch (toState) {
-                case AFOperationPausedState:
-                case AFOperationExecutingState:
+                case WPAFOperationPausedState:
+                case WPAFOperationExecutingState:
                     return YES;
-                case AFOperationFinishedState:
+                case WPAFOperationFinishedState:
                     return isCancelled;
                 default:
                     return NO;
             }
-        case AFOperationExecutingState:
+        case WPAFOperationExecutingState:
             switch (toState) {
-                case AFOperationPausedState:
-                case AFOperationFinishedState:
+                case WPAFOperationPausedState:
+                case WPAFOperationFinishedState:
                     return YES;
                 default:
                     return NO;
             }
-        case AFOperationFinishedState:
+        case WPAFOperationFinishedState:
             return NO;
-        case AFOperationPausedState:
-            return toState == AFOperationReadyState;
+        case WPAFOperationPausedState:
+            return toState == WPAFOperationReadyState;
         default:
             return YES;
     }
 }
 
 #if !defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-static NSData *AFSecKeyGetData(SecKeyRef key) {
+static NSData *WPAFSecKeyGetData(SecKeyRef key) {
     CFDataRef data = NULL;
     
     OSStatus status = SecItemExport(key, kSecFormatUnknown, kSecItemPemArmour, NULL, &data);
@@ -119,16 +119,16 @@ static NSData *AFSecKeyGetData(SecKeyRef key) {
 }
 #endif
 
-static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
+static BOOL WPAFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
     return [(__bridge id)key1 isEqual:(__bridge id)key2];
 #else
-    return [AFSecKeyGetData(key1) isEqual:AFSecKeyGetData(key2)];
+    return [WPAFSecKeyGetData(key1) isEqual:WPAFSecKeyGetData(key2)];
 #endif
 }
 
-@interface AFURLConnectionOperation ()
-@property (readwrite, nonatomic, assign) AFOperationState state;
+@interface WPAFURLConnectionOperation ()
+@property (readwrite, nonatomic, assign) WPAFOperationState state;
 @property (readwrite, nonatomic, assign, getter = isCancelled) BOOL cancelled;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @property (readwrite, nonatomic, strong) NSURLConnection *connection;
@@ -139,22 +139,22 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @property (readwrite, nonatomic, copy) NSString *responseString;
 @property (readwrite, nonatomic, assign) NSStringEncoding responseStringEncoding;
 @property (readwrite, nonatomic, assign) long long totalBytesRead;
-@property (readwrite, nonatomic, assign) AFBackgroundTaskIdentifier backgroundTaskIdentifier;
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationProgressBlock uploadProgress;
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationProgressBlock downloadProgress;
-#ifndef _AFNETWORKING_PIN_SSL_CERTIFICATES_
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock authenticationAgainstProtectionSpace;
+@property (readwrite, nonatomic, assign) WPAFBackgroundTaskIdentifier backgroundTaskIdentifier;
+@property (readwrite, nonatomic, copy) WPAFURLConnectionOperationProgressBlock uploadProgress;
+@property (readwrite, nonatomic, copy) WPAFURLConnectionOperationProgressBlock downloadProgress;
+#ifndef _WPAFNETWORKING_PIN_SSL_CERTIFICATES_
+@property (readwrite, nonatomic, copy) WPAFURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock authenticationAgainstProtectionSpace;
 #endif
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationAuthenticationChallengeBlock authenticationChallenge;
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationCacheResponseBlock cacheResponse;
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationRedirectResponseBlock redirectResponse;
+@property (readwrite, nonatomic, copy) WPAFURLConnectionOperationAuthenticationChallengeBlock authenticationChallenge;
+@property (readwrite, nonatomic, copy) WPAFURLConnectionOperationCacheResponseBlock cacheResponse;
+@property (readwrite, nonatomic, copy) WPAFURLConnectionOperationRedirectResponseBlock redirectResponse;
 
 - (void)operationDidStart;
 - (void)finish;
 - (void)cancelConnection;
 @end
 
-@implementation AFURLConnectionOperation
+@implementation WPAFURLConnectionOperation
 @synthesize state = _state;
 @synthesize cancelled = _cancelled;
 @synthesize connection = _connection;
@@ -170,7 +170,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @dynamic inputStream;
 @synthesize outputStream = _outputStream;
 @synthesize credential = _credential;
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _WPAFNETWORKING_PIN_SSL_CERTIFICATES_
 @synthesize SSLPinningMode = _SSLPinningMode;
 #endif
 @synthesize shouldUseCredentialStorage = _shouldUseCredentialStorage;
@@ -179,7 +179,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @synthesize uploadProgress = _uploadProgress;
 @synthesize downloadProgress = _downloadProgress;
 @synthesize authenticationChallenge = _authenticationChallenge;
-#ifndef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifndef _WPAFNETWORKING_PIN_SSL_CERTIFICATES_
 @synthesize authenticationAgainstProtectionSpace = _authenticationAgainstProtectionSpace;
 #endif
 @synthesize cacheResponse = _cacheResponse;
@@ -189,7 +189,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 + (void) __attribute__((noreturn)) networkRequestThreadEntryPoint:(id)__unused object {
     do {
         @autoreleasepool {
-            [[NSThread currentThread] setName:@"AFNetworking"];
+            [[NSThread currentThread] setName:@"WPAFNetworking"];
             [[NSRunLoop currentRunLoop] run];
         }
     } while (YES);
@@ -206,7 +206,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     return _networkRequestThread;
 }
 
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _WPAFNETWORKING_PIN_SSL_CERTIFICATES_
 + (NSArray *)pinnedCertificates {
     static NSArray *_pinnedCertificates = nil;
     static dispatch_once_t onceToken;
@@ -273,7 +273,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     }
     
     self.lock = [[NSRecursiveLock alloc] init];
-    self.lock.name = kAFNetworkingLockName;
+    self.lock.name = kWPAFNetworkingLockName;
     
     self.runLoopModes = [NSSet setWithObject:NSRunLoopCommonModes];
     
@@ -282,11 +282,11 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     self.shouldUseCredentialStorage = YES;
 
     // #ifdef included for backwards-compatibility 
-#ifdef _AFNETWORKING_ALLOW_INVALID_SSL_CERTIFICATES_
+#ifdef _WPAFNETWORKING_ALLOW_INVALID_SSL_CERTIFICATES_
     self.allowsInvalidSSLCertificate = YES;
 #endif
 
-    self.state = AFOperationReadyState;
+    self.state = WPAFOperationReadyState;
 
     return self;
 }
@@ -306,7 +306,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@: %p, state: %@, cancelled: %@ request: %@, response: %@>", NSStringFromClass([self class]), self, AFKeyPathFromOperationState(self.state), ([self isCancelled] ? @"YES" : @"NO"), self.request, self.response];
+    return [NSString stringWithFormat:@"<%@: %p, state: %@, cancelled: %@ request: %@, response: %@>", NSStringFromClass([self class]), self, WPAFKeyPathFromOperationState(self.state), ([self isCancelled] ? @"YES" : @"NO"), self.request, self.response];
 }
 
 - (void)setCompletionBlock:(void (^)(void))block {
@@ -391,7 +391,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     self.downloadProgress = block;
 }
 
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _WPAFNETWORKING_PIN_SSL_CERTIFICATES_
 
 - (void)setWillSendRequestForAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block {
     self.authenticationChallenge = block;
@@ -417,14 +417,14 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     self.redirectResponse = block;
 }
 
-- (void)setState:(AFOperationState)state {
-    if (!AFStateTransitionIsValid(self.state, state, [self isCancelled])) {
+- (void)setState:(WPAFOperationState)state {
+    if (!WPAFStateTransitionIsValid(self.state, state, [self isCancelled])) {
         return;
     }
     
     [self.lock lock];
-    NSString *oldStateKey = AFKeyPathFromOperationState(self.state);
-    NSString *newStateKey = AFKeyPathFromOperationState(state);
+    NSString *oldStateKey = WPAFKeyPathFromOperationState(self.state);
+    NSString *newStateKey = WPAFKeyPathFromOperationState(state);
     
     [self willChangeValueForKey:newStateKey];
     [self willChangeValueForKey:oldStateKey];
@@ -474,17 +474,17 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-            [notificationCenter postNotificationName:AFNetworkingOperationDidFinishNotification object:self];
+            [notificationCenter postNotificationName:WPAFNetworkingOperationDidFinishNotification object:self];
         });
     }
     
-    self.state = AFOperationPausedState;
+    self.state = WPAFOperationPausedState;
     
     [self.lock unlock];
 }
 
 - (BOOL)isPaused {
-    return self.state == AFOperationPausedState;
+    return self.state == WPAFOperationPausedState;
 }
 
 - (void)resume {
@@ -493,7 +493,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     }
     
     [self.lock lock];
-    self.state = AFOperationReadyState;
+    self.state = WPAFOperationReadyState;
     
     [self start];
     [self.lock unlock];
@@ -502,15 +502,15 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 #pragma mark - NSOperation
 
 - (BOOL)isReady {
-    return self.state == AFOperationReadyState && [super isReady];
+    return self.state == WPAFOperationReadyState && [super isReady];
 }
 
 - (BOOL)isExecuting {
-    return self.state == AFOperationExecutingState;
+    return self.state == WPAFOperationExecutingState;
 }
 
 - (BOOL)isFinished {
-    return self.state == AFOperationFinishedState;
+    return self.state == WPAFOperationFinishedState;
 }
 
 - (BOOL)isConcurrent {
@@ -520,7 +520,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 - (void)start {
     [self.lock lock];
     if ([self isReady]) {
-        self.state = AFOperationExecutingState;
+        self.state = WPAFOperationExecutingState;
         
         [self performSelector:@selector(operationDidStart) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
     }
@@ -543,7 +543,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     [self.lock unlock];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidStartNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:WPAFNetworkingOperationDidStartNotification object:self];
     });
     
     if ([self isCancelled]) {
@@ -552,10 +552,10 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 }
 
 - (void)finish {
-    self.state = AFOperationFinishedState;
+    self.state = WPAFOperationFinishedState;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidFinishNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:WPAFNetworkingOperationDidFinishNotification object:self];
     });
 }
 
@@ -590,7 +590,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 
 #pragma mark - NSURLConnectionDelegate
 
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _WPAFNETWORKING_PIN_SSL_CERTIFICATES_
 
 - (void)connection:(NSURLConnection *)connection
 willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
@@ -610,9 +610,9 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
         for (CFIndex i = 0; i < certificateCount; i++) {
             SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
             
-            if (self.SSLPinningMode == AFSSLPinningModeCertificate) {
+            if (self.SSLPinningMode == WPAFSSLPinningModeCertificate) {
                 [trustChain addObject:(__bridge_transfer NSData *)SecCertificateCopyData(certificate)];
-            } else if (self.SSLPinningMode == AFSSLPinningModePublicKey) {
+            } else if (self.SSLPinningMode == WPAFSSLPinningModePublicKey) {
                 SecCertificateRef someCertificates[] = {certificate};
                 CFArrayRef certificates = CFArrayCreate(NULL, (const void **)someCertificates, 1, NULL);
                 
@@ -635,12 +635,12 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
         CFRelease(policy);
         
         switch (self.SSLPinningMode) {
-            case AFSSLPinningModePublicKey: {
+            case WPAFSSLPinningModePublicKey: {
                 NSArray *pinnedPublicKeys = [self.class pinnedPublicKeys];
                 
                 for (id publicKey in trustChain) {
                     for (id pinnedPublicKey in pinnedPublicKeys) {
-                        if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)publicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
+                        if (WPAFSecKeyIsEqualToKey((__bridge SecKeyRef)publicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
                             NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
                             [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
                             return;
@@ -651,7 +651,7 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
                 [[challenge sender] cancelAuthenticationChallenge:challenge];
                 break;
             }
-            case AFSSLPinningModeCertificate: {
+            case WPAFSSLPinningModeCertificate: {
                 for (id serverCertificateData in trustChain) {
                     if ([[self.class pinnedCertificates] containsObject:serverCertificateData]) {
                         NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
@@ -663,7 +663,7 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
                 [[challenge sender] cancelAuthenticationChallenge:challenge];
                 break;
             }
-            case AFSSLPinningModeNone: {
+            case WPAFSSLPinningModeNone: {
                 if (self.allowsInvalidSSLCertificate){
                     NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
                     [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
@@ -852,7 +852,7 @@ didReceiveResponse:(NSURLResponse *)response
         return nil;
     }
     
-    self.state = (AFOperationState)[aDecoder decodeIntegerForKey:@"state"];
+    self.state = (WPAFOperationState)[aDecoder decodeIntegerForKey:@"state"];
     self.cancelled = [aDecoder decodeBoolForKey:@"isCancelled"];
     self.response = [aDecoder decodeObjectForKey:@"response"];
     self.error = [aDecoder decodeObjectForKey:@"error"];
@@ -869,9 +869,9 @@ didReceiveResponse:(NSURLResponse *)response
     [aCoder encodeObject:self.request forKey:@"request"];
     
     switch (self.state) {
-        case AFOperationExecutingState:
-        case AFOperationPausedState:
-            [aCoder encodeInteger:AFOperationReadyState forKey:@"state"];
+        case WPAFOperationExecutingState:
+        case WPAFOperationPausedState:
+            [aCoder encodeInteger:WPAFOperationReadyState forKey:@"state"];
             break;
         default:
             [aCoder encodeInteger:self.state forKey:@"state"];
@@ -889,11 +889,11 @@ didReceiveResponse:(NSURLResponse *)response
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    AFURLConnectionOperation *operation = [(AFURLConnectionOperation *)[[self class] allocWithZone:zone] initWithRequest:self.request];
+    WPAFURLConnectionOperation *operation = [(WPAFURLConnectionOperation *)[[self class] allocWithZone:zone] initWithRequest:self.request];
     
     operation.uploadProgress = self.uploadProgress;
     operation.downloadProgress = self.downloadProgress;
-#ifndef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifndef _WPAFNETWORKING_PIN_SSL_CERTIFICATES_
     operation.authenticationAgainstProtectionSpace = self.authenticationAgainstProtectionSpace;
 #endif
     operation.authenticationChallenge = self.authenticationChallenge;

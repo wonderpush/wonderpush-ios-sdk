@@ -16,7 +16,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CommonCrypto/CommonCrypto.h>
-#import "AFJSONRequestOperation.h"
+#import "WPAFJSONRequestOperation.h"
 #import "WPUtil.h"
 #import "WPClient.h"
 #import "WPConfiguration.h"
@@ -29,7 +29,7 @@
 static NSMutableArray *tokenFetchedHandlers;
 
 
-@interface WPJSONRequestOperation : AFJSONRequestOperation
+@interface WPJSONRequestOperation : WPAFJSONRequestOperation
 
 + (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request;
 
@@ -98,7 +98,7 @@ static NSMutableArray *tokenFetchedHandlers;
 {
     // Make sure the request is mutable
     if (![urlRequest isKindOfClass:[NSMutableURLRequest class]])
-        [NSException raise:@"Immutable NSURLRequest." format:NSLocalizedString(@"Url requests from AFNetworking should be mutable, please check that the AFNetworking version you are using is compatible with WonderPush.", nil)];
+        [NSException raise:@"Immutable NSURLRequest." format:NSLocalizedString(@"Url requests from WPAFNetworking should be mutable, please check that the WPAFNetworking version you are using is compatible with WonderPush.", nil)];
     NSMutableURLRequest *mutableRequest = (NSMutableURLRequest *)urlRequest;
 
     // Add the authorization header
@@ -117,8 +117,8 @@ static NSMutableArray *tokenFetchedHandlers;
 
 @interface HandlerPair : NSObject
 
-@property (copy) void (^success)(AFHTTPRequestOperation *, id);
-@property (copy) void (^error)(AFHTTPRequestOperation *, NSError *);
+@property (copy) void (^success)(WPAFHTTPRequestOperation *, id);
+@property (copy) void (^error)(WPAFHTTPRequestOperation *, NSError *);
 
 @end
 
@@ -129,7 +129,7 @@ static NSMutableArray *tokenFetchedHandlers;
 
 #pragma mark - WPHttpClient
 
-@interface WPHTTPClient : AFHTTPClient
+@interface WPHTTPClient : WPAFHTTPClient
 
 @end
 
@@ -163,7 +163,7 @@ static NSMutableArray *tokenFetchedHandlers;
  */
 - (id) initWithBaseURL:(NSURL *)url;
 
-/// The AFHTTPClient
+/// The WPAFHTTPClient
 @property (strong, nonatomic) WPHTTPClient *jsonHttpClient;
 
 /// The request vault
@@ -192,8 +192,8 @@ static NSMutableArray *tokenFetchedHandlers;
 {
     if (self = [super init]) {
         self.jsonHttpClient = [[WPHTTPClient alloc] initWithBaseURL:url];
-        [self.jsonHttpClient setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-            if (status == AFNetworkReachabilityStatusNotReachable || status == AFNetworkReachabilityStatusUnknown) {
+        [self.jsonHttpClient setReachabilityStatusChangeBlock:^(WPAFNetworkReachabilityStatus status) {
+            if (status == WPAFNetworkReachabilityStatusNotReachable || status == WPAFNetworkReachabilityStatusUnknown) {
                 [WonderPush setIsReachable:NO];
             } else {
                 [WonderPush setIsReachable:YES];
@@ -209,7 +209,7 @@ static NSMutableArray *tokenFetchedHandlers;
 
 #pragma mark HTTP Access
 
-- (AFHTTPClient *)httpClient
+- (WPAFHTTPClient *)httpClient
 {
     return self.jsonHttpClient;
 }
@@ -225,7 +225,7 @@ static NSMutableArray *tokenFetchedHandlers;
     return NO;
 }
 
-- (BOOL)fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
+- (BOOL)fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(WPAFHTTPRequestOperation *operation, id responseObject))success failure:(void (^)(WPAFHTTPRequestOperation *operation, NSError *error))failure
 {
     if (![WPConfiguration sharedConfiguration].accessToken) {
         [self fetchAnonymousAccessTokenAndCall:success failure:failure nbRetry:0];
@@ -234,7 +234,7 @@ static NSMutableArray *tokenFetchedHandlers;
     return NO;
 }
 
-- (void) fetchAnonymousAccessTokenAndCall:(void (^)(AFHTTPRequestOperation *operation, id responseObject))handler failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure nbRetry:(NSInteger) nbRetry {
+- (void) fetchAnonymousAccessTokenAndCall:(void (^)(WPAFHTTPRequestOperation *operation, id responseObject))handler failure:(void (^)(WPAFHTTPRequestOperation *operation, NSError *error))failure nbRetry:(NSInteger) nbRetry {
     if (YES == self.isFetchingAccessToken) {
         HandlerPair *pair = [[HandlerPair alloc] init];
         pair.success = handler;
@@ -259,7 +259,7 @@ static NSMutableArray *tokenFetchedHandlers;
 
     WPLog(@"Fetching access token");
 
-    [self.jsonHttpClient postPath:resource parameters:params success:^(AFHTTPRequestOperation *operation, id response) {
+    [self.jsonHttpClient postPath:resource parameters:params success:^(WPAFHTTPRequestOperation *operation, id response) {
         // Success
 
         WPJSONRequestOperation *jsonOperation = (WPJSONRequestOperation *)operation;
@@ -296,7 +296,7 @@ static NSMutableArray *tokenFetchedHandlers;
             }
         }
 
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } failure:^(WPAFHTTPRequestOperation *operation, NSError *error) {
         // Error
         WPLog(@"Could not fetch access token: %@", error);
         if (nbRetry <= 0) {
@@ -338,9 +338,9 @@ static NSMutableArray *tokenFetchedHandlers;
 - (void) fetchAnonymousAccessTokenAndRunRequest:(WPRequest *)request
 {
 
-    [self fetchAnonymousAccessTokenAndCall:^(AFHTTPRequestOperation *operation, id response) {
+    [self fetchAnonymousAccessTokenAndCall:^(WPAFHTTPRequestOperation *operation, id response) {
          [self requestAuthenticated:request];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } failure:^(WPAFHTTPRequestOperation *operation, NSError *error) {
         if (request.handler) {
              request.handler(nil, error);
         }
@@ -370,7 +370,7 @@ static NSMutableArray *tokenFetchedHandlers;
     [params setObject:[WPConfiguration sharedConfiguration].accessToken forKey:@"accessToken"];
     // The success handler
     NSTimeInterval timeRequestStart = [[NSProcessInfo processInfo] systemUptime];
-    void(^success)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id response) {
+    void(^success)(WPAFHTTPRequestOperation *, id) = ^(WPAFHTTPRequestOperation *operation, id response) {
         NSTimeInterval timeRequestStop = [[NSProcessInfo processInfo] systemUptime];
         if ([operation isKindOfClass:[WPJSONRequestOperation class]]) {
             WPJSONRequestOperation *jsonOperation = (WPJSONRequestOperation *)operation;
@@ -416,7 +416,7 @@ static NSMutableArray *tokenFetchedHandlers;
 
     // The failure handler
 
-    void(^failure)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
+    void(^failure)(WPAFHTTPRequestOperation *, NSError *) = ^(WPAFHTTPRequestOperation *operation, NSError *error) {
         id json = ((WPJSONRequestOperation *) operation).responseJSON;
         NSError *jsonError = [WPUtil errorFromJSON:json];
         if (jsonError) {

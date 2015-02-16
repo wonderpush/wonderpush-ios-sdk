@@ -1,4 +1,4 @@
-// AFPropertyListRequestOperation.m
+// WPAFPropertyListRequestOperation.m
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "AFPropertyListRequestOperation.h"
+#import "WPAFPropertyListRequestOperation.h"
 
 static dispatch_queue_t property_list_request_operation_processing_queue() {
     static dispatch_queue_t af_property_list_request_operation_processing_queue;
@@ -32,13 +32,13 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
     return af_property_list_request_operation_processing_queue;
 }
 
-@interface AFPropertyListRequestOperation ()
+@interface WPAFPropertyListRequestOperation ()
 @property (readwrite, nonatomic) id responsePropertyList;
 @property (readwrite, nonatomic, assign) NSPropertyListFormat propertyListFormat;
 @property (readwrite, nonatomic) NSError *propertyListError;
 @end
 
-@implementation AFPropertyListRequestOperation
+@implementation WPAFPropertyListRequestOperation
 @synthesize responsePropertyList = _responsePropertyList;
 @synthesize propertyListReadOptions = _propertyListReadOptions;
 @synthesize propertyListFormat = _propertyListFormat;
@@ -48,14 +48,14 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
 												success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id propertyList))success
 												failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id propertyList))failure
 {
-    AFPropertyListRequestOperation *requestOperation = [(AFPropertyListRequestOperation *)[self alloc] initWithRequest:request];
-    [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+    WPAFPropertyListRequestOperation *requestOperation = [(WPAFPropertyListRequestOperation *)[self alloc] initWithRequest:request];
+    [requestOperation setCompletionBlockWithSuccess:^(WPAFHTTPRequestOperation *operation, id responseObject) {
         if (success) {
             success(operation.request, operation.response, responseObject);
         }
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } failure:^(WPAFHTTPRequestOperation *operation, NSError *error) {
         if (failure) {
-            failure(operation.request, operation.response, error, [(AFPropertyListRequestOperation *)operation responsePropertyList]);
+            failure(operation.request, operation.response, error, [(WPAFPropertyListRequestOperation *)operation responsePropertyList]);
         }
     }];
 
@@ -94,7 +94,7 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
     }
 }
 
-#pragma mark - AFHTTPRequestOperation
+#pragma mark - WPAFHTTPRequestOperation
 
 + (NSSet *)acceptableContentTypes {
     return [NSSet setWithObjects:@"application/x-plist", nil];
@@ -104,8 +104,8 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
     return [[[request URL] pathExtension] isEqualToString:@"plist"] || [super canProcessRequest:request];
 }
 
-- (void)setCompletionBlockWithSuccess:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
-                              failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
+- (void)setCompletionBlockWithSuccess:(void (^)(WPAFHTTPRequestOperation *operation, id responseObject))success
+                              failure:(void (^)(WPAFHTTPRequestOperation *operation, NSError *error))failure
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
