@@ -96,25 +96,12 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
     return result;
 }
 
-+ (NSString *)percentEncodedString:(NSString *)s
++ (NSString *)percentEncodedString:(NSString *)string
 {
-    NSMutableString *result = [[NSMutableString alloc] init];
-    s = [NSString stringWithUTF8String:[s UTF8String]];
-    for (int i = 0; i < s.length; i++) {
-        unichar c = [s characterAtIndex:i];
-        if ((c >= 'A' && c <= 'Z')
-            || (c >= 'a' && c <= 'z')
-            || (c >= '0' && c <= '9')
-            || c == '-'
-            || c == '.'
-            || c == '_'
-            || c == '~') {
-            [result appendFormat:@"%c", c];
-        } else {
-            [result appendFormat:@"%%%02X", c];
-        }
-    }
-    return [NSString stringWithString:result];
+    // Copied from WPAFNetworking/WPAFHTTPClient.m:WPAFPercentEscapedQueryStringPairMemberFromStringWithEncoding
+    static NSString * const kWPAFCharactersToBeEscaped = @":/?&=;+!@#$()',*";
+    static NSString * const kWPAFCharactersToLeaveUnescaped = @"[].";
+    return (__bridge_transfer  NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, (__bridge CFStringRef)kWPAFCharactersToLeaveUnescaped, (__bridge CFStringRef)kWPAFCharactersToBeEscaped, CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
 }
 
 
