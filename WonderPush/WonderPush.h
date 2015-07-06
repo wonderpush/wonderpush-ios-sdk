@@ -99,6 +99,11 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (BOOL) isReady;
 
+/**
+ Controls SDK logging.
+ */
++ (void) setLogging:(BOOL)enable;
+
 
 ///-----------------------
 /// @name Core information

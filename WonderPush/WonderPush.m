@@ -49,6 +49,11 @@ static CLLocationManager *LocationManager = nil;
     });
 }
 
++ (void) setLogging:(BOOL)enable
+{
+    WPLogEnable(enable);
+}
+
 + (BOOL) isReady
 {
     return _isReady;

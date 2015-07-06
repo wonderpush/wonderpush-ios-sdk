@@ -44,6 +44,7 @@ Add this code to the corresponding method of you Application delegate:
 
     - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     {
+        // [WonderPush setLogging:YES]; // only activate logs for development
         [WonderPush setClientId:@"[YOUR_CLIENT_ID]" secret:@"[YOUR_CLIENT_SECRET]"];
         [WonderPush setNotificationEnabled:YES];
         [WonderPush handleApplicationLaunchWithOption:launchOptions];

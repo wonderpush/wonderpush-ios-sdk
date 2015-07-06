@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
+		3DDE66D81B4AE73200B5DC44 /* WPLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DDE66D61B4AE73200B5DC44 /* WPLog.h */; };
 		A1E3E0CF19E42B3E00A4EE09 /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B8508F19D4531500D1B6FB /* CustomIOS7AlertView.m */; };
 		A1E3E0D019E42B3E00A4EE09 /* WPAFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33CE19C8871F00E4E158 /* WPAFHTTPClient.m */; };
 		A1E3E0D119E42B3E00A4EE09 /* WPAFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D019C8871F00E4E158 /* WPAFHTTPRequestOperation.m */; };
@@ -44,6 +46,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3DDE66D51B4AE73200B5DC44 /* WPLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPLog.m; sourceTree = "<group>"; };
+		3DDE66D61B4AE73200B5DC44 /* WPLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPLog.h; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
 		A16E33A619C886A700E4E158 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A16E33AA19C886A700E4E158 /* WonderPush-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WonderPush-Prefix.pch"; sourceTree = "<group>"; };
@@ -171,6 +175,8 @@
 				A16E33AD19C886A700E4E158 /* WonderPush.m */,
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
 				A16E33A919C886A700E4E158 /* Supporting Files */,
+				3DDE66D51B4AE73200B5DC44 /* WPLog.m */,
+				3DDE66D61B4AE73200B5DC44 /* WPLog.h */,
 			);
 			path = WonderPush;
 			sourceTree = "<group>";
@@ -236,6 +242,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DDE66D81B4AE73200B5DC44 /* WPLog.h in Headers */,
 				A1E3E0E219E42B4800A4EE09 /* WonderPush.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,6 +341,7 @@
 				A1E3E0D119E42B3E00A4EE09 /* WPAFHTTPRequestOperation.m in Sources */,
 				A1E3E0D219E42B3E00A4EE09 /* WPAFImageRequestOperation.m in Sources */,
 				A1E3E0D319E42B3E00A4EE09 /* WPAFJSONRequestOperation.m in Sources */,
+				3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */,
 				A1E3E0D419E42B3E00A4EE09 /* WPAFNetworkActivityIndicatorManager.m in Sources */,
 				A1E3E0D519E42B3E00A4EE09 /* WPAFPropertyListRequestOperation.m in Sources */,
 				A1E3E0D619E42B3E00A4EE09 /* WPAFURLConnectionOperation.m in Sources */,

@@ -18,6 +18,7 @@
 #import <Foundation/Foundation.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "WPLog.h"
 #endif
 
 #define PRODUCTION_API_URL @"https://api.wonderpush.com/v1/"
@@ -45,8 +46,3 @@
 
 #define EVENT_RECEIVED_HISTORY_SIZE 5
 
-#if WP_DEBUG
-# define WPLog NSLog
-#else
-# define WPLog(...)
-#endif
