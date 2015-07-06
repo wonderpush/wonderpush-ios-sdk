@@ -566,15 +566,18 @@ static WPDialogButtonHandler *buttonHandler = nil;
 }
 
 
-#pragma mark - Informations mining
+#pragma mark - Information mining
 
 +(BOOL) getProximitySensorSupported
 {
     UIDevice *device = [UIDevice currentDevice];
-    device.proximityMonitoringEnabled = YES;
-    if (device.proximityMonitoringEnabled == YES) {
-        device.proximityMonitoringEnabled = NO;
-        return YES;
+    if (device)
+    {
+        device.proximityMonitoringEnabled = YES;
+        if (device.proximityMonitoringEnabled == YES) {
+            device.proximityMonitoringEnabled = NO;
+            return YES;
+        }
     }
     return NO;
 }
@@ -605,12 +608,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
 +(BOOL) getMicrophoneSupported
 {
     NSArray *availableInputs = [[AVAudioSession sharedInstance] availableInputs];
-    for (AVAudioSessionPortDescription *port in availableInputs)
+    if (availableInputs)
     {
-        if ([port.portType isEqualToString:AVAudioSessionPortBuiltInMic] ||
-            [port.portType isEqualToString:AVAudioSessionPortHeadsetMic])
+        for (AVAudioSessionPortDescription *port in availableInputs)
         {
-            return YES;
+            if (!port) continue;
+            if ([port.portType isEqualToString:AVAudioSessionPortBuiltInMic] ||
+                [port.portType isEqualToString:AVAudioSessionPortHeadsetMic])
+            {
+                return YES;
+            }
         }
     }
     return NO;
@@ -739,10 +746,13 @@ static WPDialogButtonHandler *buttonHandler = nil;
 +(BOOL) getBluetoothLeSupported
 {
     UIDevice *currentDevice = [UIDevice currentDevice];
-    if ([currentDevice.model rangeOfString:@"Simulator"].location == NSNotFound) {
-        CBCentralManager *btManager = [[CBCentralManager alloc] initWithDelegate:nil queue:nil options:nil];
-        if ([btManager state] == CBCentralManagerStateUnknown || [btManager state] == CBCentralManagerStateUnsupported) {
-            return YES;
+    if (currentDevice)
+    {
+        if ([currentDevice.model rangeOfString:@"Simulator"].location == NSNotFound) {
+            CBCentralManager *btManager = [[CBCentralManager alloc] initWithDelegate:nil queue:nil options:nil];
+            if ([btManager state] == CBCentralManagerStateUnknown || [btManager state] == CBCentralManagerStateUnsupported) {
+                return YES;
+            }
         }
     }
     return NO;
