@@ -187,6 +187,7 @@ static WPConfiguration *sharedConfiguration = nil;
     _installationId = installationId;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
+    WPLog(@"Setting installationId: %@", installationId);
     if (installationId) {
         [defaults setValue:installationId forKeyPath:USER_DEFAULTS_INSTALLATION_ID];
     } else {
@@ -220,6 +221,7 @@ static WPConfiguration *sharedConfiguration = nil;
         // unlogging
         self.accessToken = nil;
         self.sid = nil;
+        self.installationId = nil;
     }
     _userId = userId;
 
