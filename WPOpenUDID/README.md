@@ -26,8 +26,8 @@ Many have joined the effort since. Please browse this github projects to discove
 
 ####Usage
 
-	#include "OpenUDID.h"
-	NSString* openUDID = [OpenUDID value];
+	#include "WPOpenUDID.h"
+	NSString* openUDID = [WPOpenUDID value];
 
 ####Synopsis
 OpenUDID is a drop-in replacement for the deprecated uniqueIdentifier property of the UIDevice class on iOS (a.k.a. UDID) and otherwise is an industry-friendly equivalent for iOS and Android, **and most recently Windows C# and Silverlight (see links above)**.

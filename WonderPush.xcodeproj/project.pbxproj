@@ -31,7 +31,7 @@
 		A1E3E0D619E42B3E00A4EE09 /* WPAFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33DB19C8871F00E4E158 /* WPAFURLConnectionOperation.m */; };
 		A1E3E0D719E42B3E00A4EE09 /* WPAFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33DD19C8871F00E4E158 /* WPAFXMLRequestOperation.m */; };
 		A1E3E0D819E42B3E00A4EE09 /* UIImageView+WPAFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33DF19C8871F00E4E158 /* UIImageView+WPAFNetworking.m */; };
-		A1E3E0D919E42B3E00A4EE09 /* OpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33E219C8871F00E4E158 /* OpenUDID.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		A1E3E0D919E42B3E00A4EE09 /* WPOpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33E219C8871F00E4E158 /* WPOpenUDID.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		A1E3E0DA19E42B3E00A4EE09 /* WPDialogButtonHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */; };
 		A1E3E0DB19E42B3F00A4EE09 /* WPRequestVault.m in Sources */ = {isa = PBXBuildFile; fileRef = A189375319C998D100F91DDD /* WPRequestVault.m */; };
 		A1E3E0DC19E42B3F00A4EE09 /* WPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A189375019C997CA00F91DDD /* WPClient.m */; };
@@ -67,8 +67,8 @@
 		A16E33DD19C8871F00E4E158 /* WPAFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAFXMLRequestOperation.m; sourceTree = "<group>"; };
 		A16E33DE19C8871F00E4E158 /* UIImageView+WPAFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+WPAFNetworking.h"; sourceTree = "<group>"; };
 		A16E33DF19C8871F00E4E158 /* UIImageView+WPAFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+WPAFNetworking.m"; sourceTree = "<group>"; };
-		A16E33E119C8871F00E4E158 /* OpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDID.h; sourceTree = "<group>"; };
-		A16E33E219C8871F00E4E158 /* OpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenUDID.m; sourceTree = "<group>"; };
+		A16E33E119C8871F00E4E158 /* WPOpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPOpenUDID.h; sourceTree = "<group>"; };
+		A16E33E219C8871F00E4E158 /* WPOpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPOpenUDID.m; sourceTree = "<group>"; };
 		A16E33E319C8871F00E4E158 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		A16E33EE19C88EDB00E4E158 /* WPConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPConfiguration.h; sourceTree = "<group>"; };
 		A16E33EF19C88EDB00E4E158 /* WPConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPConfiguration.m; sourceTree = "<group>"; };
@@ -117,7 +117,7 @@
 			children = (
 				A1B8508D19D4528D00D1B6FB /* CustomiOSAlertView */,
 				A16E33CC19C8871F00E4E158 /* WPAFNetworking */,
-				A16E33E019C8871F00E4E158 /* OpenUDID */,
+				A16E33E019C8871F00E4E158 /* WPOpenUDID */,
 				A16E33A819C886A700E4E158 /* WonderPush */,
 				A16E33A519C886A700E4E158 /* Frameworks */,
 				A16E33A419C886A700E4E158 /* Products */,
@@ -210,14 +210,14 @@
 			path = WPAFNetworking;
 			sourceTree = "<group>";
 		};
-		A16E33E019C8871F00E4E158 /* OpenUDID */ = {
+		A16E33E019C8871F00E4E158 /* WPOpenUDID */ = {
 			isa = PBXGroup;
 			children = (
-				A16E33E119C8871F00E4E158 /* OpenUDID.h */,
-				A16E33E219C8871F00E4E158 /* OpenUDID.m */,
+				A16E33E119C8871F00E4E158 /* WPOpenUDID.h */,
+				A16E33E219C8871F00E4E158 /* WPOpenUDID.m */,
 				A16E33E319C8871F00E4E158 /* README.md */,
 			);
-			path = OpenUDID;
+			path = WPOpenUDID;
 			sourceTree = "<group>";
 		};
 		A1B8508D19D4528D00D1B6FB /* CustomiOSAlertView */ = {
@@ -339,7 +339,7 @@
 				A1E3E0D619E42B3E00A4EE09 /* WPAFURLConnectionOperation.m in Sources */,
 				A1E3E0D719E42B3E00A4EE09 /* WPAFXMLRequestOperation.m in Sources */,
 				A1E3E0D819E42B3E00A4EE09 /* UIImageView+WPAFNetworking.m in Sources */,
-				A1E3E0D919E42B3E00A4EE09 /* OpenUDID.m in Sources */,
+				A1E3E0D919E42B3E00A4EE09 /* WPOpenUDID.m in Sources */,
 				A1E3E0DA19E42B3E00A4EE09 /* WPDialogButtonHandler.m in Sources */,
 				A1E3E0DB19E42B3F00A4EE09 /* WPRequestVault.m in Sources */,
 				A1E3E0DC19E42B3F00A4EE09 /* WPClient.m in Sources */,

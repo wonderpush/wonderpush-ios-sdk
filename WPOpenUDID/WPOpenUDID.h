@@ -1,5 +1,5 @@
 //
-//  OpenUDID.h
+//  WPOpenUDID.h
 //  openudid
 //
 //  initiated by Yann Lechelle (cofounder @Appsfire) on 8/28/11.
@@ -48,15 +48,15 @@
 
 //
 // Usage:
-//    #include "OpenUDID.h"
-//    NSString* openUDID = [OpenUDID value];
+//    #include "WPOpenUDID.h"
+//    NSString* openUDID = [WPOpenUDID value];
 //
 
-#define kOpenUDIDErrorNone          0
-#define kOpenUDIDErrorOptedOut      1
-#define kOpenUDIDErrorCompromised   2
+#define kWPOpenUDIDErrorNone          0
+#define kWPOpenUDIDErrorOptedOut      1
+#define kWPOpenUDIDErrorCompromised   2
 
-@interface OpenUDID : NSObject {
+@interface WPOpenUDID : NSObject {
 }
 + (NSString*) value;
 + (NSString*) valueWithError:(NSError**)error;

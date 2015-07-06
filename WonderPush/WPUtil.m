@@ -15,7 +15,7 @@
  */
 
 #import "WPUtil.h"
-#import "OpenUDID.h"
+#import "WPOpenUDID.h"
 #import "WPConfiguration.h"
 
 #import <sys/utsname.h>
@@ -117,7 +117,7 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
 
 + (NSString *)deviceIdentifier
 {
-    return [OpenUDID value];
+    return [WPOpenUDID value];
 }
 
 
