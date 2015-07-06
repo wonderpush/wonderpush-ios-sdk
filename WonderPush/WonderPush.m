@@ -663,6 +663,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
                                  @"iPhone5,4"   : @YES,
                                  @"iPhone6,1"   : @YES,
                                  @"iPhone6,2"   : @YES,
+                                 @"iPhone7,1"   : @YES,
+                                 @"iPhone7,2"   : @YES,
                                  @"iPod1,1"     : @NO,
                                  @"iPod2,1"     : @NO,
                                  @"iPod3,1"     : @NO,
@@ -684,8 +686,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
                                  @"iPad3,6"     : @YES,
                                  @"iPad4,1"     : @NO,
                                  @"iPad4,2"     : @YES,
-                                 @"iPad4,4"     : @NO,
+                                 @"iPad4,3"     : @YES,
+                                 @"iPad4,4"     : @YES,
                                  @"iPad4,5"     : @YES,
+                                 @"iPad4,6"     : @YES,
+                                 @"iPad4,7"     : @YES,
+                                 @"iPad4,8"     : @YES,
+                                 @"iPad4,9"     : @YES,
+                                 @"iPad5,3"     : @NO,
+                                 @"iPad5,4"     : @YES,
                                  @"i386"        : @NO,
                                  @"x86_64"      : @NO
                                  };
@@ -792,6 +801,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
                                @"iPhone1,2"   : @"iPhone 3G",
                                @"iPhone2,1"   : @"iPhone 3GS",
                                @"iPhone3,1"   : @"iPhone 4",
+                               @"iPhone3,2"   : @"iPhone 4",
                                @"iPhone3,3"   : @"Verizon iPhone 4",
                                @"iPhone4,1"   : @"iPhone 4S",
                                @"iPhone5,1"   : @"iPhone 5 (GSM)",
@@ -800,6 +810,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
                                @"iPhone5,4"   : @"iPhone 5c (Global)",
                                @"iPhone6,1"   : @"iPhone 5s (GSM)",
                                @"iPhone6,2"   : @"iPhone 5s (Global)",
+                               @"iPhone7,1"   : @"iPhone 6 Plus",
+                               @"iPhone7,2"   : @"iPhone 6",
                                @"iPod1,1"     : @"iPod Touch 1G",
                                @"iPod2,1"     : @"iPod Touch 2G",
                                @"iPod3,1"     : @"iPod Touch 3G",
@@ -821,8 +833,20 @@ static WPDialogButtonHandler *buttonHandler = nil;
                                @"iPad3,6"     : @"iPad 4 (GSM+CDMA)",
                                @"iPad4,1"     : @"iPad Air (WiFi)",
                                @"iPad4,2"     : @"iPad Air (GSM)",
+                               @"iPad4,3"     : @"iPad Air",
                                @"iPad4,4"     : @"iPad Mini Retina (WiFi)",
                                @"iPad4,5"     : @"iPad Mini Retina (GSM)",
+                               @"iPad4,6"     : @"iPad Mini 2G",
+                               @"iPad4,7"     : @"iPad Mini 3 (WiFi)",
+                               @"iPad4,8"     : @"iPad Mini 3 (Cellular)",
+                               @"iPad4,9"     : @"iPad Mini 3 (China)",
+                               @"iPad5,3"     : @"iPad Air 2 (WiFi)",
+                               @"iPad5,4"     : @"iPad Air 2 (Cellular)",
+                               @"AppleTV2,1"  : @"Apple TV 2G",
+                               @"AppleTV3,1"  : @"Apple TV 3",
+                               @"AppleTV3,2"  : @"Apple TV 3 (2013)",
+                               @"Watch1,1"    : @"Apple Watch 38mm",
+                               @"Watch1,2"    : @"Apple Watch 42mm",
                                @"i386"        : @"Simulator",
                                @"x86_64"      : @"Simulator"
                               };
@@ -831,17 +855,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSString* deviceName = [deviceNamesByCode objectForKey:code];
 
     if (!deviceName) {
-        // Not found on database. At least guess main device type from string contents:
-
-        if ([code rangeOfString:@"iPod"].location != NSNotFound) {
-            deviceName = @"iPod Touch";
-        }
-        else if([code rangeOfString:@"iPad"].location != NSNotFound) {
-            deviceName = @"iPad";
-        }
-        else if([code rangeOfString:@"iPhone"].location != NSNotFound){
-            deviceName = @"iPhone";
-        }
+        // Just use the code name so we don't lose any information
+        deviceName = code;
     }
 
     return deviceName;
