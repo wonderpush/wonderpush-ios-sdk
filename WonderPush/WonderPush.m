@@ -203,6 +203,27 @@ static CLLocationManager *LocationManager = nil;
 }
 
 
+#pragma mark - core information
+
++(NSString *) userId
+{
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    return configuration.userId;
+}
+
++(NSString *) installationId
+{
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    return configuration.installationId;
+}
+
++(NSString *) pushToken
+{
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    return configuration.deviceToken;
+}
+
+
 #pragma mark - push notification types handling
 
 // We need to keep a reference on the DialogButtonHandler as the UIAlertView just keep a weak reference.

@@ -100,6 +100,29 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (BOOL) isReady;
 
 
+///-----------------------
+/// @name Core information
+///-----------------------
+
+/**
+ Returns the userId currently in use, `nil` by default.
+ */
++ (NSString *) userId;
+
+/**
+ Returns the installationId identifying your application on a device, bond to a specific userId.
+ If you want to store this information on your servers, keep the corresponding userId with it.
+ Will return `nil` until the SDK is properly initialized.
+ */
++ (NSString *) installationId;
+
+/**
+ Returns the push token, or device token in Apple lingo.
+ Returns `nil` if the user is not opt-in.
+ */
++ (NSString *) pushToken;
+
+
 ///---------------------------------
 /// @name Push Notification handling
 ///---------------------------------
