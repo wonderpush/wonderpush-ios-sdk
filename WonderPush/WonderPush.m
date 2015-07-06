@@ -587,6 +587,12 @@ static WPDialogButtonHandler *buttonHandler = nil;
     [WonderPush setDeviceToken:newToken];
 }
 
++ (void) didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    WPLog(@"Failed to register to push notifications: %@", error);
+    [WonderPush setDeviceToken:nil];
+}
+
 + (void) applicationDidBecomeActive:(UIApplication *)application;
 {
     _lastAppOpen = [[NSProcessInfo processInfo] systemUptime];

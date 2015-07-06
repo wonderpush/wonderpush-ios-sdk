@@ -107,9 +107,10 @@ Add the following methods:
         [WonderPush handleDidReceiveRemoteNotification:userInfo];
     }
 
-    // You may appreciate the following during development :-)
     - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
     {
+        [WonderPush didFailToRegisterForRemoteNotificationsWithError:error];
+        // You may appreciate the following log during development :-)
         NSLog(@"Error: %@", error);
     }
 

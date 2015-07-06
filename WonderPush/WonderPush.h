@@ -169,6 +169,13 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  Forwards an application delegate to the SDK.
 
+ Any previous device token will be forgotten.
+ */
++ (void) didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
+
+/**
+ Forwards an application delegate to the SDK.
+
  If your application uses backgroundModes/remote-notification, call this method in your
  `application:didReceiveLocalNotification:` method of your `AppDelegate`.
  Handles a notification and presents the associated dialog.
