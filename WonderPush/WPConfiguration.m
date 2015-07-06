@@ -312,4 +312,45 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 
+#pragma mark - CACHED INSTALLATION CORE PROPERTIES
+
+-(NSDictionary *) cachedInstallationCoreProperties
+{
+    NSDictionary *cachedInstallationCoreProperties = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
+    return cachedInstallationCoreProperties;
+}
+
+-(void) setCachedInstallationCoreProperties:(NSDictionary *)cachedInstallationCoreProperties
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (cachedInstallationCoreProperties) {
+        [defaults setValue:cachedInstallationCoreProperties forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
+    }
+
+    [defaults synchronize];
+}
+
+-(NSDate *) cachedInstallationCorePropertiesDate
+{
+    NSDate *cachedInstallationCorePropertiesDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
+    return cachedInstallationCorePropertiesDate;
+}
+
+-(void) setCachedInstallationCorePropertiesDate:(NSDate *)cachedInstallationCorePropertiesDate
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (cachedInstallationCorePropertiesDate) {
+        [defaults setValue:cachedInstallationCorePropertiesDate forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
+    }
+
+    [defaults synchronize];
+}
+
+
 @end

@@ -49,6 +49,9 @@
 
 @property (nonatomic, strong) NSString *installationId;
 
+@property (nonatomic, strong) NSDictionary *cachedInstallationCoreProperties;
+@property (nonatomic, strong) NSDate *cachedInstallationCorePropertiesDate;
+
 - (void) setAccessToken:(NSString *)accessToken;
 
 - (void) setDeviceToken:(NSString *)deviceToken;

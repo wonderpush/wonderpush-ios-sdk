@@ -24,16 +24,20 @@
 
 #define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
 #define USER_DEFAULTS_CLIENT_ID_KEY @"__wonderpush_client_id"
-
 #define USER_DEFAULTS_QUEUED_NOTIFICATIONS @"__wonderpush_queued_notifications"
 #define USER_DEFAULTS_EVENT_RECEIVED_HISTORY @"__wonderpush_event_received_history"
 #define USER_DEFAULTS_DEVICE_TOKEN_KEY @"__wonderpush_device_token"
 #define USER_DEFAULTS_ACCESS_TOKEN_IS_ANONYMOUS_KEY @"__wonderpush_access_token_is_anonymous"
 #define USER_DEFAULTS_USER_ID_KEY @"__wonderpush_userid"
 #define USER_DEFAULTS_INSTALLATION_ID @"_wonderpush_installationId"
+#define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES @"_wonderpush_cachedInstallationCoreProperties"
+#define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE @"_wonderpush_cachedInstallationCorePropertiesDate"
 #define USER_DEFAULTS_SID_KEY @"__wonderpush_sid"
 #define USER_DEFAULTS_REQUEST_VAULT_QUEUE @"__wonderpush_request_vault"
+
 #define RETRY_INTERVAL 10.0f
+#define CACHED_INSTALLATION_CORE_PROPERTIES_DURATION (7*24*60*60)
+
 #define ITUNES_APP_URL_FORMAT @"https://itunes.apple.com/us/app/calcfast/id%@?mt=8"
 #define WEB_CALLBACK_RESOURCE @"web/callback"
 

@@ -199,7 +199,18 @@ static CLLocationManager *LocationManager = nil;
                                  @"device": device,
                                  @"configuration": configuration,
                                  @"capabilities": capabilities};
-    [self updateInstallation:properties shouldOverwrite:NO];
+
+    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+    NSDictionary *oldProperties = sharedConfiguration.cachedInstallationCoreProperties;
+    NSDate *oldPropertiesDate = sharedConfiguration.cachedInstallationCorePropertiesDate;
+    if (!oldProperties || !oldPropertiesDate
+        || [oldPropertiesDate timeIntervalSinceNow] < -CACHED_INSTALLATION_CORE_PROPERTIES_DURATION
+        || ![oldProperties isEqualToDictionary:properties]
+    ) {
+        [sharedConfiguration setCachedInstallationCoreProperties:properties];
+        [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
+        [self updateInstallation:properties shouldOverwrite:NO];
+    }
 }
 
 
