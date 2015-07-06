@@ -1076,7 +1076,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (CLLocation *)location
 {
-    return LocationManager.location;
+    CLLocation *location = LocationManager.location;
+    if (   !location // skip if unavailable
+        || [location.timestamp timeIntervalSinceNow] < -300 // skip if older than 5 minutes
+        || location.horizontalAccuracy < 0 // skip invalid locations
+        || location.horizontalAccuracy > 10000 // skip if less precise then 10 km
+    ) {
+        return nil;
+    }
+    return location;
 }
 
 +(void) handleNotificationTracking:(NSDictionary *) notificationInformation
