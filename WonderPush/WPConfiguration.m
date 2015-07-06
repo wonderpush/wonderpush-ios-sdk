@@ -86,6 +86,25 @@ static WPConfiguration *sharedConfiguration = nil;
     [defaults synchronize];
 }
 
+-(NSDate *) cachedDeviceTokenDate
+{
+    NSDate *cachedDeviceTokenDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
+    return cachedDeviceTokenDate;
+}
+
+-(void) setCachedDeviceTokenDate:(NSDate *)cachedDeviceTokenDate
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (cachedDeviceTokenDate) {
+        [defaults setValue:cachedDeviceTokenDate forKeyPath:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
+    }
+
+    [defaults synchronize];
+}
+
 - (void) setAccessToken:(NSString *)accessToken
 {
     _accessToken = accessToken;

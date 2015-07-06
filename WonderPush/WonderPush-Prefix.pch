@@ -32,11 +32,13 @@
 #define USER_DEFAULTS_INSTALLATION_ID @"_wonderpush_installationId"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES @"_wonderpush_cachedInstallationCoreProperties"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE @"_wonderpush_cachedInstallationCorePropertiesDate"
+#define USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE @"_wonderpush_cachedDeviceTokenDate"
 #define USER_DEFAULTS_SID_KEY @"__wonderpush_sid"
 #define USER_DEFAULTS_REQUEST_VAULT_QUEUE @"__wonderpush_request_vault"
 
 #define RETRY_INTERVAL 10.0f
 #define CACHED_INSTALLATION_CORE_PROPERTIES_DURATION (7*24*60*60)
+#define CACHED_DEVICE_TOKEN_DURATION (7*24*60*60)
 
 #define ITUNES_APP_URL_FORMAT @"https://itunes.apple.com/us/app/calcfast/id%@?mt=8"
 #define WEB_CALLBACK_RESOURCE @"web/callback"

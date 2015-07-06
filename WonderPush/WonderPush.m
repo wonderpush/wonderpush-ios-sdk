@@ -475,11 +475,27 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 +(void) setDeviceToken:(NSString *) deviceToken
 {
-    deviceToken = [deviceToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
-    deviceToken = [deviceToken stringByReplacingOccurrencesOfString:@" " withString:@""];
-    [[WPConfiguration sharedConfiguration] setDeviceToken:deviceToken];
+    if (deviceToken) {
+        deviceToken = [deviceToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+        deviceToken = [deviceToken stringByReplacingOccurrencesOfString:@" " withString:@""];
+    }
 
-    [self updateInstallation:@{@"pushToken":@{@"data":deviceToken}} shouldOverwrite:NO];
+    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+    NSString *oldDeviceToken = [sharedConfiguration deviceToken];
+    NSDate *cachedDeviceTokenDate = sharedConfiguration.cachedDeviceTokenDate;
+
+    if (
+        (deviceToken == nil && oldDeviceToken != nil) || (deviceToken != nil && oldDeviceToken == nil)
+        || (deviceToken != nil && oldDeviceToken != nil && ![deviceToken isEqualToString:oldDeviceToken])
+        || (!cachedDeviceTokenDate || [cachedDeviceTokenDate timeIntervalSinceNow] < -CACHED_DEVICE_TOKEN_DURATION)
+    ) {
+        [sharedConfiguration setDeviceToken:deviceToken];
+        [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
+        [self updateInstallation:@{@"pushToken": @{@"data":
+                                                       deviceToken ? deviceToken : [NSNull null]
+                                                   }}
+                 shouldOverwrite:NO];
+    }
 }
 
 + (void) setNotificationEnabled:(BOOL) enabled

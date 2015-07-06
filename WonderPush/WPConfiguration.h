@@ -39,8 +39,9 @@
 /// The access token used to hit the WonderPush API
 @property (readonly) NSString *accessToken;
 
-// Thedevice token used for APNS
+// The device token used for APNS
 @property (readonly) NSString *deviceToken;
+@property (nonatomic, strong) NSDate *cachedDeviceTokenDate;
 
 /// The sid used to hit the WonderPush API
 @property (nonatomic, strong) NSString *sid;
