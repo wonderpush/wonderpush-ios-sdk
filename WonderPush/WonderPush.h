@@ -101,6 +101,8 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 /**
  Controls SDK logging.
+
+ @param enable Whether to enable logs.
  */
 + (void) setLogging:(BOOL)enable;
 
@@ -151,7 +153,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  Forwards an application delegate to the SDK.
 
- Method call in your `application:didReceiveRemoteNotification:` method of your `AppDelegate`.
+ Method to call in your `application:didReceiveRemoteNotification:` method of your `AppDelegate`.
 
  @param userInfo The userInfo provided by the system.
  */
@@ -160,7 +162,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  Forwards an application delegate to the SDK.
 
- Method call in your `application:didRegisterForRemoteNotificationsWithDeviceToken:` method of your `AppDelegate`.
+ Method to call in your `application:didRegisterForRemoteNotificationsWithDeviceToken:` method of your `AppDelegate`.
 
  @param deviceToken The device token provided by the system.
  */
@@ -169,7 +171,11 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  Forwards an application delegate to the SDK.
 
+ Method to call in your `application:didFailToRegisterForRemoteNotificationsWithError:` method of your `AppDelegate`.
+
  Any previous device token will be forgotten.
+
+ @param error The error provided by the system.
  */
 + (void) didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 
