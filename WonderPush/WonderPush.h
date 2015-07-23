@@ -140,6 +140,13 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 ///---------------------------------
 
 /**
+ Returns whether the notifications are enabled.
+
+ Defaults to NO as notifications are opt-in on iOS.
+ */
++ (BOOL) getNotificationEnabled;
+
+/**
  Activates or deactivates the push notification on the device (if the user accepts) and registers the device token with WondePush.
 
  @param enabled The new activation state of push notifications.

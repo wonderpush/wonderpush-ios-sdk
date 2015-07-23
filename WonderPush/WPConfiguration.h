@@ -50,6 +50,8 @@
 
 @property (nonatomic, strong) NSString *installationId;
 
+@property (nonatomic) BOOL notificationEnabled;
+
 @property (nonatomic, strong) NSDictionary *cachedInstallationCoreProperties;
 @property (nonatomic, strong) NSDate *cachedInstallationCorePropertiesDate;
 

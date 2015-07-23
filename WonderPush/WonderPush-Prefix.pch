@@ -31,10 +31,11 @@
 #define USER_DEFAULTS_ACCESS_TOKEN_IS_ANONYMOUS_KEY @"__wonderpush_access_token_is_anonymous"
 #define USER_DEFAULTS_USER_ID_KEY @"__wonderpush_userid"
 #define USER_DEFAULTS_INSTALLATION_ID @"_wonderpush_installationId"
+#define USER_DEFAULTS_SID_KEY @"__wonderpush_sid"
+#define USER_DEFAULTS_NOTIFICATION_ENABLED_KEY @"__wonderpush_notification_enabled"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES @"_wonderpush_cachedInstallationCoreProperties"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE @"_wonderpush_cachedInstallationCorePropertiesDate"
 #define USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE @"_wonderpush_cachedDeviceTokenDate"
-#define USER_DEFAULTS_SID_KEY @"__wonderpush_sid"
 #define USER_DEFAULTS_REQUEST_VAULT_QUEUE @"__wonderpush_request_vault"
 
 #define RETRY_INTERVAL 10.0f

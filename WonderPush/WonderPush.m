@@ -473,14 +473,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (BOOL) handleApplicationLaunchWithOption:(NSDictionary*) launchOptions
 {
-    WPLog(@"notification:  %@", launchOptions);
-    if (launchOptions == nil)
-    {
-        return NO;
+    if ([self getNotificationEnabled]) {
+        [self registerToPushNotifications];
     }
 
-    NSDictionary *notificationDictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    return [self handleNotification:notificationDictionary];
+    if (launchOptions != nil) {
+        NSDictionary *notificationDictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        return [self handleNotification:notificationDictionary];
+    } else {
+        return NO;
+    }
 }
 
 +(void) setDeviceToken:(NSString *) deviceToken
@@ -508,18 +510,40 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
 }
 
++ (BOOL) getNotificationEnabled
+{
+    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+    return sharedConfiguration.notificationEnabled;
+}
+
 + (void) setNotificationEnabled:(BOOL) enabled
 {
-    if (enabled) {
-        if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-            [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
+    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+    BOOL previousValue = sharedConfiguration.notificationEnabled;
+    sharedConfiguration.notificationEnabled = enabled;
+
+    // Update the subscriptionStatus if it changed
+    if (enabled != previousValue) {
+        if (enabled) {
+            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}} shouldOverwrite:NO];
         } else {
-            [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}} shouldOverwrite:NO];
         }
+    }
+
+    // Whether or not there is a change, register to push notifications if enabled
+    if (enabled) {
+        [self registerToPushNotifications];
+    }
+}
+
++ (void) registerToPushNotifications
+{
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
     } else {
-        [self setDeviceToken:@""];
-        [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     }
 }
 

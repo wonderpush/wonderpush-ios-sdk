@@ -23,6 +23,8 @@ static WPConfiguration *sharedConfiguration = nil;
 
 @property (nonatomic, strong) NSString *accessToken;
 
+@property (nonatomic, strong) NSNumber *_notificationEnabled;
+
 @end
 
 
@@ -33,6 +35,7 @@ static WPConfiguration *sharedConfiguration = nil;
 @synthesize sid = _sid;
 @synthesize userId = _userId;
 @synthesize installationId = _installationId;
+@synthesize _notificationEnabled = __notificationEnabled;
 @synthesize timeOffset = _timeOffset;
 @synthesize timeOffsetPrecision = _timeOffsetPrecision;
 
@@ -282,6 +285,33 @@ static WPConfiguration *sharedConfiguration = nil;
 {
     return [[self.baseURL absoluteString] rangeOfString:PRODUCTION_API_URL].location == NSNotFound;
 }
+
+
+#pragma mark - NOTIFICATION ENABLED
+
+- (BOOL) notificationEnabled
+{
+    if (!__notificationEnabled) {
+        __notificationEnabled = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY];
+        if (__notificationEnabled == nil) {
+NSLog(@"Setting default notification enabled to no");
+            [self setNotificationEnabled:NO];
+            __notificationEnabled = [NSNumber numberWithBool:NO];
+        }
+    }
+
+    return [__notificationEnabled boolValue];
+}
+
+- (void) setNotificationEnabled:(BOOL)notificationEnabled
+{
+    __notificationEnabled = [NSNumber numberWithBool:notificationEnabled];
+
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setValue:__notificationEnabled forKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY];
+    [defaults synchronize];
+}
+
 
 
 #pragma mark - QUEUED NOTIFICATIONS
