@@ -233,6 +233,11 @@ static CLLocationManager *LocationManager = nil;
     return configuration.installationId;
 }
 
++(NSString *) deviceId
+{
+    return [WPUtil deviceIdentifier];
+}
+
 +(NSString *) pushToken
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];

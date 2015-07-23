@@ -124,6 +124,11 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (NSString *) installationId;
 
 /**
+ Returns the unique device identifier.
+ */
++(NSString *) deviceId
+
+/**
  Returns the push token, or device token in Apple lingo.
  Returns `nil` if the user is not opt-in.
  */
