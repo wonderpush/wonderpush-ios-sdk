@@ -126,7 +126,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  Returns the unique device identifier.
  */
-+(NSString *) deviceId
++(NSString *) deviceId;
 
 /**
  Returns the push token, or device token in Apple lingo.
