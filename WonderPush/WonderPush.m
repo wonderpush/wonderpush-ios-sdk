@@ -684,6 +684,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if (wonderpushData == nil)
         return NO;
 
+    WPLog(@"Opened notification: %@", notificationDictionary);
+
     id campagnId      = [wonderpushData objectForKey:@"c"];
     id notificationId = [wonderpushData objectForKey:@"n"];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
