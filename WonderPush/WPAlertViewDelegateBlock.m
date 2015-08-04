@@ -18,7 +18,7 @@
 
 #import <objc/runtime.h>
 
-static NSString *DELEGATE_ASSOCIATION_KEY = @"com.wonderpush.sdk.AlertViewDelegate";
+const char * const DELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.AlertViewDelegate";
 
 @interface WPAlertViewDelegateBlock ()
 
@@ -32,9 +32,9 @@ static NSString *DELEGATE_ASSOCIATION_KEY = @"com.wonderpush.sdk.AlertViewDelega
 
 + (WPAlertViewDelegateBlock *) forAlert:(UIAlertView *)alertView withBlock:(void(^)(UIAlertView *alertView, NSInteger buttonIndex)) _handler
 {
-    WPAlertViewDelegateBlock *delegate = [self new];
+    WPAlertViewDelegateBlock *delegate = [WPAlertViewDelegateBlock new];
+    objc_setAssociatedObject(alertView, DELEGATE_ASSOCIATION_KEY, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [alertView setDelegate:delegate];
-    objc_setAssociatedObject(alertView, (__bridge const void *)DELEGATE_ASSOCIATION_KEY, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
     delegate.handler = _handler;
     return delegate;
@@ -42,12 +42,12 @@ static NSString *DELEGATE_ASSOCIATION_KEY = @"com.wonderpush.sdk.AlertViewDelega
 
 - (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    [alertView setDelegate:nil];
-    objc_setAssociatedObject(alertView, (__bridge const void *)DELEGATE_ASSOCIATION_KEY, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
     if (self.handler) {
         self.handler(alertView, buttonIndex);
     }
+
+    [alertView setDelegate:nil];
+    objc_setAssociatedObject(alertView, DELEGATE_ASSOCIATION_KEY, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
