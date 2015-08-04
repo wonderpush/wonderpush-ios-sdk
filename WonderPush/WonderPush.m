@@ -693,6 +693,21 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
     [self trackNotificationOpened:notificationInformation];
 
+    NSString *targetUrl = [wonderpushData objectForKey:WP_TARGET_URL_KEY];
+    if (!targetUrl)
+        targetUrl = WP_TARGET_URL_DEFAULT;
+    if ([targetUrl hasPrefix:WP_TARGET_URL_SDK_PREFIX]) {
+        if ([targetUrl isEqualToString:WP_TARGET_URL_BROADCAST]) {
+            WPLog(@"Broadcasting");
+            [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_OPENED_BROADCAST object:nil userInfo:notificationDictionary];
+        } else { //if ([targetUrl isEqualToString:WP_TARGET_URL_DEFAULT]) and the rest
+            // noop!
+        }
+    } else {
+        WPLog(@"Opening url: %@", targetUrl);
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:targetUrl]];
+    }
+
     NSString *type = [wonderpushData objectForKey:@"type"];
     if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_TEXT])
     {

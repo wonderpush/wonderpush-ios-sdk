@@ -58,6 +58,14 @@
 #define WP_PUSH_NOTIFICATION_KEY @"_wp"
 
 /**
+ Key of the deep link url to open with the notification
+ */
+#define WP_TARGET_URL_KEY @"targetUrl"
+#define WP_TARGET_URL_SDK_PREFIX @"wonderpush://"
+#define WP_TARGET_URL_DEFAULT @"wonderpush://notificationOpen/default"
+#define WP_TARGET_URL_BROADCAST @"wonderpush://notificationOpen/broadcast"
+
+/**
  Notification of type map
  */
 #define WP_PUSH_NOTIFICATION_SHOW_MAP @"map"
