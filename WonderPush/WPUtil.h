@@ -62,10 +62,21 @@
 
 + (NSError *)errorFromJSON:(id)json;
 
-+(long long) getServerDate;
+///------------------
+/// @name Server time
+///------------------
 
++ (long long) getServerDate;
 
-+(BOOL) currentApplicationIsInForeground;
+///------------------------
+/// @name Application utils
+///------------------------
+
++ (BOOL) currentApplicationIsInForeground;
+
++ (BOOL) hasBackgroundModeRemoteNotification;
+
++ (BOOL) hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler;
 
 @end
 

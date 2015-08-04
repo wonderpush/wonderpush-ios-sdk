@@ -162,6 +162,37 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
     return [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
 }
 
+static NSNumber *hasBackgroundMode = nil;
++ (BOOL) hasBackgroundModeRemoteNotification
+{
+    if (hasBackgroundMode == nil) {
+        hasBackgroundMode = [NSNumber numberWithBool:NO];
+        NSBundle *bundle = [NSBundle mainBundle];
+        NSArray *backgroundModes = [bundle objectForInfoDictionaryKey:@"UIBackgroundModes"];
+        if (backgroundModes != nil) {
+            for (NSString *value in backgroundModes) {
+                if ([value isEqual:@"remote-notification"]) {
+                    WPLog(@"Has background mode remote-notification");
+                    hasBackgroundMode = [NSNumber numberWithBool:YES];
+                    break;
+                }
+            }
+        }
+    }
+    return [hasBackgroundMode boolValue];
+}
+
+static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler = nil;
++ (BOOL) hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler
+{
+    if (hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler == nil) {
+        hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler =
+        [NSNumber numberWithBool:[[UIApplication sharedApplication].delegate
+                                  respondsToSelector:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)]];
+        WPLog(@"Has implemented [application:didReceiveRemoteNotification:fetchCompletionHandler:] = %@", hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler);
+    }
+    return [hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler boolValue];
+}
 
 #pragma mark - UUID
 

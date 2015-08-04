@@ -25,9 +25,9 @@
 #import "WonderPush_private.h"
 #import "WPConfiguration.h"
 #import "WPDialogButtonHandler.h"
+#import "WPAlertViewDelegateBlock.h"
 #import "WPClient.h"
 #import "CustomIOS7AlertView.h"
-
 
 static BOOL _isReady = NO;
 
@@ -477,12 +477,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
         [self registerToPushNotifications];
     }
 
-    if (launchOptions != nil) {
+    if (![WPUtil hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler] // didReceiveRemoteNotification will be called in such a case
+        && launchOptions != nil
+    ) {
         NSDictionary *notificationDictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-        return [self handleNotification:notificationDictionary];
-    } else {
-        return NO;
+        if (notificationDictionary) {
+            return [self handleNotification:notificationDictionary];
+        }
     }
+    return NO;
 }
 
 +(void) setDeviceToken:(NSString *) deviceToken
@@ -553,59 +556,162 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return [self handleNotification:userInfo];
 }
 
++ (BOOL) handleDidReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    return [self handleNotification:userInfo];
+}
+
 + (BOOL) handleNotification:(NSDictionary*) notificationDictionary
 {
     if (notificationDictionary == nil)
-    {
         return NO;
-    }
 
     NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
     if (wonderpushData == nil)
-    {
+        return NO;
+
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        // FIXME: Track notification received. Beware remote-notifications background mode!
+        // The didReceiveRemoteNotification:fetchCompletionHandler: will be called again in inactive state,
+        // when the app becomes foreground.
         return NO;
     }
 
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive)
-    {
-        // FIXME: Track notification received. Beware remote-notifications background mode!
+    id campagnId      = [wonderpushData objectForKey:@"c"];
+    id notificationId = [wonderpushData objectForKey:@"n"];
+    NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
+    if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
+    if (notificationId) notificationInformation[@"notificationId"] = notificationId;
+    [self trackNotificationReceived:notificationInformation];
+
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
         WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
         [configuration addToQueuedNotifications:notificationDictionary];
         return YES;
     }
 
+    return [self handleNotification:notificationDictionary withOriginalApplicationState:[UIApplication sharedApplication].applicationState];
+}
+
++ (BOOL) handleNotification:(NSDictionary*) notificationDictionary withOriginalApplicationState:(UIApplicationState)applicationState
+{
+    if (notificationDictionary == nil)
+        return NO;
+
+    NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
+    if (wonderpushData == nil)
+        return NO;
+
+    NSDictionary *aps = [notificationDictionary objectForKey:@"aps"];
+    id apsAlert = nil;
+    if (aps) apsAlert = [aps objectForKey:@"alert"];
+
+    if (aps && apsAlert && applicationState == UIApplicationStateActive) {
+
+        NSBundle *mainBundle = [NSBundle mainBundle];
+        NSDictionary *infoDictionary = [mainBundle infoDictionary];
+        NSDictionary *localizedInfoDictionary = [mainBundle localizedInfoDictionary];
+        NSString *title = nil;
+        NSString *alert = nil;
+        NSString *action = nil;
+        if ([apsAlert isKindOfClass:[NSDictionary class]]) {
+            alert = [apsAlert objectForKey:@"loc-key"];
+            if (alert) alert = [mainBundle localizedStringForKey:alert value:alert table:nil];
+            if (alert) {
+                id locArgsId = [apsAlert objectForKey:@"loc-args"];
+                if (locArgsId && [locArgsId isKindOfClass:[NSArray class]]) {
+                    NSArray *locArgs = locArgsId;
+                    alert = [NSString stringWithFormat:alert,
+                             locArgs.count > 0 ? [locArgs objectAtIndex:0] : nil,
+                             locArgs.count > 1 ? [locArgs objectAtIndex:1] : nil,
+                             locArgs.count > 2 ? [locArgs objectAtIndex:2] : nil,
+                             locArgs.count > 3 ? [locArgs objectAtIndex:3] : nil,
+                             locArgs.count > 4 ? [locArgs objectAtIndex:4] : nil,
+                             locArgs.count > 5 ? [locArgs objectAtIndex:5] : nil,
+                             locArgs.count > 6 ? [locArgs objectAtIndex:6] : nil,
+                             locArgs.count > 7 ? [locArgs objectAtIndex:7] : nil,
+                             locArgs.count > 8 ? [locArgs objectAtIndex:8] : nil,
+                             locArgs.count > 9 ? [locArgs objectAtIndex:9] : nil,
+                             nil];
+                }
+            } else {
+                alert = [apsAlert objectForKey:@"body"];
+            }
+            action = [apsAlert objectForKey:@"action-loc-key"];
+            action = [mainBundle localizedStringForKey:action value:action table:nil];
+        } else if ([apsAlert isKindOfClass:[NSString class]]) {
+            alert = apsAlert;
+        }
+        if (!title) title = [localizedInfoDictionary objectForKey:@"CFBundleDisplayName"];
+        if (!title) title = [infoDictionary objectForKey:@"CFBundleDisplayName"];
+        if (!title) title = [localizedInfoDictionary objectForKey:@"CFBundleName"];
+        if (!title) title = [infoDictionary objectForKey:@"CFBundleName"];
+        if (!title) title = [localizedInfoDictionary objectForKey:@"CFBundleExecutable"];
+        if (!title) title = [infoDictionary objectForKey:@"CFBundleExecutable"];
+        if (!action) {
+            action = @"OK"; // no need to translate this
+        }
+        if (alert) {
+            UIAlertView *systemLikeAlert = [[UIAlertView alloc] initWithTitle:title
+                                                                      message:alert
+                                                                     delegate:nil
+                                                            cancelButtonTitle:[mainBundle localizedStringForKey:@"Close" value:@"Close" table:nil]
+                                                            otherButtonTitles:action, nil];
+            [WPAlertViewDelegateBlock forAlert:systemLikeAlert withBlock:^(UIAlertView *alertView, NSInteger buttonIndex) {
+                if (buttonIndex == 1) {
+                    [WonderPush handleNotificationOpened:notificationDictionary];
+                }
+            }];
+            [systemLikeAlert show];
+            return YES;
+        }
+
+    } else {
+
+        return [self handleNotificationOpened:notificationDictionary];
+
+    }
+
+    return NO;
+}
+
++ (BOOL) handleNotificationOpened:(NSDictionary*) notificationDictionary
+{
+    if (notificationDictionary == nil)
+        return NO;
+
+    NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
+    if (wonderpushData == nil)
+        return NO;
+
     id campagnId      = [wonderpushData objectForKey:@"c"];
     id notificationId = [wonderpushData objectForKey:@"n"];
-    NSMutableDictionary *notificationInformations = [NSMutableDictionary new];
-    if (campagnId)      notificationInformations[@"campaignId"]     = campagnId;
-    if (notificationId) notificationInformations[@"notificationId"] = notificationId;
+    NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
+    if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
+    if (notificationId) notificationInformation[@"notificationId"] = notificationId;
+    [self trackNotificationOpened:notificationInformation];
 
     NSString *type = [wonderpushData objectForKey:@"type"];
     if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_TEXT])
     {
         [self handleTextNotification:wonderpushData];
-        [self handleNotificationTracking:notificationInformations];
         return YES;
     }
     else if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_HTML])
     {
         [self handleHtmlNotificaiton:wonderpushData];
-        [self handleNotificationTracking:notificationInformations];
         return YES;
     }
     else if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_URL])
     {
         [self handleHtmlNotificaiton:wonderpushData];
-        [self handleNotificationTracking:notificationInformations];
         return YES;
     }
     else if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_MAP])
     {
         [self handleMapNotificaiton:wonderpushData];
-        [self handleNotificationTracking:notificationInformations];
         return YES;
     }
-
 
     return NO;
 }
@@ -631,7 +737,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
     for (NSDictionary *queuedNotification in queuedNotifications)
     {
-        [self handleNotification:queuedNotification];
+        [self handleNotification:queuedNotification withOriginalApplicationState:UIApplicationStateInactive];
     }
     [configuration clearQueuedNotifications];
 }
@@ -1116,28 +1222,12 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return location;
 }
 
-+(void) handleNotificationTracking:(NSDictionary *) notificationInformation
++ (void) trackNotificationOpened:(NSDictionary *) notificationInformation
 {
-    NSBundle *bundle = [NSBundle mainBundle];
-    NSArray *backgroundModes = [bundle objectForInfoDictionaryKey:@"UIBackgroundModes"];
-    BOOL hasBackgroundMode = NO;
-    if (backgroundModes != nil) {
-        WPLog(@"backgroundModes not nil : %@", backgroundModes);
-        for (NSString *value in backgroundModes)
-        {
-            if ([value isEqual:@"remote-notification"])
-            {
-                hasBackgroundMode = YES;
-            }
-        }
-    }
-
-    [self trackNotificationReceived:notificationInformation];
-
     [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:notificationInformation customData:nil];
 }
 
-+(void) handleNotificationReceivedInBackground:(NSDictionary *)userInfo
++ (void) handleNotificationReceivedInBackground:(NSDictionary *)userInfo
 {
     UILocalNotification *notification = [[UILocalNotification alloc] init];
     if (![WPUtil currentApplicationIsInForeground]) {
@@ -1155,24 +1245,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
     id campagnId      = [wpData objectForKey:@"c"];
     id notificationId = [wpData objectForKey:@"n"];
-    NSMutableDictionary *notificationInformations = [NSMutableDictionary new];
-    if (campagnId)      notificationInformations[@"campaignId"]     = campagnId;
-    if (notificationId) notificationInformations[@"notificationId"] = notificationId;
-    [WonderPush trackNotificationReceived:notificationInformations];
+    NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
+    if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
+    if (notificationId) notificationInformation[@"notificationId"] = notificationId;
+    [WonderPush trackNotificationReceived:notificationInformation];
 }
 
-+ (void) trackNotificationReceived:(NSDictionary *) eventData
++ (void) trackNotificationReceived:(NSDictionary *)notificationInformation
 {
-    id campaignId = [eventData objectForKey:@"campaignId"];
-
-    if (campaignId && [[WPConfiguration sharedConfiguration] isInEventReceivedHistory:campaignId])
-    {
-        return;
-    }
-
-    [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:eventData customData:nil];
-
-    [[WPConfiguration sharedConfiguration] addToEventReceivedHistory:campaignId];
+    [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
 }
 
 +(void) trackInternalEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData

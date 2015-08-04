@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		3DCC286B1B6F773C00D2778E /* WPAlertViewDelegateBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */; };
+		3DCC286C1B6F773C00D2778E /* WPAlertViewDelegateBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */; };
 		3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
 		3DDE66D81B4AE73200B5DC44 /* WPLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DDE66D61B4AE73200B5DC44 /* WPLog.h */; };
 		A1E3E0CF19E42B3E00A4EE09 /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B8508F19D4531500D1B6FB /* CustomIOS7AlertView.m */; };
@@ -46,6 +48,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAlertViewDelegateBlock.h; sourceTree = "<group>"; };
+		3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAlertViewDelegateBlock.m; sourceTree = "<group>"; };
 		3DDE66D51B4AE73200B5DC44 /* WPLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPLog.m; sourceTree = "<group>"; };
 		3DDE66D61B4AE73200B5DC44 /* WPLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPLog.h; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
@@ -177,6 +181,8 @@
 				A16E33A919C886A700E4E158 /* Supporting Files */,
 				3DDE66D51B4AE73200B5DC44 /* WPLog.m */,
 				3DDE66D61B4AE73200B5DC44 /* WPLog.h */,
+				3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */,
+				3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */,
 			);
 			path = WonderPush;
 			sourceTree = "<group>";
@@ -244,6 +250,7 @@
 			files = (
 				3DDE66D81B4AE73200B5DC44 /* WPLog.h in Headers */,
 				A1E3E0E219E42B4800A4EE09 /* WonderPush.h in Headers */,
+				3DCC286B1B6F773C00D2778E /* WPAlertViewDelegateBlock.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,6 +363,7 @@
 				A1E3E0DF19E42B3F00A4EE09 /* WPResponse.m in Sources */,
 				A1E3E0E019E42B3F00A4EE09 /* WPConfiguration.m in Sources */,
 				A1E3E0E119E42B3F00A4EE09 /* WonderPush.m in Sources */,
+				3DCC286C1B6F773C00D2778E /* WPAlertViewDelegateBlock.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
