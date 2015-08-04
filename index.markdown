@@ -199,6 +199,8 @@ This is done very simply using the following function call, and WonderPush will 
 Note that the device is not actually unregistered from push notifications, so the registration id continues to be valid and the device stays reachable.
 The installation is simply marked and reported as *Soft opt-out* in the dashboard, and WonderPush filters it out from the targeted users.
 
+# <a id="advanced"></a>8. Advanced usage
+
 ### <a id="advanced--reading-custom-key-value-payload"></a>Reading custom key-value payload
 
 A notification can be added custom key-value pairs to it.
@@ -218,6 +220,47 @@ In order to retrieve them, simply add one line of code in the appropriate method
         // Get the custom payload
         NSDictionary * custom = [notification.userInfo objectForKey:@"custom"];
     }
+
+### <a id="advanced--deep-links"></a>Deep links
+
+Deep links are handled by the SDK by calling the `[application openURL:]` function, just like HTTP links, but with an application-specific scheme, like: `yourApplicationSpecificScheme://somePage`.
+
+Custom schemes are registered in your application’s `Info.plist` file, under the `URL Types` section.
+To add one, select your project in the Project navigator, then select your application in the *Targets* section, go to the *Info* tab, expand the *URL Types* section, and click the *+* button.
+Then simply choose a unique scheme (`yourApplicationSpecificScheme` in our example) and write it in the *URL Schemes* field.
+
+You will then need to implement the `+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation`
+function of your application delegate.
+Here is an example:
+
+    - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+    {
+        UINavigationController *navController = (UINavigationController *)self.window.rootViewController;
+        [navController popToRootViewControllerAnimated:NO];
+        UIStoryboard *storyboard = navController.storyboard;
+
+        // Look at the url, and open the target page
+        [navController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"DeepPageId"] animated:YES];
+	// For a more nested navigation tree, call pushViewController for each intermediate view
+
+        return YES; // NO: not handled, YES: handled
+    }
+
+If desired, you can also broadcast the notification opening to let some code resolve the most appropriate action to perform.
+To do so, you would use the `wonderpush://notificationOpen/broadcast` URI in your notification.
+Here is how to listen to this broadcast preferably in your `application: didFinishLaunchingWithOptions:` function of your application delegate:
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_OPENED_BROADCAST object:nil queue:nil usingBlock:^(NSNotification *note) {
+	NSDictionary *pushNotification = note.userInfo;
+
+        UINavigationController *navController = (UINavigationController *)self.window.rootViewController;
+        [navController popToRootViewControllerAnimated:NO];
+        UIStoryboard *storyboard = navController.storyboard;
+
+        // Look at the push notification data, and open the target page
+        [navController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"DeepPageId"] animated:YES];
+	// For a more nested navigation tree, call pushViewController for each intermediate view
+    }];
 
 
 
