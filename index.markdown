@@ -186,6 +186,19 @@ Here is an example:
 
 Inactive users with non-empty carts could then easily be notified. Combined with a free delivery coupon for carts above a given amount, your conversion rate will improve still!
 
+### <a id="using-sdk--soft-opt-out"></a>Opt-out
+
+On iOS, users are opt-out by default, and you need to call the `[WonderPush setNotificationEnabled:(BOOL)]` function to register the device, at an appropriate time.
+A user always has the option of opening the system settings and blocking notifications. The application has no mean to know it.
+
+If a user no longer wants to receive notifications, you will rather want them to opt out of push notifications.
+This is done very simply using the following function call, and WonderPush will no longer send push notifications to this installation:
+
+    [WonderPush setNotificationEnabled:NO];
+
+Note that the device is not actually unregistered from push notifications, so the registration id continues to be valid and the device stays reachable.
+The installation is simply marked and reported as *Soft opt-out* in the dashboard, and WonderPush filters it out from the targeted users.
+
 ### <a id="advanced--reading-custom-key-value-payload"></a>Reading custom key-value payload
 
 A notification can be added custom key-value pairs to it.
