@@ -1,4 +1,0 @@
-Documentation set was installed to Xcode!
-
-Path: /Users/ofavre/Library/Developer/Shared/Documentation/DocSets/com.wonderpush.WonderPush.docset
-Time: 2015-07-07 10:08:57 +0000
