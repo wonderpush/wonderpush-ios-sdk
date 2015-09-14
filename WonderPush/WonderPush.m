@@ -157,18 +157,6 @@ static CLLocationManager *LocationManager = nil;
                                   @"sdkVersion": [self getSDKVersionNumber],
                                 };
 
-    CGRect screenSize = [self getScreenSize];
-    NSDictionary *device = @{@"id": [WPUtil deviceIdentifier],
-                             @"platform": @"iOS",
-                             @"osVersion": [self getOsVersion],
-                             @"brand": @"Apple",
-                             @"model": [self getDeviceModel],
-                             @"name": [self getDeviceName],
-                             @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width],
-                             @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height],
-                             @"screenDensity": [NSNumber numberWithInt:(int)[self getScreenDensity]],
-                             };
-
     NSDictionary *configuration = @{@"timeZone": [self getTimezone],
                                     @"carrier": [self getCarrierName],
                                     @"locale": [self getLocale]};
@@ -199,6 +187,20 @@ static CLLocationManager *LocationManager = nil;
                                    @"touchscreenFullHand": @YES,
                                    @"figerprintScanner":[NSNumber numberWithBool:[self getFingerprintScannerSupported]]
                                    };
+
+    CGRect screenSize = [self getScreenSize];
+    NSDictionary *device = @{@"id": [WPUtil deviceIdentifier],
+                             @"platform": @"iOS",
+                             @"osVersion": [self getOsVersion],
+                             @"brand": @"Apple",
+                             @"model": [self getDeviceModel],
+                             @"name": [self getDeviceName],
+                             @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width],
+                             @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height],
+                             @"screenDensity": [NSNumber numberWithInt:(int)[self getScreenDensity]],
+                             @"configuration": configuration,
+                             @"capabilities": capabilities,
+                             };
 
     NSDictionary *properties = @{@"application": application,
                                  @"device": device,
