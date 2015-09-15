@@ -402,4 +402,108 @@ NSLog(@"Setting default notification enabled to no");
 }
 
 
+#pragma mark - CACHED INSTALLATION CUSTOM PROPERTIES
+
+-(NSDictionary *) cachedInstallationCustomPropertiesWritten
+{
+    NSData *data = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
+    if (!data) return nil;
+    NSDictionary *cachedInstallationCustomPropertiesWritten = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    return cachedInstallationCustomPropertiesWritten;
+}
+
+-(void) setCachedInstallationCustomPropertiesWritten:(NSDictionary *)cachedInstallationCustomPropertiesWritten
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (cachedInstallationCustomPropertiesWritten) {
+        NSData *data = [NSJSONSerialization dataWithJSONObject:cachedInstallationCustomPropertiesWritten options:kNilOptions error:nil];
+        [defaults setValue:data forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
+    }
+
+    [defaults synchronize];
+}
+
+-(NSDate *) cachedInstallationCustomPropertiesWrittenDate
+{
+    NSDate *cachedInstallationCustomPropertiesWrittenDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
+    return cachedInstallationCustomPropertiesWrittenDate;
+}
+
+-(void) setCachedInstallationCustomPropertiesWrittenDate:(NSDate *)cachedInstallationCustomPropertiesWrittenDate
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (cachedInstallationCustomPropertiesWrittenDate) {
+        [defaults setValue:cachedInstallationCustomPropertiesWrittenDate forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
+    }
+
+    [defaults synchronize];
+}
+
+-(NSDictionary *) cachedInstallationCustomPropertiesUpdated
+{
+    NSData *data = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
+    if (!data) return nil;
+    NSDictionary *cachedInstallationCustomPropertiesUpdated = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    return cachedInstallationCustomPropertiesUpdated;
+}
+
+-(void) setCachedInstallationCustomPropertiesUpdated:(NSDictionary *)cachedInstallationCustomPropertiesUpdated
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (cachedInstallationCustomPropertiesUpdated) {
+        NSData *data = [NSJSONSerialization dataWithJSONObject:cachedInstallationCustomPropertiesUpdated options:kNilOptions error:nil];
+        [defaults setValue:data forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
+    }
+
+    [defaults synchronize];
+}
+
+-(NSDate *) cachedInstallationCustomPropertiesUpdatedDate
+{
+    NSDate *cachedInstallationCustomPropertiesUpdatedDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
+    return cachedInstallationCustomPropertiesUpdatedDate;
+}
+
+-(void) setCachedInstallationCustomPropertiesUpdatedDate:(NSDate *)cachedInstallationCustomPropertiesUpdatedDate
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (cachedInstallationCustomPropertiesUpdatedDate) {
+        [defaults setValue:cachedInstallationCustomPropertiesUpdatedDate forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
+    }
+
+    [defaults synchronize];
+}
+
+-(NSDate *) cachedInstallationCustomPropertiesFirstDelayedWriteDate
+{
+    NSDate *cachedInstallationCustomPropertiesFirstDelayedWriteDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
+    return cachedInstallationCustomPropertiesFirstDelayedWriteDate;
+}
+
+-(void) setCachedInstallationCustomPropertiesFirstDelayedWriteDate:(NSDate *)cachedInstallationCustomPropertiesFirstDelayedWriteDate
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (cachedInstallationCustomPropertiesFirstDelayedWriteDate) {
+        [defaults setValue:cachedInstallationCustomPropertiesFirstDelayedWriteDate forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
+    }
+
+    [defaults synchronize];
+}
+
+
 @end

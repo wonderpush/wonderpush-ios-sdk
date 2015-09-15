@@ -55,6 +55,12 @@
 @property (nonatomic, strong) NSDictionary *cachedInstallationCoreProperties;
 @property (nonatomic, strong) NSDate *cachedInstallationCorePropertiesDate;
 
+@property (nonatomic, strong) NSDictionary *cachedInstallationCustomPropertiesWritten;
+@property (nonatomic, strong) NSDate *cachedInstallationCustomPropertiesWrittenDate;
+@property (nonatomic, strong) NSDictionary *cachedInstallationCustomPropertiesUpdated;
+@property (nonatomic, strong) NSDate *cachedInstallationCustomPropertiesUpdatedDate;
+@property (nonatomic, strong) NSDate *cachedInstallationCustomPropertiesFirstDelayedWriteDate;
+
 - (void) setAccessToken:(NSString *)accessToken;
 
 - (void) setDeviceToken:(NSString *)deviceToken;

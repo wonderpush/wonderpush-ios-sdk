@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
 		3DCC286B1B6F773C00D2778E /* WPAlertViewDelegateBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */; };
 		3DCC286C1B6F773C00D2778E /* WPAlertViewDelegateBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */; };
 		3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
@@ -48,6 +49,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonUtil.m; sourceTree = "<group>"; };
+		3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonUtil.h; sourceTree = "<group>"; };
 		3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAlertViewDelegateBlock.h; sourceTree = "<group>"; };
 		3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAlertViewDelegateBlock.m; sourceTree = "<group>"; };
 		3DDE66D51B4AE73200B5DC44 /* WPLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPLog.m; sourceTree = "<group>"; };
@@ -178,11 +181,13 @@
 				A1E3E0A319E425DB00A4EE09 /* WonderPush.h */,
 				A16E33AD19C886A700E4E158 /* WonderPush.m */,
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
-				A16E33A919C886A700E4E158 /* Supporting Files */,
 				3DDE66D51B4AE73200B5DC44 /* WPLog.m */,
 				3DDE66D61B4AE73200B5DC44 /* WPLog.h */,
 				3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */,
 				3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */,
+				3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */,
+				3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */,
+				A16E33A919C886A700E4E158 /* Supporting Files */,
 			);
 			path = WonderPush;
 			sourceTree = "<group>";
@@ -343,6 +348,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */,
 				A1E3E0CF19E42B3E00A4EE09 /* CustomIOS7AlertView.m in Sources */,
 				A1E3E0D019E42B3E00A4EE09 /* WPAFHTTPClient.m in Sources */,
 				A1E3E0D119E42B3E00A4EE09 /* WPAFHTTPRequestOperation.m in Sources */,

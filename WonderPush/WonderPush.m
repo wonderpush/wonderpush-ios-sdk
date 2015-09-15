@@ -28,6 +28,7 @@
 #import "WPAlertViewDelegateBlock.h"
 #import "WPClient.h"
 #import "CustomIOS7AlertView.h"
+#import "WPJsonUtil.h"
 
 static BOOL _isReady = NO;
 
@@ -46,6 +47,7 @@ static CLLocationManager *LocationManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         LocationManager = [[CLLocationManager alloc] init];
+        _putInstallationCustomProperties_lock = [NSObject new];
     });
 }
 
@@ -110,12 +112,18 @@ static CLLocationManager *LocationManager = nil;
     }
     // Fetch anonymous access token right away
     BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(WPAFHTTPRequestOperation *operation, id responseObject) {
+        if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
+            [self putInstallationCustomProperties_inner];
+        }
         [self setIsReady:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
                                                           userInfo:nil];
     } failure:^(WPAFHTTPRequestOperation *operation, NSError *error) {}];
     if (NO == isFetching) {
+        if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
+            [self putInstallationCustomProperties_inner];
+        }
         [self setIsReady:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
@@ -132,10 +140,62 @@ static CLLocationManager *LocationManager = nil;
     [self postEventually:installationEndPoint params:@{@"body":propertiesString, @"overwrite":[NSNumber numberWithBool:overwrite]} handler:^(WPResponse *response, NSError *error) {}];
 }
 
+static NSObject *_putInstallationCustomProperties_lock; //= [NSObject new];
+static int _putInstallationCustomProperties_blockId = 0;
 + (void) putInstallationCustomProperties:(NSDictionary *) customProperties;
 {
-    if (!customProperties) return;
-    [self updateInstallation:@{@"custom": customProperties} shouldOverwrite:NO];
+    @synchronized (_putInstallationCustomProperties_lock) {
+        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+        NSDictionary *updatedRef = conf.cachedInstallationCustomPropertiesUpdated;
+        if (updatedRef == nil) updatedRef = [NSDictionary new];
+        NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated;
+        if (updated == nil) updated = [NSDictionary new];
+        updated = [WPJsonUtil merge:updated with:customProperties];
+        if ([updated isEqual:updatedRef]) {
+            return;
+        }
+        int currentBlockId = ++_putInstallationCustomProperties_blockId;
+        NSDate *now = [NSDate date];
+        NSDate *firstWrite = conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate;
+        if (firstWrite == nil) {
+            firstWrite = now;
+            conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate = firstWrite;
+        }
+        conf.cachedInstallationCustomPropertiesUpdated = updated;
+        conf.cachedInstallationCustomPropertiesUpdatedDate = now;
+        NSTimeInterval delay = MIN(CACHED_INSTALLATION_CUSTOM_PROPERTIES_MIN_DELAY,
+                                   [firstWrite timeIntervalSinceReferenceDate] + CACHED_INSTALLATION_CUSTOM_PROPERTIES_MAX_DELAY
+                                   - [now timeIntervalSinceReferenceDate]);
+        NSLog(@"scheduling in %.3lf s", delay);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            @synchronized (_putInstallationCustomProperties_lock) {
+                if (_putInstallationCustomProperties_blockId == currentBlockId) {
+                    [self putInstallationCustomProperties_inner];
+                }
+            }
+        });
+    }
+}
+
++ (void) putInstallationCustomProperties_inner;
+{
+    @synchronized (_putInstallationCustomProperties_lock) {
+        NSLog(@"putInstallationCustomProperties_inner");
+        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+        NSDictionary *written = conf.cachedInstallationCustomPropertiesWritten;
+        NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated;
+        NSDictionary *customProperties = [WPJsonUtil diff:written with:updated];
+        NSLog(@"written: %@", written);
+        NSLog(@"updated: %@", updated);
+        NSLog(@"diff:    %@", customProperties);
+        if (customProperties != nil && ![customProperties isEqual:@{}]) {
+            [self updateInstallation:@{@"custom": customProperties} shouldOverwrite:NO];
+            NSDate *now = [NSDate date];
+            conf.cachedInstallationCustomPropertiesWritten = updated;
+            conf.cachedInstallationCustomPropertiesWrittenDate = now;
+        }
+        conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate = nil;
+    }
 }
 
 + (NSString *) getSDKVersionNumber
