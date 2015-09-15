@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>WonderPush Reference</title>
+
+	<link rel="stylesheet" href="css/style.css">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1.4">
+	<meta name="generator" content="appledoc 2.2.1 (build 1333)">
+</head>
+<body class="appledoc">
+	<header>
+		<div class="container" class="hide-in-xcode">
+			
+			<h1 id="library-title">
+				<a href="index.html">WonderPush </a>
+			</h1>
+
+			<p id="developer-home">
+				<a href="index.html">WonderPush</a>
+			</p>
+			
+		</div>
+	</header>
+
+	<aside>
+		<div class="container">
+			<nav>
+				<ul id="header-buttons" role="toolbar">
+					<li><a href="hierarchy.html">Hierarchy</a></li>
+				</ul>
+			</nav>
+		</div>
+	</aside>
+
+	<article>
+		<div id="overview-contents" class="container">
+			<div id="content">
+				<main role="main">
+					<h1 class="title">WonderPush Reference</h1>
+
+					
+					<div class="section section-overview index-overview">
+						
+						
+						<h2>WonderPush iOS SDK Guide</h2>
+
+<h1><a id="register-app-wonderpush"></a>1. Register your application in WonderPush</h1>
+
+<p>Log in or sign up on <a href="http://www.wonderpush.com">WonderPush</a>.</p>
+
+<p>Create your application.
+Make sure to check <code>iOS</code> under the <code>Platforms</code> section.</p>
+
+<p>Grab your <em>client id</em> and <em>client secret</em> under ther <code>Settings / Keys</code> menu.</p>
+
+<h1><a id="download-sdk"></a>2. Download the latest WonderPush SDK for iOS</h1>
+
+<p>Download the latest release <a href="https://github.com/wonderpush/wonderpush-ios-sdk/releases/latest">on GitHub</a>.</p>
+
+<h1><a id="setup-project"></a>3. Setup your project</h1>
+
+<ul>
+<li>Extract <code>WonderPush.framework</code> from the downloaded archive.</li>
+<li>Drag and drop the <code>WonderPush.framework</code> file to your project.</li>
+<li>Select your project file in the project navigator.</li>
+<li>On the top right side select <code>General</code>.</li>
+<li><p>Scroll down to <code>Linked Frameworks and libraries</code> and click on the plus to add the following frameworks:</p>
+
+<ul>
+<li>SystemConfiguration</li>
+<li>MobileCoreServices</li>
+<li>CoreGraphics</li>
+<li>UIKit</li>
+<li>CoreTelephony</li>
+<li>CoreLocation</li>
+<li>CoreBluetooth</li>
+<li>AVFoundation</li>
+<li>CoreMotion</li>
+</ul>
+</li>
+</ul>
+
+
+<h1><a id="initialize-sdk"></a>4. Initialize the SDK</h1>
+
+<p>Add this code to the corresponding method of you Application delegate:</p>
+
+<pre><code>#import &lt;WonderPush/WonderPush.h&gt;
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    // [WonderPush setLogging:YES]; // only activate logs for development
+    [WonderPush setClientId:@"[YOUR_CLIENT_ID]" secret:@"[YOUR_CLIENT_SECRET]"];
+    [WonderPush setNotificationEnabled:YES];
+    [WonderPush handleApplicationLaunchWithOption:launchOptions];
+    return YES;
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    [WonderPush applicationDidEnterBackground:application];
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    [WonderPush applicationDidBecomeActive:application];
+}
+</code></pre>
+
+<p>Replace:</p>
+
+<ul>
+<li><strong>[YOUR_CLIENT_ID]</strong> with your client id found in your <a href="https://dashboard.wonderpush.com/">WonderPush dashboard</a>, under the <code>Settings / Keys</code> menu.
+Eg.: 0123456789abcdef0123456789abcdef01234567.</li>
+<li><strong>[YOUR_CLIENT_ID]</strong> with your client secret found in your <a href="https://dashboard.wonderpush.com/">WonderPush dashboard</a>, next to the client id as described above.
+Eg.: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.</li>
+</ul>
+
+
+<h1><a id="remote-notifications"></a>5. Handle remote notifications</h1>
+
+<p>First of all you have to set up your application as described in the <a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ConfiguringPushNotifications/ConfiguringPushNotifications.html#//apple_ref/doc/uid/TP40012582-CH32-SW1">Configuring Push Notifications guide</a>.</p>
+
+<p>Once you created your provisioning profile associated to a certificate on your computer you will have to export your push notifications certificate
+in order to let WonderPush to send notification to your device:</p>
+
+<ul>
+<li>Launch <code>KeyChain Access</code></li>
+<li>Select the newly created certificate associated to your appId.<br/>
+Its name should be <code>Apple Development/Production iOS Push Services: [your.app.id]</code><br/>
+<em>If you don&rsquo;t see it</em>, make sure you have downloaded the iOS Push Service certificate Apple generated for your application:
+
+<ul>
+<li>Log into the <a href="https://developer.apple.com/account/ios/certificate/certificateList.action">member center</a> and choose <code>Certificates, Identifiers &amp; Profiles</code> section.</li>
+<li>Under <code>Certificates</code>, click the certificate corresponding to your appId, of type either <code>APNs Development iOS</code> or <code>APNs Production iOS</code>.<br/>
+The development certificate is used for sending to the devices you develop with. The production certificate is used for applications distributed through the App Store or TestFlight.</li>
+<li>Click <code>Download</code>, and open the certificate with <code>Keychain Access</code>.</li>
+</ul>
+</li>
+<li>Make sure you see a matching private key when you expand the certificate item, but select only the certificate.</li>
+<li>Click on <code>File / Export items</code>.</li>
+<li>Do not enter any password.</li>
+<li>Open a command line and go to the directory where you exported the certificate.</li>
+<li><p>Type the following command to generate the <code>.pem</code> file:</p>
+
+<pre><code>openssl pkcs12 -nodes -clcerts -out [name].pem -in [previously explorted file].p12
+</code></pre></li>
+<li><p>Again, type no password when prompted.</p></li>
+</ul>
+
+
+<p>Then go to your <a href="https://dashboard.wonderpush.com/">WonderPush dashboard</a> and upload the certificate in the <code>Settings / Keys</code> page of your application management</p>
+
+<p>In order to handle push notifications, you will have to modify your Application delegate so that all notifications will be forwarded to the WonderPush SDK.
+Add the following methods:</p>
+
+<pre><code>-(void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    [WonderPush didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+-(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [WonderPush handleDidReceiveRemoteNotification:userInfo];
+}
+
+- (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    [WonderPush didFailToRegisterForRemoteNotificationsWithError:error];
+    // You may appreciate the following log during development :-)
+    NSLog(@"Error: %@", error);
+}
+</code></pre>
+
+<p>That&rsquo;s it you should now be able to receive push notifications from WonderPush.</p>
+
+<h1><a id="background-mode"></a>6. Handling background mode</h1>
+
+<p><em>Note:</em> If your application does not use the Remote notifications Background mode, you can safely skip this step.<br/>
+If in doubt, click your project in the project navigator, select a target, go to the <code>Capabilities</code> tab, and under <code>Background modes</code>, see whether <code>Remote notifications</code> is checked.</p>
+
+<p>If your applications uses the Remote notification Background mode, the behaviour of the notification is not exactly the same.
+In order to make WonderPush work in this case, overload the following method in your application delegate as follows:</p>
+
+<pre><code>- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    [WonderPush handleNotification:notification.userInfo];
+}
+</code></pre>
+
+<p>Your application now correctly receives push notifications.</p>
+
+<h1><a id="using-sdk"></a>7. Using the SDK in your iOS application</h1>
+
+<h3><a id="using-sdk--track-event"></a>Track your first event</h3>
+
+<p>The SDK automatically tracks genetic events. This is probably insufficient to help you analyze, segment and notify users properly.
+You will want to track events that make sense for your business, here is an simple example:</p>
+
+<pre><code>[WonderPush trackEvent:"customized_interests" withData:nil];
+</code></pre>
+
+<p>This would permit you to know easily whether a user kept the default set of &ldquo;topics of interests&rdquo;, say in a newsstand application, or if they already chose a topics that represents well their center of interest.</p>
+
+<p>Your notification strategy could be to incite to customization for the lazy users, whereas you could engage in a more personalized communication with the users you performed the <code>customized_interests</code> event.</p>
+
+<h3><a id="using-sdk--track-event-custom"></a>Enriching the events</h3>
+
+<p>Events can host a rich set of properties that WonderPush indexes to permit you to filter users based on finer criteria.
+To do so, simply give a JSON object as second parameter. Here is an example:</p>
+
+<pre><code>[WonderPush trackEvent:"browse_catalog" withData:@{"string_category": @"fashion"}];
+</code></pre>
+
+<p>Using this information, you could notify customers on new items for the categories that matters most to them.</p>
+
+<p>Here is another example:</p>
+
+<pre><code>[WonderPush trackEvent:"purchase" withData:@{@"int_foo": [NSNumber numberWithInt:3], @"float_amount": [NSNumber numberWithFloat:59.98]}];
+</code></pre>
+
+<p>You could choose to thank customer for every purchase, or you could take advantage of the purchase amount to give differentiated coupons to best buyers.</p>
+
+<h3><a id="using-sdk--installation-properties"></a>Tagging users</h3>
+
+<p>Some information are better represented as properties on a user, rather than discrete events in a timeline.
+Here is an example:</p>
+
+<pre><code>- (void)didAddItemToCart:(NSString*)item withPrice:(double)price
+{
+    // Variables managed by your application
+    cartItems += 1;
+    cartAmount += price;
+    // ...
+
+    // Update this information in WonderPush
+    [WonderPush putInstallationCustomProperties:@{@"int_itemsInCart": [NSNumber numberWithInt:cartItems],
+                                                  @"float_cartAmount": [NSNumber numberWithFloat:cartAmount]}];
+}
+
+- (void)didPurchase {
+    // Empty the information in WonderPush
+    [WonderPush putInstallationCustomProperties:@{@"int_itemsInCart": [NSNull null],
+                                                  @"float_cartAmount": [NSNull null]}];
+}
+</code></pre>
+
+<p>Inactive users with non-empty carts could then easily be notified. Combined with a free delivery coupon for carts above a given amount, your conversion rate will improve still!</p>
+
+<h3><a id="using-sdk--soft-opt-out"></a>Opt-out</h3>
+
+<p>On iOS, users are opt-out by default, and you need to call the <code>[WonderPush setNotificationEnabled:(BOOL)]</code> function to register the device, at an appropriate time.
+A user always has the option of opening the system settings and blocking notifications. The application has no mean to know it.</p>
+
+<p>If a user no longer wants to receive notifications, you will rather want them to opt out of push notifications.
+This is done very simply using the following function call, and WonderPush will no longer send push notifications to this installation:</p>
+
+<pre><code>[WonderPush setNotificationEnabled:NO];
+</code></pre>
+
+<p>Note that the device is not actually unregistered from push notifications, so the registration id continues to be valid and the device stays reachable.
+The installation is simply marked and reported as <em>Soft opt-out</em> in the dashboard, and WonderPush filters it out from the targeted users.</p>
+
+<h1><a id="advanced"></a>8. Advanced usage</h1>
+
+<h3><a id="advanced--reading-custom-key-value-payload"></a>Reading custom key-value payload</h3>
+
+<p>A notification can be added custom key-value pairs to it.
+In order to retrieve them, simply add one line of code in the appropriate methods of your application delegate as follow:</p>
+
+<pre><code>- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [WonderPush handleDidReceiveRemoteNotification:userInfo];
+    // Get the custom payload
+    NSDictionary * custom = [userInfo objectForKey:@"custom"];
+}
+
+// If you use the remote-notification background mode
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    [WonderPush handleNotification:notification.userInfo];
+    // Get the custom payload
+    NSDictionary * custom = [notification.userInfo objectForKey:@"custom"];
+}
+</code></pre>
+
+<h3><a id="advanced--deep-links"></a>Deep links</h3>
+
+<p>Deep links are handled by the SDK by calling the <code>[application openURL:]</code> function, just like HTTP links, but with an application-specific scheme, like: <code>yourApplicationSpecificScheme://somePage</code>.</p>
+
+<p>Custom schemes are registered in your application’s <code>Info.plist</code> file, under the <code>URL Types</code> section.
+To add one, select your project in the Project navigator, then select your application in the <em>Targets</em> section, go to the <em>Info</em> tab, expand the <em>URL Types</em> section, and click the <em>+</em> button.
+Then simply choose a unique scheme (<code>yourApplicationSpecificScheme</code> in our example) and write it in the <em>URL Schemes</em> field.</p>
+
+<p>You will then need to implement the <code>+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation</code>
+function of your application delegate.
+Here is an example:</p>
+
+<pre><code>- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    UINavigationController *navController = (UINavigationController *)self.window.rootViewController;
+    [navController popToRootViewControllerAnimated:NO];
+    UIStoryboard *storyboard = navController.storyboard;
+
+    // Look at the url, and open the target page
+    [navController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"DeepPageId"] animated:YES];
+// For a more nested navigation tree, call pushViewController for each intermediate view
+
+    return YES; // NO: not handled, YES: handled
+}
+</code></pre>
+
+<p>If desired, you can also broadcast the notification opening to let some code resolve the most appropriate action to perform.
+To do so, you would use the <code>wonderpush://notificationOpen/broadcast</code> URI in your notification.
+Here is how to listen to this broadcast preferably in your <code>application: didFinishLaunchingWithOptions:</code> function of your application delegate:</p>
+
+<pre><code>[[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_OPENED_BROADCAST object:nil queue:nil usingBlock:^(NSNotification *note) {
+NSDictionary *pushNotification = note.userInfo;
+
+    UINavigationController *navController = (UINavigationController *)self.window.rootViewController;
+    [navController popToRootViewControllerAnimated:NO];
+    UIStoryboard *storyboard = navController.storyboard;
+
+    // Look at the push notification data, and open the target page
+    [navController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"DeepPageId"] animated:YES];
+// For a more nested navigation tree, call pushViewController for each intermediate view
+}];
+</code></pre>
+
+<h2><a id="demo-app"></a>Demo application</h2>
+
+<p>You can read an example integration by looking at the code of our <a href="https://github.com/wonderpush/wonderpush-ios-demo">Demo Application, available on GitHub</a>.</p>
+
+<h2><a id="reference"></a>API Reference</h2>
+
+<p>Take a look at the methods exposed by the <a href="Classes/WonderPush.html">WonderPush</a> class.</p>
+						
+						
+					</div>
+					
+
+					<div class="index-container">
+						
+
+						
+						<div class="index-column">
+							<h2 class="index-title">Class References</h2>
+							<ul>
+								
+								<li><a href="Classes/WonderPush.html">WonderPush</a></li>
+								
+							</ul>
+						</div>
+						
+
+						
+					</div>
+
+					<footer>
+						<div class="footer-copyright">
+							
+							<p class="copyright">Copyright &copy; 2015 WonderPush. All rights reserved. Updated: 2015-09-15</p>
+							
+							
+							<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1333)</a>.</p>
+							
+						</div>
+					</footer>
+				</main>
+			</div>
+		</div>
+	</article>
+
+	<script src="js/script.js"></script>
+</body>
+</html>
