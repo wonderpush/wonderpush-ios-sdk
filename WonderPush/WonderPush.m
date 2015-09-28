@@ -1156,10 +1156,13 @@ static WPDialogButtonHandler *buttonHandler = nil;
 {
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     CTCarrier *carrier = [netinfo subscriberCellularProvider];
-    if (carrier == nil) {
+    NSString *carrierName = [carrier carrierName];
+    
+    if (carrierName == nil) {
         return @"unknown";
     }
-    return [carrier carrierName];
+    
+    return carrierName;
 }
 
 +(NSString *) getVersionString
