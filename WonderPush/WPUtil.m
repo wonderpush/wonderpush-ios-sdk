@@ -145,12 +145,12 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
         {
             if (detailedError && ![detailedError isKindOfClass:[NSNull class]])
             {
-                return [[NSError alloc] initWithDomain:WPErrorDomain code:[[detailedError valueForKeyPath:@"code"] integerValue] userInfo:@{NSLocalizedDescriptionKey : [detailedError valueForKeyPath:@"message"]}];
+                return [[NSError alloc] initWithDomain:WPErrorDomain code:[[detailedError valueForKeyPath:@"code"] integerValue] userInfo:@{NSLocalizedDescriptionKey : [detailedError valueForKeyPath:@"message"] ?: [NSNull null]}];
             }
         }
         return nil;
     }
-    return [[NSError alloc] initWithDomain:WPErrorDomain code:[[errorJson valueForKeyPath:@"code"] integerValue] userInfo:@{NSLocalizedDescriptionKey : [errorJson valueForKeyPath:@"message"]}];
+    return [[NSError alloc] initWithDomain:WPErrorDomain code:[[errorJson valueForKeyPath:@"code"] integerValue] userInfo:@{NSLocalizedDescriptionKey : [errorJson valueForKeyPath:@"message"] ?: [NSNull null]}];
 }
 
 

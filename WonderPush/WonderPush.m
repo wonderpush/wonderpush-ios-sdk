@@ -133,6 +133,7 @@ static CLLocationManager *LocationManager = nil;
 }
 
 +(void) updateInstallation:(NSDictionary *) properties shouldOverwrite:(BOOL) overwrite {
+    if (!overwrite && (!properties || !properties.count)) return;
     NSString *installationEndPoint = @"/installation";
     NSError * err;
     NSData * jsonData = [NSJSONSerialization dataWithJSONObject:properties options:0 error:&err];
@@ -213,51 +214,52 @@ static int _putInstallationCustomProperties_blockId = 0;
 
 +(void) updateInstallationCoreProperties
 {
-    NSDictionary *application = @{@"version" : [self getVersionString],
-                                  @"sdkVersion": [self getSDKVersionNumber],
+    NSNull *null = [NSNull null];
+    NSDictionary *application = @{@"version" : [self getVersionString] ?: null,
+                                  @"sdkVersion": [self getSDKVersionNumber] ?: null,
                                 };
 
-    NSDictionary *configuration = @{@"timeZone": [self getTimezone],
-                                    @"carrier": [self getCarrierName],
-                                    @"locale": [self getLocale]};
+    NSDictionary *configuration = @{@"timeZone": [self getTimezone] ?: null,
+                                    @"carrier": [self getCarrierName] ?: null,
+                                    @"locale": [self getLocale] ?: null};
 
-    NSDictionary *capabilities = @{@"bluetooth": [NSNumber numberWithBool:[self getBluetoothSupported]],
-                                   @"bluetoothLe": [NSNumber numberWithBool:[self getBluetoothLeSupported]],
-                                   @"nfc": [NSNumber numberWithBool:[self getNFCSupported]],
-                                   @"telephony": [NSNumber numberWithBool:[self getTelephonySupported]],
-                                   @"telephonyGsm": [NSNumber numberWithBool:[self getTelephonyGSMSupported]],
-                                   @"telephonyCdma": [NSNumber numberWithBool:[self getTelephoneCDMASupported]],
+    NSDictionary *capabilities = @{@"bluetooth": [NSNumber numberWithBool:[self getBluetoothSupported]] ?: null,
+                                   @"bluetoothLe": [NSNumber numberWithBool:[self getBluetoothLeSupported]] ?: null,
+                                   @"nfc": [NSNumber numberWithBool:[self getNFCSupported]] ?: null,
+                                   @"telephony": [NSNumber numberWithBool:[self getTelephonySupported]] ?: null,
+                                   @"telephonyGsm": [NSNumber numberWithBool:[self getTelephonyGSMSupported]] ?: null,
+                                   @"telephonyCdma": [NSNumber numberWithBool:[self getTelephoneCDMASupported]] ?: null,
                                    @"wifi": @YES, // all have wifi otherwise how did we install the app
                                    @"wifiDirect": @NO, // not supported by Apple
-                                   @"gps": [NSNumber numberWithBool:[self getGPSSupported]],
+                                   @"gps": [NSNumber numberWithBool:[self getGPSSupported]] ?: null,
                                    @"networkLocation": @YES,
-                                   @"camera": [NSNumber numberWithBool:[self getCameraSupported]],
-                                   @"frontCamera": [NSNumber numberWithBool:[self getFrontCameraSupported]],
-                                   @"microphone": [NSNumber numberWithBool:[self getMicrophoneSupported]],
+                                   @"camera": [NSNumber numberWithBool:[self getCameraSupported]] ?: null,
+                                   @"frontCamera": [NSNumber numberWithBool:[self getFrontCameraSupported]] ?: null,
+                                   @"microphone": [NSNumber numberWithBool:[self getMicrophoneSupported]] ?: null,
                                    @"sensorAccelerometer":@YES,
                                    @"sensorBarometer": @NO,
-                                   @"sensorCompass": [NSNumber numberWithBool:[self getCompassSupported]],
-                                   @"sensorGyroscope": [NSNumber numberWithBool:[self getGyroscopeSupported]],
+                                   @"sensorCompass": [NSNumber numberWithBool:[self getCompassSupported]] ?: null,
+                                   @"sensorGyroscope": [NSNumber numberWithBool:[self getGyroscopeSupported]] ?: null,
                                    @"sensorLight": @YES,
-                                   @"sensorProximity": [NSNumber numberWithBool:[self getProximitySensorSupported]],
+                                   @"sensorProximity": [NSNumber numberWithBool:[self getProximitySensorSupported]] ?: null,
                                    @"sensorStepDetector": @NO,
                                    @"touchscreen": @YES,
                                    @"touchscreenTwoFingers": @YES,
                                    @"touchscreenDistinct": @YES,
                                    @"touchscreenFullHand": @YES,
-                                   @"figerprintScanner":[NSNumber numberWithBool:[self getFingerprintScannerSupported]]
+                                   @"figerprintScanner":[NSNumber numberWithBool:[self getFingerprintScannerSupported]] ?: null
                                    };
 
     CGRect screenSize = [self getScreenSize];
-    NSDictionary *device = @{@"id": [WPUtil deviceIdentifier],
+    NSDictionary *device = @{@"id": [WPUtil deviceIdentifier] ?: null,
                              @"platform": @"iOS",
-                             @"osVersion": [self getOsVersion],
+                             @"osVersion": [self getOsVersion] ?: null,
                              @"brand": @"Apple",
-                             @"model": [self getDeviceModel],
-                             @"name": [self getDeviceName],
-                             @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width],
-                             @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height],
-                             @"screenDensity": [NSNumber numberWithInt:(int)[self getScreenDensity]],
+                             @"model": [self getDeviceModel] ?: null,
+                             @"name": [self getDeviceName] ?: null,
+                             @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width] ?: null,
+                             @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height] ?: null,
+                             @"screenDensity": [NSNumber numberWithInt:(int)[self getScreenDensity]] ?: null,
                              @"configuration": configuration,
                              @"capabilities": capabilities,
                              };
@@ -497,8 +499,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     {
         NSString *methodName = [action objectForKey:@"method"];
         id methodParameter = [action objectForKey:@"methodArg"];
-        if (!methodParameter) methodParameter = [NSNull null];
-        NSDictionary *parameters = @{WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter};
+        NSDictionary *parameters = @{WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter ?: [NSNull null]};
         [[NSNotificationCenter defaultCenter]  postNotificationName:methodName
                                                              object:self
                                                            userInfo:parameters];
@@ -569,7 +570,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
         [sharedConfiguration setDeviceToken:deviceToken];
         [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
         [self updateInstallation:@{@"pushToken": @{@"data":
-                                                       deviceToken ? deviceToken : [NSNull null]
+                                                       deviceToken ?: [NSNull null]
                                                    }}
                  shouldOverwrite:NO];
     }
