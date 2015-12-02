@@ -21,6 +21,7 @@
 #import "WPLog.h"
 #endif
 
+#define SDK_VERSION @"iOS-1.1.2.3"
 #define PRODUCTION_API_URL @"https://api.wonderpush.com/v1/"
 
 #define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
