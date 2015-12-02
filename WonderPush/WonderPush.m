@@ -1071,6 +1071,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
     if (!deviceNamesByCode) {
 
+        // Source: http://www.enterpriseios.com/wiki/iOS_Devices
+        // Source: https://www.theiphonewiki.com/wiki/Models
         deviceNamesByCode = @{ @"iPhone1,1"   : @"iPhone 1G",
                                @"iPhone1,2"   : @"iPhone 3G",
                                @"iPhone2,1"   : @"iPhone 3GS",
@@ -1086,11 +1088,14 @@ static WPDialogButtonHandler *buttonHandler = nil;
                                @"iPhone6,2"   : @"iPhone 5s (Global)",
                                @"iPhone7,1"   : @"iPhone 6 Plus",
                                @"iPhone7,2"   : @"iPhone 6",
+                               @"iPhone8,1"   : @"iPhone 6S",
+                               @"iPhone8,2"   : @"iPhone 6S Plus",
                                @"iPod1,1"     : @"iPod Touch 1G",
                                @"iPod2,1"     : @"iPod Touch 2G",
                                @"iPod3,1"     : @"iPod Touch 3G",
                                @"iPod4,1"     : @"iPod Touch 4G",
                                @"iPod5,1"     : @"iPod Touch 5G",
+                               @"iPod7,1"     : @"iPod Touch 6",
                                @"iPad1,1"     : @"iPad",
                                @"iPad2,1"     : @"iPad 2 (WiFi)",
                                @"iPad2,2"     : @"iPad 2 (GSM)",
@@ -1114,11 +1119,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
                                @"iPad4,7"     : @"iPad Mini 3 (WiFi)",
                                @"iPad4,8"     : @"iPad Mini 3 (Cellular)",
                                @"iPad4,9"     : @"iPad Mini 3 (China)",
+                               @"iPad5,1"     : @"iPad Mini 4 (WiFi)",
+                               @"iPad5,2"     : @"iPad Mini 4 (Cellular)",
                                @"iPad5,3"     : @"iPad Air 2 (WiFi)",
                                @"iPad5,4"     : @"iPad Air 2 (Cellular)",
+                               @"iPad6,7"     : @"iPad Pro (WiFi)",
+                               @"iPad6,8"     : @"iPad Pro (Cellular)",
                                @"AppleTV2,1"  : @"Apple TV 2G",
                                @"AppleTV3,1"  : @"Apple TV 3",
                                @"AppleTV3,2"  : @"Apple TV 3 (2013)",
+                               @"AppleTV5,3"  : @"Apple TV 4G",
                                @"Watch1,1"    : @"Apple Watch 38mm",
                                @"Watch1,2"    : @"Apple Watch 42mm",
                                @"i386"        : @"Simulator",
