@@ -41,11 +41,136 @@ static NSTimeInterval _lastAppOpen = 0;
 
 static NSString *_currentLanguageCode = nil;
 static CLLocationManager *LocationManager = nil;
+static NSArray *validLanguageCodes = nil;
+static NSDictionary *deviceNamesByCode = nil;
+static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) initialize
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        // Initialize some constants
+        validLanguageCodes = @[@"af", @"ar", @"be",
+                               @"bg", @"bn", @"ca", @"cs", @"da", @"de", @"el", @"en", @"en_GB", @"en_US",
+                               @"es", @"es_ES", @"es_MX", @"et", @"fa", @"fi", @"fr", @"fr_FR", @"fr_CA",
+                               @"he", @"hi", @"hr", @"hu", @"id", @"is", @"it", @"ja", @"ko", @"lt", @"lv",
+                               @"mk", @"ms", @"nb", @"nl", @"pa", @"pl", @"pt", @"pt_PT", @"pt_BR", @"ro",
+                               @"ru", @"sk", @"sl", @"sq", @"sr", @"sv", @"sw", @"ta", @"th", @"tl", @"tr",
+                               @"uk", @"vi", @"zh", @"zh_CN", @"zh_TW", @"zh_HK",
+                               ];
+        // Source: http://www.enterpriseios.com/wiki/iOS_Devices
+        // Source: https://www.theiphonewiki.com/wiki/Models
+        deviceNamesByCode = @{
+                              @"iPhone1,1"   : @"iPhone 1G",
+                              @"iPhone1,2"   : @"iPhone 3G",
+                              @"iPhone2,1"   : @"iPhone 3GS",
+                              @"iPhone3,1"   : @"iPhone 4",
+                              @"iPhone3,2"   : @"iPhone 4",
+                              @"iPhone3,3"   : @"Verizon iPhone 4",
+                              @"iPhone4,1"   : @"iPhone 4S",
+                              @"iPhone5,1"   : @"iPhone 5 (GSM)",
+                              @"iPhone5,2"   : @"iPhone 5 (GSM+CDMA)",
+                              @"iPhone5,3"   : @"iPhone 5c (GSM)",
+                              @"iPhone5,4"   : @"iPhone 5c (Global)",
+                              @"iPhone6,1"   : @"iPhone 5s (GSM)",
+                              @"iPhone6,2"   : @"iPhone 5s (Global)",
+                              @"iPhone7,1"   : @"iPhone 6 Plus",
+                              @"iPhone7,2"   : @"iPhone 6",
+                              @"iPhone8,1"   : @"iPhone 6S",
+                              @"iPhone8,2"   : @"iPhone 6S Plus",
+                              @"iPod1,1"     : @"iPod Touch 1G",
+                              @"iPod2,1"     : @"iPod Touch 2G",
+                              @"iPod3,1"     : @"iPod Touch 3G",
+                              @"iPod4,1"     : @"iPod Touch 4G",
+                              @"iPod5,1"     : @"iPod Touch 5G",
+                              @"iPod7,1"     : @"iPod Touch 6",
+                              @"iPad1,1"     : @"iPad",
+                              @"iPad2,1"     : @"iPad 2 (WiFi)",
+                              @"iPad2,2"     : @"iPad 2 (GSM)",
+                              @"iPad2,3"     : @"iPad 2 (CDMA)",
+                              @"iPad2,4"     : @"iPad 2 (WiFi)",
+                              @"iPad2,5"     : @"iPad Mini (WiFi)",
+                              @"iPad2,6"     : @"iPad Mini (GSM)",
+                              @"iPad2,7"     : @"iPad Mini (GSM+CDMA)",
+                              @"iPad3,1"     : @"iPad 3 (WiFi)",
+                              @"iPad3,2"     : @"iPad 3 (GSM+CDMA)",
+                              @"iPad3,3"     : @"iPad 3 (GSM)",
+                              @"iPad3,4"     : @"iPad 4 (WiFi)",
+                              @"iPad3,5"     : @"iPad 4 (GSM)",
+                              @"iPad3,6"     : @"iPad 4 (GSM+CDMA)",
+                              @"iPad4,1"     : @"iPad Air (WiFi)",
+                              @"iPad4,2"     : @"iPad Air (GSM)",
+                              @"iPad4,3"     : @"iPad Air",
+                              @"iPad4,4"     : @"iPad Mini Retina (WiFi)",
+                              @"iPad4,5"     : @"iPad Mini Retina (GSM)",
+                              @"iPad4,6"     : @"iPad Mini 2G",
+                              @"iPad4,7"     : @"iPad Mini 3 (WiFi)",
+                              @"iPad4,8"     : @"iPad Mini 3 (Cellular)",
+                              @"iPad4,9"     : @"iPad Mini 3 (China)",
+                              @"iPad5,1"     : @"iPad Mini 4 (WiFi)",
+                              @"iPad5,2"     : @"iPad Mini 4 (Cellular)",
+                              @"iPad5,3"     : @"iPad Air 2 (WiFi)",
+                              @"iPad5,4"     : @"iPad Air 2 (Cellular)",
+                              @"iPad6,7"     : @"iPad Pro (WiFi)",
+                              @"iPad6,8"     : @"iPad Pro (Cellular)",
+                              @"AppleTV2,1"  : @"Apple TV 2G",
+                              @"AppleTV3,1"  : @"Apple TV 3",
+                              @"AppleTV3,2"  : @"Apple TV 3 (2013)",
+                              @"AppleTV5,3"  : @"Apple TV 4G",
+                              @"Watch1,1"    : @"Apple Watch 38mm",
+                              @"Watch1,2"    : @"Apple Watch 42mm",
+                              @"i386"        : @"Simulator",
+                              @"x86_64"      : @"Simulator"
+                              };
+        gpsCapabilityByCode = @{
+                                @"iPhone1,1"   : @NO,
+                                @"iPhone1,2"   : @YES,
+                                @"iPhone2,1"   : @YES,
+                                @"iPhone3,1"   : @YES,
+                                @"iPhone3,3"   : @YES,
+                                @"iPhone4,1"   : @YES,
+                                @"iPhone5,1"   : @YES,
+                                @"iPhone5,2"   : @YES,
+                                @"iPhone5,3"   : @YES,
+                                @"iPhone5,4"   : @YES,
+                                @"iPhone6,1"   : @YES,
+                                @"iPhone6,2"   : @YES,
+                                @"iPhone7,1"   : @YES,
+                                @"iPhone7,2"   : @YES,
+                                @"iPod1,1"     : @NO,
+                                @"iPod2,1"     : @NO,
+                                @"iPod3,1"     : @NO,
+                                @"iPod4,1"     : @NO,
+                                @"iPod5,1"     : @NO,
+                                @"iPad1,1"     : @NO,
+                                @"iPad2,1"     : @NO,
+                                @"iPad2,2"     : @YES,
+                                @"iPad2,3"     : @YES,
+                                @"iPad2,4"     : @NO,
+                                @"iPad2,5"     : @NO,
+                                @"iPad2,6"     : @YES,
+                                @"iPad2,7"     : @YES,
+                                @"iPad3,1"     : @NO,
+                                @"iPad3,2"     : @YES,
+                                @"iPad3,3"     : @YES,
+                                @"iPad3,4"     : @NO,
+                                @"iPad3,5"     : @YES,
+                                @"iPad3,6"     : @YES,
+                                @"iPad4,1"     : @NO,
+                                @"iPad4,2"     : @YES,
+                                @"iPad4,3"     : @YES,
+                                @"iPad4,4"     : @YES,
+                                @"iPad4,5"     : @YES,
+                                @"iPad4,6"     : @YES,
+                                @"iPad4,7"     : @YES,
+                                @"iPad4,8"     : @YES,
+                                @"iPad4,9"     : @YES,
+                                @"iPad5,3"     : @NO,
+                                @"iPad5,4"     : @YES,
+                                @"i386"        : @NO,
+                                @"x86_64"      : @NO
+                                };
+        // Initialize other variables
         LocationManager = [[CLLocationManager alloc] init];
         _putInstallationCustomProperties_lock = [NSObject new];
     });
@@ -921,58 +1046,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSString* code = [NSString stringWithCString:systemInfo.machine
                                         encoding:NSUTF8StringEncoding];
 
-    static NSDictionary* gpsCapabilityByCode = nil;
-
-    if (!gpsCapabilityByCode) {
-
-        gpsCapabilityByCode = @{ @"iPhone1,1"   : @NO,
-                                 @"iPhone1,2"   : @YES,
-                                 @"iPhone2,1"   : @YES,
-                                 @"iPhone3,1"   : @YES,
-                                 @"iPhone3,3"   : @YES,
-                                 @"iPhone4,1"   : @YES,
-                                 @"iPhone5,1"   : @YES,
-                                 @"iPhone5,2"   : @YES,
-                                 @"iPhone5,3"   : @YES,
-                                 @"iPhone5,4"   : @YES,
-                                 @"iPhone6,1"   : @YES,
-                                 @"iPhone6,2"   : @YES,
-                                 @"iPhone7,1"   : @YES,
-                                 @"iPhone7,2"   : @YES,
-                                 @"iPod1,1"     : @NO,
-                                 @"iPod2,1"     : @NO,
-                                 @"iPod3,1"     : @NO,
-                                 @"iPod4,1"     : @NO,
-                                 @"iPod5,1"     : @NO,
-                                 @"iPad1,1"     : @NO,
-                                 @"iPad2,1"     : @NO,
-                                 @"iPad2,2"     : @YES,
-                                 @"iPad2,3"     : @YES,
-                                 @"iPad2,4"     : @NO,
-                                 @"iPad2,5"     : @NO,
-                                 @"iPad2,6"     : @YES,
-                                 @"iPad2,7"     : @YES,
-                                 @"iPad3,1"     : @NO,
-                                 @"iPad3,2"     : @YES,
-                                 @"iPad3,3"     : @YES,
-                                 @"iPad3,4"     : @NO,
-                                 @"iPad3,5"     : @YES,
-                                 @"iPad3,6"     : @YES,
-                                 @"iPad4,1"     : @NO,
-                                 @"iPad4,2"     : @YES,
-                                 @"iPad4,3"     : @YES,
-                                 @"iPad4,4"     : @YES,
-                                 @"iPad4,5"     : @YES,
-                                 @"iPad4,6"     : @YES,
-                                 @"iPad4,7"     : @YES,
-                                 @"iPad4,8"     : @YES,
-                                 @"iPad4,9"     : @YES,
-                                 @"iPad5,3"     : @NO,
-                                 @"iPad5,4"     : @YES,
-                                 @"i386"        : @NO,
-                                 @"x86_64"      : @NO
-                                 };
-    }
     BOOL gpsCapability = [[gpsCapabilityByCode objectForKey:code] boolValue];
 
     if (!gpsCapability) {
@@ -1066,75 +1139,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
     NSString* code = [NSString stringWithCString:systemInfo.machine
                                         encoding:NSUTF8StringEncoding];
-
-    static NSDictionary* deviceNamesByCode = nil;
-
-    if (!deviceNamesByCode) {
-
-        // Source: http://www.enterpriseios.com/wiki/iOS_Devices
-        // Source: https://www.theiphonewiki.com/wiki/Models
-        deviceNamesByCode = @{ @"iPhone1,1"   : @"iPhone 1G",
-                               @"iPhone1,2"   : @"iPhone 3G",
-                               @"iPhone2,1"   : @"iPhone 3GS",
-                               @"iPhone3,1"   : @"iPhone 4",
-                               @"iPhone3,2"   : @"iPhone 4",
-                               @"iPhone3,3"   : @"Verizon iPhone 4",
-                               @"iPhone4,1"   : @"iPhone 4S",
-                               @"iPhone5,1"   : @"iPhone 5 (GSM)",
-                               @"iPhone5,2"   : @"iPhone 5 (GSM+CDMA)",
-                               @"iPhone5,3"   : @"iPhone 5c (GSM)",
-                               @"iPhone5,4"   : @"iPhone 5c (Global)",
-                               @"iPhone6,1"   : @"iPhone 5s (GSM)",
-                               @"iPhone6,2"   : @"iPhone 5s (Global)",
-                               @"iPhone7,1"   : @"iPhone 6 Plus",
-                               @"iPhone7,2"   : @"iPhone 6",
-                               @"iPhone8,1"   : @"iPhone 6S",
-                               @"iPhone8,2"   : @"iPhone 6S Plus",
-                               @"iPod1,1"     : @"iPod Touch 1G",
-                               @"iPod2,1"     : @"iPod Touch 2G",
-                               @"iPod3,1"     : @"iPod Touch 3G",
-                               @"iPod4,1"     : @"iPod Touch 4G",
-                               @"iPod5,1"     : @"iPod Touch 5G",
-                               @"iPod7,1"     : @"iPod Touch 6",
-                               @"iPad1,1"     : @"iPad",
-                               @"iPad2,1"     : @"iPad 2 (WiFi)",
-                               @"iPad2,2"     : @"iPad 2 (GSM)",
-                               @"iPad2,3"     : @"iPad 2 (CDMA)",
-                               @"iPad2,4"     : @"iPad 2 (WiFi)",
-                               @"iPad2,5"     : @"iPad Mini (WiFi)",
-                               @"iPad2,6"     : @"iPad Mini (GSM)",
-                               @"iPad2,7"     : @"iPad Mini (GSM+CDMA)",
-                               @"iPad3,1"     : @"iPad 3 (WiFi)",
-                               @"iPad3,2"     : @"iPad 3 (GSM+CDMA)",
-                               @"iPad3,3"     : @"iPad 3 (GSM)",
-                               @"iPad3,4"     : @"iPad 4 (WiFi)",
-                               @"iPad3,5"     : @"iPad 4 (GSM)",
-                               @"iPad3,6"     : @"iPad 4 (GSM+CDMA)",
-                               @"iPad4,1"     : @"iPad Air (WiFi)",
-                               @"iPad4,2"     : @"iPad Air (GSM)",
-                               @"iPad4,3"     : @"iPad Air",
-                               @"iPad4,4"     : @"iPad Mini Retina (WiFi)",
-                               @"iPad4,5"     : @"iPad Mini Retina (GSM)",
-                               @"iPad4,6"     : @"iPad Mini 2G",
-                               @"iPad4,7"     : @"iPad Mini 3 (WiFi)",
-                               @"iPad4,8"     : @"iPad Mini 3 (Cellular)",
-                               @"iPad4,9"     : @"iPad Mini 3 (China)",
-                               @"iPad5,1"     : @"iPad Mini 4 (WiFi)",
-                               @"iPad5,2"     : @"iPad Mini 4 (Cellular)",
-                               @"iPad5,3"     : @"iPad Air 2 (WiFi)",
-                               @"iPad5,4"     : @"iPad Air 2 (Cellular)",
-                               @"iPad6,7"     : @"iPad Pro (WiFi)",
-                               @"iPad6,8"     : @"iPad Pro (Cellular)",
-                               @"AppleTV2,1"  : @"Apple TV 2G",
-                               @"AppleTV3,1"  : @"Apple TV 3",
-                               @"AppleTV3,2"  : @"Apple TV 3 (2013)",
-                               @"AppleTV5,3"  : @"Apple TV 4G",
-                               @"Watch1,1"    : @"Apple Watch 38mm",
-                               @"Watch1,2"    : @"Apple Watch 42mm",
-                               @"i386"        : @"Simulator",
-                               @"x86_64"      : @"Simulator"
-                              };
-    }
 
     NSString* deviceName = [deviceNamesByCode objectForKey:code];
 
@@ -1263,21 +1267,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 #pragma mark - Language
 
-+ (NSArray *)validLanguageCodes
-{
-    static NSArray *result = nil;
-    if (!result)
-        result = @[@"af", @"ar", @"be",
-                   @"bg", @"bn", @"ca", @"cs", @"da", @"de", @"el", @"en", @"en_GB", @"en_US",
-                   @"es", @"es_ES", @"es_MX", @"et", @"fa", @"fi", @"fr", @"fr_FR", @"fr_CA",
-                   @"he", @"hi", @"hr", @"hu", @"id", @"is", @"it", @"ja", @"ko", @"lt", @"lv",
-                   @"mk", @"ms", @"nb", @"nl", @"pa", @"pl", @"pt", @"pt_PT", @"pt_BR", @"ro",
-                   @"ru", @"sk", @"sl", @"sq", @"sr", @"sv", @"sw", @"ta", @"th", @"tl", @"tr",
-                   @"uk", @"vi", @"zh", @"zh_CN", @"zh_TW", @"zh_HK",
-                   ];
-    return result;
-}
-
 + (NSString *)languageCode
 {
     if (_currentLanguageCode != nil) {
@@ -1288,7 +1277,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
 }
 
 +(void) setLanguageCode:(NSString *) languageCode {
-    if ([[self validLanguageCodes] containsObject:languageCode]) {
+    if ([validLanguageCodes containsObject:languageCode]) {
         _currentLanguageCode = languageCode;
     }
     return;
@@ -1297,7 +1286,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
 + (NSString *)wonderpushLanguageCodeForLocaleLanguageCode:(NSString *)localeLanguageCode
 {
     NSString *code = [localeLanguageCode stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
-    if ([[self validLanguageCodes] containsObject:code])
+    if ([validLanguageCodes containsObject:code])
         return code;
     return @"en";
 }

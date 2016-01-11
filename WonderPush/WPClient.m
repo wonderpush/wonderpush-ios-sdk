@@ -27,6 +27,7 @@
 #pragma mark - WPJSONRequestOperation
 
 static NSMutableArray *tokenFetchedHandlers;
+static NSArray *allowedMethods = nil;
 
 
 @interface WPJSONRequestOperation : WPAFJSONRequestOperation
@@ -174,6 +175,15 @@ static NSMutableArray *tokenFetchedHandlers;
 @end
 
 @implementation WPClient
+
++ (void) initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Initialize some constants
+        allowedMethods = @[@"GET", @"POST", @"PUT", @"DELETE"];
+    });
+}
 
 + (WPClient *)sharedClient
 {
@@ -474,13 +484,9 @@ static NSMutableArray *tokenFetchedHandlers;
 
 - (void) checkMethod:(WPRequest *)request
 {
-    static NSArray *allowedMethods = nil;
-    if (!allowedMethods)
-        allowedMethods = @[@"GET", @"POST", @"DELETE"];
-
     NSString *method = request.method.uppercaseString;
     if (!method || ![allowedMethods containsObject:method])
-        [NSException raise:@"InvalidHTTPVerb" format:@"Supported verbs are GET, POST, DELETE."];
+        [NSException raise:@"InvalidHTTPVerb" format:@"Supported verbs are GET, POST, PUT and DELETE."];
 
     return;
 }

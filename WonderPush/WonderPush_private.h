@@ -102,8 +102,6 @@
 
 + (void) setIsReachable:(BOOL)isReachable;
 
-+ (NSArray *) validLanguageCodes;
-
 + (NSString *)languageCode;
 
 + (void) setLanguageCode:(NSString *) languageCode;
