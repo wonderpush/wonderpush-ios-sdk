@@ -137,11 +137,14 @@ static NSDictionary* gpsCapabilityByCode = nil;
                                 @"iPhone6,2"   : @YES,
                                 @"iPhone7,1"   : @YES,
                                 @"iPhone7,2"   : @YES,
+                                @"iPhone8,1"   : @YES,
+                                @"iPhone8,2"   : @YES,
                                 @"iPod1,1"     : @NO,
                                 @"iPod2,1"     : @NO,
                                 @"iPod3,1"     : @NO,
                                 @"iPod4,1"     : @NO,
                                 @"iPod5,1"     : @NO,
+                                @"iPod7,1"     : @NO,
                                 @"iPad1,1"     : @NO,
                                 @"iPad2,1"     : @NO,
                                 @"iPad2,2"     : @YES,
@@ -167,6 +170,14 @@ static NSDictionary* gpsCapabilityByCode = nil;
                                 @"iPad4,9"     : @YES,
                                 @"iPad5,3"     : @NO,
                                 @"iPad5,4"     : @YES,
+                                @"iPad6,6"     : @YES,
+                                @"iPad6,7"     : @YES,
+                                @"AppleTV2,1"  : @NO,
+                                @"AppleTV3,1"  : @NO,
+                                @"AppleTV3,2"  : @NO,
+                                @"AppleTV5,3"  : @NO,
+                                @"Watch1,1"    : @NO,
+                                @"Watch1,2"    : @NO,
                                 @"i386"        : @NO,
                                 @"x86_64"      : @NO
                                 };
@@ -1046,19 +1057,24 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSString* code = [NSString stringWithCString:systemInfo.machine
                                         encoding:NSUTF8StringEncoding];
 
-    BOOL gpsCapability = [[gpsCapabilityByCode objectForKey:code] boolValue];
-
-    if (!gpsCapability) {
+    BOOL gpsCapability = @NO;
+    id kbValue = [gpsCapabilityByCode objectForKey:code];
+    if (kbValue != nil) {
+        gpsCapability = [kbValue boolValue];
+    } else {
         // Not found on database. At least guess main device type from string contents:
 
         if ([code rangeOfString:@"iPod"].location != NSNotFound) {
             gpsCapability = NO;
         }
         else if([code rangeOfString:@"iPad"].location != NSNotFound) {
-            gpsCapability = NO; // this is not sure but it's still better than crashing
+            gpsCapability = YES; // this is not sure but let's assume the future will tend to that
         }
         else if([code rangeOfString:@"iPhone"].location != NSNotFound){
             gpsCapability = YES;
+        }
+        else {
+            gpsCapability = NO;
         }
     }
 
