@@ -1074,7 +1074,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSString* code = [NSString stringWithCString:systemInfo.machine
                                         encoding:NSUTF8StringEncoding];
 
-    BOOL gpsCapability = @NO;
+    BOOL gpsCapability = NO;
     id kbValue = [gpsCapabilityByCode objectForKey:code];
     if (kbValue != nil) {
         gpsCapability = [kbValue boolValue];
