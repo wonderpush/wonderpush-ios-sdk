@@ -48,7 +48,10 @@
     NSNumber *shownTime = [[NSNumber alloc] initWithLong:(long)(([[NSProcessInfo processInfo] systemUptime] - self.showTime) * 1000)];
     [WonderPush trackInternalEvent:@"@NOTIFICATION_ACTION"
                          eventData:@{@"buttonLabel":[clickedButton objectForKey:@"label"] ?: [NSNull null],
-                                     @"reactionTime":shownTime}
+                                     @"reactionTime":shownTime,
+                                     @"campaignId": [notificationConfiguration objectForKey:@"c"] ?: [NSNull null],
+                                     @"notificationId": [notificationConfiguration objectForKey:@"n"] ?: [NSNull null],
+                                     }
                         customData:nil];
 
     NSArray *clickedButtonAction = [clickedButton objectForKey:@"actions"];
