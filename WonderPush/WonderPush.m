@@ -357,6 +357,8 @@ static int _putInstallationCustomProperties_blockId = 0;
 
     NSDictionary *configuration = @{@"timeZone": [self getTimezone] ?: null,
                                     @"carrier": [self getCarrierName] ?: null,
+                                    @"country": [self getCountry] ?: null,
+                                    @"currency": [self getCurrency] ?: null,
                                     @"locale": [self getLocale] ?: null};
 
     NSDictionary *capabilities = @{@"bluetooth": [NSNumber numberWithBool:[self getBluetoothSupported]] ?: null,
@@ -1203,6 +1205,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
 +(NSString *) getLocale
 {
     return [[NSLocale currentLocale] localeIdentifier];
+}
+
++(NSString *) getCountry
+{
+    return [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+}
+
++(NSString *) getCurrency
+{
+    return [[NSLocale currentLocale] objectForKey:NSLocaleCurrencyCode];
 }
 
 +(NSString *) getOsVersion
