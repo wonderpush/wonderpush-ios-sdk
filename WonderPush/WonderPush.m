@@ -624,6 +624,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
         NSDictionary *custom = [event objectForKey:@"custom"];
         [WonderPush trackEvent:type withData:custom];
     }
+    if ([type isEqualToString:WP_ACTION_UPDATE_INSTALLATION])
+    {
+        NSDictionary *custom = [action objectForKey:@"custom"];
+        if (custom == nil)
+        {
+            return;
+        }
+        [WonderPush putInstallationCustomProperties:custom];
+    }
     if ([type isEqualToString:WP_ACTION_RATING])
     {
         NSBundle* mainBundle = [NSBundle mainBundle];

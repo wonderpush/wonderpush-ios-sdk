@@ -47,6 +47,11 @@
 #define WP_ACTION_TRACK @"trackEvent"
 
 /**
+ Button of type update installation (update installation custom data on button click)
+ */
+#define WP_ACTION_UPDATE_INSTALLATION @"updateInstallation"
+
+/**
  Key to set in your .plist file to allow rating button action
  */
 #define WP_ITUNES_APP_ID @"itunesAppID"
