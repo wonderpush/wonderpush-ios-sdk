@@ -32,6 +32,7 @@
 
 - (void)executeButtonActions:(NSArray *) actions
 {
+    if (!actions) return;
     for (NSDictionary *action in actions)
     {
         [WonderPush executeAction:action onNotification:notificationConfiguration];
@@ -39,7 +40,10 @@
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    NSDictionary *clickedButton = [buttonConfiguration objectAtIndex:buttonIndex];
+    NSDictionary *clickedButton = nil;
+    if (buttonConfiguration && buttonIndex >= 0 && buttonIndex < buttonConfiguration.count) {
+        clickedButton = [buttonConfiguration objectAtIndex:buttonIndex];
+    }
 
     NSNumber *shownTime = [[NSNumber alloc] initWithLong:(long)(([[NSProcessInfo processInfo] systemUptime] - self.showTime) * 1000)];
     [WonderPush trackInternalEvent:@"@NOTIFICATION_ACTION"

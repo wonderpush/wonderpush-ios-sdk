@@ -468,16 +468,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
     UIAlertView *dialog = [[UIAlertView alloc] initWithTitle:[wonderPushData objectForKey:@"title"] message:[wonderPushData objectForKey:@"message"] delegate:nil cancelButtonTitle:nil otherButtonTitles:nil, nil];
     NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
+    buttonHandler = [[WPDialogButtonHandler alloc] init];
+    buttonHandler.notificationConfiguration = wonderPushData;
+    buttonHandler.buttonConfiguration = buttons;
+    dialog.delegate = buttonHandler;
     if (buttons != nil && [buttons count] > 0)
     {
         for (NSDictionary *button in buttons)
         {
             [dialog addButtonWithTitle:[button objectForKey:@"label"]];
         }
-        buttonHandler = [[WPDialogButtonHandler alloc] init];
-        buttonHandler.buttonConfiguration = buttons;
-        buttonHandler.notificationConfiguration = wonderPushData;
-        dialog.delegate = buttonHandler;
     }
     else
     {
@@ -525,6 +525,10 @@ static WPDialogButtonHandler *buttonHandler = nil;
     [alert setContainerView:view];
 
     NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
+    buttonHandler = [[WPDialogButtonHandler alloc] init];
+    buttonHandler.buttonConfiguration = buttons;
+    buttonHandler.notificationConfiguration = wonderPushData;
+    [alert setDelegate:buttonHandler];
     if (buttons != nil && [buttons count] > 0)
     {
         NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
@@ -532,10 +536,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
         {
             [textButtons addObject:[button valueForKey:@"label"]];
         }
-        buttonHandler = [[WPDialogButtonHandler alloc] init];
-        buttonHandler.buttonConfiguration = buttons;
-        buttonHandler.notificationConfiguration = wonderPushData;
-        [alert setDelegate:buttonHandler];
         [alert setButtonTitles:textButtons];
     }
     else
@@ -587,6 +587,10 @@ static WPDialogButtonHandler *buttonHandler = nil;
    [alert setContainerView:view];
 
     NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
+    buttonHandler = [[WPDialogButtonHandler alloc] init];
+    buttonHandler.buttonConfiguration = buttons;
+    buttonHandler.notificationConfiguration = wonderPushData;
+    [alert setDelegate:buttonHandler];
     if (buttons != nil && [buttons count] > 0)
     {
         NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
@@ -594,10 +598,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
         {
             [textButtons addObject:[button valueForKey:@"label"]];
         }
-        buttonHandler = [[WPDialogButtonHandler alloc] init];
-        buttonHandler.buttonConfiguration = buttons;
-        buttonHandler.notificationConfiguration = wonderPushData;
-        [alert setDelegate:buttonHandler];
         [alert setButtonTitles:textButtons];
     }
     else
