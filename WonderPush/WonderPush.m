@@ -35,6 +35,8 @@ static BOOL _isReady = NO;
 static BOOL _isReachable = NO;
 
 static NSTimeInterval _lastAppOpen = 0;
+static NSString *_notificationFromAppLaunchCampaignId = nil;
+static NSString *_notificationFromAppLaunchNotificationId = nil;
 
 
 @implementation WonderPush
@@ -682,6 +684,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
     ) {
         NSDictionary *notificationDictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
         if (notificationDictionary) {
+            _notificationFromAppLaunchCampaignId = nil;
+            _notificationFromAppLaunchNotificationId = nil;
+            if (notificationDictionary != nil) {
+                NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
+                if (wonderpushData) {
+                    _notificationFromAppLaunchCampaignId = [wonderpushData objectForKey:@"c"];
+                    _notificationFromAppLaunchNotificationId = [wonderpushData objectForKey:@"n"];
+                }
+            }
             return [self handleNotification:notificationDictionary];
         }
     }
@@ -948,7 +959,12 @@ static WPDialogButtonHandler *buttonHandler = nil;
 + (void) applicationDidBecomeActive:(UIApplication *)application;
 {
     _lastAppOpen = [[NSProcessInfo processInfo] systemUptime];
-    [self trackInternalEvent:@"@APP_OPEN" eventData:nil customData:nil];
+    NSMutableDictionary *appOpenData = [NSMutableDictionary new];
+    if (_notificationFromAppLaunchCampaignId)     appOpenData[@"campaignId"]     = _notificationFromAppLaunchCampaignId;
+    if (_notificationFromAppLaunchNotificationId) appOpenData[@"notificationId"] = _notificationFromAppLaunchNotificationId;
+    _notificationFromAppLaunchCampaignId = nil;     // reset those info, not to report them again unduly
+    _notificationFromAppLaunchNotificationId = nil; // reset those info, not to report them again unduly
+    [self trackInternalEvent:@"@APP_OPEN" eventData:appOpenData customData:nil];
     // Show any queued notifications
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
