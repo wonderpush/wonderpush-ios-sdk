@@ -401,9 +401,8 @@ static int _putInstallationCustomProperties_blockId = 0;
                              };
 
     NSDictionary *properties = @{@"application": application,
-                                 @"device": device,
-                                 @"configuration": configuration,
-                                 @"capabilities": capabilities};
+                                 @"device": device
+                                 };
 
     WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
     NSDictionary *oldProperties = sharedConfiguration.cachedInstallationCoreProperties;
