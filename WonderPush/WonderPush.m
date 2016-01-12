@@ -913,6 +913,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
     [self trackNotificationOpened:notificationInformation];
 
+    id atOpenActions = [wonderpushData objectForKey:@"actions"];
+    if (atOpenActions && [atOpenActions isKindOfClass:[NSArray class]]) {
+        for (id action in ((NSArray*)atOpenActions)) {
+            if (action && [action isKindOfClass:[NSDictionary class]]) {
+                [self executeAction:action onNotification:wonderpushData];
+            }
+        }
+    }
+
     NSString *targetUrl = [wonderpushData objectForKey:WP_TARGET_URL_KEY];
     if (!targetUrl)
         targetUrl = WP_TARGET_URL_DEFAULT;
