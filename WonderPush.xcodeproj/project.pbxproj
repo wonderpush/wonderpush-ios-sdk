@@ -24,17 +24,6 @@
 		3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
 		3DCC286C1B6F773C00D2778E /* WPAlertViewDelegateBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */; };
 		3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
-		A1E3E0CF19E42B3E00A4EE09 /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B8508F19D4531500D1B6FB /* CustomIOS7AlertView.m */; };
-		A1E3E0D019E42B3E00A4EE09 /* WPAFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33CE19C8871F00E4E158 /* WPAFHTTPClient.m */; };
-		A1E3E0D119E42B3E00A4EE09 /* WPAFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D019C8871F00E4E158 /* WPAFHTTPRequestOperation.m */; };
-		A1E3E0D219E42B3E00A4EE09 /* WPAFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D219C8871F00E4E158 /* WPAFImageRequestOperation.m */; };
-		A1E3E0D319E42B3E00A4EE09 /* WPAFJSONRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D419C8871F00E4E158 /* WPAFJSONRequestOperation.m */; };
-		A1E3E0D419E42B3E00A4EE09 /* WPAFNetworkActivityIndicatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D619C8871F00E4E158 /* WPAFNetworkActivityIndicatorManager.m */; };
-		A1E3E0D519E42B3E00A4EE09 /* WPAFPropertyListRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33D919C8871F00E4E158 /* WPAFPropertyListRequestOperation.m */; };
-		A1E3E0D619E42B3E00A4EE09 /* WPAFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33DB19C8871F00E4E158 /* WPAFURLConnectionOperation.m */; };
-		A1E3E0D719E42B3E00A4EE09 /* WPAFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33DD19C8871F00E4E158 /* WPAFXMLRequestOperation.m */; };
-		A1E3E0D819E42B3E00A4EE09 /* UIImageView+WPAFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33DF19C8871F00E4E158 /* UIImageView+WPAFNetworking.m */; };
-		A1E3E0D919E42B3E00A4EE09 /* WPOpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33E219C8871F00E4E158 /* WPOpenUDID.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		A1E3E0DA19E42B3E00A4EE09 /* WPDialogButtonHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */; };
 		A1E3E0DB19E42B3F00A4EE09 /* WPRequestVault.m in Sources */ = {isa = PBXBuildFile; fileRef = A189375319C998D100F91DDD /* WPRequestVault.m */; };
 		A1E3E0DC19E42B3F00A4EE09 /* WPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A189375019C997CA00F91DDD /* WPClient.m */; };
@@ -57,28 +46,6 @@
 		A16E33A619C886A700E4E158 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A16E33AA19C886A700E4E158 /* WonderPush-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WonderPush-Prefix.pch"; sourceTree = "<group>"; };
 		A16E33AD19C886A700E4E158 /* WonderPush.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPush.m; sourceTree = "<group>"; };
-		A16E33CD19C8871F00E4E158 /* WPAFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAFHTTPClient.h; sourceTree = "<group>"; };
-		A16E33CE19C8871F00E4E158 /* WPAFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAFHTTPClient.m; sourceTree = "<group>"; };
-		A16E33CF19C8871F00E4E158 /* WPAFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAFHTTPRequestOperation.h; sourceTree = "<group>"; };
-		A16E33D019C8871F00E4E158 /* WPAFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAFHTTPRequestOperation.m; sourceTree = "<group>"; };
-		A16E33D119C8871F00E4E158 /* WPAFImageRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAFImageRequestOperation.h; sourceTree = "<group>"; };
-		A16E33D219C8871F00E4E158 /* WPAFImageRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAFImageRequestOperation.m; sourceTree = "<group>"; };
-		A16E33D319C8871F00E4E158 /* WPAFJSONRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAFJSONRequestOperation.h; sourceTree = "<group>"; };
-		A16E33D419C8871F00E4E158 /* WPAFJSONRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAFJSONRequestOperation.m; sourceTree = "<group>"; };
-		A16E33D519C8871F00E4E158 /* WPAFNetworkActivityIndicatorManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAFNetworkActivityIndicatorManager.h; sourceTree = "<group>"; };
-		A16E33D619C8871F00E4E158 /* WPAFNetworkActivityIndicatorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAFNetworkActivityIndicatorManager.m; sourceTree = "<group>"; };
-		A16E33D719C8871F00E4E158 /* WPAFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAFNetworking.h; sourceTree = "<group>"; };
-		A16E33D819C8871F00E4E158 /* WPAFPropertyListRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAFPropertyListRequestOperation.h; sourceTree = "<group>"; };
-		A16E33D919C8871F00E4E158 /* WPAFPropertyListRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAFPropertyListRequestOperation.m; sourceTree = "<group>"; };
-		A16E33DA19C8871F00E4E158 /* WPAFURLConnectionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAFURLConnectionOperation.h; sourceTree = "<group>"; };
-		A16E33DB19C8871F00E4E158 /* WPAFURLConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAFURLConnectionOperation.m; sourceTree = "<group>"; };
-		A16E33DC19C8871F00E4E158 /* WPAFXMLRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAFXMLRequestOperation.h; sourceTree = "<group>"; };
-		A16E33DD19C8871F00E4E158 /* WPAFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAFXMLRequestOperation.m; sourceTree = "<group>"; };
-		A16E33DE19C8871F00E4E158 /* UIImageView+WPAFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+WPAFNetworking.h"; sourceTree = "<group>"; };
-		A16E33DF19C8871F00E4E158 /* UIImageView+WPAFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+WPAFNetworking.m"; sourceTree = "<group>"; };
-		A16E33E119C8871F00E4E158 /* WPOpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPOpenUDID.h; sourceTree = "<group>"; };
-		A16E33E219C8871F00E4E158 /* WPOpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPOpenUDID.m; sourceTree = "<group>"; };
-		A16E33E319C8871F00E4E158 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		A16E33EE19C88EDB00E4E158 /* WPConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPConfiguration.h; sourceTree = "<group>"; };
 		A16E33EF19C88EDB00E4E158 /* WPConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPConfiguration.m; sourceTree = "<group>"; };
 		A16E33F119C97BE700E4E158 /* WPRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPRequest.h; sourceTree = "<group>"; };
@@ -103,8 +70,6 @@
 		A18937WPAF19CAEC0700F91DDD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		A1B8508A19D41F6700D1B6FB /* WPDialogButtonHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPDialogButtonHandler.h; sourceTree = "<group>"; };
 		A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPDialogButtonHandler.m; sourceTree = "<group>"; };
-		A1B8508E19D4531500D1B6FB /* CustomIOS7AlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomIOS7AlertView.h; path = CustomiOSAlertView/CustomIOS7AlertView.h; sourceTree = "<group>"; };
-		A1B8508F19D4531500D1B6FB /* CustomIOS7AlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomIOS7AlertView.m; path = CustomiOSAlertView/CustomIOS7AlertView.m; sourceTree = "<group>"; };
 		A1E3E08219E423A200A4EE09 /* WonderPush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WonderPush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1E3E08519E423A200A4EE09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1E3E0A319E425DB00A4EE09 /* WonderPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPush.h; sourceTree = "<group>"; };
@@ -124,9 +89,6 @@
 		A16E339A19C886A700E4E158 = {
 			isa = PBXGroup;
 			children = (
-				A1B8508D19D4528D00D1B6FB /* CustomiOSAlertView */,
-				A16E33CC19C8871F00E4E158 /* WPAFNetworking */,
-				A16E33E019C8871F00E4E158 /* WPOpenUDID */,
 				A16E33A819C886A700E4E158 /* WonderPush */,
 				A16E33A519C886A700E4E158 /* Frameworks */,
 				A16E33A419C886A700E4E158 /* Products */,
@@ -197,51 +159,6 @@
 				A16E33AA19C886A700E4E158 /* WonderPush-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		A16E33CC19C8871F00E4E158 /* WPAFNetworking */ = {
-			isa = PBXGroup;
-			children = (
-				A16E33CD19C8871F00E4E158 /* WPAFHTTPClient.h */,
-				A16E33CE19C8871F00E4E158 /* WPAFHTTPClient.m */,
-				A16E33CF19C8871F00E4E158 /* WPAFHTTPRequestOperation.h */,
-				A16E33D019C8871F00E4E158 /* WPAFHTTPRequestOperation.m */,
-				A16E33D119C8871F00E4E158 /* WPAFImageRequestOperation.h */,
-				A16E33D219C8871F00E4E158 /* WPAFImageRequestOperation.m */,
-				A16E33D319C8871F00E4E158 /* WPAFJSONRequestOperation.h */,
-				A16E33D419C8871F00E4E158 /* WPAFJSONRequestOperation.m */,
-				A16E33D519C8871F00E4E158 /* WPAFNetworkActivityIndicatorManager.h */,
-				A16E33D619C8871F00E4E158 /* WPAFNetworkActivityIndicatorManager.m */,
-				A16E33D719C8871F00E4E158 /* WPAFNetworking.h */,
-				A16E33D819C8871F00E4E158 /* WPAFPropertyListRequestOperation.h */,
-				A16E33D919C8871F00E4E158 /* WPAFPropertyListRequestOperation.m */,
-				A16E33DA19C8871F00E4E158 /* WPAFURLConnectionOperation.h */,
-				A16E33DB19C8871F00E4E158 /* WPAFURLConnectionOperation.m */,
-				A16E33DC19C8871F00E4E158 /* WPAFXMLRequestOperation.h */,
-				A16E33DD19C8871F00E4E158 /* WPAFXMLRequestOperation.m */,
-				A16E33DE19C8871F00E4E158 /* UIImageView+WPAFNetworking.h */,
-				A16E33DF19C8871F00E4E158 /* UIImageView+WPAFNetworking.m */,
-			);
-			path = WPAFNetworking;
-			sourceTree = "<group>";
-		};
-		A16E33E019C8871F00E4E158 /* WPOpenUDID */ = {
-			isa = PBXGroup;
-			children = (
-				A16E33E119C8871F00E4E158 /* WPOpenUDID.h */,
-				A16E33E219C8871F00E4E158 /* WPOpenUDID.m */,
-				A16E33E319C8871F00E4E158 /* README.md */,
-			);
-			path = WPOpenUDID;
-			sourceTree = "<group>";
-		};
-		A1B8508D19D4528D00D1B6FB /* CustomiOSAlertView */ = {
-			isa = PBXGroup;
-			children = (
-				A1B8508E19D4531500D1B6FB /* CustomIOS7AlertView.h */,
-				A1B8508F19D4531500D1B6FB /* CustomIOS7AlertView.m */,
-			);
-			name = CustomiOSAlertView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -345,18 +262,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */,
-				A1E3E0CF19E42B3E00A4EE09 /* CustomIOS7AlertView.m in Sources */,
-				A1E3E0D019E42B3E00A4EE09 /* WPAFHTTPClient.m in Sources */,
-				A1E3E0D119E42B3E00A4EE09 /* WPAFHTTPRequestOperation.m in Sources */,
-				A1E3E0D219E42B3E00A4EE09 /* WPAFImageRequestOperation.m in Sources */,
-				A1E3E0D319E42B3E00A4EE09 /* WPAFJSONRequestOperation.m in Sources */,
 				3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */,
-				A1E3E0D419E42B3E00A4EE09 /* WPAFNetworkActivityIndicatorManager.m in Sources */,
-				A1E3E0D519E42B3E00A4EE09 /* WPAFPropertyListRequestOperation.m in Sources */,
-				A1E3E0D619E42B3E00A4EE09 /* WPAFURLConnectionOperation.m in Sources */,
-				A1E3E0D719E42B3E00A4EE09 /* WPAFXMLRequestOperation.m in Sources */,
-				A1E3E0D819E42B3E00A4EE09 /* UIImageView+WPAFNetworking.m in Sources */,
-				A1E3E0D919E42B3E00A4EE09 /* WPOpenUDID.m in Sources */,
 				A1E3E0DA19E42B3E00A4EE09 /* WPDialogButtonHandler.m in Sources */,
 				A1E3E0DB19E42B3F00A4EE09 /* WPRequestVault.m in Sources */,
 				A1E3E0DC19E42B3F00A4EE09 /* WPClient.m in Sources */,
