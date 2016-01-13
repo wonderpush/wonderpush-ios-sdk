@@ -1,0 +1,44 @@
+{
+  "name": "WonderPush",
+  "documentation_url": "http://wonderpush.github.io/wonderpush-ios-sdk/",
+  "version": "1.2.3",
+  "license": {
+    "type": "Apache-2.0",
+    "file": "LICENSE.txt"
+  },
+  "platforms": {
+    "ios": "7.0"
+  },
+  "summary": "Push notification and analytics",
+  "homepage": "https://www.wonderpush.com/",
+  "authors": {
+    "WonderPush": "contact@wonderpush.com"
+  },
+  "source": {
+    "git": "https://github.com/wonderpush/wonderpush-ios-sdk.git",
+    "tag": "v1.1.2.3"
+  },
+  "requires_arc": true,
+  "module_name": "WonderPush",
+  "frameworks": [
+    "SystemConfiguration",
+    "MobileCoreServices",
+    "CoreGraphics",
+    "UIKit",
+    "CoreTelephony",
+    "CoreLocation",
+    "CoreBluetooth",
+    "AVFoundation",
+    "CoreMotion"
+  ],
+  "dependencies": {
+    "OpenUDID": "~> 1.0.0"
+  },
+  "public_header_files": "WonderPush/WonderPush.h",
+  "prefix_header_file": "WonderPush/WonderPush-Prefix.pch",
+  "source_files": [
+    "WonderPush/*.{m,h}",
+    "CustomiOSAlertView/*.{m,h}",
+    "WPAFNetworking/*.{m,h}"
+  ]
+}
