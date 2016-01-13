@@ -59,7 +59,7 @@
     [WonderPush resetButtonHandler];
 }
 
-- (void)customIOS7dialogButtonTouchUpInside: (CustomIOS7AlertView *)alertView clickedButtonAtIndex: (NSInteger)buttonIndex
+- (void)customIOS7dialogButtonTouchUpInside: (CustomIOSAlertView *)alertView clickedButtonAtIndex: (NSInteger)buttonIndex
 {
     [self alertView:nil clickedButtonAtIndex:buttonIndex];
     [alertView close];

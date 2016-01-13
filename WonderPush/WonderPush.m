@@ -27,7 +27,7 @@
 #import "WPDialogButtonHandler.h"
 #import "WPAlertViewDelegateBlock.h"
 #import "WPClient.h"
-#import "CustomIOS7AlertView.h"
+#import "CustomIOSAlertView.h"
 #import "WPJsonUtil.h"
 
 static BOOL _isReady = NO;
@@ -492,7 +492,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
         // we currently support only one dialog at a time
         return;
     }
-    CustomIOS7AlertView *alert = [[CustomIOS7AlertView alloc] init];
+    CustomIOSAlertView *alert = [[CustomIOSAlertView alloc] init];
     UIWebView *view = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 260, 300)];
     [view sizeToFit];
 //    view.scalesPageToFit = YES;
@@ -578,7 +578,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     UIImage *image = [UIImage imageWithData: [NSData dataWithContentsOfURL:mapUrl]];
 
 
-    CustomIOS7AlertView *alert = [[CustomIOS7AlertView alloc] init];
+    CustomIOSAlertView *alert = [[CustomIOSAlertView alloc] init];
     UIImageView * view = [[UIImageView alloc] initWithImage:image];
     // setting rounded corners
     view.layer.masksToBounds = YES;
