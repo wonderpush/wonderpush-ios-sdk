@@ -18,7 +18,7 @@
 
 #import <objc/runtime.h>
 
-const char * const DELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.AlertViewDelegate";
+const char * const WPALERTVIEWDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.AlertViewDelegate";
 
 @interface WPAlertViewDelegateBlock ()
 
@@ -33,7 +33,7 @@ const char * const DELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.AlertViewDeleg
 + (WPAlertViewDelegateBlock *) forAlert:(UIAlertView *)alertView withBlock:(void(^)(UIAlertView *alertView, NSInteger buttonIndex)) _handler
 {
     WPAlertViewDelegateBlock *delegate = [WPAlertViewDelegateBlock new];
-    objc_setAssociatedObject(alertView, DELEGATE_ASSOCIATION_KEY, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(alertView, WPALERTVIEWDELEGATE_ASSOCIATION_KEY, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [alertView setDelegate:delegate];
 
     delegate.handler = _handler;
@@ -47,7 +47,7 @@ const char * const DELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.AlertViewDeleg
     }
 
     [alertView setDelegate:nil];
-    objc_setAssociatedObject(alertView, DELEGATE_ASSOCIATION_KEY, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(alertView, WPALERTVIEWDELEGATE_ASSOCIATION_KEY, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

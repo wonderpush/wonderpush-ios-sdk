@@ -23,6 +23,7 @@
 #import <sys/utsname.h>
 #import "WPUtil.h"
 #import "WonderPush_private.h"
+#import "WPAppDelegate.h"
 #import "WPConfiguration.h"
 #import "WPDialogButtonHandler.h"
 #import "WPAlertViewDelegateBlock.h"
@@ -268,6 +269,11 @@ static NSDictionary* gpsCapabilityByCode = nil;
                                                           userInfo:nil];
         [WonderPush updateInstallationCoreProperties];
     }
+}
+
++ (void) setupDelegateForApplication:(UIApplication *)application
+{
+    [WPAppDelegate setupDelegateForApplication:application];
 }
 
 +(void) updateInstallation:(NSDictionary *) properties shouldOverwrite:(BOOL) overwrite {

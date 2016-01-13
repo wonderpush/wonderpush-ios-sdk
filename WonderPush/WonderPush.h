@@ -95,6 +95,16 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) setUserId:(NSString *)userId;
 
+/**
+ Setup UIApplicationDelegate override, so that calls from your UIApplicationDelegate are automatically transmitted to the WonderPush SDK.
+
+ This eases your setup, you can call this from your
+ `- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions` method.
+
+ @param application The application parameter from your AppDelegate.
+ */
++ (void) setupDelegateForApplication:(UIApplication *)application;
+
 + (void) initialize;
 
 /**
