@@ -41,7 +41,7 @@
 
 - (void) reachabilityNotification:(NSNotification *)notification;
 
-- (void) reachabilityChanged:(WPAFNetworkReachabilityStatus)status;
+- (void) reachabilityChanged:(AFNetworkReachabilityStatus)status;
 
 - (void) addToQueue:(WPRequest *)request;
 
@@ -61,7 +61,7 @@
         self.operationQueue = [[NSOperationQueue alloc] init];
 
         // Register for reachability notifications
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityNotification:) name:WPAFNetworkingReachabilityDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityNotification:) name:AFNetworkingReachabilityDidChangeNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedNotification:) name:WP_NOTIFICATION_INITIALIZED object:nil];
         // Set initial reachability
         [self reachabilityChanged:[WonderPush isReachable]];
@@ -172,15 +172,15 @@
 
 - (void) reachabilityNotification:(NSNotification *)notification
 {
-    NSNumber *status = [notification.userInfo valueForKey:WPAFNetworkingReachabilityNotificationStatusItem];
+    NSNumber *status = [notification.userInfo valueForKey:AFNetworkingReachabilityNotificationStatusItem];
     [self reachabilityChanged:status.intValue];
 }
 
-- (void) reachabilityChanged:(WPAFNetworkReachabilityStatus)status
+- (void) reachabilityChanged:(AFNetworkReachabilityStatus)status
 {
     switch (status) {
-        case WPAFNetworkReachabilityStatusNotReachable:
-        case WPAFNetworkReachabilityStatusUnknown:
+        case AFNetworkReachabilityStatusNotReachable:
+        case AFNetworkReachabilityStatusUnknown:
             WPLog(@"Reachability changed to %i, stopping queue.", status);
             [self.operationQueue setSuspended:YES];
             break;

@@ -16,7 +16,7 @@
   },
   "source": {
     "git": "https://github.com/wonderpush/wonderpush-ios-sdk.git",
-    "tag": "v1.1.2.3"
+    "tag": "dev-cocoapods"
   },
   "requires_arc": true,
   "module_name": "WonderPush",
@@ -32,13 +32,13 @@
     "CoreMotion"
   ],
   "dependencies": {
-    "OpenUDID": "~> 1.0.0"
+    "OpenUDID": "~> 1.0.0",
+    "AFNetworking": "~>1.3.0"
   },
   "public_header_files": "WonderPush/WonderPush.h",
   "prefix_header_file": "WonderPush/WonderPush-Prefix.pch",
   "source_files": [
     "WonderPush/*.{m,h}",
-    "CustomiOSAlertView/*.{m,h}",
-    "WPAFNetworking/*.{m,h}"
+    "CustomiOSAlertView/*.{m,h}"
   ]
 }

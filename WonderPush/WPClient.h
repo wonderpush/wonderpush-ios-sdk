@@ -15,11 +15,11 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "WPAFHTTPClient.h"
+#import "AFHTTPClient.h"
 #import "WPRequest.h"
 
 /**
- WPClient is an implementation of WPAFHTTPClient that handles authentication to the API.
+ WPClient is an implementation of AFHTTPClient that handles authentication to the API.
  */
 @interface WPClient : NSObject
 
@@ -38,10 +38,10 @@
 ///@name Access Token Management
 ///-----------------------------
 
-- (void) fetchAnonymousAccessTokenAndCall:(void (^)(WPAFHTTPRequestOperation *operation, id responseObject))handler failure:(void (^)(WPAFHTTPRequestOperation *operation, NSError *error))failure nbRetry:(NSInteger) nbRetry;
+- (void) fetchAnonymousAccessTokenAndCall:(void (^)(AFHTTPRequestOperation *operation, id responseObject))handler failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure nbRetry:(NSInteger) nbRetry;
 
 
-- (BOOL)fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(WPAFHTTPRequestOperation *operation, id responseObject))handler failure:(void (^)(WPAFHTTPRequestOperation *operation, NSError *error))failure;
+- (BOOL)fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(AFHTTPRequestOperation *operation, id responseObject))handler failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
 
 /**
  Fetch an access token if the user isn't authenticated and none is found in the `NSUserDefaults`.
@@ -87,9 +87,9 @@
 ///------------------
 
 /**
- The WPAFHTTPClient used to perform HTTP requests.
+ The AFHTTPClient used to perform HTTP requests.
  */
-@property (strong, nonatomic) WPAFHTTPClient *httpClient;
+@property (strong, nonatomic) AFHTTPClient *httpClient;
 @property (assign, atomic) BOOL isFetchingAccessToken;
 
 @end

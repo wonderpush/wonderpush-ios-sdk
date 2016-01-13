@@ -98,9 +98,9 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
 
 + (NSString *)percentEncodedString:(NSString *)string
 {
-    static NSString * const kWPAFCharactersToBeEscaped = @":/?#[]@!$&'()*+,;=";
-    static NSString * const kWPAFCharactersToLeaveUnescaped = @"-._~";
-    return (__bridge_transfer  NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, (__bridge CFStringRef)kWPAFCharactersToLeaveUnescaped, (__bridge CFStringRef)kWPAFCharactersToBeEscaped, CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+    static NSString * const kAFCharactersToBeEscaped = @":/?#[]@!$&'()*+,;=";
+    static NSString * const kAFCharactersToLeaveUnescaped = @"-._~";
+    return (__bridge_transfer  NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, (__bridge CFStringRef)kAFCharactersToLeaveUnescaped, (__bridge CFStringRef)kAFCharactersToBeEscaped, CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
 }
 
 

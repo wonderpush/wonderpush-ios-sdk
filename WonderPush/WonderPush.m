@@ -249,7 +249,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
         configuration.sid = nil;
     }
     // Fetch anonymous access token right away
-    BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(WPAFHTTPRequestOperation *operation, id responseObject) {
+    BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
             [self putInstallationCustomProperties_inner];
         }
@@ -257,7 +257,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
                                                           userInfo:nil];
-    } failure:^(WPAFHTTPRequestOperation *operation, NSError *error) {}];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {}];
     if (NO == isFetching) {
         if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
             [self putInstallationCustomProperties_inner];
