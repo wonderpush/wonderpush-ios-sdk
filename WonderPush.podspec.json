@@ -9,7 +9,8 @@
   "platforms": {
     "ios": "7.0"
   },
-  "summary": "Push notification and analytics",
+  "summary": "Push notification library by WonderPush",
+  "description": "Push notifications iOS library by WonderPush - cross platform push notifications service. https://www.wonderpush.com",
   "homepage": "https://www.wonderpush.com/",
   "authors": {
     "WonderPush": "contact@wonderpush.com"
