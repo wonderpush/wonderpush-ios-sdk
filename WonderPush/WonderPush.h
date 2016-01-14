@@ -168,32 +168,40 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) setNotificationEnabled:(BOOL)enabled;
 
+
+///------------------------------------
+/// @name Manual AppDelegate forwarding
+///------------------------------------
+
 /**
  Forwards an application delegate to the SDK.
 
  Method to call in your `application:didFinishLaunchingWithOptions:` method of your `AppDelegate`.
 
- @param launchOptions The launch options.
+ @param application Same parameter as in the forwarded delegate method.
+ @param launchOptions Same parameter as in the forwarded delegate method.
  */
-+ (BOOL) handleApplicationLaunchWithOption:(NSDictionary*)launchOptions;
++ (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
 
 /**
  Forwards an application delegate to the SDK.
 
  Method to call in your `application:didReceiveRemoteNotification:` method of your `AppDelegate`.
 
- @param userInfo The userInfo provided by the system.
+ @param application Same parameter as in the forwarded delegate method.
+ @param userInfo Same parameter as in the forwarded delegate method.
  */
-+ (BOOL) handleDidReceiveRemoteNotification:(NSDictionary *)userInfo;
++ (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo;
 
 /**
  Forwards an application delegate to the SDK.
 
  Method to call in your `application:didRegisterForRemoteNotificationsWithDeviceToken:` method of your `AppDelegate`.
 
- @param deviceToken The device token provided by the system.
+ @param application Same parameter as in the forwarded delegate method.
+ @param deviceToken Same parameter as in the forwarded delegate method.
  */
-+ (void) didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken;
++ (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 
 /**
  Forwards an application delegate to the SDK.
@@ -202,9 +210,10 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
  Any previous device token will be forgotten.
 
- @param error The error provided by the system.
+ @param application Same parameter as in the forwarded delegate method.
+ @param error Same parameter as in the forwarded delegate method.
  */
-+ (void) didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
++ (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 
 /**
  Forwards an application delegate to the SDK.
@@ -213,9 +222,10 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  `application:didReceiveLocalNotification:` method of your `AppDelegate`.
  Handles a notification and presents the associated dialog.
 
- @param notificationUserInfo The `UILocalNotification` `userInfo` member.
+ @param application Same parameter as in the forwarded delegate method.
+ @param notification Same parameter as in the forwarded delegate method.
  */
-+ (BOOL) handleNotification:(NSDictionary*)notificationUserInfo;
++ (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
 
 /**
  Forwards an application delegate to the SDK.
@@ -223,21 +233,16 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  If your application uses backgroundModes/remote-notification, call this method in your
  `application:didReceiveRemoteNotification:fetchCompletionHandler:` method
 
- @param userInfo The userInfo provided by the system.
+ @param userInfo Same parameter as in the forwarded delegate method.
  */
-+ (void) handleNotificationReceivedInBackground:(NSDictionary *)userInfo;
-
-
-///-----------------------------------
-/// @name Application state monitoring
-///-----------------------------------
++ (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
 
 /**
  Forwards an application delegate to the SDK.
 
  Method to call in your `applicationDidBecomeActive:` method of your `AppDelegate`.
 
- @param application The application provided by the system.
+ @param application Same parameter as in the forwarded delegate method.
  */
 + (void) applicationDidBecomeActive:(UIApplication *)application;
 
@@ -246,7 +251,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
  Method to call in your `applicationDidEnterBackground:` method of your `AppDelegate`.
 
- @param application The application provided by the system.
+ @param application Same parameter as in the forwarded delegate method.
  */
 + (void) applicationDidEnterBackground:(UIApplication *)application;
 

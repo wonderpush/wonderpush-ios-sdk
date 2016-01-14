@@ -31,6 +31,8 @@
 #import "CustomIOSAlertView.h"
 #import "WPJsonUtil.h"
 
+static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
+
 static BOOL _isReady = NO;
 
 static BOOL _isReachable = NO;
@@ -287,7 +289,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 static NSObject *_putInstallationCustomProperties_lock; //= [NSObject new];
 static int _putInstallationCustomProperties_blockId = 0;
-+ (void) putInstallationCustomProperties:(NSDictionary *) customProperties;
++ (void) putInstallationCustomProperties:(NSDictionary *) customProperties
 {
     @synchronized (_putInstallationCustomProperties_lock) {
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
@@ -322,7 +324,7 @@ static int _putInstallationCustomProperties_blockId = 0;
     }
 }
 
-+ (void) putInstallationCustomProperties_inner;
++ (void) putInstallationCustomProperties_inner
 {
     @synchronized (_putInstallationCustomProperties_lock) {
         NSLog(@"putInstallationCustomProperties_inner");
@@ -688,7 +690,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
 }
 
-+ (BOOL) handleApplicationLaunchWithOption:(NSDictionary*) launchOptions
++ (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     if ([self getNotificationEnabled]) {
         [self registerToPushNotifications];
@@ -776,15 +778,14 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
 }
 
-
-+ (BOOL) handleDidReceiveRemoteNotification:(NSDictionary *)userInfo
++ (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-    return [self handleNotification:userInfo];
+    [WonderPush handleNotification:notification.userInfo withOriginalApplicationState:UIApplicationStateInactive];
 }
 
-+ (BOOL) handleDidReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
++ (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    return [self handleNotification:userInfo];
+    [self handleNotification:userInfo];
 }
 
 + (BOOL) handleNotification:(NSDictionary*) notificationDictionary
@@ -796,20 +797,30 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if (wonderpushData == nil)
         return NO;
 
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        // FIXME: Track notification received. Beware remote-notifications background mode!
-        // The didReceiveRemoteNotification:fetchCompletionHandler: will be called again in inactive state,
-        // when the app becomes foreground.
-        return NO;
+    UIApplicationState appState = [UIApplication sharedApplication].applicationState;
+
+    // Reception tracking:
+    // - only if background mode remote notification is enabled,
+    //   otherwise the timing information is lost, and we already have notification opened tracking
+    if ([WPUtil hasBackgroundModeRemoteNotification]) {
+        // - when opening the application in response to a notification click,
+        //   the application:didReceiveRemoteNotification:fetchCompletionHandler:
+        //   method is called again, but in the inactive application state this time,
+        //   we should not track reception again in such case.
+        // - if the user is switching between apps, we are called just like if the app was active,
+        //   but the application state is actually inactive too, test the previous state to distinguish.
+        if (appState != UIApplicationStateInactive || _previousApplicationState == UIApplicationStateActive) {
+            [WonderPush trackNotificationReceived:notificationDictionary];
+        }
     }
 
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
+    if (appState == UIApplicationStateInactive) {
         WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
         [configuration addToQueuedNotifications:notificationDictionary];
         return YES;
     }
 
-    return [self handleNotification:notificationDictionary withOriginalApplicationState:[UIApplication sharedApplication].applicationState];
+    return [self handleNotification:notificationDictionary withOriginalApplicationState:appState];
 }
 
 + (BOOL) handleNotification:(NSDictionary*) notificationDictionary withOriginalApplicationState:(UIApplicationState)applicationState
@@ -961,13 +972,13 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
-+ (void) didRegisterForRemoteNotificationsWithDeviceToken:(NSData*) deviceToken
++ (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     NSString *newToken = [deviceToken description];
     [WonderPush setDeviceToken:newToken];
 }
 
-+ (void) didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
++ (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
     WPLog(@"Failed to register to push notifications: %@", error);
     [WonderPush setDeviceToken:nil];
@@ -975,6 +986,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) applicationDidBecomeActive:(UIApplication *)application;
 {
+    BOOL comesBackFromTemporaryInactive = _previousApplicationState == UIApplicationStateActive;
+    _previousApplicationState = UIApplicationStateActive;
     _lastAppOpen = [[NSProcessInfo processInfo] systemUptime];
     NSMutableDictionary *appOpenData = [NSMutableDictionary new];
     if (_notificationFromAppLaunchCampaignId)     appOpenData[@"campaignId"]     = _notificationFromAppLaunchCampaignId;
@@ -983,17 +996,19 @@ static WPDialogButtonHandler *buttonHandler = nil;
     _notificationFromAppLaunchNotificationId = nil; // reset those info, not to report them again unduly
     [self trackInternalEvent:@"@APP_OPEN" eventData:appOpenData customData:nil];
     // Show any queued notifications
+    UIApplicationState originalApplicationState = comesBackFromTemporaryInactive ? UIApplicationStateActive : UIApplicationStateInactive;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
     for (NSDictionary *queuedNotification in queuedNotifications)
     {
-        [self handleNotification:queuedNotification withOriginalApplicationState:UIApplicationStateInactive];
+        [self handleNotification:queuedNotification withOriginalApplicationState:originalApplicationState];
     }
     [configuration clearQueuedNotifications];
 }
 
 + (void) applicationDidEnterBackground:(UIApplication *)application
 {
+    _previousApplicationState = UIApplicationStateBackground;
     [self trackInternalEvent:@"@APP_CLOSE"
                    eventData:@{@"openedTime":(_lastAppOpen > 0
                                               ? [NSNumber numberWithLong:floor(1000 * ([[NSProcessInfo processInfo] systemUptime] - _lastAppOpen))]
@@ -1002,9 +1017,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
     // Send queued notifications as LocalNotifications
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
-    for (NSDictionary *queuedNotification in queuedNotifications)
+    for (NSDictionary *userInfo in queuedNotifications)
     {
-        [self handleNotificationReceivedInBackground:queuedNotification];
+        UILocalNotification *notification = [[UILocalNotification alloc] init];
+        if (![WPUtil currentApplicationIsInForeground]) {
+            NSDictionary *aps = [userInfo objectForKey:@"aps"];
+            notification.alertBody =  [aps objectForKey:@"alert"];
+            notification.soundName = [aps objectForKey:@"sound"];
+            notification.userInfo = userInfo;
+            [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+        }
     }
     [configuration clearQueuedNotifications];
 }
@@ -1369,23 +1391,12 @@ static WPDialogButtonHandler *buttonHandler = nil;
     [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:notificationInformation customData:nil];
 }
 
-+ (void) handleNotificationReceivedInBackground:(NSDictionary *)userInfo
++ (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    UILocalNotification *notification = [[UILocalNotification alloc] init];
-    if (![WPUtil currentApplicationIsInForeground]) {
-        NSDictionary *aps = [userInfo objectForKey:@"aps"];
-        notification.alertBody =  [aps objectForKey:@"alert"];
-        notification.soundName = [aps objectForKey:@"sound"];
-        notification.userInfo = userInfo;
-        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+    [WonderPush handleNotification:userInfo];
+    if (completionHandler) {
+        completionHandler(UIBackgroundFetchResultNewData);
     }
-    NSDictionary *wpData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
-    if (!wpData)
-    {
-        // This notification is not targetted for WonderPush SDK consumption.
-        return;
-    }
-    [WonderPush trackNotificationReceived:userInfo];
 }
 
 + (void) trackNotificationReceived:(NSDictionary *)userInfo

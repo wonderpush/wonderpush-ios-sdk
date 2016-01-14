@@ -56,7 +56,8 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
 #pragma mark - Overriding useful methods
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [WonderPush handleApplicationLaunchWithOption:launchOptions];
+    WPLog(@"%@", NSStringFromSelector(_cmd));
+    [WonderPush application:application didFinishLaunchingWithOptions:launchOptions];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         return [self.nextDelegate application:application didFinishLaunchingWithOptions:launchOptions];
     } else {
@@ -66,15 +67,17 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-    [WonderPush handleNotification:notification.userInfo];
+    WPLog(@"%@", NSStringFromSelector(_cmd));
+    [WonderPush application:application didReceiveLocalNotification:notification];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         [self.nextDelegate application:application didReceiveLocalNotification:notification];
     }
 }
 
--(void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+- (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    [WonderPush didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+    WPLog(@"%@", NSStringFromSelector(_cmd));
+    [WonderPush application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         [self.nextDelegate application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
     }
@@ -82,15 +85,17 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    [WonderPush didFailToRegisterForRemoteNotificationsWithError:error];
+    WPLog(@"%@", NSStringFromSelector(_cmd));
+    [WonderPush application:application didFailToRegisterForRemoteNotificationsWithError:error];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         [self.nextDelegate application:application didFailToRegisterForRemoteNotificationsWithError:error];
     }
 }
 
--(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    [WonderPush handleDidReceiveRemoteNotification:userInfo];
+    WPLog(@"%@", NSStringFromSelector(_cmd));
+    [WonderPush application:application didReceiveRemoteNotification:userInfo];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         [self.nextDelegate application:application didReceiveRemoteNotification:userInfo];
     }
@@ -98,11 +103,16 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
 
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    [WonderPush handleNotificationReceivedInBackground:userInfo];
-    completionHandler(UIBackgroundFetchResultNewData);
+    WPLog(@"%@", NSStringFromSelector(_cmd));
+    if ([self.nextDelegate respondsToSelector:_cmd]) {
+        [self.nextDelegate application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+        completionHandler = nil;
+    }
+    [WonderPush application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
+    WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush applicationDidEnterBackground:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         [self.nextDelegate applicationDidEnterBackground:application];
@@ -110,6 +120,7 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush applicationDidBecomeActive:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         [self.nextDelegate applicationDidBecomeActive:application];
