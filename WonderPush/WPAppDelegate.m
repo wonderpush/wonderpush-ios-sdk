@@ -33,11 +33,6 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
 {
     WPAppDelegate *delegate = [WPAppDelegate new];
 
-    // Make sure to provide the same window
-    if ([application.delegate respondsToSelector:@selector(window)]) {
-        delegate.window = application.delegate.window;
-    }
-
     // Retain the delegate as long as the UIApplication lives
     objc_setAssociatedObject(application, WPAPPDELEGATE_ASSOCIATION_KEY, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     // Note: the association is not breakable, like the created delegate chain
@@ -49,8 +44,12 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
 
 - (id) forwardingTargetForSelector:(SEL)aSelector
 {
-    NSLog(@"forwardingTargetForSelector:%@ -> %@", NSStringFromSelector(aSelector), self.nextDelegate);
     return self.nextDelegate;
+}
+
+- (BOOL)respondsToSelector:(SEL)aSelector
+{
+    return [super respondsToSelector:aSelector] || [self.nextDelegate respondsToSelector:aSelector];
 }
 
 

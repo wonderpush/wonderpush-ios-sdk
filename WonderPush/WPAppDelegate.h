@@ -14,7 +14,6 @@
 
 @interface WPAppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) id<UIApplicationDelegate> nextDelegate;
 
 + (void) setupDelegateForApplication:(UIApplication *)application;
