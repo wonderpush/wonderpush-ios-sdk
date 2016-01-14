@@ -808,7 +808,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
-    [self trackNotificationReceived:notificationInformation];
+    [self trackNotificationReceived:notificationDictionary];
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
         WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
@@ -1392,16 +1392,21 @@ static WPDialogButtonHandler *buttonHandler = nil;
         // This notification is not targetted for WonderPush SDK consumption.
         return;
     }
+    [WonderPush trackNotificationReceived:userInfo];
+}
+
++ (void) trackNotificationReceived:(NSDictionary *)userInfo
+{
+    if (!userInfo) return;
+    NSDictionary *wpData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
+    if (!wpData) return; // This notification is not targetted for WonderPush SDK consumption.
+    id receipt        = [wpData objectForKey:@"receipt"];
+    if (receipt == @NO) return;
     id campagnId      = [wpData objectForKey:@"c"];
     id notificationId = [wpData objectForKey:@"n"];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
-    [WonderPush trackNotificationReceived:notificationInformation];
-}
-
-+ (void) trackNotificationReceived:(NSDictionary *)notificationInformation
-{
     [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
 }
 
