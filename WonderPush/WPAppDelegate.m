@@ -96,6 +96,12 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
     }
 }
 
+- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    [WonderPush handleNotificationReceivedInBackground:userInfo];
+    completionHandler(UIBackgroundFetchResultNewData);
+}
+
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     [WonderPush applicationDidEnterBackground:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {

@@ -803,13 +803,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
         return NO;
     }
 
-    id campagnId      = [wonderpushData objectForKey:@"c"];
-    id notificationId = [wonderpushData objectForKey:@"n"];
-    NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
-    if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
-    if (notificationId) notificationInformation[@"notificationId"] = notificationId;
-    [self trackNotificationReceived:notificationDictionary];
-
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
         WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
         [configuration addToQueuedNotifications:notificationDictionary];
