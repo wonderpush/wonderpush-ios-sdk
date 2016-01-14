@@ -1394,7 +1394,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSDictionary *wpData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
     if (!wpData) return; // This notification is not targetted for WonderPush SDK consumption.
     id receipt        = [wpData objectForKey:@"receipt"];
-    if (receipt == @NO) return;
+    if (receipt && [[receipt class] isEqual:[@YES class]] && [receipt isEqual:@NO]) return; // lengthy but warning-free test for `receipt == @NO`, both properly distinguishes 0 from @NO, whereas `[receipt isEqual:@NO]` alone does not
     id campagnId      = [wpData objectForKey:@"c"];
     id notificationId = [wpData objectForKey:@"n"];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
