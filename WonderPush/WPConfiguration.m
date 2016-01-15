@@ -294,7 +294,6 @@ static WPConfiguration *sharedConfiguration = nil;
     if (!__notificationEnabled) {
         __notificationEnabled = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY];
         if (__notificationEnabled == nil) {
-NSLog(@"Setting default notification enabled to no");
             [self setNotificationEnabled:NO];
             __notificationEnabled = [NSNumber numberWithBool:NO];
         }

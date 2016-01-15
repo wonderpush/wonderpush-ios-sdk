@@ -483,7 +483,6 @@ static int _putInstallationCustomProperties_blockId = 0;
         NSTimeInterval delay = MIN(CACHED_INSTALLATION_CUSTOM_PROPERTIES_MIN_DELAY,
                                    [firstWrite timeIntervalSinceReferenceDate] + CACHED_INSTALLATION_CUSTOM_PROPERTIES_MAX_DELAY
                                    - [now timeIntervalSinceReferenceDate]);
-        NSLog(@"scheduling in %.3lf s", delay);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             @synchronized (_putInstallationCustomProperties_lock) {
                 if (_putInstallationCustomProperties_blockId == currentBlockId) {
@@ -497,14 +496,10 @@ static int _putInstallationCustomProperties_blockId = 0;
 + (void) putInstallationCustomProperties_inner
 {
     @synchronized (_putInstallationCustomProperties_lock) {
-        NSLog(@"putInstallationCustomProperties_inner");
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
         NSDictionary *written = conf.cachedInstallationCustomPropertiesWritten;
         NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated;
         NSDictionary *customProperties = [WPJsonUtil diff:written with:updated];
-        NSLog(@"written: %@", written);
-        NSLog(@"updated: %@", updated);
-        NSLog(@"diff:    %@", customProperties);
         if (customProperties != nil && ![customProperties isEqual:@{}]) {
             [self updateInstallation:@{@"custom": customProperties} shouldOverwrite:NO];
             NSDate *now = [NSDate date];
