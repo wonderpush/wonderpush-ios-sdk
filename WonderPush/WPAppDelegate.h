@@ -18,6 +18,8 @@
 
 + (void) setupDelegateForApplication:(UIApplication *)application;
 
++ (BOOL) isAlreadyRunning;
+
 @end
 
 #endif /* WPAppDelegate_h */

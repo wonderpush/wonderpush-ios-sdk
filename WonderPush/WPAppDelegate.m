@@ -16,6 +16,8 @@
 
 const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDelegate";
 
+static BOOL _WPAppDelegateAlreadyRunning = NO;
+
 
 @interface WPAppDelegate ()
 
@@ -42,6 +44,11 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
     application.delegate = delegate;
 }
 
++ (BOOL) isAlreadyRunning
+{
+    return _WPAppDelegateAlreadyRunning;
+}
+
 - (id) forwardingTargetForSelector:(SEL)aSelector
 {
     return self.nextDelegate;
@@ -58,11 +65,13 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didFinishLaunchingWithOptions:launchOptions];
+    BOOL rtn = YES;
     if ([self.nextDelegate respondsToSelector:_cmd]) {
-        return [self.nextDelegate application:application didFinishLaunchingWithOptions:launchOptions];
-    } else {
-        return YES;
+        _WPAppDelegateAlreadyRunning = YES;
+        rtn = [self.nextDelegate application:application didFinishLaunchingWithOptions:launchOptions];
+        _WPAppDelegateAlreadyRunning = NO;
     }
+    return rtn;
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
@@ -70,7 +79,9 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didReceiveLocalNotification:notification];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
+        _WPAppDelegateAlreadyRunning = YES;
         [self.nextDelegate application:application didReceiveLocalNotification:notification];
+        _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
@@ -79,7 +90,9 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
+        _WPAppDelegateAlreadyRunning = YES;
         [self.nextDelegate application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+        _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
@@ -88,7 +101,9 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didFailToRegisterForRemoteNotificationsWithError:error];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
+        _WPAppDelegateAlreadyRunning = YES;
         [self.nextDelegate application:application didFailToRegisterForRemoteNotificationsWithError:error];
+        _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
@@ -97,7 +112,9 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didReceiveRemoteNotification:userInfo];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
+        _WPAppDelegateAlreadyRunning = YES;
         [self.nextDelegate application:application didReceiveRemoteNotification:userInfo];
+        _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
@@ -105,8 +122,10 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
 {
     WPLog(@"%@", NSStringFromSelector(_cmd));
     if ([self.nextDelegate respondsToSelector:_cmd]) {
+        _WPAppDelegateAlreadyRunning = YES;
         [self.nextDelegate application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
         completionHandler = nil;
+        _WPAppDelegateAlreadyRunning = NO;
     }
     [WonderPush application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
@@ -115,7 +134,9 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush applicationDidEnterBackground:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
+        _WPAppDelegateAlreadyRunning = YES;
         [self.nextDelegate applicationDidEnterBackground:application];
+        _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
@@ -123,7 +144,9 @@ const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDele
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush applicationDidBecomeActive:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
+        _WPAppDelegateAlreadyRunning = YES;
         [self.nextDelegate applicationDidBecomeActive:application];
+        _WPAppDelegateAlreadyRunning = NO;
     }
 }
 

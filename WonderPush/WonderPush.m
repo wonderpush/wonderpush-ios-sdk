@@ -310,6 +310,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    if ([WPAppDelegate isAlreadyRunning]) return NO;
     if ([self getNotificationEnabled]) {
         [self registerToPushNotifications];
     }
@@ -336,6 +337,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
+    if ([WPAppDelegate isAlreadyRunning]) return;
     [WonderPush handleNotification:userInfo];
     if (completionHandler) {
         completionHandler(UIBackgroundFetchResultNewData);
@@ -344,28 +346,33 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
+    if ([WPAppDelegate isAlreadyRunning]) return;
     [WonderPush handleNotification:notification.userInfo withOriginalApplicationState:UIApplicationStateInactive];
 }
 
 + (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
+    if ([WPAppDelegate isAlreadyRunning]) return;
     [self handleNotification:userInfo];
 }
 
 + (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    if ([WPAppDelegate isAlreadyRunning]) return;
     NSString *newToken = [deviceToken description];
     [WonderPush setDeviceToken:newToken];
 }
 
 + (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
+    if ([WPAppDelegate isAlreadyRunning]) return;
     WPLog(@"Failed to register to push notifications: %@", error);
     [WonderPush setDeviceToken:nil];
 }
 
 + (void) applicationDidBecomeActive:(UIApplication *)application;
 {
+    if ([WPAppDelegate isAlreadyRunning]) return;
     BOOL comesBackFromTemporaryInactive = _previousApplicationState == UIApplicationStateActive;
     _previousApplicationState = UIApplicationStateActive;
     _lastAppOpen = [[NSProcessInfo processInfo] systemUptime];
@@ -388,6 +395,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) applicationDidEnterBackground:(UIApplication *)application
 {
+    if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
     [self trackInternalEvent:@"@APP_CLOSE"
                    eventData:@{@"openedTime":(_lastAppOpen > 0
