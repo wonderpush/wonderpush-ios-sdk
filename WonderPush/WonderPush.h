@@ -158,6 +158,18 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) setNotificationEnabled:(BOOL)enabled;
 
+/**
+ Returns whether the given notification is to be consumed by the WonderPush SDK.
+ */
++ (BOOL) isNotificationForWonderPush:(NSDictionary *)userInfo;
+
+/**
+ Returns whether the notification is a `data` notification sent by WonderPush.
+
+ Data notifications are aimed at providing your application with some data your should consume accordingly.
+ */
++ (BOOL) isDataNotification:(NSDictionary *)userInfo;
+
 
 ///-----------------------------------
 /// @name Installation data and events
@@ -181,10 +193,6 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) trackEvent:(NSString*)type withData:(id)data;
 
-@end
-
-
-@interface WonderPush (ApplicationDelegate)
 
 ///---------------------------------------
 /// @name Automatic AppDelegate forwarding
@@ -199,6 +207,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param application The application parameter from your AppDelegate.
  */
 + (void) setupDelegateForApplication:(UIApplication *)application;
+
 
 ///------------------------------------
 /// @name Manual AppDelegate forwarding

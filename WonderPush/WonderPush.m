@@ -300,6 +300,22 @@ static NSDictionary* gpsCapabilityByCode = nil;
     }
 }
 
++ (BOOL) isNotificationForWonderPush:(NSDictionary *)userInfo
+{
+    if (userInfo) {
+        NSDictionary *wonderpushData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
+        return !!wonderpushData && [wonderpushData isKindOfClass:[NSDictionary class]];
+    }
+    return NO;
+}
+
++ (BOOL) isDataNotification:(NSDictionary *)userInfo
+{
+    if (![WonderPush isNotificationForWonderPush:userInfo])
+        return NO;
+    return [[[userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY] objectForKey:WP_PUSH_NOTIFICATION_TYPE_KEY] isEqualToString:WP_PUSH_NOTIFICATION_DATA];
+}
+
 
 #pragma mark - Application delegate
 
@@ -322,12 +338,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
         if (notificationDictionary) {
             _notificationFromAppLaunchCampaignId = nil;
             _notificationFromAppLaunchNotificationId = nil;
-            if (notificationDictionary != nil) {
+            if ([WonderPush isNotificationForWonderPush:notificationDictionary]) {
                 NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
-                if (wonderpushData) {
-                    _notificationFromAppLaunchCampaignId = [wonderpushData objectForKey:@"c"];
-                    _notificationFromAppLaunchNotificationId = [wonderpushData objectForKey:@"n"];
-                }
+                _notificationFromAppLaunchCampaignId = [wonderpushData objectForKey:@"c"];
+                _notificationFromAppLaunchNotificationId = [wonderpushData objectForKey:@"n"];
             }
             return [self handleNotification:notificationDictionary];
         }
@@ -517,9 +531,8 @@ static int _putInstallationCustomProperties_blockId = 0;
 
 + (void) trackNotificationReceived:(NSDictionary *)userInfo
 {
-    if (!userInfo) return;
+    if (![WonderPush isNotificationForWonderPush:userInfo]) return;
     NSDictionary *wpData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
-    if (!wpData) return; // This notification is not targetted for WonderPush SDK consumption.
     id receipt        = [wpData objectForKey:@"receipt"];
     if (receipt && [[receipt class] isEqual:[@YES class]] && [receipt isEqual:@NO]) return; // lengthy but warning-free test for `receipt == @NO`, both properly distinguishes 0 from @NO, whereas `[receipt isEqual:@NO]` alone does not
     id campagnId      = [wpData objectForKey:@"c"];
@@ -854,11 +867,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (BOOL) handleNotification:(NSDictionary*) notificationDictionary
 {
-    if (notificationDictionary == nil)
-        return NO;
-
-    NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
-    if (wonderpushData == nil)
+    if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
 
     UIApplicationState appState = [UIApplication sharedApplication].applicationState;
@@ -889,11 +898,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (BOOL) handleNotification:(NSDictionary*) notificationDictionary withOriginalApplicationState:(UIApplicationState)applicationState
 {
-    if (notificationDictionary == nil)
-        return NO;
-
-    NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
-    if (wonderpushData == nil)
+    if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
 
     NSDictionary *aps = [notificationDictionary objectForKey:@"aps"];
@@ -971,13 +976,10 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (BOOL) handleNotificationOpened:(NSDictionary*) notificationDictionary
 {
-    if (notificationDictionary == nil)
+    if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
 
     NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
-    if (wonderpushData == nil)
-        return NO;
-
     WPLog(@"Opened notification: %@", notificationDictionary);
 
     id campagnId      = [wonderpushData objectForKey:@"c"];

@@ -63,6 +63,11 @@
 #define WP_PUSH_NOTIFICATION_KEY @"_wp"
 
 /**
+ Key of the notification type in the WonderPush content of a push notification
+ */
+#define WP_PUSH_NOTIFICATION_TYPE_KEY @"type"
+
+/**
  Key of the deep link url to open with the notification
  */
 #define WP_TARGET_URL_KEY @"targetUrl"
@@ -89,6 +94,11 @@
  Notification of type html
  */
 #define WP_PUSH_NOTIFICATION_SHOW_HTML @"html"
+
+/**
+ Notification of type data
+ */
+#define WP_PUSH_NOTIFICATION_DATA @"data"
 
 
 /**
