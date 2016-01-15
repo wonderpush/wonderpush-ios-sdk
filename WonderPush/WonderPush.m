@@ -273,10 +273,172 @@ static NSDictionary* gpsCapabilityByCode = nil;
     }
 }
 
++ (BOOL) getNotificationEnabled
+{
+    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+    return sharedConfiguration.notificationEnabled;
+}
+
++ (void) setNotificationEnabled:(BOOL) enabled
+{
+    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+    BOOL previousValue = sharedConfiguration.notificationEnabled;
+    sharedConfiguration.notificationEnabled = enabled;
+
+    // Update the subscriptionStatus if it changed
+    if (enabled != previousValue) {
+        if (enabled) {
+            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}} shouldOverwrite:NO];
+        } else {
+            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}} shouldOverwrite:NO];
+        }
+    }
+
+    // Whether or not there is a change, register to push notifications if enabled
+    if (enabled) {
+        [self registerToPushNotifications];
+    }
+}
+
+
+#pragma mark - Application delegate
+
 + (void) setupDelegateForApplication:(UIApplication *)application
 {
     [WPAppDelegate setupDelegateForApplication:application];
 }
+
++ (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    if ([self getNotificationEnabled]) {
+        [self registerToPushNotifications];
+    }
+
+    if (![WPUtil hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler] // didReceiveRemoteNotification will be called in such a case
+        && launchOptions != nil
+        ) {
+        NSDictionary *notificationDictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        if (notificationDictionary) {
+            _notificationFromAppLaunchCampaignId = nil;
+            _notificationFromAppLaunchNotificationId = nil;
+            if (notificationDictionary != nil) {
+                NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
+                if (wonderpushData) {
+                    _notificationFromAppLaunchCampaignId = [wonderpushData objectForKey:@"c"];
+                    _notificationFromAppLaunchNotificationId = [wonderpushData objectForKey:@"n"];
+                }
+            }
+            return [self handleNotification:notificationDictionary];
+        }
+    }
+    return NO;
+}
+
++ (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    [WonderPush handleNotification:userInfo];
+    if (completionHandler) {
+        completionHandler(UIBackgroundFetchResultNewData);
+    }
+}
+
++ (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    [WonderPush handleNotification:notification.userInfo withOriginalApplicationState:UIApplicationStateInactive];
+}
+
++ (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [self handleNotification:userInfo];
+}
+
++ (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    NSString *newToken = [deviceToken description];
+    [WonderPush setDeviceToken:newToken];
+}
+
++ (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    WPLog(@"Failed to register to push notifications: %@", error);
+    [WonderPush setDeviceToken:nil];
+}
+
++ (void) applicationDidBecomeActive:(UIApplication *)application;
+{
+    BOOL comesBackFromTemporaryInactive = _previousApplicationState == UIApplicationStateActive;
+    _previousApplicationState = UIApplicationStateActive;
+    _lastAppOpen = [[NSProcessInfo processInfo] systemUptime];
+    NSMutableDictionary *appOpenData = [NSMutableDictionary new];
+    if (_notificationFromAppLaunchCampaignId)     appOpenData[@"campaignId"]     = _notificationFromAppLaunchCampaignId;
+    if (_notificationFromAppLaunchNotificationId) appOpenData[@"notificationId"] = _notificationFromAppLaunchNotificationId;
+    _notificationFromAppLaunchCampaignId = nil;     // reset those info, not to report them again unduly
+    _notificationFromAppLaunchNotificationId = nil; // reset those info, not to report them again unduly
+    [self trackInternalEvent:@"@APP_OPEN" eventData:appOpenData customData:nil];
+    // Show any queued notifications
+    UIApplicationState originalApplicationState = comesBackFromTemporaryInactive ? UIApplicationStateActive : UIApplicationStateInactive;
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    NSArray *queuedNotifications = [configuration getQueuedNotifications];
+    for (NSDictionary *queuedNotification in queuedNotifications)
+    {
+        [self handleNotification:queuedNotification withOriginalApplicationState:originalApplicationState];
+    }
+    [configuration clearQueuedNotifications];
+}
+
++ (void) applicationDidEnterBackground:(UIApplication *)application
+{
+    _previousApplicationState = UIApplicationStateBackground;
+    [self trackInternalEvent:@"@APP_CLOSE"
+                   eventData:@{@"openedTime":(_lastAppOpen > 0
+                                              ? [NSNumber numberWithLong:floor(1000 * ([[NSProcessInfo processInfo] systemUptime] - _lastAppOpen))]
+                                              : [NSNull null])}
+                  customData:nil];
+    // Send queued notifications as LocalNotifications
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    NSArray *queuedNotifications = [configuration getQueuedNotifications];
+    for (NSDictionary *userInfo in queuedNotifications)
+    {
+        UILocalNotification *notification = [[UILocalNotification alloc] init];
+        if (![WPUtil currentApplicationIsInForeground]) {
+            NSDictionary *aps = [userInfo objectForKey:@"aps"];
+            notification.alertBody =  [aps objectForKey:@"alert"];
+            notification.soundName = [aps objectForKey:@"sound"];
+            notification.userInfo = userInfo;
+            [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+        }
+    }
+    [configuration clearQueuedNotifications];
+}
+
+
+#pragma mark - Core information
+
++(NSString *) userId
+{
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    return configuration.userId;
+}
+
++(NSString *) installationId
+{
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    return configuration.installationId;
+}
+
++(NSString *) deviceId
+{
+    return [WPUtil deviceIdentifier];
+}
+
++(NSString *) pushToken
+{
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    return configuration.deviceToken;
+}
+
+
+#pragma mark - Installation data and events
 
 +(void) updateInstallation:(NSDictionary *) properties shouldOverwrite:(BOOL) overwrite {
     if (!overwrite && (!properties || !properties.count)) return;
@@ -345,114 +507,79 @@ static int _putInstallationCustomProperties_blockId = 0;
     }
 }
 
-+ (NSString *) getSDKVersionNumber
++ (void) trackNotificationOpened:(NSDictionary *) notificationInformation
 {
-    NSString *result;
-#ifdef SDK_VERSION
-    result = SDK_VERSION;
-#else
-    // Note: Only valid for framework builds
-    NSBundle *bundle = [NSBundle bundleWithIdentifier:@"com.wonderpush.WonderPush"];
-    result = [NSString stringWithFormat:@"iOS-%@", [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
-#endif
-    return result;
+    [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:notificationInformation customData:nil];
 }
 
-+(void) updateInstallationCoreProperties
++ (void) trackNotificationReceived:(NSDictionary *)userInfo
 {
-    NSNull *null = [NSNull null];
-    NSDictionary *application = @{@"version" : [self getVersionString] ?: null,
-                                  @"sdkVersion": [self getSDKVersionNumber] ?: null,
-                                };
+    if (!userInfo) return;
+    NSDictionary *wpData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
+    if (!wpData) return; // This notification is not targetted for WonderPush SDK consumption.
+    id receipt        = [wpData objectForKey:@"receipt"];
+    if (receipt && [[receipt class] isEqual:[@YES class]] && [receipt isEqual:@NO]) return; // lengthy but warning-free test for `receipt == @NO`, both properly distinguishes 0 from @NO, whereas `[receipt isEqual:@NO]` alone does not
+    id campagnId      = [wpData objectForKey:@"c"];
+    id notificationId = [wpData objectForKey:@"n"];
+    NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
+    if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
+    if (notificationId) notificationInformation[@"notificationId"] = notificationId;
+    [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
+}
 
-    NSDictionary *configuration = @{@"timeZone": [self getTimezone] ?: null,
-                                    @"carrier": [self getCarrierName] ?: null,
-                                    @"country": [self getCountry] ?: null,
-                                    @"currency": [self getCurrency] ?: null,
-                                    @"locale": [self getLocale] ?: null};
-
-    NSDictionary *capabilities = @{@"bluetooth": [NSNumber numberWithBool:[self getBluetoothSupported]] ?: null,
-                                   @"bluetoothLe": [NSNumber numberWithBool:[self getBluetoothLeSupported]] ?: null,
-                                   @"nfc": [NSNumber numberWithBool:[self getNFCSupported]] ?: null,
-                                   @"telephony": [NSNumber numberWithBool:[self getTelephonySupported]] ?: null,
-                                   @"telephonyGsm": [NSNumber numberWithBool:[self getTelephonyGSMSupported]] ?: null,
-                                   @"telephonyCdma": [NSNumber numberWithBool:[self getTelephoneCDMASupported]] ?: null,
-                                   @"wifi": @YES, // all have wifi otherwise how did we install the app
-                                   @"wifiDirect": @NO, // not supported by Apple
-                                   @"gps": [NSNumber numberWithBool:[self getGPSSupported]] ?: null,
-                                   @"networkLocation": @YES,
-                                   @"camera": [NSNumber numberWithBool:[self getCameraSupported]] ?: null,
-                                   @"frontCamera": [NSNumber numberWithBool:[self getFrontCameraSupported]] ?: null,
-                                   @"microphone": [NSNumber numberWithBool:[self getMicrophoneSupported]] ?: null,
-                                   @"sensorAccelerometer":@YES,
-                                   @"sensorBarometer": @NO,
-                                   @"sensorCompass": [NSNumber numberWithBool:[self getCompassSupported]] ?: null,
-                                   @"sensorGyroscope": [NSNumber numberWithBool:[self getGyroscopeSupported]] ?: null,
-                                   @"sensorLight": @YES,
-                                   @"sensorProximity": [NSNumber numberWithBool:[self getProximitySensorSupported]] ?: null,
-                                   @"sensorStepDetector": @NO,
-                                   @"touchscreen": @YES,
-                                   @"touchscreenTwoFingers": @YES,
-                                   @"touchscreenDistinct": @YES,
-                                   @"touchscreenFullHand": @YES,
-                                   @"figerprintScanner":[NSNumber numberWithBool:[self getFingerprintScannerSupported]] ?: null
-                                   };
-
-    CGRect screenSize = [self getScreenSize];
-    NSDictionary *device = @{@"id": [WPUtil deviceIdentifier] ?: null,
-                             @"platform": @"iOS",
-                             @"osVersion": [self getOsVersion] ?: null,
-                             @"brand": @"Apple",
-                             @"model": [self getDeviceModel] ?: null,
-                             @"name": [self getDeviceName] ?: null,
-                             @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width] ?: null,
-                             @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height] ?: null,
-                             @"screenDensity": [NSNumber numberWithInt:(int)[self getScreenDensity]] ?: null,
-                             @"configuration": configuration,
-                             @"capabilities": capabilities,
-                             };
-
-    NSDictionary *properties = @{@"application": application,
-                                 @"device": device
-                                 };
-
-    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    NSDictionary *oldProperties = sharedConfiguration.cachedInstallationCoreProperties;
-    NSDate *oldPropertiesDate = sharedConfiguration.cachedInstallationCorePropertiesDate;
-    if (!oldProperties || !oldPropertiesDate
-        || [oldPropertiesDate timeIntervalSinceNow] < -CACHED_INSTALLATION_CORE_PROPERTIES_DURATION
-        || ![oldProperties isEqualToDictionary:properties]
-    ) {
-        [sharedConfiguration setCachedInstallationCoreProperties:properties];
-        [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
-        [self updateInstallation:properties shouldOverwrite:NO];
++(void) trackInternalEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData
+{
+    if ([type characterAtIndex:0] != '@')
+    {
+        @throw [NSException exceptionWithName:@"illegal argument" reason:@"This method must only be called for internal events, starting with an '@'" userInfo:nil];
     }
+
+    [self trackEvent:type eventData:data customData:customData];
 }
 
-
-#pragma mark - core information
-
-+(NSString *) userId
++ (void) trackEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData
 {
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    return configuration.userId;
+    if (type == nil)
+    {
+        return;
+    }
+    NSString *eventEndPoint = @"/events";
+    long long date = [WPUtil getServerDate];
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:@{@"type": type,
+                                                                                    @"actionDate": [NSNumber numberWithLongLong:date]}];
+
+    if (data != nil)
+    {
+        for (NSString *key in data)
+        {
+            [params setValue:[data objectForKey:key] forKey:key];
+        }
+    }
+
+    if (customData != nil)
+    {
+        [params setValue:customData forKey:@"custom"];
+    }
+
+    CLLocation *location = [self location];
+    if (location != nil)
+    {
+        [params setValue:[NSString stringWithFormat:@"%f,%f", location.coordinate.latitude, location.coordinate.longitude] forKey:@"location"];
+    }
+
+    NSError *err;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&err];
+    NSString *eventString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [self postEventually:eventEndPoint params:@{@"body":eventString} handler:
+     ^(WPResponse *response, NSError *error) {
+
+     }];
+
 }
 
-+(NSString *) installationId
++ (void) trackEvent:(NSString*) type withData:(id)data
 {
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    return configuration.installationId;
-}
-
-+(NSString *) deviceId
-{
-    return [WPUtil deviceIdentifier];
-}
-
-+(NSString *) pushToken
-{
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    return configuration.deviceToken;
+    [self trackEvent:type eventData:nil customData:data];
 }
 
 
@@ -615,9 +742,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
     [alert show];
 }
 
-
-#pragma mark - Push notification handling
-
 + (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *) notification
 {
     NSString *type = [action objectForKey:@"type"];
@@ -690,32 +814,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
 }
 
-+ (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    if ([self getNotificationEnabled]) {
-        [self registerToPushNotifications];
-    }
-
-    if (![WPUtil hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler] // didReceiveRemoteNotification will be called in such a case
-        && launchOptions != nil
-    ) {
-        NSDictionary *notificationDictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-        if (notificationDictionary) {
-            _notificationFromAppLaunchCampaignId = nil;
-            _notificationFromAppLaunchNotificationId = nil;
-            if (notificationDictionary != nil) {
-                NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
-                if (wonderpushData) {
-                    _notificationFromAppLaunchCampaignId = [wonderpushData objectForKey:@"c"];
-                    _notificationFromAppLaunchNotificationId = [wonderpushData objectForKey:@"n"];
-                }
-            }
-            return [self handleNotification:notificationDictionary];
-        }
-    }
-    return NO;
-}
-
 +(void) setDeviceToken:(NSString *) deviceToken
 {
     if (deviceToken) {
@@ -741,33 +839,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
 }
 
-+ (BOOL) getNotificationEnabled
-{
-    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    return sharedConfiguration.notificationEnabled;
-}
-
-+ (void) setNotificationEnabled:(BOOL) enabled
-{
-    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    BOOL previousValue = sharedConfiguration.notificationEnabled;
-    sharedConfiguration.notificationEnabled = enabled;
-
-    // Update the subscriptionStatus if it changed
-    if (enabled != previousValue) {
-        if (enabled) {
-            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}} shouldOverwrite:NO];
-        } else {
-            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}} shouldOverwrite:NO];
-        }
-    }
-
-    // Whether or not there is a change, register to push notifications if enabled
-    if (enabled) {
-        [self registerToPushNotifications];
-    }
-}
-
 + (void) registerToPushNotifications
 {
     if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
@@ -776,16 +847,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
     } else {
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     }
-}
-
-+ (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
-    [WonderPush handleNotification:notification.userInfo withOriginalApplicationState:UIApplicationStateInactive];
-}
-
-+ (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
-    [self handleNotification:userInfo];
 }
 
 + (BOOL) handleNotification:(NSDictionary*) notificationDictionary
@@ -972,67 +1033,92 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
-+ (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
-{
-    NSString *newToken = [deviceToken description];
-    [WonderPush setDeviceToken:newToken];
-}
-
-+ (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-{
-    WPLog(@"Failed to register to push notifications: %@", error);
-    [WonderPush setDeviceToken:nil];
-}
-
-+ (void) applicationDidBecomeActive:(UIApplication *)application;
-{
-    BOOL comesBackFromTemporaryInactive = _previousApplicationState == UIApplicationStateActive;
-    _previousApplicationState = UIApplicationStateActive;
-    _lastAppOpen = [[NSProcessInfo processInfo] systemUptime];
-    NSMutableDictionary *appOpenData = [NSMutableDictionary new];
-    if (_notificationFromAppLaunchCampaignId)     appOpenData[@"campaignId"]     = _notificationFromAppLaunchCampaignId;
-    if (_notificationFromAppLaunchNotificationId) appOpenData[@"notificationId"] = _notificationFromAppLaunchNotificationId;
-    _notificationFromAppLaunchCampaignId = nil;     // reset those info, not to report them again unduly
-    _notificationFromAppLaunchNotificationId = nil; // reset those info, not to report them again unduly
-    [self trackInternalEvent:@"@APP_OPEN" eventData:appOpenData customData:nil];
-    // Show any queued notifications
-    UIApplicationState originalApplicationState = comesBackFromTemporaryInactive ? UIApplicationStateActive : UIApplicationStateInactive;
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    NSArray *queuedNotifications = [configuration getQueuedNotifications];
-    for (NSDictionary *queuedNotification in queuedNotifications)
-    {
-        [self handleNotification:queuedNotification withOriginalApplicationState:originalApplicationState];
-    }
-    [configuration clearQueuedNotifications];
-}
-
-+ (void) applicationDidEnterBackground:(UIApplication *)application
-{
-    _previousApplicationState = UIApplicationStateBackground;
-    [self trackInternalEvent:@"@APP_CLOSE"
-                   eventData:@{@"openedTime":(_lastAppOpen > 0
-                                              ? [NSNumber numberWithLong:floor(1000 * ([[NSProcessInfo processInfo] systemUptime] - _lastAppOpen))]
-                                              : [NSNull null])}
-                  customData:nil];
-    // Send queued notifications as LocalNotifications
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    NSArray *queuedNotifications = [configuration getQueuedNotifications];
-    for (NSDictionary *userInfo in queuedNotifications)
-    {
-        UILocalNotification *notification = [[UILocalNotification alloc] init];
-        if (![WPUtil currentApplicationIsInForeground]) {
-            NSDictionary *aps = [userInfo objectForKey:@"aps"];
-            notification.alertBody =  [aps objectForKey:@"alert"];
-            notification.soundName = [aps objectForKey:@"sound"];
-            notification.userInfo = userInfo;
-            [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
-        }
-    }
-    [configuration clearQueuedNotifications];
-}
-
 
 #pragma mark - Information mining
+
++(void) updateInstallationCoreProperties
+{
+    NSNull *null = [NSNull null];
+    NSDictionary *application = @{@"version" : [self getVersionString] ?: null,
+                                  @"sdkVersion": [self getSDKVersionNumber] ?: null,
+                                  };
+
+    NSDictionary *configuration = @{@"timeZone": [self getTimezone] ?: null,
+                                    @"carrier": [self getCarrierName] ?: null,
+                                    @"country": [self getCountry] ?: null,
+                                    @"currency": [self getCurrency] ?: null,
+                                    @"locale": [self getLocale] ?: null};
+
+    NSDictionary *capabilities = @{@"bluetooth": [NSNumber numberWithBool:[self getBluetoothSupported]] ?: null,
+                                   @"bluetoothLe": [NSNumber numberWithBool:[self getBluetoothLeSupported]] ?: null,
+                                   @"nfc": [NSNumber numberWithBool:[self getNFCSupported]] ?: null,
+                                   @"telephony": [NSNumber numberWithBool:[self getTelephonySupported]] ?: null,
+                                   @"telephonyGsm": [NSNumber numberWithBool:[self getTelephonyGSMSupported]] ?: null,
+                                   @"telephonyCdma": [NSNumber numberWithBool:[self getTelephoneCDMASupported]] ?: null,
+                                   @"wifi": @YES, // all have wifi otherwise how did we install the app
+                                   @"wifiDirect": @NO, // not supported by Apple
+                                   @"gps": [NSNumber numberWithBool:[self getGPSSupported]] ?: null,
+                                   @"networkLocation": @YES,
+                                   @"camera": [NSNumber numberWithBool:[self getCameraSupported]] ?: null,
+                                   @"frontCamera": [NSNumber numberWithBool:[self getFrontCameraSupported]] ?: null,
+                                   @"microphone": [NSNumber numberWithBool:[self getMicrophoneSupported]] ?: null,
+                                   @"sensorAccelerometer":@YES,
+                                   @"sensorBarometer": @NO,
+                                   @"sensorCompass": [NSNumber numberWithBool:[self getCompassSupported]] ?: null,
+                                   @"sensorGyroscope": [NSNumber numberWithBool:[self getGyroscopeSupported]] ?: null,
+                                   @"sensorLight": @YES,
+                                   @"sensorProximity": [NSNumber numberWithBool:[self getProximitySensorSupported]] ?: null,
+                                   @"sensorStepDetector": @NO,
+                                   @"touchscreen": @YES,
+                                   @"touchscreenTwoFingers": @YES,
+                                   @"touchscreenDistinct": @YES,
+                                   @"touchscreenFullHand": @YES,
+                                   @"figerprintScanner":[NSNumber numberWithBool:[self getFingerprintScannerSupported]] ?: null
+                                   };
+
+    CGRect screenSize = [self getScreenSize];
+    NSDictionary *device = @{@"id": [WPUtil deviceIdentifier] ?: null,
+                             @"platform": @"iOS",
+                             @"osVersion": [self getOsVersion] ?: null,
+                             @"brand": @"Apple",
+                             @"model": [self getDeviceModel] ?: null,
+                             @"name": [self getDeviceName] ?: null,
+                             @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width] ?: null,
+                             @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height] ?: null,
+                             @"screenDensity": [NSNumber numberWithInt:(int)[self getScreenDensity]] ?: null,
+                             @"configuration": configuration,
+                             @"capabilities": capabilities,
+                             };
+
+    NSDictionary *properties = @{@"application": application,
+                                 @"device": device
+                                 };
+
+    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+    NSDictionary *oldProperties = sharedConfiguration.cachedInstallationCoreProperties;
+    NSDate *oldPropertiesDate = sharedConfiguration.cachedInstallationCorePropertiesDate;
+    if (!oldProperties || !oldPropertiesDate
+        || [oldPropertiesDate timeIntervalSinceNow] < -CACHED_INSTALLATION_CORE_PROPERTIES_DURATION
+        || ![oldProperties isEqualToDictionary:properties]
+        ) {
+        [sharedConfiguration setCachedInstallationCoreProperties:properties];
+        [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
+        [self updateInstallation:properties shouldOverwrite:NO];
+    }
+}
+
++ (NSString *) getSDKVersionNumber
+{
+    NSString *result;
+#ifdef SDK_VERSION
+    result = SDK_VERSION;
+#else
+    // Note: Only valid for framework builds
+    NSBundle *bundle = [NSBundle bundleWithIdentifier:@"com.wonderpush.WonderPush"];
+    result = [NSString stringWithFormat:@"iOS-%@", [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
+#endif
+    return result;
+}
 
 +(BOOL) getProximitySensorSupported
 {
@@ -1244,11 +1330,11 @@ static WPDialogButtonHandler *buttonHandler = nil;
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     CTCarrier *carrier = [netinfo subscriberCellularProvider];
     NSString *carrierName = [carrier carrierName];
-    
+
     if (carrierName == nil) {
         return @"unknown";
     }
-    
+
     return carrierName;
 }
 
@@ -1384,89 +1470,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
         return nil;
     }
     return location;
-}
-
-+ (void) trackNotificationOpened:(NSDictionary *) notificationInformation
-{
-    [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:notificationInformation customData:nil];
-}
-
-+ (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
-{
-    [WonderPush handleNotification:userInfo];
-    if (completionHandler) {
-        completionHandler(UIBackgroundFetchResultNewData);
-    }
-}
-
-+ (void) trackNotificationReceived:(NSDictionary *)userInfo
-{
-    if (!userInfo) return;
-    NSDictionary *wpData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
-    if (!wpData) return; // This notification is not targetted for WonderPush SDK consumption.
-    id receipt        = [wpData objectForKey:@"receipt"];
-    if (receipt && [[receipt class] isEqual:[@YES class]] && [receipt isEqual:@NO]) return; // lengthy but warning-free test for `receipt == @NO`, both properly distinguishes 0 from @NO, whereas `[receipt isEqual:@NO]` alone does not
-    id campagnId      = [wpData objectForKey:@"c"];
-    id notificationId = [wpData objectForKey:@"n"];
-    NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
-    if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
-    if (notificationId) notificationInformation[@"notificationId"] = notificationId;
-    [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
-}
-
-+(void) trackInternalEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData
-{
-    if ([type characterAtIndex:0] != '@')
-    {
-        @throw [NSException exceptionWithName:@"illegal argument" reason:@"This method must only be called for internal events, starting with an '@'" userInfo:nil];
-    }
-
-    [self trackEvent:type eventData:data customData:customData];
-}
-
-+ (void) trackEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData
-{
-    if (type == nil)
-    {
-        return;
-    }
-    NSString *eventEndPoint = @"/events";
-    long long date = [WPUtil getServerDate];
-    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:@{@"type": type,
-                            @"actionDate": [NSNumber numberWithLongLong:date]}];
-
-    if (data != nil)
-    {
-        for (NSString *key in data)
-        {
-            [params setValue:[data objectForKey:key] forKey:key];
-        }
-    }
-
-    if (customData != nil)
-    {
-        [params setValue:customData forKey:@"custom"];
-    }
-
-    CLLocation *location = [self location];
-    if (location != nil)
-    {
-        [params setValue:[NSString stringWithFormat:@"%f,%f", location.coordinate.latitude, location.coordinate.longitude] forKey:@"location"];
-    }
-
-    NSError *err;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&err];
-    NSString *eventString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    [self postEventually:eventEndPoint params:@{@"body":eventString} handler:
-     ^(WPResponse *response, NSError *error) {
-
-     }];
-
-}
-
-+ (void) trackEvent:(NSString*) type withData:(id)data
-{
-    [self trackEvent:type eventData:nil customData:data];
 }
 
 @end

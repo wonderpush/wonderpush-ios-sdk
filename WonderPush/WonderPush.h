@@ -95,16 +95,6 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) setUserId:(NSString *)userId;
 
-/**
- Setup UIApplicationDelegate override, so that calls from your UIApplicationDelegate are automatically transmitted to the WonderPush SDK.
-
- This eases your setup, you can call this from your
- `- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions` method.
-
- @param application The application parameter from your AppDelegate.
- */
-+ (void) setupDelegateForApplication:(UIApplication *)application;
-
 + (void) initialize;
 
 /**
@@ -168,6 +158,47 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) setNotificationEnabled:(BOOL)enabled;
 
+
+///-----------------------------------
+/// @name Installation data and events
+///-----------------------------------
+
+/**
+ Updates the custom properties attached to the current installation object stored by WonderPush.
+
+ In order to remove a value, don't forget to use `[NSNull null]` as value.
+
+ @param customProperties The partial object containing only the properties to update.
+ */
++ (void) putInstallationCustomProperties:(NSDictionary *)customProperties;
+
+/**
+ Send an event to be tracked to WonderPush.
+
+ @param type The event type, or name. Event types starting with an `@` character are reserved.
+ @param data A dictionary containing custom properties to be attached to the event.
+     Prefer using a few custom properties over a plethora of event type variants.
+ */
++ (void) trackEvent:(NSString*)type withData:(id)data;
+
+@end
+
+
+@interface WonderPush (ApplicationDelegate)
+
+///---------------------------------------
+/// @name Automatic AppDelegate forwarding
+///---------------------------------------
+
+/**
+ Setup UIApplicationDelegate override, so that calls from your UIApplicationDelegate are automatically transmitted to the WonderPush SDK.
+
+ This eases your setup, you can call this from your
+ `- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions` method.
+
+ @param application The application parameter from your AppDelegate.
+ */
++ (void) setupDelegateForApplication:(UIApplication *)application;
 
 ///------------------------------------
 /// @name Manual AppDelegate forwarding
@@ -256,27 +287,5 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (void) applicationDidEnterBackground:(UIApplication *)application;
 
 
-///-----------------------------------
-/// @name Installation data and events
-///-----------------------------------
-
-/**
- Updates the custom properties attached to the current installation object stored by WonderPush.
-
- In order to remove a value, don't forget to use `[NSNull null]` as value.
-
- @param customProperties The partial object containing only the properties to update.
- */
-+ (void) putInstallationCustomProperties:(NSDictionary *)customProperties;
-
-/**
- Send an event to be tracked to WonderPush.
-
- @param type The event type, or name. Event types starting with an `@` character are reserved.
- @param data A dictionary containing custom properties to be attached to the event.
-     Prefer using a few custom properties over a plethora of event type variants.
- */
-+ (void) trackEvent:(NSString*)type withData:(id)data;
-
-
 @end
+
