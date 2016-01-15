@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		20314D82424531F76800D2AE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9A43256ACEF670B48A5F2A /* libPods.a */; };
 		3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
 		3DCC286C1B6F773C00D2778E /* WPAlertViewDelegateBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */; };
 		3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
@@ -45,6 +46,8 @@
 		3DDE66D61B4AE73200B5DC44 /* WPLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPLog.h; sourceTree = "<group>"; };
 		3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAppDelegate.m; sourceTree = "<group>"; };
 		3DFEA88F1C46E0D600E27404 /* WPAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPAppDelegate.h; sourceTree = "<group>"; };
+		7FF224E158A72BE58197ED07 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		9021052846FD8EC5F8841A83 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
 		A16E33A619C886A700E4E158 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A16E33AA19C886A700E4E158 /* WonderPush-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WonderPush-Prefix.pch"; sourceTree = "<group>"; };
@@ -76,6 +79,7 @@
 		A1E3E08219E423A200A4EE09 /* WonderPush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WonderPush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1E3E08519E423A200A4EE09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1E3E0A319E425DB00A4EE09 /* WonderPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPush.h; sourceTree = "<group>"; };
+		FA9A43256ACEF670B48A5F2A /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,18 +87,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20314D82424531F76800D2AE /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9DA57C399CB0C3688B6AFD73 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9021052846FD8EC5F8841A83 /* Pods.debug.xcconfig */,
+				7FF224E158A72BE58197ED07 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		A16E339A19C886A700E4E158 = {
 			isa = PBXGroup;
 			children = (
 				A16E33A819C886A700E4E158 /* WonderPush */,
 				A16E33A519C886A700E4E158 /* Frameworks */,
 				A16E33A419C886A700E4E158 /* Products */,
+				9DA57C399CB0C3688B6AFD73 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -120,6 +135,7 @@
 				A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */,
 				A189379D19C9E0C600F91DDD /* CoreTelephony.framework */,
 				A16E33A619C886A700E4E158 /* Foundation.framework */,
+				FA9A43256ACEF670B48A5F2A /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -184,10 +200,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1E3E09219E423A300A4EE09 /* Build configuration list for PBXNativeTarget "WonderPush" */;
 			buildPhases = (
+				BC9D617E327A40612748BF95 /* Check Pods Manifest.lock */,
 				A1E3E07D19E423A200A4EE09 /* Sources */,
 				A1E3E07E19E423A200A4EE09 /* Frameworks */,
 				A1E3E07F19E423A200A4EE09 /* Headers */,
 				A1E3E08019E423A200A4EE09 /* Resources */,
+				C18B07E3FF29D1721B24697D /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -257,6 +275,36 @@
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\necho \"GCC_PREPROCESSOR_DEFINITIONS = $GCC_PREPROCESSOR_DEFINITIONS\"\nUNIVERSAL_OUTPUTFOLDER=${INSTALL_DIR}/Libraries\nversion=\"$(defaults read \"$(pwd)/WonderPush/Info\" CFBundleShortVersionString)\"\necho \"Framework version: $version\"\n\n# make sure the output directory exists\necho \"Output folder: ${UNIVERSAL_OUTPUTFOLDER}/\"\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 1. Build Device and Simulator versions\necho \"Building for iphoneos...\"\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" GCC_PREPROCESSOR_DEFINITIONS=\"$GCC_PREPROCESSOR_DEFINITIONS SDK_VERSION=@\\\\\\\"iOS-$version\\\\\\\"\" clean build\necho \"Building for iphonesimulator...\"\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphonesimulator BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" GCC_PREPROCESSOR_DEFINITIONS=\"$GCC_PREPROCESSOR_DEFINITIONS SDK_VERSION=@\\\\\\\"iOS-$version\\\\\\\"\" clean build\n\n# Step 2. Copy the framework structure to the universal folder\necho \"Copying base framework structure...\"\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Step 3. Create universal binary file using lipo and place the combined executable in the copied framework directory\necho \"Creating the universal binary...\"\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework/${PROJECT_NAME}\"\n\necho \"Done\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BC9D617E327A40612748BF95 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C18B07E3FF29D1721B24697D /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -377,6 +425,7 @@
 		};
 		A1E3E09319E423A300A4EE09 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9021052846FD8EC5F8841A83 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -396,6 +445,7 @@
 		};
 		A1E3E09419E423A300A4EE09 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7FF224E158A72BE58197ED07 /* Pods.release.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

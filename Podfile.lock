@@ -1,0 +1,23 @@
+PODS:
+  - AFNetworking (1.3.4)
+  - CustomIOSAlertView (0.9.3)
+  - OpenUDID (1.0.0)
+  - WonderPush (1.2.3):
+    - AFNetworking (~> 1.3.0)
+    - CustomIOSAlertView (~> 0.9.3)
+    - OpenUDID (~> 1.0.0)
+
+DEPENDENCIES:
+  - WonderPush (from `.`)
+
+EXTERNAL SOURCES:
+  WonderPush:
+    :path: .
+
+SPEC CHECKSUMS:
+  AFNetworking: cf8e418e16f0c9c7e5c3150d019a3c679d015018
+  CustomIOSAlertView: 94d2401e34fcfb0ac0134679d6947f5e251b0446
+  OpenUDID: e7cb6984c7304906ad20f3a36bf087b025896b6b
+  WonderPush: 5475ef226b0452c8a4705200af7ab6f017121fc3
+
+COCOAPODS: 0.39.0
