@@ -1113,13 +1113,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
 + (NSString *) getSDKVersionNumber
 {
     NSString *result;
-#ifdef SDK_VERSION
     result = SDK_VERSION;
-#else
-    // Note: Only valid for framework builds
-    NSBundle *bundle = [NSBundle bundleWithIdentifier:@"com.wonderpush.WonderPush"];
-    result = [NSString stringWithFormat:@"iOS-%@", [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
-#endif
     return result;
 }
 

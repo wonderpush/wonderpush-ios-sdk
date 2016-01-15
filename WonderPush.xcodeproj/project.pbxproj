@@ -6,20 +6,6 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		A1272C8D1A0CD19C005A11C1 /* Universal Framework */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = A1272C8E1A0CD19D005A11C1 /* Build configuration list for PBXAggregateTarget "Universal Framework" */;
-			buildPhases = (
-				A1272C911A0CD1AA005A11C1 /* ShellScript */,
-			);
-			dependencies = (
-			);
-			name = "Universal Framework";
-			productName = "Universal Framework";
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
 		20314D82424531F76800D2AE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9A43256ACEF670B48A5F2A /* libPods.a */; };
 		3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
@@ -225,9 +211,6 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = WonderPush;
 				TargetAttributes = {
-					A1272C8D1A0CD19C005A11C1 = {
-						CreatedOnToolsVersion = 6.1;
-					};
 					A1E3E08119E423A200A4EE09 = {
 						CreatedOnToolsVersion = 6.0.1;
 					};
@@ -246,7 +229,6 @@
 			projectRoot = "";
 			targets = (
 				A1E3E08119E423A200A4EE09 /* WonderPush */,
-				A1272C8D1A0CD19C005A11C1 /* Universal Framework */,
 			);
 		};
 /* End PBXProject section */
@@ -262,21 +244,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		A1272C911A0CD1AA005A11C1 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-				"$(INSTALL_DIR)/Libraries/$(PROJECT_NAME).framework",
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-			shellPath = /bin/sh;
-			shellScript = "set -e\n\necho \"GCC_PREPROCESSOR_DEFINITIONS = $GCC_PREPROCESSOR_DEFINITIONS\"\nUNIVERSAL_OUTPUTFOLDER=${INSTALL_DIR}/Libraries\nversion=\"$(defaults read \"$(pwd)/WonderPush/Info\" CFBundleShortVersionString)\"\necho \"Framework version: $version\"\n\n# make sure the output directory exists\necho \"Output folder: ${UNIVERSAL_OUTPUTFOLDER}/\"\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 1. Build Device and Simulator versions\necho \"Building for iphoneos...\"\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" GCC_PREPROCESSOR_DEFINITIONS=\"$GCC_PREPROCESSOR_DEFINITIONS SDK_VERSION=@\\\\\\\"iOS-$version\\\\\\\"\" clean build\necho \"Building for iphonesimulator...\"\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphonesimulator BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" GCC_PREPROCESSOR_DEFINITIONS=\"$GCC_PREPROCESSOR_DEFINITIONS SDK_VERSION=@\\\\\\\"iOS-$version\\\\\\\"\" clean build\n\n# Step 2. Copy the framework structure to the universal folder\necho \"Copying base framework structure...\"\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Step 3. Create universal binary file using lipo and place the combined executable in the copied framework directory\necho \"Creating the universal binary...\"\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework/${PROJECT_NAME}\"\n\necho \"Done\"\n";
-			showEnvVarsInLog = 0;
-		};
 		BC9D617E327A40612748BF95 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -332,20 +299,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		A1272C8F1A0CD19D005A11C1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		A1272C901A0CD19D005A11C1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		A16E33C419C886A700E4E158 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -465,15 +418,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A1272C8E1A0CD19D005A11C1 /* Build configuration list for PBXAggregateTarget "Universal Framework" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A1272C8F1A0CD19D005A11C1 /* Debug */,
-				A1272C901A0CD19D005A11C1 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		A16E339E19C886A700E4E158 /* Build configuration list for PBXProject "WonderPush" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
