@@ -69,10 +69,6 @@
 
 -(NSString *) getStoredClientId;
 
--(void) addToEventReceivedHistory:(NSString *) notificationId;
-
--(BOOL) isInEventReceivedHistory:(NSString *) notificationId;
-
 -(void) addToQueuedNotifications:(NSDictionary *) notification;
 
 -(NSMutableArray *) getQueuedNotifications;
