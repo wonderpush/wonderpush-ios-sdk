@@ -166,7 +166,6 @@ static NSArray *backgroundModes = nil;
 + (NSArray *) getBackgroundModes
 {
     if (!backgroundModes) {
-        hasBackgroundMode = [NSNumber numberWithBool:NO];
         NSBundle *bundle = [NSBundle mainBundle];
         backgroundModes = [bundle objectForInfoDictionaryKey:@"UIBackgroundModes"];
     }
