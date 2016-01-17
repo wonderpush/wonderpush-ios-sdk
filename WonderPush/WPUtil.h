@@ -74,7 +74,11 @@
 
 + (BOOL) currentApplicationIsInForeground;
 
++ (NSArray *) getBackgroundModes;
+
 + (BOOL) hasBackgroundModeRemoteNotification;
+
++ (NSString *) getEntitlement:(NSString *)key;
 
 + (BOOL) hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler;
 

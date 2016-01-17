@@ -1044,8 +1044,13 @@ static WPDialogButtonHandler *buttonHandler = nil;
 +(void) updateInstallationCoreProperties
 {
     NSNull *null = [NSNull null];
+    NSDictionary *apple = @{@"apsEnvironment": [WPUtil getEntitlement:@"aps-environment"] ?: null,
+                            @"appId": [WPUtil getEntitlement:@"application-identifier"] ?: null,
+                            @"backgroundModes": [WPUtil getBackgroundModes] ?: null
+                            };
     NSDictionary *application = @{@"version" : [self getVersionString] ?: null,
                                   @"sdkVersion": [self getSDKVersionNumber] ?: null,
+                                  @"apple": apple ?: null
                                   };
 
     NSDictionary *configuration = @{@"timeZone": [self getTimezone] ?: null,

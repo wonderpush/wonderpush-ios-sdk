@@ -20,6 +20,7 @@
 
 #import <sys/utsname.h>
 #import <UIKit/UIApplication.h>
+#import <TCMobileProvision/TCMobileProvision.h>
 
 
 NSString * const WPErrorDomain = @"WPErrorDomain";
@@ -161,13 +162,23 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
     return [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
 }
 
+static NSArray *backgroundModes = nil;
++ (NSArray *) getBackgroundModes
+{
+    if (!backgroundModes) {
+        hasBackgroundMode = [NSNumber numberWithBool:NO];
+        NSBundle *bundle = [NSBundle mainBundle];
+        backgroundModes = [bundle objectForInfoDictionaryKey:@"UIBackgroundModes"];
+    }
+    return backgroundModes;
+}
+
 static NSNumber *hasBackgroundMode = nil;
 + (BOOL) hasBackgroundModeRemoteNotification
 {
     if (hasBackgroundMode == nil) {
         hasBackgroundMode = [NSNumber numberWithBool:NO];
-        NSBundle *bundle = [NSBundle mainBundle];
-        NSArray *backgroundModes = [bundle objectForInfoDictionaryKey:@"UIBackgroundModes"];
+        NSArray *backgroundModes = [WPUtil getBackgroundModes];
         if (backgroundModes != nil) {
             for (NSString *value in backgroundModes) {
                 if ([value isEqual:@"remote-notification"]) {
@@ -179,6 +190,18 @@ static NSNumber *hasBackgroundMode = nil;
         }
     }
     return [hasBackgroundMode boolValue];
+}
+
+static NSDictionary *entitlements = nil;
++ (NSString *) getEntitlement:(NSString *)key
+{
+    if (!entitlements) {
+        NSString *mobileprovisionPath = [[[NSBundle mainBundle] bundlePath]
+                                         stringByAppendingPathComponent:@"embedded.mobileprovision"];
+        TCMobileProvision *mobileprovision = [[TCMobileProvision alloc] initWithData:[NSData dataWithContentsOfFile:mobileprovisionPath]];
+        entitlements = mobileprovision.dict[@"Entitlements"];
+    }
+    return entitlements[key];
 }
 
 static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler = nil;
