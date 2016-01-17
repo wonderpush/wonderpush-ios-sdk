@@ -390,11 +390,16 @@ static NSDictionary* gpsCapabilityByCode = nil;
     BOOL comesBackFromTemporaryInactive = _previousApplicationState == UIApplicationStateActive;
     _previousApplicationState = UIApplicationStateActive;
     _lastAppOpen = [[NSProcessInfo processInfo] systemUptime];
+    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     NSMutableDictionary *appOpenData = [NSMutableDictionary new];
     if (_notificationFromAppLaunchCampaignId)     appOpenData[@"campaignId"]     = _notificationFromAppLaunchCampaignId;
     if (_notificationFromAppLaunchNotificationId) appOpenData[@"notificationId"] = _notificationFromAppLaunchNotificationId;
     _notificationFromAppLaunchCampaignId = nil;     // reset those info, not to report them again unduly
     _notificationFromAppLaunchNotificationId = nil; // reset those info, not to report them again unduly
+    if ([WPUtil hasBackgroundModeRemoteNotification]) {
+        NSDate *lastNotificationReceivedDate = conf.lastReceivedNotificationDate;
+        if (lastNotificationReceivedDate)         appOpenData[@"lastReceivedNotificationTime"] = [NSNumber numberWithLong:(1000 * [[NSDate date] timeIntervalSinceDate:lastNotificationReceivedDate])];
+    }
     [self trackInternalEvent:@"@APP_OPEN" eventData:appOpenData customData:nil];
     // Show any queued notifications
     UIApplicationState originalApplicationState = comesBackFromTemporaryInactive ? UIApplicationStateActive : UIApplicationStateInactive;
@@ -540,6 +545,9 @@ static int _putInstallationCustomProperties_blockId = 0;
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
+    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+    conf.lastReceivedNotificationDate = [NSDate date];
+    conf.lastReceivedNotification = notificationInformation;
     [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
 }
 

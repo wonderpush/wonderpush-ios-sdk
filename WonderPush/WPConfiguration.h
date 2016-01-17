@@ -61,6 +61,9 @@
 @property (nonatomic, strong) NSDate *cachedInstallationCustomPropertiesUpdatedDate;
 @property (nonatomic, strong) NSDate *cachedInstallationCustomPropertiesFirstDelayedWriteDate;
 
+@property (nonatomic, strong) NSDictionary *lastReceivedNotification;
+@property (nonatomic, strong) NSDate *lastReceivedNotificationDate;
+
 - (void) setAccessToken:(NSString *)accessToken;
 
 - (void) setDeviceToken:(NSString *)deviceToken;

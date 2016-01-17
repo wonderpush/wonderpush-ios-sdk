@@ -449,5 +449,46 @@ static WPConfiguration *sharedConfiguration = nil;
     [defaults synchronize];
 }
 
+-(NSDate *) lastReceivedNotificationDate
+{
+    NSDate *lastReceivedNotificationDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
+    return lastReceivedNotificationDate;
+}
+
+-(void) setLastReceivedNotificationDate:(NSDate *)lastReceivedNotificationDate
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (lastReceivedNotificationDate) {
+        [defaults setValue:lastReceivedNotificationDate forKeyPath:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
+    }
+
+    [defaults synchronize];
+}
+
+-(NSDictionary *) lastReceivedNotification
+{
+    NSData *data = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
+    if (!data) return nil;
+    NSDictionary *lastReceivedNotification = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    return lastReceivedNotification;
+}
+
+-(void) setLastReceivedNotification:(NSDictionary *)lastReceivedNotification
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (lastReceivedNotification) {
+        NSData *data = [NSJSONSerialization dataWithJSONObject:lastReceivedNotification options:kNilOptions error:nil];
+        [defaults setValue:data forKeyPath:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
+    } else {
+        [defaults removeObjectForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
+    }
+
+    [defaults synchronize];
+}
+
 
 @end
