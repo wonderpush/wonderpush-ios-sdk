@@ -887,6 +887,10 @@ static WPDialogButtonHandler *buttonHandler = nil;
         }
     }
 
+    if (appState == UIApplicationStateBackground) {
+        return YES;
+    }
+
     if (appState == UIApplicationStateInactive) {
         WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
         [configuration addToQueuedNotifications:notificationDictionary];
