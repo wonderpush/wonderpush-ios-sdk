@@ -50,6 +50,66 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 
+#pragma mark - Utilities
+
+- (NSDictionary *) _getNSDictionaryFromJSONForKey:(NSString *)key
+{
+    NSData *data = [[NSUserDefaults standardUserDefaults] valueForKey:key];
+    if (!data) return nil;
+    return [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+}
+
+- (void) _setNSDictionaryAsJSON:(NSDictionary *)value forKey:(NSString *)key
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (value) {
+        NSData *data = [NSJSONSerialization dataWithJSONObject:value options:kNilOptions error:nil];
+        [defaults setValue:data forKeyPath:key];
+    } else {
+        [defaults removeObjectForKey:key];
+    }
+
+    [defaults synchronize];
+}
+
+- (NSDate *) _getNSDateForKey:(NSString *)key
+{
+    return [[NSUserDefaults standardUserDefaults] valueForKey:key];
+}
+
+- (void) _setNSDate:(NSDate *)value forKey:(NSString *)key
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (value) {
+        [defaults setValue:value forKeyPath:key];
+    } else {
+        [defaults removeObjectForKey:key];
+    }
+
+    [defaults synchronize];
+}
+
+- (NSString *) _getNSStringForKey:(NSString *)key
+{
+    return [[NSUserDefaults standardUserDefaults] valueForKey:key];
+}
+
+- (void) _setNSString:(NSString *)value forKey:(NSString *)key
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (value) {
+        [defaults setValue:value forKeyPath:key];
+    } else {
+        [defaults removeObjectForKey:key];
+    }
+
+    [defaults synchronize];
+}
+
+
 #pragma mark - Access token
 
 - (NSURL *) baseURL
@@ -78,63 +138,37 @@ static WPConfiguration *sharedConfiguration = nil;
 - (void) setDeviceToken:(NSString *)deviceToken
 {
     _deviceToken = deviceToken;
-
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     WPLog(@"Setting device token: %@", deviceToken);
-    if (deviceToken)
-        [defaults setValue:deviceToken forKey:USER_DEFAULTS_DEVICE_TOKEN_KEY];
-    else
-        [defaults removeObjectForKey:USER_DEFAULTS_DEVICE_TOKEN_KEY];
-
-    [defaults synchronize];
+    [self _setNSString:deviceToken forKey:USER_DEFAULTS_DEVICE_TOKEN_KEY];
 }
 
 -(NSDate *) cachedDeviceTokenDate
 {
-    NSDate *cachedDeviceTokenDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
-    return cachedDeviceTokenDate;
+    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
 }
 
 -(void) setCachedDeviceTokenDate:(NSDate *)cachedDeviceTokenDate
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (cachedDeviceTokenDate) {
-        [defaults setValue:cachedDeviceTokenDate forKeyPath:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
-    }
-
-    [defaults synchronize];
+    [self _setNSDate:cachedDeviceTokenDate forKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
 }
 
 - (void) setAccessToken:(NSString *)accessToken
 {
     _accessToken = accessToken;
-
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
     WPLog(@"Setting access token: %@", accessToken);
-    if (accessToken)
-        [defaults setValue:accessToken forKey:USER_DEFAULTS_ACCESS_TOKEN_KEY];
-    else
-        [defaults removeObjectForKey:USER_DEFAULTS_ACCESS_TOKEN_KEY];
-
-    [defaults synchronize];
+    [self _setNSString:accessToken forKey:USER_DEFAULTS_ACCESS_TOKEN_KEY];
 }
 
 -(void) setStoredClientId:(NSString *)clientId;
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (clientId) {
-        [defaults setValue:clientId forKey:USER_DEFAULTS_CLIENT_ID_KEY];
+        [self _setNSString:clientId forKey:USER_DEFAULTS_CLIENT_ID_KEY];
     }
 }
 
 -(NSString *) getStoredClientId
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults valueForKey:USER_DEFAULTS_CLIENT_ID_KEY];
+    return [self _getNSStringForKey:USER_DEFAULTS_CLIENT_ID_KEY];
 }
 
 
@@ -145,23 +179,15 @@ static WPConfiguration *sharedConfiguration = nil;
     if (_installationId)
         return _installationId;
 
-    _installationId = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_INSTALLATION_ID];
+    _installationId = [self _getNSStringForKey:USER_DEFAULTS_INSTALLATION_ID];
     return _installationId;
 }
 
 -(void) setInstallationId:(NSString *)installationId
 {
     _installationId = installationId;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
     WPLog(@"Setting installationId: %@", installationId);
-    if (installationId) {
-        [defaults setValue:installationId forKeyPath:USER_DEFAULTS_INSTALLATION_ID];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_INSTALLATION_ID];
-    }
-
-    [defaults synchronize];
+    [self _setNSString:installationId forKey:USER_DEFAULTS_INSTALLATION_ID];
 }
 
 
@@ -172,7 +198,7 @@ static WPConfiguration *sharedConfiguration = nil;
     if (_userId)
         return _userId;
 
-    _userId = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_USER_ID_KEY];
+    _userId = [self _getNSStringForKey:USER_DEFAULTS_USER_ID_KEY];
     return _userId;
 }
 
@@ -192,13 +218,8 @@ static WPConfiguration *sharedConfiguration = nil;
     }
     _userId = userId;
 
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     WPLog(@"Setting userId: %@", userId);
-    if (userId)
-        [defaults setValue:userId forKey:USER_DEFAULTS_USER_ID_KEY];
-    else
-        [defaults removeObjectForKey:USER_DEFAULTS_USER_ID_KEY];
-    [defaults synchronize];
+    [self _setNSString:userId forKey:USER_DEFAULTS_USER_ID_KEY];
 }
 
 
@@ -209,21 +230,15 @@ static WPConfiguration *sharedConfiguration = nil;
     if (_sid)
         return _sid;
 
-    _sid = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_SID_KEY];
+    _sid = [self _getNSStringForKey:USER_DEFAULTS_SID_KEY];
     return _sid;
 }
 
 - (void) setSid:(NSString *)sid
 {
     _sid = sid;
-
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     WPLog(@"Setting sid: %@", sid);
-    if (sid)
-        [defaults setValue:sid forKey:USER_DEFAULTS_SID_KEY];
-    else
-        [defaults removeObjectForKey:USER_DEFAULTS_SID_KEY];
-    [defaults synchronize];
+    [self _setNSString:sid forKey:USER_DEFAULTS_SID_KEY];
 }
 
 - (BOOL) usesSandbox
@@ -328,21 +343,12 @@ static WPConfiguration *sharedConfiguration = nil;
 
 -(NSDate *) cachedInstallationCorePropertiesDate
 {
-    NSDate *cachedInstallationCorePropertiesDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
-    return cachedInstallationCorePropertiesDate;
+    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
 }
 
 -(void) setCachedInstallationCorePropertiesDate:(NSDate *)cachedInstallationCorePropertiesDate
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (cachedInstallationCorePropertiesDate) {
-        [defaults setValue:cachedInstallationCorePropertiesDate forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
-    }
-
-    [defaults synchronize];
+    [self _setNSDate:cachedInstallationCorePropertiesDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
 }
 
 
@@ -350,144 +356,72 @@ static WPConfiguration *sharedConfiguration = nil;
 
 -(NSDictionary *) cachedInstallationCustomPropertiesWritten
 {
-    NSData *data = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
-    if (!data) return nil;
-    NSDictionary *cachedInstallationCustomPropertiesWritten = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-    return cachedInstallationCustomPropertiesWritten;
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
 }
 
 -(void) setCachedInstallationCustomPropertiesWritten:(NSDictionary *)cachedInstallationCustomPropertiesWritten
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (cachedInstallationCustomPropertiesWritten) {
-        NSData *data = [NSJSONSerialization dataWithJSONObject:cachedInstallationCustomPropertiesWritten options:kNilOptions error:nil];
-        [defaults setValue:data forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
-    }
-
-    [defaults synchronize];
+    [self _setNSDictionaryAsJSON:cachedInstallationCustomPropertiesWritten forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
 }
 
 -(NSDate *) cachedInstallationCustomPropertiesWrittenDate
 {
-    NSDate *cachedInstallationCustomPropertiesWrittenDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
-    return cachedInstallationCustomPropertiesWrittenDate;
+    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
 }
 
 -(void) setCachedInstallationCustomPropertiesWrittenDate:(NSDate *)cachedInstallationCustomPropertiesWrittenDate
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (cachedInstallationCustomPropertiesWrittenDate) {
-        [defaults setValue:cachedInstallationCustomPropertiesWrittenDate forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
-    }
-
-    [defaults synchronize];
+    [self _setNSDate:cachedInstallationCustomPropertiesWrittenDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
 }
 
 -(NSDictionary *) cachedInstallationCustomPropertiesUpdated
 {
-    NSData *data = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
-    if (!data) return nil;
-    NSDictionary *cachedInstallationCustomPropertiesUpdated = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-    return cachedInstallationCustomPropertiesUpdated;
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
 }
 
 -(void) setCachedInstallationCustomPropertiesUpdated:(NSDictionary *)cachedInstallationCustomPropertiesUpdated
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (cachedInstallationCustomPropertiesUpdated) {
-        NSData *data = [NSJSONSerialization dataWithJSONObject:cachedInstallationCustomPropertiesUpdated options:kNilOptions error:nil];
-        [defaults setValue:data forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
-    }
-
-    [defaults synchronize];
+    [self _setNSDictionaryAsJSON:cachedInstallationCustomPropertiesUpdated forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
 }
 
 -(NSDate *) cachedInstallationCustomPropertiesUpdatedDate
 {
-    NSDate *cachedInstallationCustomPropertiesUpdatedDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
-    return cachedInstallationCustomPropertiesUpdatedDate;
+    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
 }
 
 -(void) setCachedInstallationCustomPropertiesUpdatedDate:(NSDate *)cachedInstallationCustomPropertiesUpdatedDate
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (cachedInstallationCustomPropertiesUpdatedDate) {
-        [defaults setValue:cachedInstallationCustomPropertiesUpdatedDate forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
-    }
-
-    [defaults synchronize];
+    [self _setNSDate:cachedInstallationCustomPropertiesUpdatedDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
 }
 
 -(NSDate *) cachedInstallationCustomPropertiesFirstDelayedWriteDate
 {
-    NSDate *cachedInstallationCustomPropertiesFirstDelayedWriteDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
-    return cachedInstallationCustomPropertiesFirstDelayedWriteDate;
+    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
 }
 
 -(void) setCachedInstallationCustomPropertiesFirstDelayedWriteDate:(NSDate *)cachedInstallationCustomPropertiesFirstDelayedWriteDate
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (cachedInstallationCustomPropertiesFirstDelayedWriteDate) {
-        [defaults setValue:cachedInstallationCustomPropertiesFirstDelayedWriteDate forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
-    }
-
-    [defaults synchronize];
+    [self _setNSDate:cachedInstallationCustomPropertiesFirstDelayedWriteDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
 }
 
 -(NSDate *) lastReceivedNotificationDate
 {
-    NSDate *lastReceivedNotificationDate = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
-    return lastReceivedNotificationDate;
+    return [self _getNSDateForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
 }
 
 -(void) setLastReceivedNotificationDate:(NSDate *)lastReceivedNotificationDate
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (lastReceivedNotificationDate) {
-        [defaults setValue:lastReceivedNotificationDate forKeyPath:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
-    }
-
-    [defaults synchronize];
+    [self _setNSDate:lastReceivedNotificationDate forKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
 }
 
 -(NSDictionary *) lastReceivedNotification
 {
-    NSData *data = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
-    if (!data) return nil;
-    NSDictionary *lastReceivedNotification = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-    return lastReceivedNotification;
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
 }
 
 -(void) setLastReceivedNotification:(NSDictionary *)lastReceivedNotification
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (lastReceivedNotification) {
-        NSData *data = [NSJSONSerialization dataWithJSONObject:lastReceivedNotification options:kNilOptions error:nil];
-        [defaults setValue:data forKeyPath:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
-    }
-
-    [defaults synchronize];
+    [self _setNSDictionaryAsJSON:lastReceivedNotification forKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
 }
 
 
