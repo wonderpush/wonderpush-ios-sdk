@@ -63,6 +63,13 @@
 
 @property (nonatomic, strong) NSDictionary *lastReceivedNotification;
 @property (nonatomic, strong) NSDate *lastReceivedNotificationDate;
+@property (nonatomic, strong) NSDictionary *justOpenedNotification; // kept in memory only
+@property (nonatomic, strong) NSDictionary *lastOpenedNotification;
+@property (nonatomic, strong) NSDate *lastOpenedNotificationDate;
+@property (nonatomic, strong) NSDate *lastInteractionDate;
+@property (nonatomic, strong) NSDictionary *lastAppOpenInfo;
+@property (nonatomic, strong) NSDate *lastAppOpenDate;
+@property (nonatomic, strong) NSDate *lastAppCloseDate;
 
 - (void) setAccessToken:(NSString *)accessToken;
 

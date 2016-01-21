@@ -45,6 +45,12 @@
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE @"_wonderpush_cachedInstallationCustomPropertiesFirstDelayedWriteDate"
 #define USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION @"_wonderpush_lastReceivedNotification"
 #define USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE @"_wonderpush_lastReceivedNotificationDate"
+#define USER_DEFAULTS_LAST_OPENED_NOTIFICATION @"_wonderpush_lastOpenedNotification"
+#define USER_DEFAULTS_LAST_OPENED_NOTIFICATION_DATE @"_wonderpush_lastOpenedNotificationDate"
+#define USER_DEFAULTS_LAST_INTERACTION_DATE @"_wonderpush_lastInteractionDate"
+#define USER_DEFAULTS_LAST_APP_OPEN_INFO @"_wonderpush_lastAppOpenInfo"
+#define USER_DEFAULTS_LAST_APP_OPEN_DATE @"_wonderpush_lastAppOpenDate"
+#define USER_DEFAULTS_LAST_APP_CLOSE_DATE @"_wonderpush_lastAppCloseDate"
 
 #define RETRY_INTERVAL 10.0f
 #define CACHED_INSTALLATION_CORE_PROPERTIES_DURATION (7*24*60*60)

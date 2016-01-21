@@ -38,6 +38,8 @@ static WPConfiguration *sharedConfiguration = nil;
 @synthesize _notificationEnabled = __notificationEnabled;
 @synthesize timeOffset = _timeOffset;
 @synthesize timeOffsetPrecision = _timeOffsetPrecision;
+@synthesize justOpenedNotification = _justOpenedNotification;
+
 
 + (void) initialize
 {
@@ -422,6 +424,66 @@ static WPConfiguration *sharedConfiguration = nil;
 -(void) setLastReceivedNotification:(NSDictionary *)lastReceivedNotification
 {
     [self _setNSDictionaryAsJSON:lastReceivedNotification forKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
+}
+
+-(NSDate *) lastOpenedNotificationDate
+{
+    return [self _getNSDateForKey:USER_DEFAULTS_LAST_OPENED_NOTIFICATION_DATE];
+}
+
+-(void) setLastOpenedNotificationDate:(NSDate *)lastOpenedNotificationDate
+{
+    [self _setNSDate:lastOpenedNotificationDate forKey:USER_DEFAULTS_LAST_OPENED_NOTIFICATION_DATE];
+}
+
+-(NSDictionary *) lastOpenedNotification
+{
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_LAST_OPENED_NOTIFICATION];
+}
+
+-(void) setLastOpenedNotification:(NSDictionary *)lastOpenedNotification
+{
+    [self _setNSDictionaryAsJSON:lastOpenedNotification forKey:USER_DEFAULTS_LAST_OPENED_NOTIFICATION];
+}
+
+-(NSDate *) lastInteractionDate
+{
+    return [self _getNSDateForKey:USER_DEFAULTS_LAST_INTERACTION_DATE];
+}
+
+-(void) setLastInteractionDate:(NSDate *)lastInteractionDate
+{
+    [self _setNSDate:lastInteractionDate forKey:USER_DEFAULTS_LAST_INTERACTION_DATE];
+}
+
+-(NSDictionary *) lastAppOpenInfo
+{
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_LAST_APP_OPEN_INFO];
+}
+
+-(void) setLastAppOpenInfo:(NSDictionary *)lastAppOpenInfo
+{
+    [self _setNSDictionaryAsJSON:lastAppOpenInfo forKey:USER_DEFAULTS_LAST_APP_OPEN_INFO];
+}
+
+-(NSDate *) lastAppOpenDate
+{
+    return [self _getNSDateForKey:USER_DEFAULTS_LAST_APP_OPEN_DATE];
+}
+
+-(void) setLastAppOpenDate:(NSDate *)lastAppOpenDate
+{
+    [self _setNSDate:lastAppOpenDate forKey:USER_DEFAULTS_LAST_APP_OPEN_DATE];
+}
+
+-(NSDate *) lastAppCloseDate
+{
+    return [self _getNSDateForKey:USER_DEFAULTS_LAST_APP_CLOSE_DATE];
+}
+
+-(void) setLastAppCloseDate:(NSDate *)lastAppCloseDate
+{
+    [self _setNSDate:lastAppCloseDate forKey:USER_DEFAULTS_LAST_APP_CLOSE_DATE];
 }
 
 

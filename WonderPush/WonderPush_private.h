@@ -21,6 +21,9 @@
 #import "WPResponse.h"
 
 
+#define DIFFERENT_SESSION_REGULAR_MIN_TIME_GAP      (30*60*1000)
+#define DIFFERENT_SESSION_NOTIFICATION_MIN_TIME_GAP (15*60*1000)
+
 /**
  Button of type link (opens the browser)
  */

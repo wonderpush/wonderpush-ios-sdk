@@ -37,7 +37,6 @@ static BOOL _isReady = NO;
 
 static BOOL _isReachable = NO;
 
-static NSTimeInterval _lastAppOpen = 0;
 static NSString *_notificationFromAppLaunchCampaignId = nil;
 static NSString *_notificationFromAppLaunchNotificationId = nil;
 
@@ -389,18 +388,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     if ([WPAppDelegate isAlreadyRunning]) return;
     BOOL comesBackFromTemporaryInactive = _previousApplicationState == UIApplicationStateActive;
     _previousApplicationState = UIApplicationStateActive;
-    _lastAppOpen = [[NSProcessInfo processInfo] systemUptime];
-    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-    NSMutableDictionary *appOpenData = [NSMutableDictionary new];
-    if (_notificationFromAppLaunchCampaignId)     appOpenData[@"campaignId"]     = _notificationFromAppLaunchCampaignId;
-    if (_notificationFromAppLaunchNotificationId) appOpenData[@"notificationId"] = _notificationFromAppLaunchNotificationId;
-    _notificationFromAppLaunchCampaignId = nil;     // reset those info, not to report them again unduly
-    _notificationFromAppLaunchNotificationId = nil; // reset those info, not to report them again unduly
-    if ([WPUtil hasBackgroundModeRemoteNotification]) {
-        NSDate *lastNotificationReceivedDate = conf.lastReceivedNotificationDate;
-        if (lastNotificationReceivedDate)         appOpenData[@"lastReceivedNotificationTime"] = [NSNumber numberWithLong:(1000 * [[NSDate date] timeIntervalSinceDate:lastNotificationReceivedDate])];
-    }
-    [self trackInternalEvent:@"@APP_OPEN" eventData:appOpenData customData:nil];
+
     // Show any queued notifications
     UIApplicationState originalApplicationState = comesBackFromTemporaryInactive ? UIApplicationStateActive : UIApplicationStateInactive;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
@@ -410,17 +398,15 @@ static NSDictionary* gpsCapabilityByCode = nil;
         [self handleNotification:queuedNotification withOriginalApplicationState:originalApplicationState];
     }
     [configuration clearQueuedNotifications];
+
+    [self onInteraction];
 }
 
 + (void) applicationDidEnterBackground:(UIApplication *)application
 {
     if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
-    [self trackInternalEvent:@"@APP_CLOSE"
-                   eventData:@{@"openedTime":(_lastAppOpen > 0
-                                              ? [NSNumber numberWithLong:floor(1000 * ([[NSProcessInfo processInfo] systemUptime] - _lastAppOpen))]
-                                              : [NSNull null])}
-                  customData:nil];
+
     // Send queued notifications as LocalNotifications
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
@@ -436,6 +422,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
         }
     }
     [configuration clearQueuedNotifications];
+
+    [self onInteraction];
 }
 
 
@@ -480,6 +468,7 @@ static NSObject *_putInstallationCustomProperties_lock; //= [NSObject new];
 static int _putInstallationCustomProperties_blockId = 0;
 + (void) putInstallationCustomProperties:(NSDictionary *) customProperties
 {
+    [self onInteraction];
     @synchronized (_putInstallationCustomProperties_lock) {
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
         NSDictionary *updatedRef = conf.cachedInstallationCustomPropertiesUpdated;
@@ -604,6 +593,7 @@ static int _putInstallationCustomProperties_blockId = 0;
 + (void) trackEvent:(NSString*) type withData:(id)data
 {
     [self trackEvent:type eventData:nil customData:data];
+    [self onInteraction];
 }
 
 
@@ -991,6 +981,9 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
 
+    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+    conf.justOpenedNotification = notificationDictionary;
+
     NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
     WPLog(@"Opened notification: %@", notificationDictionary);
 
@@ -1050,6 +1043,64 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
+
+#pragma mark - Session app open/close
+
+
++ (void) onInteraction
+{
+    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+    NSDate *lastInteractionDate = conf.lastInteractionDate;
+    long long lastInteractionTs = lastInteractionDate ? (long long)([lastInteractionDate timeIntervalSince1970] * 1000) : 0;
+    NSDate *lastAppOpenDate = conf.lastAppOpenDate;
+    long long lastAppOpenTs = lastAppOpenDate ? (long long)([lastAppOpenDate timeIntervalSince1970] * 1000) : 0;
+    NSDate *lastAppCloseDate = conf.lastAppCloseDate;
+    long long lastAppCloseTs = lastAppCloseDate ? (long long)([lastAppCloseDate timeIntervalSince1970] * 1000) : 0;
+    NSDate *lastReceivedNotificationDate = conf.lastReceivedNotificationDate;
+    long long lastReceivedNotificationTs = lastReceivedNotificationDate ? (long long)([lastReceivedNotificationDate timeIntervalSince1970] * 1000) : LONG_LONG_MAX;
+    NSDate *date = [NSDate date];
+    long long now = [date timeIntervalSince1970] * 1000;
+
+    if (
+        now - lastInteractionTs >= DIFFERENT_SESSION_REGULAR_MIN_TIME_GAP
+        || (
+            [WPUtil hasBackgroundModeRemoteNotification]
+            && lastReceivedNotificationTs > lastInteractionTs
+            && now - lastInteractionTs >= DIFFERENT_SESSION_NOTIFICATION_MIN_TIME_GAP
+        )
+    ) {
+        // We will track a new app open event
+
+        // We must first close the possibly still-open previous session
+        if (lastAppCloseTs < lastAppOpenTs) {
+            NSDictionary *openInfo = conf.lastAppOpenInfo;
+            NSMutableDictionary *closeInfo = [[NSMutableDictionary alloc] initWithDictionary:openInfo];
+            long long appCloseDate = lastInteractionTs;
+            closeInfo[@"actionDate"] = [[NSNumber alloc] initWithLongLong:appCloseDate];
+            closeInfo[@"openedTime"] = [[NSNumber alloc] initWithLongLong:appCloseDate - lastAppOpenTs];
+            [WonderPush trackInternalEvent:@"@APP_CLOSE" eventData:closeInfo customData:nil];
+            conf.lastAppCloseDate = [[NSDate alloc] initWithTimeIntervalSince1970:appCloseDate / 1000.];
+        }
+
+        // Track the new app open event
+        NSMutableDictionary *openInfo = [NSMutableDictionary new];
+        // Add the elapsed time between the last received notification
+        if ([WPUtil hasBackgroundModeRemoteNotification] && lastReceivedNotificationTs <= now) {
+            openInfo[@"lastReceivedNotificationTime"] = [[NSNumber alloc] initWithLongLong:now - lastReceivedNotificationTs];
+        }
+        // Add the information of the clicked notification
+        if (conf.justOpenedNotification && conf.justOpenedNotification[@"_wp"]) {
+            openInfo[@"campaignId"]     = conf.justOpenedNotification[@"_wp"][@"c"] ?: [NSNull null];
+            openInfo[@"notificationId"] = conf.justOpenedNotification[@"_wp"][@"n"] ?: [NSNull null];
+            conf.justOpenedNotification = nil;
+        }
+        [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil];
+        conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
+        conf.lastAppOpenInfo = openInfo;
+    }
+
+    conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
+}
 
 #pragma mark - Information mining
 
