@@ -60,6 +60,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Make sure you properly installed the WonderPush SDK, as described in [the guide](../index.html).
 
  You must call `<setClientId:secret:>` before using any other method.
+ You must also either call `<setupDelegateForApplication:>`, preferably in the `application:willFinishLaunchingWithOptions:` method of your `AppDelegate` just after calling the previously mentioned method, or override every method listed under [Manual AppDelegate forwarding](#task_Manual AppDelegate forwarding).
 
  Troubleshooting tip: As the SDK should not interfere with your application other than when a notification is to be shown, make sure to monitor your logs for WonderPush output during development, if things did not went as smoothly as they should have.
  */
@@ -160,6 +161,8 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 /**
  Returns whether the given notification is to be consumed by the WonderPush SDK.
+
+ @param userInfo The notification dictionary as read from some UIApplicationDelegate method parameters.
  */
 + (BOOL) isNotificationForWonderPush:(NSDictionary *)userInfo;
 
@@ -167,6 +170,8 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Returns whether the notification is a `data` notification sent by WonderPush.
 
  Data notifications are aimed at providing your application with some data your should consume accordingly.
+
+ @param userInfo The notification dictionary as read from some UIApplicationDelegate method parameters.
  */
 + (BOOL) isDataNotification:(NSDictionary *)userInfo;
 
@@ -271,9 +276,14 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Forwards an application delegate to the SDK.
 
  If your application uses backgroundModes/remote-notification, call this method in your
- `application:didReceiveRemoteNotification:fetchCompletionHandler:` method
+ `application:didReceiveRemoteNotification:fetchCompletionHandler:` method.
 
+ If you implement this application delegate function, you must call `completionHandler` at some point.
+ If you do not know what to do, you're probably good with calling it right away.
+
+ @param application Same parameter as in the forwarded delegate method.
  @param userInfo Same parameter as in the forwarded delegate method.
+ @param completionHandler Same parameter as in the forwarded delegate method.
  */
 + (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
 
