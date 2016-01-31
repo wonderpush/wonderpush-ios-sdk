@@ -251,7 +251,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
         configuration.sid = nil;
     }
     // Fetch anonymous access token right away
-    BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(AFHTTPRequestOperation *operation, id responseObject) {
+    BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
         if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
             [self putInstallationCustomProperties_inner];
         }
@@ -259,7 +259,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
                                                           userInfo:nil];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {}];
+    } failure:^(NSURLSessionTask *task, NSError *error) {}];
     if (NO == isFetching) {
         if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
             [self putInstallationCustomProperties_inner];
@@ -458,10 +458,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 +(void) updateInstallation:(NSDictionary *) properties shouldOverwrite:(BOOL) overwrite {
     if (!overwrite && (!properties || !properties.count)) return;
     NSString *installationEndPoint = @"/installation";
-    NSError * err;
-    NSData * jsonData = [NSJSONSerialization dataWithJSONObject:properties options:0 error:&err];
-    NSString * propertiesString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    [self postEventually:installationEndPoint params:@{@"body":propertiesString, @"overwrite":[NSNumber numberWithBool:overwrite]} handler:^(WPResponse *response, NSError *error) {}];
+    [self postEventually:installationEndPoint params:@{@"body":properties, @"overwrite":[NSNumber numberWithBool:overwrite]} handler:^(WPResponse *response, NSError *error) {}];
 }
 
 static NSObject *_putInstallationCustomProperties_lock; //= [NSObject new];
@@ -580,10 +577,7 @@ static int _putInstallationCustomProperties_blockId = 0;
         [params setValue:[NSString stringWithFormat:@"%f,%f", location.coordinate.latitude, location.coordinate.longitude] forKey:@"location"];
     }
 
-    NSError *err;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&err];
-    NSString *eventString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    [self postEventually:eventEndPoint params:@{@"body":eventString} handler:
+    [self postEventually:eventEndPoint params:@{@"body":params} handler:
      ^(WPResponse *response, NSError *error) {
 
      }];

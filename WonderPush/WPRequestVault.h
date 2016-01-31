@@ -24,6 +24,8 @@
 
 - (id) initWithClient:(WPClient *)client;
 
+- (void) reachabilityChanged:(AFNetworkReachabilityStatus)status;
+
 - (void) add:(WPRequest *)request;
 
 - (void) reset;

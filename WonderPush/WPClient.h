@@ -15,7 +15,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "AFHTTPClient.h"
+#import <AFNetworking/AFNetworking.h>
 #import "WPRequest.h"
 
 /**
@@ -38,10 +38,10 @@
 ///@name Access Token Management
 ///-----------------------------
 
-- (void) fetchAnonymousAccessTokenAndCall:(void (^)(AFHTTPRequestOperation *operation, id responseObject))handler failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure nbRetry:(NSInteger) nbRetry;
+- (void) fetchAnonymousAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger) nbRetry;
 
 
-- (BOOL)fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(AFHTTPRequestOperation *operation, id responseObject))handler failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
+- (BOOL) fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure;
 
 /**
  Fetch an access token if the user isn't authenticated and none is found in the `NSUserDefaults`.
@@ -87,9 +87,9 @@
 ///------------------
 
 /**
- The AFHTTPClient used to perform HTTP requests.
+ The AFNetworking HTTP client used to perform HTTP requests.
  */
-@property (strong, nonatomic) AFHTTPClient *httpClient;
+@property (strong, nonatomic) AFHTTPSessionManager *afManager;
 @property (assign, atomic) BOOL isFetchingAccessToken;
 
 @end

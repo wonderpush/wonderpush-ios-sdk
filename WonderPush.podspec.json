@@ -35,7 +35,7 @@
   "dependencies": {
     "TCMobileProvision": "~> 1.0.0",
     "OpenUDID": "~> 1.0.0",
-    "AFNetworking": "~>1.3.0",
+    "AFNetworking": "~>3.0",
     "CustomIOSAlertView": "~> 0.9.3"
   },
   "public_header_files": "WonderPush/WonderPush.h",

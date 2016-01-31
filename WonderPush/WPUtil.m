@@ -137,6 +137,8 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
 
 + (NSError *)errorFromJSON:(id)json
 {
+    if (![json isKindOfClass:[NSDictionary class]])
+        return nil;
     id errorJson = [json valueForKeyPath:@"error"];
     if (!errorJson)
         return nil;

@@ -22,7 +22,8 @@
 #endif
 
 #define SDK_VERSION @"iOS-1.1.2.3"
-#define PRODUCTION_API_URL @"https://api.wonderpush.com/v1/"
+#define PRODUCTION_API_DOMAIN @"api.wonderpush.com"
+#define PRODUCTION_API_URL @"https://" PRODUCTION_API_DOMAIN @"/v1/"
 
 #define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
 #define USER_DEFAULTS_CLIENT_ID_KEY @"__wonderpush_client_id"
