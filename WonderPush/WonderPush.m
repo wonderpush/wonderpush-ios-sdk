@@ -574,7 +574,8 @@ static int _putInstallationCustomProperties_blockId = 0;
     CLLocation *location = [self location];
     if (location != nil)
     {
-        [params setValue:[NSString stringWithFormat:@"%f,%f", location.coordinate.latitude, location.coordinate.longitude] forKey:@"location"];
+        params[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
+                                @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
     }
 
     [self postEventually:eventEndPoint params:@{@"body":params} handler:
