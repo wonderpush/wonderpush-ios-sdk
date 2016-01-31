@@ -30,13 +30,13 @@ static NSMutableArray *tokenFetchedHandlers;
 static NSArray *allowedMethods = nil;
 
 
-@interface WPJSONRequestSerializer : AFJSONRequestSerializer
+@interface WPRequestSerializer : AFHTTPRequestSerializer
 
 + (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request;
 
 @end
 
-@implementation WPJSONRequestSerializer
+@implementation WPRequestSerializer
 
 + (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request
 {
@@ -57,11 +57,13 @@ static NSArray *allowedMethods = nil;
     NSDictionary *getParams = [WPUtil dictionaryWithFormEncodedString:request.URL.query];
 
     // Gather POST params
+    NSData *dBody = nil;
     NSDictionary *postParams = nil;
     if ([@"application/x-www-form-urlencoded" isEqualToString:[request valueForHTTPHeaderField:@"Content-Type"]]) {
         postParams = [WPUtil dictionaryWithFormEncodedString:[[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]];
     } else {
         postParams = @{};
+        dBody = request.HTTPBody;
     }
 
     // Step 3: add params
@@ -85,8 +87,8 @@ static NSArray *allowedMethods = nil;
 
     // Add body if Content-Type is not application/x-www-form-urlencoded
     [buffer appendString:@"&"];
-    NSData *dBody = nil; // will be hmac-ed directly after buffer
-    dBody = request.HTTPBody;
+    //WPLog(@"%@", buffer);
+    // body will be hmac-ed directly after buffer
 
     // Sign the buffer with the client secret using HMacSha1
     const char *cKey  = [[WPConfiguration sharedConfiguration].clientSecret cStringUsingEncoding:NSASCIIStringEncoding];
@@ -96,6 +98,7 @@ static NSArray *allowedMethods = nil;
     CCHmacInit(&hmacCtx, kCCHmacAlgSHA1, cKey, strlen(cKey));
     CCHmacUpdate(&hmacCtx, cData, strlen(cData));
     if (dBody) {
+        //WPLog(@"%@", [[NSString alloc] initWithData:dBody encoding:NSUTF8StringEncoding]);
         CCHmacUpdate(&hmacCtx, dBody.bytes, dBody.length);
     }
     CCHmacFinal(&hmacCtx, cHMAC);
@@ -108,25 +111,18 @@ static NSArray *allowedMethods = nil;
 - (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request withParameters:(id)parameters error:(NSError *__autoreleasing  _Nullable *)error
 {
     NSMutableURLRequest *mutableRequest = [request mutableCopy];
-
-    if (parameters && [parameters isKindOfClass:[NSDictionary class]]) {
-        // Read any accessToken parameter
-        NSString *accessToken = parameters[@"accessToken"];
-        if (accessToken) {
-            // Extract it from the parameters that will go to the JSON body
-            parameters = [parameters mutableCopy];
-            [parameters removeObjectForKey:@"accessToken"];
-        
-            // Append it to the URL query string
-            ((NSMutableURLRequest *)mutableRequest).URL = [NSURL URLWithString:[[mutableRequest.URL absoluteString] stringByAppendingFormat:(mutableRequest.URL.query ? @"&accessToken=%@" : @"?accessToken=%@"), accessToken]];
+    NSMutableDictionary *mutableParameters = [parameters mutableCopy];
+    for (NSString *key in parameters) {
+        id value = parameters[key];
+        if ([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSArray class]]) {
+            NSError *err;
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:&err];
+            NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            mutableParameters[key] = jsonString;
         }
     }
 
-    if ([parameters count] > 0) {
-        [mutableRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    }
-
-    request = [super requestBySerializingRequest:mutableRequest withParameters:parameters error:error];
+    request = [super requestBySerializingRequest:request withParameters:mutableParameters error:error];
     mutableRequest = [request mutableCopy];
 
     // Add the authorization header after JSON serialization
@@ -170,7 +166,7 @@ static NSArray *allowedMethods = nil;
         return nil;
     }
 
-    self.requestSerializer = [WPJSONRequestSerializer new];
+    self.requestSerializer = [WPRequestSerializer new];
 
     return self;
 }
@@ -337,6 +333,12 @@ static NSArray *allowedMethods = nil;
     } failure:^(NSURLSessionTask *task, NSError *error) {
         // Error
         WPLog(@"Could not fetch access token: %@", error);
+        if (error) {
+            NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+            if ([errorBody isKindOfClass:[NSData class]]) {
+                WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+            }
+        }
         if (nbRetry <= 0) {
             self.isFetchingAccessToken = NO;
             if (nil != failure) {
