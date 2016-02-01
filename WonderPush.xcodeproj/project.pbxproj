@@ -36,7 +36,6 @@
 		9021052846FD8EC5F8841A83 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
 		A16E33A619C886A700E4E158 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		A16E33AA19C886A700E4E158 /* WonderPush-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WonderPush-Prefix.pch"; sourceTree = "<group>"; };
 		A16E33AD19C886A700E4E158 /* WonderPush.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPush.m; sourceTree = "<group>"; };
 		A16E33EE19C88EDB00E4E158 /* WPConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPConfiguration.h; sourceTree = "<group>"; };
 		A16E33EF19C88EDB00E4E158 /* WPConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPConfiguration.m; sourceTree = "<group>"; };
@@ -163,7 +162,6 @@
 			isa = PBXGroup;
 			children = (
 				A1E3E08519E423A200A4EE09 /* Info.plist */,
-				A16E33AA19C886A700E4E158 /* WonderPush-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -319,7 +317,6 @@
 				DEAD_CODE_STRIPPING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREFIX_HEADER = "WonderPush/WonderPush-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"WP_DEBUG=1",
@@ -360,7 +357,6 @@
 				DEAD_CODE_STRIPPING = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_PREFIX_HEADER = "WonderPush/WonderPush-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
