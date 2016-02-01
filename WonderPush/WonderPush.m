@@ -30,6 +30,7 @@
 #import "WPClient.h"
 #import "CustomIOSAlertView.h"
 #import "WPJsonUtil.h"
+#import "WPLog.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 

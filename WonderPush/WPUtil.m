@@ -17,6 +17,7 @@
 #import "WPUtil.h"
 #import "OpenUDID.h"
 #import "WPConfiguration.h"
+#import "WPLog.h"
 
 #import <sys/utsname.h>
 #import <UIKit/UIApplication.h>

@@ -16,6 +16,7 @@
 
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
+#import "WPLog.h"
 #import <AFNetworking/AFNetworking.h>
 
 

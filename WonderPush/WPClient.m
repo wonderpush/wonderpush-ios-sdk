@@ -22,6 +22,7 @@
 #import "WPConfiguration.h"
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
+#import "WPLog.h"
 
 
 #pragma mark - WPJSONRequestOperation

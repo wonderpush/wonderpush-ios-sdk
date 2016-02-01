@@ -39,7 +39,6 @@
     "CustomIOSAlertView": "~> 0.9.3"
   },
   "public_header_files": "WonderPush/WonderPush.h",
-  "prefix_header_file": "WonderPush/WonderPush-Prefix.pch",
   "source_files": [
     "WonderPush/*.{m,h}",
     "CustomiOSAlertView/*.{m,h}"

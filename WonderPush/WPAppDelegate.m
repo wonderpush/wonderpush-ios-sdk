@@ -12,6 +12,7 @@
 #import <objc/runtime.h>
 
 #import "WonderPush.h"
+#import "WPLog.h"
 
 
 const char * const WPAPPDELEGATE_ASSOCIATION_KEY = "com.wonderpush.sdk.WPAppDelegate";

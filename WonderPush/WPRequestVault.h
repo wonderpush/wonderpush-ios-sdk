@@ -18,6 +18,9 @@
 #import "WPRequest.h"
 #import "WPClient.h"
 
+#define USER_DEFAULTS_REQUEST_VAULT_QUEUE @"__wonderpush_request_vault"
+
+
 @interface WPRequestVault : NSObject
 
 @property (nonatomic, weak) WPClient *client;

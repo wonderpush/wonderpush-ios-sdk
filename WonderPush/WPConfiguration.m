@@ -15,6 +15,8 @@
  */
 
 #import "WPConfiguration.h"
+#import "WonderPush_private.h"
+#import "WPLog.h"
 
 
 static WPConfiguration *sharedConfiguration = nil;
