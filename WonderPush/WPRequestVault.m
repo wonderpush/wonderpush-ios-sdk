@@ -57,6 +57,8 @@
     if (self = [super init]) {
         self.client = client;
         self.operationQueue = [[NSOperationQueue alloc] init];
+        self.operationQueue.name = @"WonderPush-RequestVault";
+        self.operationQueue.maxConcurrentOperationCount = 1;
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedNotification:) name:WP_NOTIFICATION_INITIALIZED object:nil];
         // Set initial reachability
@@ -188,6 +190,7 @@
 
 - (void) initializedNotification:(NSNotification *) notification
 {
+    WPLog(@"SDK initialized, starting queue to test reachability.");
     [self.operationQueue setSuspended:NO];
 }
 
@@ -224,7 +227,11 @@
 
         // Handle network errors
         if (error && [NSURLErrorDomain isEqualToString:error.domain] && error.code <= NSURLErrorBadURL) {
-
+            // Make sure to stop the queue
+            if (![WonderPush isReachable]) {
+                WPLog(@"Declaring not reachable");
+                [self.vault reachabilityChanged:AFNetworkReachabilityStatusNotReachable];
+            }
             [self.vault addToQueue:self.request];
 
             return;

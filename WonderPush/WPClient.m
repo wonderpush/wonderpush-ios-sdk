@@ -214,7 +214,6 @@ static NSArray *allowedMethods = nil;
         NSURL *baseURL = [WPConfiguration sharedConfiguration].baseURL;
         WPLog(@"WonderPush base URL: %@", baseURL);
         sharedClient = [[WPClient alloc] initWithBaseURL:baseURL];
-        sharedClient.requestVault = [[WPRequestVault alloc] initWithClient:sharedClient];
     });
     return sharedClient;
 }
@@ -222,6 +221,9 @@ static NSArray *allowedMethods = nil;
 - (id)initWithBaseURL:(NSURL *)url
 {
     if (self = [super init]) {
+        self.isFetchingAccessToken = false;
+        tokenFetchedHandlers = [[NSMutableArray alloc] init];
+
         WPRequestVault *wpRequestVault = [[WPRequestVault alloc] initWithClient:self];
         self.requestVault = wpRequestVault;
         self.jsonHttpClient = [[WPHTTPClient alloc] initWithBaseURL:url];
@@ -236,8 +238,7 @@ static NSArray *allowedMethods = nil;
                 [wpRequestVault reachabilityChanged:status];
             }
         }];
-        self.isFetchingAccessToken = false;
-        tokenFetchedHandlers = [[NSMutableArray alloc] init];
+        [self.jsonHttpClient.reachabilityManager startMonitoring];
     }
     return self;
 }
