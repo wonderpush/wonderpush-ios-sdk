@@ -903,13 +903,36 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
     NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
     NSString *type = [wonderpushData objectForKey:@"type"];
+    NSDictionary *apsForeground = [wonderpushData objectForKey:@"apsForeground"];
+    if (![apsForeground isKindOfClass:[NSDictionary class]] || apsForeground.count == 0) apsForeground = nil;
+    BOOL apsForegroundAutoOpen = NO;
+    BOOL apsForegroundAutoDrop = NO;
+    if (apsForeground) {
+        apsForegroundAutoOpen = [[apsForeground objectForKey:@"autoOpen"] isEqual:@YES];
+        apsForegroundAutoDrop = [[apsForeground objectForKey:@"autoDrop"] isEqual:@YES];
+    }
+
+    // Should we merely drop this notification if received in foreground?
+    if (applicationState == UIApplicationStateActive && apsForegroundAutoDrop) {
+        WPLog(@"Dropping notification received in foreground like demanded");
+        return NO;
+    }
 
     NSDictionary *aps = [notificationDictionary objectForKey:@"aps"];
     if (![aps isKindOfClass:[NSDictionary class]] || aps.count == 0) aps = nil;
-    id apsAlert = nil;
-    if (aps) apsAlert = [aps objectForKey:@"alert"];
+    id apsAlert = aps ? [aps objectForKey:@"alert"] : nil;
 
-    if (![type isEqualToString:WP_PUSH_NOTIFICATION_DATA] && aps && apsAlert && applicationState == UIApplicationStateActive) {
+    // Should we simulate the system alert if the notification is received in foreground?
+    if (
+        // we only treat the case where the notification is received in foreground
+        applicationState == UIApplicationStateActive
+        // data notifications should never be displayed by our SDK
+        && ![type isEqualToString:WP_PUSH_NOTIFICATION_DATA]
+        // if we should auto open the notification, skip to the else
+        && !apsForegroundAutoOpen
+        // we have some text to display
+        && aps && apsAlert
+    ) {
 
         NSBundle *mainBundle = [NSBundle mainBundle];
         NSDictionary *infoDictionary = [mainBundle infoDictionary];
