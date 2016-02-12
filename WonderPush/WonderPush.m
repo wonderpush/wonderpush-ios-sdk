@@ -899,11 +899,14 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
 
+    NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
+    NSString *type = [wonderpushData objectForKey:@"type"];
+
     NSDictionary *aps = [notificationDictionary objectForKey:@"aps"];
     id apsAlert = nil;
     if (aps) apsAlert = [aps objectForKey:@"alert"];
 
-    if (aps && apsAlert && applicationState == UIApplicationStateActive) {
+    if (![type isEqualToString:WP_PUSH_NOTIFICATION_DATA] && aps && apsAlert && applicationState == UIApplicationStateActive) {
 
         NSBundle *mainBundle = [NSBundle mainBundle];
         NSDictionary *infoDictionary = [mainBundle infoDictionary];
