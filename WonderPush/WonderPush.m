@@ -302,9 +302,11 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (BOOL) isNotificationForWonderPush:(NSDictionary *)userInfo
 {
-    if (userInfo) {
+    if ([userInfo isKindOfClass:[NSDictionary class]]) {
         NSDictionary *wonderpushData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
         return !!wonderpushData && [wonderpushData isKindOfClass:[NSDictionary class]];
+    } else {
+        WPLog(@"isNotificationForWonderPush: received a non NSDictionary: %@", userInfo);
     }
     return NO;
 }
@@ -335,7 +337,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
         && launchOptions != nil
         ) {
         NSDictionary *notificationDictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-        if (notificationDictionary) {
+        if ([notificationDictionary isKindOfClass:[NSDictionary class]]) {
             _notificationFromAppLaunchCampaignId = nil;
             _notificationFromAppLaunchNotificationId = nil;
             if ([WonderPush isNotificationForWonderPush:notificationDictionary]) {
@@ -617,7 +619,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     buttonHandler.notificationConfiguration = wonderPushData;
     buttonHandler.buttonConfiguration = buttons;
     dialog.delegate = buttonHandler;
-    if (buttons != nil && [buttons count] > 0)
+    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0)
     {
         for (NSDictionary *button in buttons)
         {
@@ -674,7 +676,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     buttonHandler.buttonConfiguration = buttons;
     buttonHandler.notificationConfiguration = wonderPushData;
     [alert setDelegate:buttonHandler];
-    if (buttons != nil && [buttons count] > 0)
+    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0)
     {
         NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
         for (NSDictionary *button in buttons)
@@ -698,19 +700,19 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
 
     NSDictionary *mapData = [wonderPushData objectForKey:@"map"];
-    if (mapData == nil)
+    if (![mapData isKindOfClass:[NSDictionary class]])
     {
         return;
     }
 
     NSDictionary *place = [mapData objectForKey:@"place"];
-    if (place == nil)
+    if (![place isKindOfClass:[NSDictionary class]])
     {
         return;
     }
 
     NSDictionary *point = [place objectForKey:@"point"];
-    if (point == nil)
+    if (![point isKindOfClass:[NSDictionary class]])
     {
         return;
     }
@@ -736,7 +738,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     buttonHandler.buttonConfiguration = buttons;
     buttonHandler.notificationConfiguration = wonderPushData;
     [alert setDelegate:buttonHandler];
-    if (buttons != nil && [buttons count] > 0)
+    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0)
     {
         NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
         for (NSDictionary *button in buttons)
@@ -802,19 +804,19 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if ([type isEqualToString:WP_ACTION_MAP_OPEN])
     {
         NSDictionary *mapData = [notification objectForKey:@"map"];
-        if (mapData == nil)
+        if (![mapData isKindOfClass:[NSDictionary class]])
         {
             return;
         }
 
         NSDictionary *place = [mapData objectForKey:@"place"];
-        if (place == nil)
+        if (![place isKindOfClass:[NSDictionary class]])
         {
             return;
         }
 
         NSDictionary *point = [place objectForKey:@"point"];
-        if (point == nil)
+        if (![point isKindOfClass:[NSDictionary class]])
         {
             return;
         }
@@ -903,6 +905,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSString *type = [wonderpushData objectForKey:@"type"];
 
     NSDictionary *aps = [notificationDictionary objectForKey:@"aps"];
+    if (![aps isKindOfClass:[NSDictionary class]] || aps.count == 0) aps = nil;
     id apsAlert = nil;
     if (aps) apsAlert = [aps objectForKey:@"alert"];
 
