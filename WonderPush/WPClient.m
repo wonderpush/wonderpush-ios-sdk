@@ -335,24 +335,31 @@ static NSArray *allowedMethods = nil;
     } failure:^(NSURLSessionTask *task, NSError *error) {
         // Error
         WPLog(@"Could not fetch access token: %@", error);
-        if (error) {
-            NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-            if ([errorBody isKindOfClass:[NSData class]]) {
-                WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+        id jsonError = nil;
+        NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+        }
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            NSError *decodeError = nil;
+            jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
+            if (decodeError) NSLog(@"WPClient: Error while deserializing: %@", decodeError);
+        }
+
+        BOOL abort = NO;
+        NSError *wpError = [WPUtil errorFromJSON:jsonError];
+        if (wpError) {
+            // Handle invalid credentials
+            if (wpError.code == WPErrorInvalidCredentials) {
+                WPLog(@"Invalid client credentials: %@", jsonError);
+                NSLog(@"Please check your WonderPush clientId and clientSecret!");
+                abort = YES;
             }
         }
-        if (nbRetry <= 0) {
+
+        if (abort || nbRetry <= 0) {
             self.isFetchingAccessToken = NO;
-            if (nil != failure) {
-                id json = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-                NSError *jsonError = [WPUtil errorFromJSON:json];
-                if (jsonError) {
-                    // Handle invalid credentials
-                    if (jsonError.code == WPErrorInvalidCredentials) {
-                        WPLog(@"Invalid client credentials: %@", jsonError);
-                        NSLog(@"Please check your WonderPush clientId and clientSecret!");
-                    }
-                }
+            if (failure) {
                 failure(task, error);
             }
             @synchronized(tokenFetchedHandlers) {
@@ -362,16 +369,15 @@ static NSArray *allowedMethods = nil;
                 }
                 [tokenFetchedHandlers removeAllObjects];
             }
-            return ;
+            return;
         }
-        // Retry in 60 seconds
+
+        // Retry later
         double delayInSeconds = RETRY_INTERVAL;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             self.isFetchingAccessToken = NO;
-            if (nbRetry > 0) {
-                [self fetchAnonymousAccessTokenAndCall:handler failure:failure nbRetry:nbRetry - 1];
-            }
+            [self fetchAnonymousAccessTokenAndCall:handler failure:failure nbRetry:nbRetry - 1];
         });
     }];
 
@@ -457,14 +463,23 @@ static NSArray *allowedMethods = nil;
     };
 
     // The failure handler
-
     void(^failure)(NSURLSessionTask *, NSError *) = ^(NSURLSessionTask *task, NSError *error) {
-        id json = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-        NSError *jsonError = [WPUtil errorFromJSON:json];
-        if (jsonError) {
+        id jsonError = nil;
+        NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+        }
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            NSError *decodeError = nil;
+            jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
+            if (decodeError) NSLog(@"WPClient: Error while deserializing: %@", decodeError);
+        }
+
+        NSError *wpError = [WPUtil errorFromJSON:jsonError];
+        if (wpError) {
 
             // Handle invalid access token by requesting a new one.
-            if (jsonError.code == WPErrorInvalidAccessToken) {
+            if (wpError.code == WPErrorInvalidAccessToken) {
 
                 WPLog(@"Invalid access token: %@", jsonError);
 
@@ -474,14 +489,14 @@ static NSArray *allowedMethods = nil;
                 configuration.sid = nil;
                 configuration.installationId = nil;
 
-                // Retry in 60 secs
+                // Retry later
                 double delayInSeconds = RETRY_INTERVAL;
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     [self requestAuthenticated:request];
                 });
 
-            } else if (jsonError.code == WPErrorInvalidCredentials) {
+            } else if (wpError.code == WPErrorInvalidCredentials) {
 
                 WPLog(@"Invalid client credentials: %@", jsonError);
                 NSLog(@"Please check your WonderPush clientId and clientSecret!");
