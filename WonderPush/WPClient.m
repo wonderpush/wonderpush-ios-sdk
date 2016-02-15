@@ -16,12 +16,13 @@
 
 #import <UIKit/UIKit.h>
 #import <CommonCrypto/CommonCrypto.h>
-#import "AFJSONRequestOperation.h"
+#import <AFNetworking/AFNetworking.h>
 #import "WPUtil.h"
 #import "WPClient.h"
 #import "WPConfiguration.h"
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
+#import "WPLog.h"
 
 
 #pragma mark - WPJSONRequestOperation
@@ -30,14 +31,13 @@ static NSMutableArray *tokenFetchedHandlers;
 static NSArray *allowedMethods = nil;
 
 
-@interface WPJSONRequestOperation : AFJSONRequestOperation
+@interface WPRequestSerializer : AFHTTPRequestSerializer
 
 + (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request;
 
 @end
 
-
-@implementation WPJSONRequestOperation
+@implementation WPRequestSerializer
 
 + (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request
 {
@@ -58,7 +58,14 @@ static NSArray *allowedMethods = nil;
     NSDictionary *getParams = [WPUtil dictionaryWithFormEncodedString:request.URL.query];
 
     // Gather POST params
-    NSDictionary *postParams = [WPUtil dictionaryWithFormEncodedString:[[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]];
+    NSData *dBody = nil;
+    NSDictionary *postParams = nil;
+    if ([@"application/x-www-form-urlencoded" isEqualToString:[request valueForHTTPHeaderField:@"Content-Type"]]) {
+        postParams = [WPUtil dictionaryWithFormEncodedString:[[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]];
+    } else {
+        postParams = @{};
+        dBody = request.HTTPBody;
+    }
 
     // Step 3: add params
     [buffer appendString:@"&"];
@@ -79,36 +86,53 @@ static NSArray *allowedMethods = nil;
         }
     }
 
-    // TODO: add the body here when we support other content types
-    // than application/x-www-form-urlencoded
+    // Add body if Content-Type is not application/x-www-form-urlencoded
     [buffer appendString:@"&"];
+    //WPLog(@"%@", buffer);
+    // body will be hmac-ed directly after buffer
 
     // Sign the buffer with the client secret using HMacSha1
     const char *cKey  = [[WPConfiguration sharedConfiguration].clientSecret cStringUsingEncoding:NSASCIIStringEncoding];
     const char *cData = [buffer cStringUsingEncoding:NSASCIIStringEncoding];
     unsigned char cHMAC[CC_SHA1_DIGEST_LENGTH];
-    CCHmac(kCCHmacAlgSHA1, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+    CCHmacContext hmacCtx;
+    CCHmacInit(&hmacCtx, kCCHmacAlgSHA1, cKey, strlen(cKey));
+    CCHmacUpdate(&hmacCtx, cData, strlen(cData));
+    if (dBody) {
+        //WPLog(@"%@", [[NSString alloc] initWithData:dBody encoding:NSUTF8StringEncoding]);
+        CCHmacUpdate(&hmacCtx, dBody.bytes, dBody.length);
+    }
+    CCHmacFinal(&hmacCtx, cHMAC);
     NSData *HMAC = [[NSData alloc] initWithBytes:cHMAC length:sizeof(cHMAC)];
     NSString *hash = [WPUtil base64forData:HMAC];
 
     return [NSString stringWithFormat:@"WonderPush sig=\"%@\", meth=\"0\"", [WPUtil percentEncodedString:hash]];
 }
 
-
-- (id) initWithRequest:(NSURLRequest *)urlRequest
+- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request withParameters:(id)parameters error:(NSError *__autoreleasing  _Nullable *)error
 {
-    // Make sure the request is mutable
-    if (![urlRequest isKindOfClass:[NSMutableURLRequest class]])
-        [NSException raise:@"Immutable NSURLRequest." format:NSLocalizedString(@"Url requests from AFNetworking should be mutable, please check that the AFNetworking version you are using is compatible with WonderPush.", nil)];
-    NSMutableURLRequest *mutableRequest = (NSMutableURLRequest *)urlRequest;
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+    NSMutableDictionary *mutableParameters = [parameters mutableCopy];
+    for (NSString *key in parameters) {
+        id value = parameters[key];
+        if ([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSArray class]]) {
+            NSError *err;
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:&err];
+            NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            mutableParameters[key] = jsonString;
+        }
+    }
 
-    // Add the authorization header
-    NSString *authorizationHeader = [[self class] wonderPushAuthorizationHeaderValueForRequest:mutableRequest];
-    if (authorizationHeader)
+    request = [super requestBySerializingRequest:request withParameters:mutableParameters error:error];
+    mutableRequest = [request mutableCopy];
+
+    // Add the authorization header after JSON serialization
+    NSString *authorizationHeader = [[self class] wonderPushAuthorizationHeaderValueForRequest:request];
+    if (authorizationHeader) {
         [mutableRequest addValue:authorizationHeader forHTTPHeaderField:@"X-WonderPush-Authorization"];
+    }
 
-    return [super initWithRequest:mutableRequest];
-
+    return mutableRequest;
 }
 
 @end
@@ -118,8 +142,8 @@ static NSArray *allowedMethods = nil;
 
 @interface HandlerPair : NSObject
 
-@property (copy) void (^success)(AFHTTPRequestOperation *, id);
-@property (copy) void (^error)(AFHTTPRequestOperation *, NSError *);
+@property (copy) void (^success)(NSURLSessionTask *, id);
+@property (copy) void (^error)(NSURLSessionTask *, NSError *);
 
 @end
 
@@ -130,7 +154,7 @@ static NSArray *allowedMethods = nil;
 
 #pragma mark - WPHttpClient
 
-@interface WPHTTPClient : AFHTTPClient
+@interface WPHTTPClient : AFHTTPSessionManager
 
 @end
 
@@ -143,10 +167,7 @@ static NSArray *allowedMethods = nil;
         return nil;
     }
 
-    [self registerHTTPOperationClass:[WPJSONRequestOperation class]];
-
-    // Accept HTTP Header; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
-	[self setDefaultHeader:@"Accept" value:@"application/json"];
+    self.requestSerializer = [WPRequestSerializer new];
 
     return self;
 }
@@ -164,7 +185,7 @@ static NSArray *allowedMethods = nil;
  */
 - (id) initWithBaseURL:(NSURL *)url;
 
-/// The AFHTTPClient
+/// The wrapped AFNetworking HTTP client
 @property (strong, nonatomic) WPHTTPClient *jsonHttpClient;
 
 /// The request vault
@@ -181,7 +202,7 @@ static NSArray *allowedMethods = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // Initialize some constants
-        allowedMethods = @[@"GET", @"POST", @"PUT", @"DELETE"];
+        allowedMethods = @[@"GET", @"POST", @"PUT", @"PATCH", @"DELETE"];
     });
 }
 
@@ -193,7 +214,6 @@ static NSArray *allowedMethods = nil;
         NSURL *baseURL = [WPConfiguration sharedConfiguration].baseURL;
         WPLog(@"WonderPush base URL: %@", baseURL);
         sharedClient = [[WPClient alloc] initWithBaseURL:baseURL];
-        sharedClient.requestVault = [[WPRequestVault alloc] initWithClient:sharedClient];
     });
     return sharedClient;
 }
@@ -201,17 +221,24 @@ static NSArray *allowedMethods = nil;
 - (id)initWithBaseURL:(NSURL *)url
 {
     if (self = [super init]) {
+        self.isFetchingAccessToken = false;
+        tokenFetchedHandlers = [[NSMutableArray alloc] init];
+
+        WPRequestVault *wpRequestVault = [[WPRequestVault alloc] initWithClient:self];
+        self.requestVault = wpRequestVault;
         self.jsonHttpClient = [[WPHTTPClient alloc] initWithBaseURL:url];
-        [self.jsonHttpClient setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        self.jsonHttpClient.reachabilityManager = [AFNetworkReachabilityManager managerForDomain:PRODUCTION_API_DOMAIN];
+        [self.jsonHttpClient.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
             if (status == AFNetworkReachabilityStatusNotReachable || status == AFNetworkReachabilityStatusUnknown) {
                 [WonderPush setIsReachable:NO];
             } else {
                 [WonderPush setIsReachable:YES];
             }
-
+            if (wpRequestVault) {
+                [wpRequestVault reachabilityChanged:status];
+            }
         }];
-        self.isFetchingAccessToken = false;
-        tokenFetchedHandlers = [[NSMutableArray alloc] init];
+        [self.jsonHttpClient.reachabilityManager startMonitoring];
     }
     return self;
 }
@@ -219,7 +246,7 @@ static NSArray *allowedMethods = nil;
 
 #pragma mark HTTP Access
 
-- (AFHTTPClient *)httpClient
+- (AFHTTPSessionManager *)afManager
 {
     return self.jsonHttpClient;
 }
@@ -235,7 +262,7 @@ static NSArray *allowedMethods = nil;
     return NO;
 }
 
-- (BOOL)fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
+- (BOOL)fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(NSURLSessionTask *task, id responseObject))success failure:(void (^)(NSURLSessionTask *task, NSError *error))failure
 {
     if (![WPConfiguration sharedConfiguration].accessToken) {
         [self fetchAnonymousAccessTokenAndCall:success failure:failure nbRetry:0];
@@ -244,7 +271,7 @@ static NSArray *allowedMethods = nil;
     return NO;
 }
 
-- (void) fetchAnonymousAccessTokenAndCall:(void (^)(AFHTTPRequestOperation *operation, id responseObject))handler failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure nbRetry:(NSInteger) nbRetry {
+- (void) fetchAnonymousAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger) nbRetry {
     if (YES == self.isFetchingAccessToken) {
         HandlerPair *pair = [[HandlerPair alloc] init];
         pair.success = handler;
@@ -269,11 +296,10 @@ static NSArray *allowedMethods = nil;
 
     WPLog(@"Fetching access token");
 
-    [self.jsonHttpClient postPath:resource parameters:params success:^(AFHTTPRequestOperation *operation, id response) {
+    [self.jsonHttpClient POST:resource parameters:params progress:nil success:^(NSURLSessionTask *task, id response) {
         // Success
 
-        WPJSONRequestOperation *jsonOperation = (WPJSONRequestOperation *)operation;
-        id responseJson = jsonOperation.responseJSON;
+        NSDictionary *responseJson = (NSDictionary *)response;
         NSString *accessToken = [responseJson valueForKeyPath:@"token"];
         NSString *sid = [responseJson valueForKeyPath:@"data.sid"];
 
@@ -295,51 +321,63 @@ static NSArray *allowedMethods = nil;
             [WonderPush updateInstallationCoreProperties];
 
             if (nil != handler) {
-                handler(operation,response);
+                handler(task, response);
             }
             @synchronized(tokenFetchedHandlers) {
                 for (HandlerPair *pair in tokenFetchedHandlers) {
                     if (nil != pair.success)
-                        pair.success(operation, response);
+                        pair.success(task, response);
                 }
                 [tokenFetchedHandlers removeAllObjects];
             }
         }
 
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } failure:^(NSURLSessionTask *task, NSError *error) {
         // Error
         WPLog(@"Could not fetch access token: %@", error);
-        if (nbRetry <= 0) {
+        id jsonError = nil;
+        NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+        }
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            NSError *decodeError = nil;
+            jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
+            if (decodeError) NSLog(@"WPClient: Error while deserializing: %@", decodeError);
+        }
+
+        BOOL abort = NO;
+        NSError *wpError = [WPUtil errorFromJSON:jsonError];
+        if (wpError) {
+            // Handle invalid credentials
+            if (wpError.code == WPErrorInvalidCredentials) {
+                WPLog(@"Invalid client credentials: %@", jsonError);
+                NSLog(@"Please check your WonderPush clientId and clientSecret!");
+                abort = YES;
+            }
+        }
+
+        if (abort || nbRetry <= 0) {
             self.isFetchingAccessToken = NO;
-            if (nil != failure) {
-                id json = ((WPJSONRequestOperation *) operation).responseJSON;
-                NSError *jsonError = [WPUtil errorFromJSON:json];
-                if (jsonError) {
-                    // Handle invalid credentials
-                    if (jsonError.code == WPErrorInvalidCredentials) {
-                        WPLog(@"Invalid client credentials: %@", jsonError);
-                        NSLog(@"Please check your WonderPush clientId and clientSecret!");
-                    }
-                }
-                failure(operation, error);
+            if (failure) {
+                failure(task, error);
             }
             @synchronized(tokenFetchedHandlers) {
                 for (HandlerPair *pair in tokenFetchedHandlers) {
                     if (nil != pair.error)
-                        pair.error(operation, error);
+                        pair.error(task, error);
                 }
                 [tokenFetchedHandlers removeAllObjects];
             }
-            return ;
+            return;
         }
-        // Retry in 60 seconds
+
+        // Retry later
         double delayInSeconds = RETRY_INTERVAL;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             self.isFetchingAccessToken = NO;
-            if (nbRetry > 0) {
-                [self fetchAnonymousAccessTokenAndCall:handler failure:failure nbRetry:nbRetry - 1];
-            }
+            [self fetchAnonymousAccessTokenAndCall:handler failure:failure nbRetry:nbRetry - 1];
         });
     }];
 
@@ -348,9 +386,9 @@ static NSArray *allowedMethods = nil;
 - (void) fetchAnonymousAccessTokenAndRunRequest:(WPRequest *)request
 {
 
-    [self fetchAnonymousAccessTokenAndCall:^(AFHTTPRequestOperation *operation, id response) {
+    [self fetchAnonymousAccessTokenAndCall:^(NSURLSessionTask *task, id response) {
          [self requestAuthenticated:request];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } failure:^(NSURLSessionTask *task, NSError *error) {
         if (request.handler) {
              request.handler(nil, error);
         }
@@ -380,12 +418,12 @@ static NSArray *allowedMethods = nil;
     [params setObject:[WPConfiguration sharedConfiguration].accessToken forKey:@"accessToken"];
     // The success handler
     NSTimeInterval timeRequestStart = [[NSProcessInfo processInfo] systemUptime];
-    void(^success)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id response) {
+    void(^success)(NSURLSessionTask *, id) = ^(NSURLSessionTask *task, id response) {
         NSTimeInterval timeRequestStop = [[NSProcessInfo processInfo] systemUptime];
-        if ([operation isKindOfClass:[WPJSONRequestOperation class]]) {
-            WPJSONRequestOperation *jsonOperation = (WPJSONRequestOperation *)operation;
+        if ([response isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *responseJSON = (NSDictionary *)response;
 
-            NSError *jsonError = [WPUtil errorFromJSON:jsonOperation.responseJSON];
+            NSError *jsonError = [WPUtil errorFromJSON:responseJSON];
             if (jsonError) {
                 if (request.handler)
                     request.handler(nil, jsonError);
@@ -393,9 +431,9 @@ static NSArray *allowedMethods = nil;
             } else {
 
                 WPResponse *response = [[WPResponse alloc] init];
-                response.object = jsonOperation.responseJSON;
-                NSNumber *_serverTime = [((NSDictionary *)jsonOperation.responseJSON) objectForKey:@"_serverTime"];
-                NSNumber *_serverTook = [((NSDictionary *)jsonOperation.responseJSON) objectForKey:@"_serverTook"];
+                response.object = responseJSON;
+                NSNumber *_serverTime = [(responseJSON) objectForKey:@"_serverTime"];
+                NSNumber *_serverTook = [(responseJSON) objectForKey:@"_serverTook"];
 
                 if (_serverTime != nil) {
                     NSTimeInterval serverTime = [_serverTime doubleValue] / 1000.;
@@ -425,14 +463,23 @@ static NSArray *allowedMethods = nil;
     };
 
     // The failure handler
+    void(^failure)(NSURLSessionTask *, NSError *) = ^(NSURLSessionTask *task, NSError *error) {
+        id jsonError = nil;
+        NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+        }
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            NSError *decodeError = nil;
+            jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
+            if (decodeError) NSLog(@"WPClient: Error while deserializing: %@", decodeError);
+        }
 
-    void(^failure)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
-        id json = ((WPJSONRequestOperation *) operation).responseJSON;
-        NSError *jsonError = [WPUtil errorFromJSON:json];
-        if (jsonError) {
+        NSError *wpError = [WPUtil errorFromJSON:jsonError];
+        if (wpError) {
 
             // Handle invalid access token by requesting a new one.
-            if (jsonError.code == WPErrorInvalidAccessToken) {
+            if (wpError.code == WPErrorInvalidAccessToken) {
 
                 WPLog(@"Invalid access token: %@", jsonError);
 
@@ -442,14 +489,14 @@ static NSArray *allowedMethods = nil;
                 configuration.sid = nil;
                 configuration.installationId = nil;
 
-                // Retry in 60 secs
+                // Retry later
                 double delayInSeconds = RETRY_INTERVAL;
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     [self requestAuthenticated:request];
                 });
 
-            } else if (jsonError.code == WPErrorInvalidCredentials) {
+            } else if (wpError.code == WPErrorInvalidCredentials) {
 
                 WPLog(@"Invalid client credentials: %@", jsonError);
                 NSLog(@"Please check your WonderPush clientId and clientSecret!");
@@ -472,13 +519,15 @@ static NSArray *allowedMethods = nil;
     WPLog(@"Performing request: %@", request);
 
     if ([@"POST" isEqualToString:method]) {
-        [self.jsonHttpClient postPath:request.resource parameters:params success:success failure:failure];
+        [self.jsonHttpClient POST:request.resource parameters:params progress:nil success:success failure:failure];
     } else if ([@"GET" isEqualToString:method]) {
-        [self.jsonHttpClient getPath:request.resource parameters:params success:success failure:failure];
+        [self.jsonHttpClient GET:request.resource parameters:params progress:nil success:success failure:failure];
     } else if ([@"DELETE" isEqualToString:method]) {
-        [self.jsonHttpClient deletePath:request.resource parameters:params success:success failure:failure];
+        [self.jsonHttpClient DELETE:request.resource parameters:params success:success failure:failure];
     } else if ([@"PUT" isEqualToString:method]) {
-        [self.jsonHttpClient putPath:request.resource parameters:params success:success failure:failure];
+        [self.jsonHttpClient PUT:request.resource parameters:params success:success failure:failure];
+    } else if ([@"PATCH" isEqualToString:method]) {
+        [self.jsonHttpClient PATCH:request.resource parameters:params success:success failure:failure];
     }
 }
 
@@ -486,7 +535,7 @@ static NSArray *allowedMethods = nil;
 {
     NSString *method = request.method.uppercaseString;
     if (!method || ![allowedMethods containsObject:method])
-        [NSException raise:@"InvalidHTTPVerb" format:@"Supported verbs are GET, POST, PUT and DELETE."];
+        [NSException raise:@"InvalidHTTPVerb" format:@"Supported verbs are GET, POST, PUT, PATCH and DELETE."];
 
     return;
 }

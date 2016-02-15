@@ -16,6 +16,8 @@
 
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
+#import "WPLog.h"
+#import <AFNetworking/AFNetworking.h>
 
 
 #pragma mark - RequestVaultOperation
@@ -39,10 +41,6 @@
 
 - (void) forget:(WPRequest *)request;
 
-- (void) reachabilityNotification:(NSNotification *)notification;
-
-- (void) reachabilityChanged:(AFNetworkReachabilityStatus)status;
-
 - (void) addToQueue:(WPRequest *)request;
 
 @property (readonly) NSArray *savedRequests;
@@ -59,9 +57,9 @@
     if (self = [super init]) {
         self.client = client;
         self.operationQueue = [[NSOperationQueue alloc] init];
+        self.operationQueue.name = @"WonderPush-RequestVault";
+        self.operationQueue.maxConcurrentOperationCount = 1;
 
-        // Register for reachability notifications
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityNotification:) name:AFNetworkingReachabilityDidChangeNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedNotification:) name:WP_NOTIFICATION_INITIALIZED object:nil];
         // Set initial reachability
         [self reachabilityChanged:[WonderPush isReachable]];
@@ -170,12 +168,6 @@
 
 #pragma mark - Reachability
 
-- (void) reachabilityNotification:(NSNotification *)notification
-{
-    NSNumber *status = [notification.userInfo valueForKey:AFNetworkingReachabilityNotificationStatusItem];
-    [self reachabilityChanged:status.intValue];
-}
-
 - (void) reachabilityChanged:(AFNetworkReachabilityStatus)status
 {
     switch (status) {
@@ -198,6 +190,7 @@
 
 - (void) initializedNotification:(NSNotification *) notification
 {
+    WPLog(@"SDK initialized, starting queue to test reachability.");
     [self.operationQueue setSuspended:NO];
 }
 
@@ -225,10 +218,20 @@
     requestCopy.handler = ^(WPResponse *response, NSError *error) {
 
         WPLog(@"WPRequestVaultOperation complete with response:%@ error:%@", response, error);
+        if (error) {
+            NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+            if ([errorBody isKindOfClass:[NSData class]]) {
+                WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+            }
+        }
 
         // Handle network errors
         if (error && [NSURLErrorDomain isEqualToString:error.domain] && error.code <= NSURLErrorBadURL) {
-
+            // Make sure to stop the queue
+            if (![WonderPush isReachable]) {
+                WPLog(@"Declaring not reachable");
+                [self.vault reachabilityChanged:AFNetworkReachabilityStatusNotReachable];
+            }
             [self.vault addToQueue:self.request];
 
             return;

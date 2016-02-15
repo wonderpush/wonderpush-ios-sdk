@@ -15,6 +15,8 @@
  */
 
 #import "WPConfiguration.h"
+#import "WonderPush_private.h"
+#import "WPLog.h"
 
 
 static WPConfiguration *sharedConfiguration = nil;
@@ -56,9 +58,18 @@ static WPConfiguration *sharedConfiguration = nil;
 
 - (NSDictionary *) _getNSDictionaryFromJSONForKey:(NSString *)key
 {
-    NSData *data = [[NSUserDefaults standardUserDefaults] valueForKey:key];
-    if (!data) return nil;
-    return [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    id rawValue = [[NSUserDefaults standardUserDefaults] valueForKey:key];
+    if (!rawValue) return nil;
+    if ([rawValue isKindOfClass:[NSDictionary class]]) {
+        return (NSDictionary *)rawValue;
+    } else if ([rawValue isKindOfClass:[NSData class]]) {
+        NSError *error = NULL;
+        NSDictionary *value = [NSJSONSerialization JSONObjectWithData:(NSData *)rawValue options:kNilOptions error:&error];
+        if (error) NSLog(@"WPConfiguration: Error while deserializing %@: %@", key, error);
+        return value;
+    }
+    NSLog(@"WonderPush expected an NSDictionary of JSON NSData but got: (%@) %@", [rawValue class], rawValue);
+    return nil;
 }
 
 - (void) _setNSDictionaryAsJSON:(NSDictionary *)value forKey:(NSString *)key
@@ -66,7 +77,9 @@ static WPConfiguration *sharedConfiguration = nil;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
     if (value) {
-        NSData *data = [NSJSONSerialization dataWithJSONObject:value options:kNilOptions error:nil];
+        NSError *error = NULL;
+        NSData *data = [NSJSONSerialization dataWithJSONObject:value options:kNilOptions error:&error];
+        if (error) NSLog(@"WPConfiguration: Error while serializing %@: %@", key, error);
         [defaults setValue:data forKeyPath:key];
     } else {
         [defaults removeObjectForKey:key];
@@ -326,21 +339,12 @@ static WPConfiguration *sharedConfiguration = nil;
 
 -(NSDictionary *) cachedInstallationCoreProperties
 {
-    NSDictionary *cachedInstallationCoreProperties = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
-    return cachedInstallationCoreProperties;
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
 }
 
 -(void) setCachedInstallationCoreProperties:(NSDictionary *)cachedInstallationCoreProperties
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if (cachedInstallationCoreProperties) {
-        [defaults setValue:cachedInstallationCoreProperties forKeyPath:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
-    } else {
-        [defaults removeObjectForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
-    }
-
-    [defaults synchronize];
+    [self _setNSDictionaryAsJSON:cachedInstallationCoreProperties forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
 }
 
 -(NSDate *) cachedInstallationCorePropertiesDate

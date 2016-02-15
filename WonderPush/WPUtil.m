@@ -17,6 +17,7 @@
 #import "WPUtil.h"
 #import "OpenUDID.h"
 #import "WPConfiguration.h"
+#import "WPLog.h"
 
 #import <sys/utsname.h>
 #import <UIKit/UIApplication.h>
@@ -137,6 +138,8 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
 
 + (NSError *)errorFromJSON:(id)json
 {
+    if (![json isKindOfClass:[NSDictionary class]])
+        return nil;
     id errorJson = [json valueForKeyPath:@"error"];
     if (!errorJson)
         return nil;

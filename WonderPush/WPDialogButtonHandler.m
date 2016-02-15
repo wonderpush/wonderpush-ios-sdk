@@ -32,7 +32,7 @@
 
 - (void)executeButtonActions:(NSArray *) actions
 {
-    if (!actions) return;
+    if (![actions isKindOfClass:[NSArray class]]) return;
     for (NSDictionary *action in actions)
     {
         [WonderPush executeAction:action onNotification:notificationConfiguration];
