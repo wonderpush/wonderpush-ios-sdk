@@ -1,7 +1,7 @@
 {
   "name": "WonderPush",
   "documentation_url": "http://wonderpush.github.io/wonderpush-ios-sdk/",
-  "version": "1.2.3",
+  "version": "2.0.0",
   "license": {
     "type": "Apache-2.0",
     "file": "LICENSE.txt"
@@ -17,7 +17,7 @@
   },
   "source": {
     "git": "https://github.com/wonderpush/wonderpush-ios-sdk.git",
-    "tag": "dev-cocoapods"
+    "tag": "v1.2.0.0"
   },
   "requires_arc": true,
   "module_name": "WonderPush",
@@ -40,7 +40,6 @@
   },
   "public_header_files": "WonderPush/WonderPush.h",
   "source_files": [
-    "WonderPush/*.{m,h}",
-    "CustomiOSAlertView/*.{m,h}"
+    "WonderPush/*.{m,h}"
   ]
 }
