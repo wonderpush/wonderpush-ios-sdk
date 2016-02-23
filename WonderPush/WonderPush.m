@@ -1039,8 +1039,10 @@ static WPDialogButtonHandler *buttonHandler = nil;
             // noop!
         }
     } else {
-        WPLog(@"Opening url: %@", targetUrl);
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:targetUrl]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            WPLog(@"Opening url: %@", targetUrl);
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:targetUrl]];
+        });
     }
 
     NSString *type = [wonderpushData objectForKey:@"type"];
