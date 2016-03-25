@@ -1119,7 +1119,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
             long long appCloseDate = lastInteractionTs;
             closeInfo[@"actionDate"] = [[NSNumber alloc] initWithLongLong:appCloseDate];
             closeInfo[@"openedTime"] = [[NSNumber alloc] initWithLongLong:appCloseDate - lastAppOpenTs];
-            [WonderPush trackInternalEvent:@"@APP_CLOSE" eventData:closeInfo customData:nil];
+            // [WonderPush trackInternalEvent:@"@APP_CLOSE" eventData:closeInfo customData:nil];
             conf.lastAppCloseDate = [[NSDate alloc] initWithTimeIntervalSince1970:appCloseDate / 1000.];
         }
 
