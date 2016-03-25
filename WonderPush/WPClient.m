@@ -23,6 +23,7 @@
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
 #import "WPLog.h"
+#import "WPJsonUtil.h"
 
 
 #pragma mark - WPJSONRequestOperation
@@ -309,6 +310,27 @@ static NSArray *allowedMethods = nil;
             configuration.accessToken = accessToken;
             configuration.sid = sid;
             configuration.installationId = [responseJson valueForKeyPath:@"data.installationId"];
+
+            id rawInstallation = [responseJson valueForKey:@"_installation"];
+            if ([rawInstallation isKindOfClass:[NSDictionary class]]) {
+                NSDictionary *installation = (NSDictionary *)rawInstallation;
+                id installationRawUpdateDate = [installation valueForKey:@"updateDate"];
+                NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:([installationRawUpdateDate isKindOfClass:[NSNumber class]] ? [(NSNumber *)installationRawUpdateDate longValue] : 0.) / 1000. ];
+                id rawCustom = [installation valueForKey:@"custom"];
+                NSDictionary * custom        = [rawCustom isKindOfClass:[NSDictionary class]] ? (NSDictionary *)rawCustom : @{};
+                NSDictionary * customUpdated = [custom copy];
+                WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+                NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated ?: @{};
+                NSDictionary *written = conf.cachedInstallationCustomPropertiesWritten ?: @{};
+                NSDate *updatedDate = conf.cachedInstallationCustomPropertiesUpdatedDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
+                NSDate *writtenDate = conf.cachedInstallationCustomPropertiesWrittenDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
+                NSDictionary * diff = [WPJsonUtil diff:written with:updated];
+                [WPJsonUtil merge:customUpdated with:diff];
+                conf.cachedInstallationCustomPropertiesUpdated = customUpdated;
+                conf.cachedInstallationCustomPropertiesWritten = custom;
+                conf.cachedInstallationCustomPropertiesUpdatedDate = [updatedDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? updatedDate : installationUpdateDate;
+                conf.cachedInstallationCustomPropertiesWrittenDate = [writtenDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? writtenDate : installationUpdateDate;
+            }
 
             self.isFetchingAccessToken = NO;
             NSDictionary *userInfo = @{WP_NOTIFICATION_USER_LOGED_IN_SID_KEY: sid,

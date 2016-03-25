@@ -181,6 +181,11 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 ///-----------------------------------
 
 /**
+ Returns the latest known custom properties attached to the current installation object stored by WonderPush.
+ */
++ (NSDictionary *) getInstallationCustomProperties;
+
+/**
  Updates the custom properties attached to the current installation object stored by WonderPush.
 
  In order to remove a value, don't forget to use `[NSNull null]` as value.

@@ -458,6 +458,15 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 #pragma mark - Installation data and events
 
++ (NSDictionary *) getInstallationCustomProperties
+{
+    [self onInteraction];
+    @synchronized (_putInstallationCustomProperties_lock) {
+        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+        return [(conf.cachedInstallationCustomPropertiesUpdated ?: @{}) copy];
+    }
+}
+
 +(void) updateInstallation:(NSDictionary *) properties shouldOverwrite:(BOOL) overwrite {
     if (!overwrite && (!properties || !properties.count)) return;
     NSString *installationEndPoint = @"/installation";
