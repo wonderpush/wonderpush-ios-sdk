@@ -588,7 +588,12 @@ static int _putInstallationCustomProperties_blockId = 0;
 
 }
 
-+ (void) trackEvent:(NSString*) type withData:(id)data
++ (void) trackEvent:(NSString*)type
+{
+    [self trackEvent:type eventData:nil customData:nil];
+}
+
++ (void) trackEvent:(NSString*)type withData:(NSDictionary *)data
 {
     [self trackEvent:type eventData:nil customData:data];
     [self onInteraction];

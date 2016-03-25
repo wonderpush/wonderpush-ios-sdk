@@ -193,10 +193,19 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Send an event to be tracked to WonderPush.
 
  @param type The event type, or name. Event types starting with an `@` character are reserved.
+ */
++ (void) trackEvent:(NSString*)type;
+
+/**
+ Send an event to be tracked to WonderPush.
+
+ @param type The event type, or name. Event types starting with an `@` character are reserved.
  @param data A dictionary containing custom properties to be attached to the event.
      Prefer using a few custom properties over a plethora of event type variants.
+     The keys should be prefixed according to the type of their values.
+     You can find the details here: http://www.wonderpush.com/docs/guide/custom-fields
  */
-+ (void) trackEvent:(NSString*)type withData:(id)data;
++ (void) trackEvent:(NSString*)type withData:(NSDictionary *)data;
 
 
 ///---------------------------------------
