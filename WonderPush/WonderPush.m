@@ -854,7 +854,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if (
         (deviceToken == nil && oldDeviceToken != nil) || (deviceToken != nil && oldDeviceToken == nil)
         || (deviceToken != nil && oldDeviceToken != nil && ![deviceToken isEqualToString:oldDeviceToken])
-        || (!cachedDeviceTokenDate || [cachedDeviceTokenDate timeIntervalSinceNow] < -CACHED_DEVICE_TOKEN_DURATION)
     ) {
         [sharedConfiguration setDeviceToken:deviceToken];
         [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
@@ -1212,9 +1211,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSDictionary *oldProperties = sharedConfiguration.cachedInstallationCoreProperties;
     NSDate *oldPropertiesDate = sharedConfiguration.cachedInstallationCorePropertiesDate;
     if (!oldProperties || !oldPropertiesDate
-        || [oldPropertiesDate timeIntervalSinceNow] < -CACHED_INSTALLATION_CORE_PROPERTIES_DURATION
         || ![oldProperties isEqualToDictionary:properties]
-        ) {
+    ) {
         [sharedConfiguration setCachedInstallationCoreProperties:properties];
         [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
         [self updateInstallation:properties shouldOverwrite:NO];
