@@ -140,6 +140,14 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (NSString *) pushToken;
 
+/**
+ Returns the currently used access token.
+ Returns `nil` until the SDK is properly initialized.
+ This together with your client secret gives entire control to the current installation and associated user,
+ you should not disclose it unnecessarily.
+ */
++ (NSString *) accessToken;
+
 
 ///---------------------------------
 /// @name Push Notification handling

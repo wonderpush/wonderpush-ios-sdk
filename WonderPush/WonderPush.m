@@ -455,6 +455,12 @@ static NSDictionary* gpsCapabilityByCode = nil;
     return configuration.deviceToken;
 }
 
++(NSString *) accessToken
+{
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    return configuration.accessToken;
+}
+
 
 #pragma mark - Installation data and events
 
