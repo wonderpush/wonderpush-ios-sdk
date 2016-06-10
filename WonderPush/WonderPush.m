@@ -506,7 +506,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 +(void) updateInstallation:(NSDictionary *) properties shouldOverwrite:(BOOL) overwrite {
     if (!overwrite && (!properties || !properties.count)) return;
     NSString *installationEndPoint = @"/installation";
-    [self postEventually:installationEndPoint params:@{@"body":properties, @"overwrite":[NSNumber numberWithBool:overwrite]} handler:^(WPResponse *response, NSError *error) {}];
+    [self postEventually:installationEndPoint params:@{@"body":properties, @"overwrite":[NSNumber numberWithBool:overwrite]}];
 }
 
 static NSObject *_putInstallationCustomProperties_lock; //= [NSObject new];
@@ -626,10 +626,7 @@ static int _putInstallationCustomProperties_blockId = 0;
                                 @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
     }
 
-    [self postEventually:eventEndPoint params:@{@"body":params} handler:
-     ^(WPResponse *response, NSError *error) {
-
-     }];
+    [self postEventually:eventEndPoint params:@{@"body":params}];
 
 }
 
@@ -1596,7 +1593,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     [client requestAuthenticated:request];
 }
 
-+ (void) postEventually:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
++ (void) postEventually:(NSString *)resource params:(id)params
 {
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
@@ -1604,7 +1601,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
     [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
     request.method = @"POST";
     request.resource = resource;
-    request.handler = handler;
     request.params = parameters;
     [client requestEventually:request];
 }

@@ -208,9 +208,8 @@
  @param resource The relative resource path, ommiting the first "/"
  Example: `scores/best`
  @param params A dictionary with parameter names and corresponding values that will constitute the POST request's body.
- @param handler A block to be executed when the request is done executing. Note that this handler will not be executed if the request completes after a network error.
  */
-+ (void) postEventually:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler;
++ (void) postEventually:(NSString *)resource params:(id)params;
 
 /**
  The last known location

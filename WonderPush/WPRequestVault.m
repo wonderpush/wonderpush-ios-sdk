@@ -238,9 +238,6 @@
         }
 
         [self.vault forget:self.request];
-
-        if (self.request.handler)
-            self.request.handler(response, error);
     };
 
     [self.vault.client requestAuthenticated:requestCopy];
