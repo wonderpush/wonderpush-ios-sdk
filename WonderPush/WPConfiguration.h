@@ -16,11 +16,14 @@
 
 #import <Foundation/Foundation.h>
 
-#define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
 #define USER_DEFAULTS_CLIENT_ID_KEY @"__wonderpush_client_id"
 #define USER_DEFAULTS_QUEUED_NOTIFICATIONS @"__wonderpush_queued_notifications"
 #define USER_DEFAULTS_EVENT_RECEIVED_HISTORY @"__wonderpush_event_received_history"
 #define USER_DEFAULTS_DEVICE_TOKEN_KEY @"__wonderpush_device_token"
+#define USER_DEFAULTS_DEVICE_TOKEN_ASSOCIATED_TO_USER_ID_KEY @"__wonderpush_device_token_associated_to_user_id"
+
+#define USER_DEFAULTS_PER_USER_ARCHIVE_KEY @"__wonderpush_per_user_archive"
+#define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
 #define USER_DEFAULTS_ACCESS_TOKEN_IS_ANONYMOUS_KEY @"__wonderpush_access_token_is_anonymous"
 #define USER_DEFAULTS_USER_ID_KEY @"__wonderpush_userid"
 #define USER_DEFAULTS_INSTALLATION_ID @"_wonderpush_installationId"
@@ -69,6 +72,7 @@
 
 // The device token used for APNS
 @property (readonly) NSString *deviceToken;
+@property (readonly) NSString *deviceTokenAssociatedToUserId;
 @property (nonatomic, strong) NSDate *cachedDeviceTokenDate;
 
 /// The sid used to hit the WonderPush API
@@ -99,9 +103,12 @@
 @property (nonatomic, strong) NSDate *lastAppOpenDate;
 @property (nonatomic, strong) NSDate *lastAppCloseDate;
 
+- (void) changeUserId:(NSString *)newUserId;
+
 - (void) setAccessToken:(NSString *)accessToken;
 
 - (void) setDeviceToken:(NSString *)deviceToken;
+- (void) setDeviceTokenAssociatedToUserId:(NSString *)userId;
 
 -(void) setStoredClientId:(NSString *)clientId;
 

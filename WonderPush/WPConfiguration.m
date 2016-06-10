@@ -125,6 +125,107 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 
+#pragma mark - JSON utilities
+
+- (id) _NSDateToJSON:(NSDate *)date
+{
+    if (!date) return [NSNull null];
+    return [NSNumber numberWithInt:(int)([date timeIntervalSince1970] * 1000)];
+}
+
+- (NSDate *) _JSONToNSDate:(id)value
+{
+    if ([value isKindOfClass:[NSNumber class]])
+        return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value intValue]];
+    return nil;
+}
+
+- (NSNumber *) _BOOLToJSON:(BOOL)value
+{
+    return value == YES ? @YES : @NO;
+}
+
+- (BOOL) _JSONToBOOL:(id)value withDefault:(BOOL)defaultValue
+{
+    if (!value || value == [NSNull null]) return defaultValue;
+    if ([value isEqual:@YES]) return YES;
+    return NO;
+}
+
+- (id) _NSStringToJSON:(NSString *)value
+{
+    return value ?: [NSNull null];
+}
+
+- (NSString *) _JSONToNSString:(id)value
+{
+    return [value isKindOfClass:[NSString class]] ? value : nil;
+}
+
+- (id) _NSDictionaryToJSON:(NSDictionary *)value
+{
+    return value ?: [NSNull null];
+}
+
+- (NSDictionary *) _JSONToNSDictionary:(id)value
+{
+    return [value isKindOfClass:[NSDictionary class]] ? value : nil;
+}
+
+
+#pragma mark - Change user id
+
+- (void) changeUserId:(NSString *)newUserId
+{
+    if ([@"" isEqualToString:newUserId]) newUserId = nil;
+    if ((newUserId == nil && self.userId == nil)
+        || (newUserId != nil && [newUserId isEqualToString:self.userId])) {
+        // No userId change
+        return;
+    }
+    // Save current user preferences
+    NSDictionary *currentUserArchive = @{
+                                         USER_DEFAULTS_ACCESS_TOKEN_KEY: [self _NSStringToJSON:self.accessToken],
+                                         USER_DEFAULTS_SID_KEY: [self _NSStringToJSON:self.sid],
+                                         USER_DEFAULTS_INSTALLATION_ID: [self _NSStringToJSON:self.installationId],
+                                         USER_DEFAULTS_USER_ID_KEY: [self _NSStringToJSON:self.userId],
+                                         USER_DEFAULTS_NOTIFICATION_ENABLED_KEY: [self _BOOLToJSON:self.notificationEnabled],
+                                         USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES: [self _NSDictionaryToJSON:self.cachedInstallationCoreProperties],
+                                         USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE: [self _NSDateToJSON:self.cachedInstallationCorePropertiesDate],
+                                         USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN: [self _NSDictionaryToJSON:self.cachedInstallationCustomPropertiesWritten],
+                                         USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE: [self _NSDateToJSON:self.cachedInstallationCustomPropertiesWrittenDate],
+                                         USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED: [self _NSDictionaryToJSON:self.cachedInstallationCustomPropertiesUpdated],
+                                         USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE: [self _NSDateToJSON:self.cachedInstallationCustomPropertiesUpdatedDate],
+                                         USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE: [self _NSDateToJSON:self.cachedInstallationCustomPropertiesFirstDelayedWriteDate],
+                                         USER_DEFAULTS_LAST_INTERACTION_DATE: [self _NSDateToJSON:self.lastInteractionDate],
+                                         USER_DEFAULTS_LAST_APP_OPEN_DATE: [self _NSDateToJSON:self.lastAppOpenDate],
+                                         USER_DEFAULTS_LAST_APP_OPEN_INFO: [self _NSDictionaryToJSON:self.lastAppOpenInfo],
+                                         USER_DEFAULTS_LAST_APP_CLOSE_DATE: [self _NSDateToJSON:self.lastAppCloseDate],
+                                         };
+    NSMutableDictionary *usersArchive = [([self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY] ?: @{}) mutableCopy];
+    usersArchive[self.userId ?: @""] = currentUserArchive;
+    [self _setNSDictionaryAsJSON:usersArchive forKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY];
+
+    // Load new user preferences
+    NSDictionary *newUserArchive = usersArchive[newUserId ?: @""] ?: @{};
+    self.userId              = newUserId;
+    self.accessToken         = [self _JSONToNSString:newUserArchive[USER_DEFAULTS_ACCESS_TOKEN_KEY]];
+    self.sid                 = [self _JSONToNSString:newUserArchive[USER_DEFAULTS_SID_KEY]];
+    self.installationId      = [self _JSONToNSString:newUserArchive[USER_DEFAULTS_INSTALLATION_ID]];
+    self.notificationEnabled = [self _JSONToBOOL:    newUserArchive[USER_DEFAULTS_NOTIFICATION_ENABLED_KEY] withDefault:YES];
+    self.cachedInstallationCoreProperties                        = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES]];
+    self.cachedInstallationCorePropertiesDate                    = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE]];
+    self.cachedInstallationCustomPropertiesWritten               = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN]];
+    self.cachedInstallationCustomPropertiesWrittenDate           = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE]];
+    self.cachedInstallationCustomPropertiesUpdated               = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED]];
+    self.cachedInstallationCustomPropertiesUpdatedDate           = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE]];
+    self.cachedInstallationCustomPropertiesFirstDelayedWriteDate = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE]];
+    self.lastInteractionDate = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_INTERACTION_DATE]];
+    self.lastAppOpenDate     = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_APP_OPEN_DATE]];
+    self.lastAppOpenInfo     = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_LAST_APP_OPEN_INFO]];
+    self.lastAppCloseDate    = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_APP_CLOSE_DATE]];
+}
+
 #pragma mark - Access token
 
 - (NSURL *) baseURL
@@ -165,6 +266,16 @@ static WPConfiguration *sharedConfiguration = nil;
 -(void) setCachedDeviceTokenDate:(NSDate *)cachedDeviceTokenDate
 {
     [self _setNSDate:cachedDeviceTokenDate forKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
+}
+
+- (NSString *) deviceTokenAssociatedToUserId
+{
+    return [self _getNSStringForKey:USER_DEFAULTS_DEVICE_TOKEN_ASSOCIATED_TO_USER_ID_KEY];
+}
+
+- (void) setDeviceTokenAssociatedToUserId:(NSString *)userId
+{
+    [self _setNSString:userId forKey:USER_DEFAULTS_DEVICE_TOKEN_ASSOCIATED_TO_USER_ID_KEY];
 }
 
 - (void) setAccessToken:(NSString *)accessToken
@@ -222,14 +333,6 @@ static WPConfiguration *sharedConfiguration = nil;
     if ([@"" isEqualToString:userId])
     {
         userId = nil;
-    }
-    if ((userId == nil && self.userId != nil)
-        || (userId != nil && ![userId isEqualToString:self.userId]))
-    {
-        // unlogging
-        self.accessToken = nil;
-        self.sid = nil;
-        self.installationId = nil;
     }
     _userId = userId;
 

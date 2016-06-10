@@ -137,7 +137,9 @@
 
 + (NSString *) getSDKVersionNumber;
 
-+(void) resetButtonHandler;
++ (void) resetButtonHandler;
+
++ (void) initForNewUser:(NSString *)userId;
 
 /**
  Method returning the rechability state of WonderPush on this phone

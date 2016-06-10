@@ -35,8 +35,11 @@
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
 static BOOL _isReady = NO;
-
+static BOOL _isInitialized = NO;
 static BOOL _isReachable = NO;
+
+static BOOL _beforeInitializationUserIdSet = NO;
+static NSString *_beforeInitializationUserId = nil;
 
 static NSString *_notificationFromAppLaunchCampaignId = nil;
 static NSString *_notificationFromAppLaunchNotificationId = nil;
@@ -197,6 +200,15 @@ static NSDictionary* gpsCapabilityByCode = nil;
     WPLogEnable(enable);
 }
 
++ (BOOL) isInitialized
+{
+    return _isInitialized;
+}
+
++ (void) setIsInitialized:(BOOL)isInitialized {
+    _isInitialized = isInitialized;
+}
+
 + (BOOL) isReady
 {
     return _isReady;
@@ -217,8 +229,20 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) setUserId:(NSString *) userId
 {
+    if ([@"" isEqualToString:userId]) userId = nil;
+    if (![self isInitialized]) {
+        _beforeInitializationUserIdSet = YES;
+        _beforeInitializationUserId = userId;
+        // Now we wait for [WonderPush setClientId:secret:] to be called
+        return;
+    }
+    _beforeInitializationUserIdSet = NO;
+    _beforeInitializationUserId = nil;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    configuration.userId = userId;
+    if ((userId == nil && configuration.userId != nil)
+        || (userId != nil && ![userId isEqualToString:configuration.userId])) {
+        [self initForNewUser:userId];
+    } // else: nothing needs to be done
 }
 
 + (void) setClientId:(NSString *)clientId secret:(NSString *)secret{
@@ -251,25 +275,31 @@ static NSDictionary* gpsCapabilityByCode = nil;
         configuration.accessToken = nil;
         configuration.sid = nil;
     }
-    // Fetch anonymous access token right away
-    BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
-        if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
-            [self putInstallationCustomProperties_inner];
-        }
-        [self setIsReady:YES];
-        [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
-                                                            object:self
-                                                          userInfo:nil];
-    } failure:^(NSURLSessionTask *task, NSError *error) {}];
-    if (NO == isFetching) {
-        if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
-            [self putInstallationCustomProperties_inner];
-        }
+    [self setIsInitialized:YES];
+    [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
+}
+
++ (void) initForNewUser:(NSString *)userId {
+    [self setIsReady:NO];
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
+        [self putInstallationCustomProperties_inner];
+    }
+    [configuration changeUserId:userId];
+    void (^init)(void)= ^{
         [self setIsReady:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
                                                           userInfo:nil];
         [WonderPush updateInstallationCoreProperties];
+        [self refreshDeviceTokenIfPossible];
+    };
+    // Fetch anonymous access token right away
+    BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
+        init();
+    } failure:^(NSURLSessionTask *task, NSError *error) {}];
+    if (NO == isFetching) {
+        init();
     }
 }
 
@@ -858,15 +888,50 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSDate *cachedDeviceTokenDate = sharedConfiguration.cachedDeviceTokenDate;
 
     if (
+        // New device token
         (deviceToken == nil && oldDeviceToken != nil) || (deviceToken != nil && oldDeviceToken == nil)
         || (deviceToken != nil && oldDeviceToken != nil && ![deviceToken isEqualToString:oldDeviceToken])
+        // Last associated with another userId?
+        || (sharedConfiguration.userId == nil && sharedConfiguration.deviceTokenAssociatedToUserId != nil)
+        || (sharedConfiguration.userId != nil && ![sharedConfiguration.userId isEqualToString:sharedConfiguration.deviceTokenAssociatedToUserId])
     ) {
         [sharedConfiguration setDeviceToken:deviceToken];
+        [sharedConfiguration setDeviceTokenAssociatedToUserId:sharedConfiguration.userId];
         [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
         [self updateInstallation:@{@"pushToken": @{@"data":
                                                        deviceToken ?: [NSNull null]
                                                    }}
                  shouldOverwrite:NO];
+    }
+}
+
++ (BOOL) hasAcceptedVisibleNotifications
+{
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)]) {
+        return [[UIApplication sharedApplication] currentUserNotificationSettings].types != 0;
+    } else {
+        return [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != 0;
+    }
+}
+
++ (BOOL) isRegisteredForRemoteNotifications
+{
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+        return [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
+    } else {
+        return [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != 0;
+    }
+}
+
++ (void) refreshDeviceTokenIfPossible
+{
+    if (![self hasAcceptedVisibleNotifications]) return;
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerForRemoteNotifications)]) {
+        NSLog(@"Calling [UIApplication registerForRemoteNotifications]");
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+    } else {
+        NSLog(@"Calling [UIApplication registerForRemoteNotificationTypes:%lu]", (unsigned long)[[UIApplication sharedApplication] enabledRemoteNotificationTypes]);
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:[[UIApplication sharedApplication] enabledRemoteNotificationTypes]];
     }
 }
 
