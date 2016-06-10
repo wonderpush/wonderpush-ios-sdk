@@ -38,23 +38,23 @@
 ///@name Access Token Management
 ///-----------------------------
 
-- (void) fetchAnonymousAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger) nbRetry;
+- (void) fetchAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger) nbRetry forUserId:(NSString *)userId;
 
 
-- (BOOL) fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure;
+- (BOOL) fetchAccessTokenIfNeededAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure forUserId:(NSString *)userId;
 
 /**
  Fetch an access token if the user isn't authenticated and none is found in the `NSUserDefaults`.
  */
 
-- (BOOL) fetchAnonymousAccessTokenIfNeeded;
+- (BOOL) fetchAccessTokenIfNeededForUserId:(NSString *)userId;
 
 /**
  Fetches an anonymous access token and runs the given request.
  @param request The request to run once the access token is fetched.
  */
 
-- (void) fetchAnonymousAccessTokenAndRunRequest:(WPRequest *)request;
+- (void) fetchAccessTokenAndRunRequest:(WPRequest *)request;
 
 
 ///----------------------

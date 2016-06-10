@@ -255,24 +255,24 @@ static NSArray *allowedMethods = nil;
 
 #pragma mark - Access Token
 
-- (BOOL)fetchAnonymousAccessTokenIfNeeded {
+- (BOOL)fetchAccessTokenIfNeededForUserId:(NSString *)userId {
     if (![WPConfiguration sharedConfiguration].accessToken) {
-        [self fetchAnonymousAccessTokenAndCall:nil failure:nil nbRetry:0];
+        [self fetchAccessTokenAndCall:nil failure:nil nbRetry:0 forUserId:userId];
         return YES;
     }
     return NO;
 }
 
-- (BOOL)fetchAnonymousAccessTokenIfNeededAndCall:(void (^)(NSURLSessionTask *task, id responseObject))success failure:(void (^)(NSURLSessionTask *task, NSError *error))failure
+- (BOOL)fetchAccessTokenIfNeededAndCall:(void (^)(NSURLSessionTask *task, id responseObject))success failure:(void (^)(NSURLSessionTask *task, NSError *error))failure forUserId:(NSString *)userId
 {
     if (![WPConfiguration sharedConfiguration].accessToken) {
-        [self fetchAnonymousAccessTokenAndCall:success failure:failure nbRetry:0];
+        [self fetchAccessTokenAndCall:success failure:failure nbRetry:0 forUserId:userId];
         return YES;
     }
     return NO;
 }
 
-- (void) fetchAnonymousAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger) nbRetry {
+- (void) fetchAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger) nbRetry forUserId:(NSString *)userId {
     if (YES == self.isFetchingAccessToken) {
         HandlerPair *pair = [[HandlerPair alloc] init];
         pair.success = handler;
@@ -289,8 +289,8 @@ static NSArray *allowedMethods = nil;
                                                                                     @"devicePlatform":  @"iOS",
                                                                                     @"deviceModel":     [WPUtil deviceModel],
                                                                                     @"deviceId":        [WPUtil deviceIdentifier]}];
-    if ([configuration userId] != nil) {
-        [params setValue:[configuration userId] forKeyPath:@"userId"];
+    if (userId != nil) {
+        [params setValue:userId forKeyPath:@"userId"];
     }
 
     NSString *resource = @"authentication/accessToken";
@@ -307,6 +307,8 @@ static NSArray *allowedMethods = nil;
         // Do we have an accessToken and an SID ?
         if (sid && accessToken && sid.length && accessToken.length) {
             WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+            NSString *prevUserId = configuration.userId;
+            [configuration changeUserId:userId];
             configuration.accessToken = accessToken;
             configuration.sid = sid;
             configuration.installationId = [responseJson valueForKeyPath:@"data.installationId"];
@@ -319,18 +321,19 @@ static NSArray *allowedMethods = nil;
                 id rawCustom = [installation valueForKey:@"custom"];
                 NSDictionary * custom        = [rawCustom isKindOfClass:[NSDictionary class]] ? (NSDictionary *)rawCustom : @{};
                 NSDictionary * customUpdated = [custom copy];
-                WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-                NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated ?: @{};
-                NSDictionary *written = conf.cachedInstallationCustomPropertiesWritten ?: @{};
-                NSDate *updatedDate = conf.cachedInstallationCustomPropertiesUpdatedDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
-                NSDate *writtenDate = conf.cachedInstallationCustomPropertiesWrittenDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
+                NSDictionary *updated = configuration.cachedInstallationCustomPropertiesUpdated ?: @{};
+                NSDictionary *written = configuration.cachedInstallationCustomPropertiesWritten ?: @{};
+                NSDate *updatedDate = configuration.cachedInstallationCustomPropertiesUpdatedDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
+                NSDate *writtenDate = configuration.cachedInstallationCustomPropertiesWrittenDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
                 NSDictionary * diff = [WPJsonUtil diff:written with:updated];
                 [WPJsonUtil merge:customUpdated with:diff];
-                conf.cachedInstallationCustomPropertiesUpdated = customUpdated;
-                conf.cachedInstallationCustomPropertiesWritten = custom;
-                conf.cachedInstallationCustomPropertiesUpdatedDate = [updatedDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? updatedDate : installationUpdateDate;
-                conf.cachedInstallationCustomPropertiesWrittenDate = [writtenDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? writtenDate : installationUpdateDate;
+                configuration.cachedInstallationCustomPropertiesUpdated = customUpdated;
+                configuration.cachedInstallationCustomPropertiesWritten = custom;
+                configuration.cachedInstallationCustomPropertiesUpdatedDate = [updatedDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? updatedDate : installationUpdateDate;
+                configuration.cachedInstallationCustomPropertiesWrittenDate = [writtenDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? writtenDate : installationUpdateDate;
             }
+
+            [configuration changeUserId:prevUserId];
 
             self.isFetchingAccessToken = NO;
             NSDictionary *userInfo = @{WP_NOTIFICATION_USER_LOGED_IN_SID_KEY: sid,
@@ -399,22 +402,22 @@ static NSArray *allowedMethods = nil;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             self.isFetchingAccessToken = NO;
-            [self fetchAnonymousAccessTokenAndCall:handler failure:failure nbRetry:nbRetry - 1];
+            [self fetchAccessTokenAndCall:handler failure:failure nbRetry:nbRetry - 1 forUserId:userId];
         });
     }];
 
 }
 
-- (void) fetchAnonymousAccessTokenAndRunRequest:(WPRequest *)request
+- (void) fetchAccessTokenAndRunRequest:(WPRequest *)request
 {
 
-    [self fetchAnonymousAccessTokenAndCall:^(NSURLSessionTask *task, id response) {
+    [self fetchAccessTokenAndCall:^(NSURLSessionTask *task, id response) {
          [self requestAuthenticated:request];
     } failure:^(NSURLSessionTask *task, NSError *error) {
         if (request.handler) {
              request.handler(nil, error);
         }
-    } nbRetry:0];
+    } nbRetry:0 forUserId:request.userId];
 }
 
 
@@ -427,17 +430,18 @@ static NSArray *allowedMethods = nil;
         return;
 
     // Fetch access token if needed then run request
-    if (![WPConfiguration sharedConfiguration].accessToken) {
-        [self fetchAnonymousAccessTokenAndRunRequest:request];
+    NSString *accessToken = [[WPConfiguration sharedConfiguration] getAccessTokenForUserId:request.userId];
+    if (!accessToken) {
+        [self fetchAccessTokenAndRunRequest:request];
         return;
     } else {
-        WPLog(@"accessToken: %@", [WPConfiguration sharedConfiguration].accessToken);
+        WPLog(@"accessToken: %@", accessToken);
     }
 
     // We have an access token
 
     NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:request.params];
-    [params setObject:[WPConfiguration sharedConfiguration].accessToken forKey:@"accessToken"];
+    [params setObject:accessToken forKey:@"accessToken"];
     // The success handler
     NSTimeInterval timeRequestStart = [[NSProcessInfo processInfo] systemUptime];
     void(^success)(NSURLSessionTask *, id) = ^(NSURLSessionTask *task, id response) {
@@ -507,9 +511,12 @@ static NSArray *allowedMethods = nil;
 
                 // null out the access token
                 WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+                NSString *prevUserId = configuration.userId;
+                [configuration changeUserId:request.userId];
                 configuration.accessToken = nil;
                 configuration.sid = nil;
                 configuration.installationId = nil;
+                [configuration changeUserId:prevUserId];
 
                 // Retry later
                 double delayInSeconds = RETRY_INTERVAL;

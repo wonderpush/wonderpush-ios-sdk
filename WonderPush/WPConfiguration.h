@@ -120,4 +120,6 @@
 
 -(void) clearQueuedNotifications;
 
+- (NSString *) getAccessTokenForUserId:(NSString *)userId;
+
 @end

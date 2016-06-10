@@ -46,6 +46,7 @@
 -(id) copyWithZone:(NSZone *)zone
 {
     WPRequest *copy = [[WPRequest allocWithZone:zone] init];
+    copy.userId = self.userId;
     copy.method = self.method;
     copy.handler = self.handler;
     copy.resource = self.resource;
@@ -55,18 +56,19 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<WPRequest method=%@ resource=%@ params=%@", self.method, self.resource, self.params];
+    return [NSString stringWithFormat:@"<WPRequest userId=%@ method=%@ resource=%@ params=%@", self.userId, self.method, self.resource, self.params];
 }
 
 - (BOOL) isEqual:(id)object
 {
     if ([object isKindOfClass:[self class]]) {
         WPRequest *request = (WPRequest *)object;
+        BOOL userId = (nil == self.userId && nil == request.userId) || [self.userId isEqual:request.userId];
         BOOL method = (nil == self.method && nil == request.method) || [self.method isEqual:request.method];
         BOOL params = (nil == self.params && nil == request.params) || [self.params isEqual:request.params];
         BOOL resource = (nil == self.resource && nil == request.resource) || [self.resource isEqual:request.resource];
         BOOL requestId = (nil == self.requestId && nil == request.requestId) || [self.requestId isEqual:request.requestId];
-        return method && params && resource && requestId;
+        return userId && method && params && resource && requestId;
     }
     return [super isEqual:object];
 }
@@ -77,6 +79,7 @@
     [aCoder encodeObject:self.params];
     [aCoder encodeObject:self.method];
     [aCoder encodeObject:self.requestId];
+    [aCoder encodeObject:self.userId];
 }
 
 - (id) initWithCoder:(NSCoder *)aDecoder
@@ -86,6 +89,7 @@
         self.params = [aDecoder decodeObject];
         self.method = [aDecoder decodeObject];
         self.requestId = [aDecoder decodeObject];
+        self.userId = [aDecoder decodeObject];
     }
     return self;
 }

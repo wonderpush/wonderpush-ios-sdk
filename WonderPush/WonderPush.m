@@ -295,9 +295,9 @@ static NSDictionary* gpsCapabilityByCode = nil;
         [self refreshDeviceTokenIfPossible];
     };
     // Fetch anonymous access token right away
-    BOOL isFetching = [[WPClient sharedClient] fetchAnonymousAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
+    BOOL isFetching = [[WPClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
         init();
-    } failure:^(NSURLSessionTask *task, NSError *error) {}];
+    } failure:^(NSURLSessionTask *task, NSError *error) {} forUserId:userId];
     if (NO == isFetching) {
         init();
     }
@@ -1546,6 +1546,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"POST";
     request.resource = resource;
     request.handler = handler;
@@ -1560,6 +1561,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"GET";
     request.resource = resource;
     request.handler = handler;
@@ -1573,6 +1575,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"DELETE";
     request.resource = resource;
     request.handler = handler;
@@ -1586,6 +1589,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"PUT";
     request.resource = resource;
     request.handler = handler;
@@ -1599,6 +1603,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"POST";
     request.resource = resource;
     request.params = parameters;

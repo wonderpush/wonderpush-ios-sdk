@@ -23,6 +23,7 @@ typedef void(^WPRequestHandler)(WPResponse *response, NSError *error);
  WPRequest is a JSON serializable representation of a request to the WonderPush API.
  It encapsulates the following aspects of an HTTP request:
 
+ - The associated userId
  - The resource
  - The HTTP verb (GET, POST or DELETE)
  - The HTTP parameters as a dictionary
@@ -30,6 +31,8 @@ typedef void(^WPRequestHandler)(WPResponse *response, NSError *error);
 
  */
 @interface WPRequest : NSObject <NSCopying, NSCoding>
+
+@property (strong, nonatomic) NSString *userId;
 
 @property (strong, nonatomic) NSString *resource;
 

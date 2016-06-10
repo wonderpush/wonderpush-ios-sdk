@@ -297,6 +297,18 @@ static WPConfiguration *sharedConfiguration = nil;
     return [self _getNSStringForKey:USER_DEFAULTS_CLIENT_ID_KEY];
 }
 
+- (NSString *) getAccessTokenForUserId:(NSString *)userId
+{
+    if ((userId == nil && self.userId == nil)
+        || (userId != nil && [userId isEqualToString:self.userId])) {
+        return self.accessToken;
+    } else {
+        NSDictionary *usersArchive = [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY] ?: @{};
+        NSDictionary *userArchive = usersArchive[userId ?: @""] ?: @{};
+        return [self _JSONToNSString:userArchive[USER_DEFAULTS_ACCESS_TOKEN_KEY]];
+    }
+}
+
 
 #pragma mark - INSTALLATION ID
 
