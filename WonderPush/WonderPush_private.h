@@ -166,6 +166,16 @@
  */
 +(void) trackInternalEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData;
 
+/**
+ Whether the user has already been prompted for permission by the OS.
+ This asks the OS itself, so it can detect a situation for an application updating from pre-WonderPush push-enabled version.
+ */
++ (BOOL) hasAcceptedVisibleNotifications;
+
+/**
+ Whether iOS has granted a device token (or should have, for iOS 7).
+ */
++ (BOOL) isRegisteredForRemoteNotifications;
 
 ///---------------------
 /// @name REST API
