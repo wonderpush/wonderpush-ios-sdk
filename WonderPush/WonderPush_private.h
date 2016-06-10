@@ -177,6 +177,11 @@
  */
 + (BOOL) isRegisteredForRemoteNotifications;
 
+/**
+ Makes sure we have an up-to-date device token, and send it to WonderPush servers if necessary.
+ */
++ (void) refreshDeviceTokenIfPossible;
+
 ///---------------------
 /// @name REST API
 ///---------------------

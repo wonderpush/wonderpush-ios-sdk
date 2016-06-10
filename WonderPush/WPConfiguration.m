@@ -192,6 +192,7 @@ static WPConfiguration *sharedConfiguration = nil;
                                          USER_DEFAULTS_NOTIFICATION_ENABLED_KEY: [self _BOOLToJSON:self.notificationEnabled],
                                          USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES: [self _NSDictionaryToJSON:self.cachedInstallationCoreProperties],
                                          USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE: [self _NSDateToJSON:self.cachedInstallationCorePropertiesDate],
+                                         USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN: [self _NSStringToJSON:self.cachedInstallationCorePropertiesAccessToken],
                                          USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN: [self _NSDictionaryToJSON:self.cachedInstallationCustomPropertiesWritten],
                                          USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE: [self _NSDateToJSON:self.cachedInstallationCustomPropertiesWrittenDate],
                                          USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED: [self _NSDictionaryToJSON:self.cachedInstallationCustomPropertiesUpdated],
@@ -215,6 +216,7 @@ static WPConfiguration *sharedConfiguration = nil;
     self.notificationEnabled = [self _JSONToBOOL:    newUserArchive[USER_DEFAULTS_NOTIFICATION_ENABLED_KEY] withDefault:YES];
     self.cachedInstallationCoreProperties                        = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES]];
     self.cachedInstallationCorePropertiesDate                    = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE]];
+    self.cachedInstallationCorePropertiesAccessToken             = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN]];
     self.cachedInstallationCustomPropertiesWritten               = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN]];
     self.cachedInstallationCustomPropertiesWrittenDate           = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE]];
     self.cachedInstallationCustomPropertiesUpdated               = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED]];
@@ -277,6 +279,17 @@ static WPConfiguration *sharedConfiguration = nil;
 {
     [self _setNSString:userId forKey:USER_DEFAULTS_DEVICE_TOKEN_ASSOCIATED_TO_USER_ID_KEY];
 }
+
+- (NSString *) cachedDeviceTokenAccessToken
+{
+    return [self _getNSStringForKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_ACCESS_TOKEN_KEY];
+}
+
+- (void) setCachedDeviceTokenAccessToken:(NSString *)cachedDeviceTokenAccessToken
+{
+    [self _setNSString:cachedDeviceTokenAccessToken forKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_ACCESS_TOKEN_KEY];
+}
+
 
 - (void) setAccessToken:(NSString *)accessToken
 {
@@ -469,6 +482,16 @@ static WPConfiguration *sharedConfiguration = nil;
 -(void) setCachedInstallationCorePropertiesDate:(NSDate *)cachedInstallationCorePropertiesDate
 {
     [self _setNSDate:cachedInstallationCorePropertiesDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
+}
+
+-(NSString *) cachedInstallationCorePropertiesAccessToken
+{
+    return [self _getNSStringForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN];
+}
+
+-(void) setCachedInstallationCorePropertiesAccessToken:(NSString *)cachedInstallationCorePropertiesAccessToken
+{
+    [self _setNSString:cachedInstallationCorePropertiesAccessToken forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN];
 }
 
 

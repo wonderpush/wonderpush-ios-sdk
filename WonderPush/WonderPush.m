@@ -263,7 +263,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
         @throw invalidArgumentException;
     }
 
-
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     configuration.clientId = clientId;
     configuration.clientSecret = secret;
@@ -882,7 +881,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
     WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
     NSString *oldDeviceToken = [sharedConfiguration deviceToken];
-    NSDate *cachedDeviceTokenDate = sharedConfiguration.cachedDeviceTokenDate;
 
     if (
         // New device token
@@ -891,10 +889,14 @@ static WPDialogButtonHandler *buttonHandler = nil;
         // Last associated with another userId?
         || (sharedConfiguration.userId == nil && sharedConfiguration.deviceTokenAssociatedToUserId != nil)
         || (sharedConfiguration.userId != nil && ![sharedConfiguration.userId isEqualToString:sharedConfiguration.deviceTokenAssociatedToUserId])
+        // Last associated with another access token?
+        || (sharedConfiguration.accessToken == nil && sharedConfiguration.cachedDeviceTokenAccessToken != nil)
+        || (sharedConfiguration.accessToken != nil && ![sharedConfiguration.accessToken isEqualToString:sharedConfiguration.cachedDeviceTokenAccessToken])
     ) {
         [sharedConfiguration setDeviceToken:deviceToken];
         [sharedConfiguration setDeviceTokenAssociatedToUserId:sharedConfiguration.userId];
         [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
+        [sharedConfiguration setCachedDeviceTokenAccessToken:sharedConfiguration.accessToken];
         [self updateInstallation:@{@"pushToken": @{@"data":
                                                        deviceToken ?: [NSNull null]
                                                    }}
@@ -1278,11 +1280,14 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
     NSDictionary *oldProperties = sharedConfiguration.cachedInstallationCoreProperties;
     NSDate *oldPropertiesDate = sharedConfiguration.cachedInstallationCorePropertiesDate;
-    if (!oldProperties || !oldPropertiesDate
+    NSString *oldPropertiesAccessToken = sharedConfiguration.cachedInstallationCorePropertiesAccessToken;
+    if (!oldProperties || !oldPropertiesDate || !oldPropertiesAccessToken
         || ![oldProperties isEqualToDictionary:properties]
+        || ![oldPropertiesAccessToken isEqualToString:sharedConfiguration.accessToken]
     ) {
         [sharedConfiguration setCachedInstallationCoreProperties:properties];
         [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
+        [sharedConfiguration setCachedInstallationCorePropertiesAccessToken:sharedConfiguration.accessToken];
         [self updateInstallation:properties shouldOverwrite:NO];
     }
 }

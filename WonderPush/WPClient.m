@@ -344,6 +344,7 @@ static NSArray *allowedMethods = nil;
                                                               userInfo:userInfo];
 
             [WonderPush updateInstallationCoreProperties];
+            [WonderPush refreshDeviceTokenIfPossible];
 
             if (nil != handler) {
                 handler(task, response);

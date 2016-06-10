@@ -21,6 +21,8 @@
 #define USER_DEFAULTS_EVENT_RECEIVED_HISTORY @"__wonderpush_event_received_history"
 #define USER_DEFAULTS_DEVICE_TOKEN_KEY @"__wonderpush_device_token"
 #define USER_DEFAULTS_DEVICE_TOKEN_ASSOCIATED_TO_USER_ID_KEY @"__wonderpush_device_token_associated_to_user_id"
+#define USER_DEFAULTS_CACHED_DEVICE_TOKEN_ACCESS_TOKEN_KEY @"__wonderpush_cachedDeviceTokenAccessToken"
+#define USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE @"_wonderpush_cachedDeviceTokenDate"
 
 #define USER_DEFAULTS_PER_USER_ARCHIVE_KEY @"__wonderpush_per_user_archive"
 #define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
@@ -31,7 +33,7 @@
 #define USER_DEFAULTS_NOTIFICATION_ENABLED_KEY @"__wonderpush_notification_enabled"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES @"_wonderpush_cachedInstallationCoreProperties"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE @"_wonderpush_cachedInstallationCorePropertiesDate"
-#define USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE @"_wonderpush_cachedDeviceTokenDate"
+#define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN @"_wonderpush_cachedInstallationCorePropertiesAccessToken"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN @"_wonderpush_cachedInstallationCustomPropertiesWritten"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE @"_wonderpush_cachedInstallationCustomPropertiesWrittenDate"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED @"_wonderpush_cachedInstallationCustomPropertiesUpdated"
@@ -74,6 +76,7 @@
 @property (readonly) NSString *deviceToken;
 @property (readonly) NSString *deviceTokenAssociatedToUserId;
 @property (nonatomic, strong) NSDate *cachedDeviceTokenDate;
+@property (nonatomic, strong) NSString *cachedDeviceTokenAccessToken;
 
 /// The sid used to hit the WonderPush API
 @property (nonatomic, strong) NSString *sid;
@@ -86,6 +89,7 @@
 
 @property (nonatomic, strong) NSDictionary *cachedInstallationCoreProperties;
 @property (nonatomic, strong) NSDate *cachedInstallationCorePropertiesDate;
+@property (nonatomic, strong) NSString *cachedInstallationCorePropertiesAccessToken;
 
 @property (nonatomic, strong) NSDictionary *cachedInstallationCustomPropertiesWritten;
 @property (nonatomic, strong) NSDate *cachedInstallationCustomPropertiesWrittenDate;
