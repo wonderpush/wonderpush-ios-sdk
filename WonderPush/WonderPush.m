@@ -333,7 +333,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 {
     if ([userInfo isKindOfClass:[NSDictionary class]]) {
         NSDictionary *wonderpushData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
-        return !!wonderpushData && [wonderpushData isKindOfClass:[NSDictionary class]];
+        return [wonderpushData isKindOfClass:[NSDictionary class]];
     } else {
         WPLog(@"isNotificationForWonderPush: received a non NSDictionary: %@", userInfo);
     }
@@ -503,7 +503,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 }
 
 +(void) updateInstallation:(NSDictionary *) properties shouldOverwrite:(BOOL) overwrite {
-    if (!overwrite && (!properties || !properties.count)) return;
+    if (!overwrite && (![properties isKindOfClass:[NSDictionary class]] || !properties.count)) return;
     NSString *installationEndPoint = @"/installation";
     [self postEventually:installationEndPoint params:@{@"body":properties, @"overwrite":[NSNumber numberWithBool:overwrite]}];
 }
@@ -596,31 +596,24 @@ static int _putInstallationCustomProperties_blockId = 0;
 
 + (void) trackEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData
 {
-    if (type == nil)
-    {
-        return;
-    }
+    if (![type isKindOfClass:[NSString class]]) return;
     NSString *eventEndPoint = @"/events";
     long long date = [WPUtil getServerDate];
     NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:@{@"type": type,
                                                                                     @"actionDate": [NSNumber numberWithLongLong:date]}];
 
-    if (data != nil)
-    {
-        for (NSString *key in data)
-        {
+    if ([data isKindOfClass:[NSDictionary class]]) {
+        for (NSString *key in data) {
             [params setValue:[data objectForKey:key] forKey:key];
         }
     }
 
-    if (customData != nil)
-    {
+    if ([customData isKindOfClass:[NSDictionary class]]) {
         [params setValue:customData forKey:@"custom"];
     }
 
     CLLocation *location = [self location];
-    if (location != nil)
-    {
+    if (location != nil) {
         params[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
                                 @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
     }
@@ -632,6 +625,7 @@ static int _putInstallationCustomProperties_blockId = 0;
 + (void) trackEvent:(NSString*)type
 {
     [self trackEvent:type eventData:nil customData:nil];
+    [self onInteraction];
 }
 
 + (void) trackEvent:(NSString*)type withData:(NSDictionary *)data
@@ -806,21 +800,17 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if ([type isEqualToString:WP_ACTION_TRACK])
     {
         NSDictionary *event = [action objectForKey:@"event"];
-        if (event == nil)
-        {
-            return;
-        }
+        if (![event isKindOfClass:[NSDictionary class]]) return;
         NSString *type = [event objectForKey:@"type"];
+        if (![type isKindOfClass:[NSString class]]) return;
         NSDictionary *custom = [event objectForKey:@"custom"];
+        if (![custom isKindOfClass:[NSDictionary class]]) custom = nil;
         [WonderPush trackEvent:type withData:custom];
     }
     if ([type isEqualToString:WP_ACTION_UPDATE_INSTALLATION])
     {
         NSDictionary *custom = [action objectForKey:@"custom"];
-        if (custom == nil)
-        {
-            return;
-        }
+        if (![custom isKindOfClass:[NSDictionary class]]) return;
         [WonderPush putInstallationCustomProperties:custom];
     }
     if ([type isEqualToString:WP_ACTION_RATING])
@@ -850,22 +840,14 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if ([type isEqualToString:WP_ACTION_MAP_OPEN])
     {
         NSDictionary *mapData = [notification objectForKey:@"map"];
-        if (![mapData isKindOfClass:[NSDictionary class]])
-        {
-            return;
-        }
+        if (![mapData isKindOfClass:[NSDictionary class]]) return;
 
         NSDictionary *place = [mapData objectForKey:@"place"];
-        if (![place isKindOfClass:[NSDictionary class]])
-        {
-            return;
-        }
+        if (![place isKindOfClass:[NSDictionary class]]) return;
 
         NSDictionary *point = [place objectForKey:@"point"];
-        if (![point isKindOfClass:[NSDictionary class]])
-        {
-            return;
-        }
+        if (![point isKindOfClass:[NSDictionary class]]) return;
+
         NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [[point objectForKey:@"lat"] doubleValue], [[point objectForKey:@"lon"] doubleValue]];
         WPLog(@"url: %@", url);
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
@@ -1281,7 +1263,9 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSDictionary *oldProperties = sharedConfiguration.cachedInstallationCoreProperties;
     NSDate *oldPropertiesDate = sharedConfiguration.cachedInstallationCorePropertiesDate;
     NSString *oldPropertiesAccessToken = sharedConfiguration.cachedInstallationCorePropertiesAccessToken;
-    if (!oldProperties || !oldPropertiesDate || !oldPropertiesAccessToken
+    if (![oldProperties isKindOfClass:[NSDictionary class]]
+        || ![oldPropertiesDate isKindOfClass:[NSDate class]]
+        || ![oldPropertiesAccessToken isKindOfClass:[NSString class]]
         || ![oldProperties isEqualToDictionary:properties]
         || ![oldPropertiesAccessToken isEqualToString:sharedConfiguration.accessToken]
     ) {
