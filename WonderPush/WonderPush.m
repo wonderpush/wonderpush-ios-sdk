@@ -805,7 +805,10 @@ static WPDialogButtonHandler *buttonHandler = nil;
         if (![type isKindOfClass:[NSString class]]) return;
         NSDictionary *custom = [event objectForKey:@"custom"];
         if (![custom isKindOfClass:[NSDictionary class]]) custom = nil;
-        [WonderPush trackEvent:type withData:custom];
+        [WonderPush trackEvent:type
+                     eventData:@{@"campaignId": notification[@"c"] ?: [NSNull null],
+                                 @"notificationId": notification[@"n"] ?: [NSNull null]}
+                    customData:custom];
     }
     if ([type isEqualToString:WP_ACTION_UPDATE_INSTALLATION])
     {
