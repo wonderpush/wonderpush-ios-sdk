@@ -21,7 +21,7 @@ PODS:
   - OpenUDID (1.0.0)
   - TCMobileProvision (1.0.0):
     - DTFoundation/DTASN1 (~> 1.6)
-  - WonderPush (2.0.1):
+  - WonderPush (2.1.0):
     - AFNetworking (~> 3.0)
     - CustomIOSAlertView (~> 0.9.3)
     - OpenUDID (~> 1.0.0)
@@ -40,6 +40,6 @@ SPEC CHECKSUMS:
   DTFoundation: 3b6b1b817d2a7fb02e7eaf2596c922a68145bd43
   OpenUDID: e7cb6984c7304906ad20f3a36bf087b025896b6b
   TCMobileProvision: 2a8962b38821a20fad53b9d7851bbc9ae8c52995
-  WonderPush: f87ca8701944269035c369cb8ba02c50ea399a6f
+  WonderPush: 1488c20f77173d9ad3d47bfbde79d27ab9015523
 
 COCOAPODS: 0.39.0
