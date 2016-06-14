@@ -163,6 +163,17 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  Activates or deactivates the push notification on the device (if the user accepts) and registers the device token with WondePush.
 
+ You **must** call the following method at least once to make the user pushable.
+
+ - You can call this method multiple times. The user is only prompted for permission by iOS once.
+ - Calling with `YES` opts the user in, whether he was not opt-in or soft opt-out (by calling with `NO`).
+ - There is no need to call this method if the permission has already been granted, but it does not harm either.
+   Prior to WonderPush iOS SDK v1.2.1.0, you should call it if the user was already opt-in in a non WonderPush-enabled version of your application.
+ - If the permission has been denied, calling this method cannot opt the user back in as iOS leaves the user in control, through the system settings.
+
+ Because you only have *one* chance for prompting the user, you should find a good timing for that.
+ For a start, you can systematically call it when the application starts, so that the user will be prompted directly at the first launch.
+
  @param enabled The new activation state of push notifications.
  */
 + (void) setNotificationEnabled:(BOOL)enabled;
