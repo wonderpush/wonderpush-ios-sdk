@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A2CC2F03B1E42F7B3F87442 /* libPods-WonderPush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0E0B4187386B4EE992754AC /* libPods-WonderPush.a */; };
 		20314D82424531F76800D2AE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9A43256ACEF670B48A5F2A /* libPods.a */; };
 		3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
 		3DCC286C1B6F773C00D2778E /* WPAlertViewDelegateBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		10BA8C9BA84D85ABE71E91C6 /* Pods-WonderPush.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WonderPush.release.xcconfig"; path = "Pods/Target Support Files/Pods-WonderPush/Pods-WonderPush.release.xcconfig"; sourceTree = "<group>"; };
 		3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonUtil.m; sourceTree = "<group>"; };
 		3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonUtil.h; sourceTree = "<group>"; };
 		3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAlertViewDelegateBlock.h; sourceTree = "<group>"; };
@@ -32,6 +34,7 @@
 		3DDE66D61B4AE73200B5DC44 /* WPLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPLog.h; sourceTree = "<group>"; };
 		3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAppDelegate.m; sourceTree = "<group>"; };
 		3DFEA88F1C46E0D600E27404 /* WPAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPAppDelegate.h; sourceTree = "<group>"; };
+		694D5459D3AE7B6E48C26A62 /* Pods-WonderPush.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WonderPush.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WonderPush/Pods-WonderPush.debug.xcconfig"; sourceTree = "<group>"; };
 		7FF224E158A72BE58197ED07 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		9021052846FD8EC5F8841A83 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
@@ -64,6 +67,7 @@
 		A1E3E08219E423A200A4EE09 /* WonderPush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WonderPush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1E3E08519E423A200A4EE09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1E3E0A319E425DB00A4EE09 /* WonderPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPush.h; sourceTree = "<group>"; };
+		B0E0B4187386B4EE992754AC /* libPods-WonderPush.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WonderPush.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA9A43256ACEF670B48A5F2A /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -73,6 +77,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20314D82424531F76800D2AE /* libPods.a in Frameworks */,
+				0A2CC2F03B1E42F7B3F87442 /* libPods-WonderPush.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +89,8 @@
 			children = (
 				9021052846FD8EC5F8841A83 /* Pods.debug.xcconfig */,
 				7FF224E158A72BE58197ED07 /* Pods.release.xcconfig */,
+				694D5459D3AE7B6E48C26A62 /* Pods-WonderPush.debug.xcconfig */,
+				10BA8C9BA84D85ABE71E91C6 /* Pods-WonderPush.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -121,6 +128,7 @@
 				A189379D19C9E0C600F91DDD /* CoreTelephony.framework */,
 				A16E33A619C886A700E4E158 /* Foundation.framework */,
 				FA9A43256ACEF670B48A5F2A /* libPods.a */,
+				B0E0B4187386B4EE992754AC /* libPods-WonderPush.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -184,12 +192,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1E3E09219E423A300A4EE09 /* Build configuration list for PBXNativeTarget "WonderPush" */;
 			buildPhases = (
-				BC9D617E327A40612748BF95 /* Check Pods Manifest.lock */,
+				BC9D617E327A40612748BF95 /* [CP] Check Pods Manifest.lock */,
 				A1E3E07D19E423A200A4EE09 /* Sources */,
 				A1E3E07E19E423A200A4EE09 /* Frameworks */,
 				A1E3E07F19E423A200A4EE09 /* Headers */,
 				A1E3E08019E423A200A4EE09 /* Resources */,
-				C18B07E3FF29D1721B24697D /* Copy Pods Resources */,
+				C18B07E3FF29D1721B24697D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -242,14 +250,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		BC9D617E327A40612748BF95 /* Check Pods Manifest.lock */ = {
+		BC9D617E327A40612748BF95 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -257,19 +265,19 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		C18B07E3FF29D1721B24697D /* Copy Pods Resources */ = {
+		C18B07E3FF29D1721B24697D /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WonderPush/Pods-WonderPush-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -374,7 +382,7 @@
 		};
 		A1E3E09319E423A300A4EE09 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9021052846FD8EC5F8841A83 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 694D5459D3AE7B6E48C26A62 /* Pods-WonderPush.debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -394,7 +402,7 @@
 		};
 		A1E3E09419E423A300A4EE09 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7FF224E158A72BE58197ED07 /* Pods.release.xcconfig */;
+			baseConfigurationReference = 10BA8C9BA84D85ABE71E91C6 /* Pods-WonderPush.release.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

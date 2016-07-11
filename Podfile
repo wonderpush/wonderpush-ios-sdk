@@ -1,3 +1,5 @@
-platform :ios, '7.0'
+target 'WonderPush' do
+    platform :ios, '7.0'
 
-pod 'WonderPush', :path => '.'
+    pod 'WonderPush', :path => '.'
+end
