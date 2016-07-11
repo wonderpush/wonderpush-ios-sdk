@@ -1003,14 +1003,37 @@ static WPDialogButtonHandler *buttonHandler = nil;
     ) {
 
         NSBundle *mainBundle = [NSBundle mainBundle];
+        NSBundle *wpLocaleBundle = [NSBundle bundleWithPath:[mainBundle pathForResource:@"WonderPush" ofType:@"bundle"]];
         NSDictionary *infoDictionary = [mainBundle infoDictionary];
         NSDictionary *localizedInfoDictionary = [mainBundle localizedInfoDictionary];
         NSString *title = nil;
         NSString *alert = nil;
         NSString *action = nil;
         if ([apsAlert isKindOfClass:[NSDictionary class]]) {
+            title = [apsAlert objectForKey:@"title-loc-key"];
+            if (title) title = NSLocalizedStringWithDefaultValue(title, nil, mainBundle, title, nil);
+            if (title) {
+                id locArgsId = [apsAlert objectForKey:@"title-loc-args"];
+                if (locArgsId && [locArgsId isKindOfClass:[NSArray class]]) {
+                    NSArray *locArgs = locArgsId;
+                    title = [NSString stringWithFormat:title,
+                             locArgs.count > 0 ? [locArgs objectAtIndex:0] : nil,
+                             locArgs.count > 1 ? [locArgs objectAtIndex:1] : nil,
+                             locArgs.count > 2 ? [locArgs objectAtIndex:2] : nil,
+                             locArgs.count > 3 ? [locArgs objectAtIndex:3] : nil,
+                             locArgs.count > 4 ? [locArgs objectAtIndex:4] : nil,
+                             locArgs.count > 5 ? [locArgs objectAtIndex:5] : nil,
+                             locArgs.count > 6 ? [locArgs objectAtIndex:6] : nil,
+                             locArgs.count > 7 ? [locArgs objectAtIndex:7] : nil,
+                             locArgs.count > 8 ? [locArgs objectAtIndex:8] : nil,
+                             locArgs.count > 9 ? [locArgs objectAtIndex:9] : nil,
+                             nil];
+                }
+            } else {
+                title = [apsAlert objectForKey:@"title"];
+            }
             alert = [apsAlert objectForKey:@"loc-key"];
-            if (alert) alert = [mainBundle localizedStringForKey:alert value:alert table:nil];
+            if (alert) alert = NSLocalizedStringWithDefaultValue(alert, nil, mainBundle, alert, nil);
             if (alert) {
                 id locArgsId = [apsAlert objectForKey:@"loc-args"];
                 if (locArgsId && [locArgsId isKindOfClass:[NSArray class]]) {
@@ -1032,7 +1055,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
                 alert = [apsAlert objectForKey:@"body"];
             }
             action = [apsAlert objectForKey:@"action-loc-key"];
-            action = [mainBundle localizedStringForKey:action value:action table:nil];
+            if (action) action = NSLocalizedStringWithDefaultValue(action, nil, mainBundle, action, nil);
         } else if ([apsAlert isKindOfClass:[NSString class]]) {
             alert = apsAlert;
         }
@@ -1042,14 +1065,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
         if (!title) title = [infoDictionary objectForKey:@"CFBundleName"];
         if (!title) title = [localizedInfoDictionary objectForKey:@"CFBundleExecutable"];
         if (!title) title = [infoDictionary objectForKey:@"CFBundleExecutable"];
+
         if (!action) {
-            action = @"OK"; // no need to translate this
+            action = NSLocalizedStringWithDefaultValue(@"VIEW", @"WonderPushLocalizable", wpLocaleBundle, @"View", nil);
         }
         if (alert) {
             UIAlertView *systemLikeAlert = [[UIAlertView alloc] initWithTitle:title
                                                                       message:alert
                                                                      delegate:nil
-                                                            cancelButtonTitle:[mainBundle localizedStringForKey:@"Close" value:@"Close" table:nil]
+                                                            cancelButtonTitle:NSLocalizedStringWithDefaultValue(@"CLOSE", @"WonderPushLocalizable", wpLocaleBundle, @"Close", nil)
                                                             otherButtonTitles:action, nil];
             [WPAlertViewDelegateBlock forAlert:systemLikeAlert withBlock:^(UIAlertView *alertView, NSInteger buttonIndex) {
                 if (buttonIndex == 1) {
