@@ -75,9 +75,9 @@ static NSArray *allowedMethods = nil;
     if (paramNames.count) {
         NSString *last = paramNames.lastObject;
         for (NSString *paramName in paramNames) {
-            NSString *val = [postParams valueForKey:paramName];
+            NSString *val = [postParams stringForKey:paramName];
             if (!val)
-                val = [getParams valueForKey:paramName];
+                val = [getParams stringForKey:paramName];
 
             [buffer appendString:[WPUtil percentEncodedString:[NSString stringWithFormat:@"%@=%@", [WPUtil percentEncodedString:paramName], [WPUtil percentEncodedString:val]]]];
 

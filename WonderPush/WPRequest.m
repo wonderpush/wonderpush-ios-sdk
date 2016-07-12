@@ -126,7 +126,7 @@
 
 + (NSDictionary *)addParameterIfNotPresent:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
 {
-    if (![params valueForKey:name]) {
+    if (![params objectForKey:name]) {
         NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
         [mutable setObject:value forKey:name];
         return [NSDictionary dictionaryWithDictionary:mutable];

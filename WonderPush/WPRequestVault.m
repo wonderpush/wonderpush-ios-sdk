@@ -65,8 +65,10 @@
         [self reachabilityChanged:[WonderPush isReachable]];
 
         // Add saved operations to queue
-        for (WPRequest *request in self.savedRequests)
+        for (WPRequest *request in self.savedRequests) {
+            if (![request isKindOfClass:[WPRequest class]]) continue;
             [self addToQueue:request];
+        }
     }
     return self;
 }

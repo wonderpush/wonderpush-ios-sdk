@@ -430,8 +430,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
     UIApplicationState originalApplicationState = comesBackFromTemporaryInactive ? UIApplicationStateActive : UIApplicationStateInactive;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
-    for (NSDictionary *queuedNotification in queuedNotifications)
-    {
+    for (NSDictionary *queuedNotification in queuedNotifications) {
+        if (![queuedNotification isKindOfClass:[NSDictionary class]]) continue;
         [self handleNotification:queuedNotification withOriginalApplicationState:originalApplicationState];
     }
     [configuration clearQueuedNotifications];
@@ -448,6 +448,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
     for (NSDictionary *userInfo in queuedNotifications) {
+        if (![userInfo isKindOfClass:[NSDictionary class]]) continue;
         UILocalNotification *notification = [[UILocalNotification alloc] init];
         if (![WPUtil currentApplicationIsInForeground]) {
             NSDictionary *aps = [userInfo dictionaryForKey:@"aps"];
@@ -665,6 +666,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     dialog.delegate = buttonHandler;
     if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
         for (NSDictionary *button in buttons) {
+            if (![button isKindOfClass:[NSDictionary class]]) continue;
             [dialog addButtonWithTitle:[button stringForKey:@"label"]];
         }
     } else {
@@ -683,10 +685,10 @@ static WPDialogButtonHandler *buttonHandler = nil;
     UIWebView *view = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 260, 300)];
     [view sizeToFit];
 //    view.scalesPageToFit = YES;
-    NSString *message = [wonderPushData valueForKey:@"message"];
-    NSString *url = [wonderPushData valueForKey:@"url"];
+    NSString *message = [wonderPushData stringForKey:@"message"];
+    NSString *url = [wonderPushData stringForKey:@"url"];
     if (message != nil) {
-        [view loadHTMLString:[wonderPushData valueForKey:@"message"] baseURL:nil];
+        [view loadHTMLString:[wonderPushData stringForKey:@"message"] baseURL:nil];
     } else if (url != nil) {
         [view loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]]];
     } else {
@@ -714,7 +716,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
         NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
         for (NSDictionary *button in buttons) {
-            [textButtons addObject:[button valueForKey:@"label"]];
+            if (![button isKindOfClass:[NSDictionary class]]) continue;
+            [textButtons addObject:[button stringForKey:@"label"]];
         }
         [alert setButtonTitles:textButtons];
     } else {
@@ -759,7 +762,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
     if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
         NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
         for (NSDictionary *button in buttons) {
-            [textButtons addObject:[button valueForKey:@"label"]];
+            if (![button isKindOfClass:[NSDictionary class]]) continue;
+            [textButtons addObject:[button stringForKey:@"label"]];
         }
         [alert setButtonTitles:textButtons];
     } else {
@@ -771,7 +775,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
 + (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
 {
     NSString *type = [action stringForKey:@"type"];
-    
+
     if ([WP_ACTION_TRACK isEqualToString:type]) {
 
         NSDictionary *event = [action dictionaryForKey:@"event"] ?: @{};
