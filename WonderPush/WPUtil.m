@@ -243,4 +243,21 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
 }
 
 
+# pragma mark - LOCALIZATION
+
++ (NSString *) localizedStringIfPossible:(NSString *)string
+{
+    return NSLocalizedStringWithDefaultValue(string, nil, [NSBundle mainBundle], string, nil);
+}
+
+static NSBundle *wpLocaleBundle = nil;
++ (NSString *) wpLocalizedString:(NSString *)key withDefault:(NSString *)defaultValue
+{
+    if (!wpLocaleBundle) {
+        wpLocaleBundle = [NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"WonderPush" ofType:@"bundle"]];
+    }
+    return NSLocalizedStringWithDefaultValue(key, @"WonderPushLocalizable", wpLocaleBundle, defaultValue, nil);
+}
+
+
 @end

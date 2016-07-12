@@ -970,7 +970,6 @@ static WPDialogButtonHandler *buttonHandler = nil;
     ) {
 
         NSBundle *mainBundle = [NSBundle mainBundle];
-        NSBundle *wpLocaleBundle = [NSBundle bundleWithPath:[mainBundle pathForResource:@"WonderPush" ofType:@"bundle"]];
         NSDictionary *infoDictionary = [mainBundle infoDictionary];
         NSDictionary *localizedInfoDictionary = [mainBundle localizedInfoDictionary];
         NSString *title = nil;
@@ -978,7 +977,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
         NSString *action = nil;
         if ([apsAlert isKindOfClass:[NSDictionary class]]) {
             title = [apsAlert stringForKey:@"title-loc-key"];
-            if (title) title = NSLocalizedStringWithDefaultValue(title, nil, mainBundle, title, nil);
+            if (title) title = [WPUtil localizedStringIfPossible:title];
             if (title) {
                 id locArgsId = [apsAlert arrayForKey:@"title-loc-args"];
                 if (locArgsId) {
@@ -1000,7 +999,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
                 title = [apsAlert stringForKey:@"title"];
             }
             alert = [apsAlert stringForKey:@"loc-key"];
-            if (alert) alert = NSLocalizedStringWithDefaultValue(alert, nil, mainBundle, alert, nil);
+            if (alert) alert = [WPUtil localizedStringIfPossible:alert];
             if (alert) {
                 id locArgsId = [apsAlert arrayForKey:@"loc-args"];
                 if (locArgsId) {
@@ -1022,7 +1021,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
                 alert = [apsAlert stringForKey:@"body"];
             }
             action = [apsAlert stringForKey:@"action-loc-key"];
-            if (action) action = NSLocalizedStringWithDefaultValue(action, nil, mainBundle, action, nil);
+            if (action) action = [WPUtil localizedStringIfPossible:action];
         } else if ([apsAlert isKindOfClass:[NSString class]]) {
             alert = (NSString *)apsAlert;
         }
@@ -1034,13 +1033,13 @@ static WPDialogButtonHandler *buttonHandler = nil;
         if (!title) title = [infoDictionary stringForKey:@"CFBundleExecutable"];
 
         if (!action) {
-            action = NSLocalizedStringWithDefaultValue(@"VIEW", @"WonderPushLocalizable", wpLocaleBundle, @"View", nil);
+            action = [WPUtil wpLocalizedString:@"VIEW" withDefault:@"View"];
         }
         if (alert) {
             UIAlertView *systemLikeAlert = [[UIAlertView alloc] initWithTitle:title
                                                                       message:alert
                                                                      delegate:nil
-                                                            cancelButtonTitle:NSLocalizedStringWithDefaultValue(@"CLOSE", @"WonderPushLocalizable", wpLocaleBundle, @"Close", nil)
+                                                            cancelButtonTitle:[WPUtil wpLocalizedString:@"CLOSE" withDefault:@"Close"]
                                                             otherButtonTitles:action, nil];
             [WPAlertViewDelegateBlock forAlert:systemLikeAlert withBlock:^(UIAlertView *alertView, NSInteger buttonIndex) {
                 if (buttonIndex == 1) {

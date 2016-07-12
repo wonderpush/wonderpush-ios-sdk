@@ -119,7 +119,7 @@
 /**
  Default notification button label
  */
-#define WP_DEFAULT_BUTTON_LOCALIZED_LABEL NSLocalizedString(@"Close", nil)
+#define WP_DEFAULT_BUTTON_LOCALIZED_LABEL [WPUtil wpLocalizedString:@"CLOSE" withDefault:@"Close"]
 
 
 @interface WonderPush (private)

@@ -82,6 +82,10 @@
 
 + (BOOL) hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler;
 
++ (NSString *) localizedStringIfPossible:(NSString *)string;
+
++ (NSString *) wpLocalizedString:(NSString *)key withDefault:(NSString *)defaultValue;
+
 @end
 
 
