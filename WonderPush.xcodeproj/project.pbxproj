@@ -10,6 +10,8 @@
 		0A2CC2F03B1E42F7B3F87442 /* libPods-WonderPush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0E0B4187386B4EE992754AC /* libPods-WonderPush.a */; };
 		20314D82424531F76800D2AE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9A43256ACEF670B48A5F2A /* libPods.a */; };
 		3D0A08441D33D9B2001289BD /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08461D33D9B2001289BD /* WonderPushLocalizable.strings */; };
+		3D0A08771D340CFA001289BD /* NSDictionary+TypeSafe.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0A08751D340CFA001289BD /* NSDictionary+TypeSafe.h */; };
+		3D0A08781D340CFA001289BD /* NSDictionary+TypeSafe.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0A08761D340CFA001289BD /* NSDictionary+TypeSafe.m */; };
 		3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
 		3DCC286C1B6F773C00D2778E /* WPAlertViewDelegateBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */; };
 		3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
@@ -61,6 +63,8 @@
 		3D0A08651D33F39C001289BD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/WonderPushLocalizable.strings"; sourceTree = "<group>"; };
 		3D0A08661D33F3A0001289BD /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/WonderPushLocalizable.strings"; sourceTree = "<group>"; };
 		3D0A08671D33F543001289BD /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/WonderPushLocalizable.strings; sourceTree = "<group>"; };
+		3D0A08751D340CFA001289BD /* NSDictionary+TypeSafe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+TypeSafe.h"; sourceTree = "<group>"; };
+		3D0A08761D340CFA001289BD /* NSDictionary+TypeSafe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+TypeSafe.m"; sourceTree = "<group>"; };
 		3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonUtil.m; sourceTree = "<group>"; };
 		3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonUtil.h; sourceTree = "<group>"; };
 		3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAlertViewDelegateBlock.h; sourceTree = "<group>"; };
@@ -188,15 +192,17 @@
 				A1E3E0A319E425DB00A4EE09 /* WonderPush.h */,
 				A16E33AD19C886A700E4E158 /* WonderPush.m */,
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
-				3DDE66D51B4AE73200B5DC44 /* WPLog.m */,
 				3DDE66D61B4AE73200B5DC44 /* WPLog.h */,
+				3DDE66D51B4AE73200B5DC44 /* WPLog.m */,
 				3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */,
 				3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */,
-				3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */,
 				3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */,
+				3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */,
 				A16E33A919C886A700E4E158 /* Supporting Files */,
-				3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */,
 				3DFEA88F1C46E0D600E27404 /* WPAppDelegate.h */,
+				3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */,
+				3D0A08751D340CFA001289BD /* NSDictionary+TypeSafe.h */,
+				3D0A08761D340CFA001289BD /* NSDictionary+TypeSafe.m */,
 			);
 			path = WonderPush;
 			sourceTree = "<group>";
@@ -217,6 +223,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D0A08771D340CFA001289BD /* NSDictionary+TypeSafe.h in Headers */,
 				A1E3E0E219E42B4800A4EE09 /* WonderPush.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -364,6 +371,7 @@
 				A1E3E0DC19E42B3F00A4EE09 /* WPClient.m in Sources */,
 				3DFEA88E1C46E09E00E27404 /* WPAppDelegate.m in Sources */,
 				A1E3E0DD19E42B3F00A4EE09 /* WPUtil.m in Sources */,
+				3D0A08781D340CFA001289BD /* NSDictionary+TypeSafe.m in Sources */,
 				A1E3E0DE19E42B3F00A4EE09 /* WPRequest.m in Sources */,
 				A1E3E0DF19E42B3F00A4EE09 /* WPResponse.m in Sources */,
 				A1E3E0E019E42B3F00A4EE09 /* WPConfiguration.m in Sources */,

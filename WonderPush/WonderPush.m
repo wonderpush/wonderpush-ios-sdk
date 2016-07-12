@@ -332,8 +332,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
 + (BOOL) isNotificationForWonderPush:(NSDictionary *)userInfo
 {
     if ([userInfo isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *wonderpushData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
-        return [wonderpushData isKindOfClass:[NSDictionary class]];
+        NSDictionary *wonderpushData = [userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
+        return !!wonderpushData;
     } else {
         WPLog(@"isNotificationForWonderPush: received a non NSDictionary: %@", userInfo);
     }
@@ -344,7 +344,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 {
     if (![WonderPush isNotificationForWonderPush:userInfo])
         return NO;
-    return [[[userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY] objectForKey:WP_PUSH_NOTIFICATION_TYPE_KEY] isEqualToString:WP_PUSH_NOTIFICATION_DATA];
+    return [WP_PUSH_NOTIFICATION_DATA isEqualToString:[([userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY] ?: @{}) stringForKey:WP_PUSH_NOTIFICATION_TYPE_KEY]];
 }
 
 
@@ -364,15 +364,15 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
     if (![WPUtil hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler] // didReceiveRemoteNotification will be called in such a case
         && launchOptions != nil
-        ) {
-        NSDictionary *notificationDictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    ) {
+        NSDictionary *notificationDictionary = [launchOptions dictionaryForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
         if ([notificationDictionary isKindOfClass:[NSDictionary class]]) {
             _notificationFromAppLaunchCampaignId = nil;
             _notificationFromAppLaunchNotificationId = nil;
             if ([WonderPush isNotificationForWonderPush:notificationDictionary]) {
-                NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
-                _notificationFromAppLaunchCampaignId = [wonderpushData objectForKey:@"c"];
-                _notificationFromAppLaunchNotificationId = [wonderpushData objectForKey:@"n"];
+                NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
+                _notificationFromAppLaunchCampaignId = [wonderpushData stringForKey:@"c"];
+                _notificationFromAppLaunchNotificationId = [wonderpushData stringForKey:@"n"];
             }
             return [self handleNotification:notificationDictionary];
         }
@@ -442,13 +442,14 @@ static NSDictionary* gpsCapabilityByCode = nil;
     // Send queued notifications as LocalNotifications
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
-    for (NSDictionary *userInfo in queuedNotifications)
-    {
+    for (NSDictionary *userInfo in queuedNotifications) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
         if (![WPUtil currentApplicationIsInForeground]) {
-            NSDictionary *aps = [userInfo objectForKey:@"aps"];
-            notification.alertBody =  [aps objectForKey:@"alert"];
-            notification.soundName = [aps objectForKey:@"sound"];
+            NSDictionary *aps = [userInfo dictionaryForKey:@"aps"];
+            NSDictionary *alertDict = [aps dictionaryForKey:@"alert"];
+            NSString *alert = alertDict ? [alertDict stringForKey:@"body"] : [aps stringForKey:@"alert"];
+            notification.alertBody = alert;
+            notification.soundName = [aps stringForKey:@"sound"];
             notification.userInfo = userInfo;
             [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
         }
@@ -570,11 +571,11 @@ static int _putInstallationCustomProperties_blockId = 0;
 + (void) trackNotificationReceived:(NSDictionary *)userInfo
 {
     if (![WonderPush isNotificationForWonderPush:userInfo]) return;
-    NSDictionary *wpData = [userInfo objectForKey:WP_PUSH_NOTIFICATION_KEY];
-    id receipt        = [wpData objectForKey:@"receipt"];
+    NSDictionary *wpData = [userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
+    id receipt        = [wpData nullsafeObjectForKey:@"receipt"];
     if (receipt && [[receipt class] isEqual:[@YES class]] && [receipt isEqual:@NO]) return; // lengthy but warning-free test for `receipt == @NO`, both properly distinguishes 0 from @NO, whereas `[receipt isEqual:@NO]` alone does not
-    id campagnId      = [wpData objectForKey:@"c"];
-    id notificationId = [wpData objectForKey:@"n"];
+    id campagnId      = [wpData stringForKey:@"c"];
+    id notificationId = [wpData stringForKey:@"n"];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
@@ -653,21 +654,17 @@ static WPDialogButtonHandler *buttonHandler = nil;
         return;
     }
 
-    UIAlertView *dialog = [[UIAlertView alloc] initWithTitle:[wonderPushData objectForKey:@"title"] message:[wonderPushData objectForKey:@"message"] delegate:nil cancelButtonTitle:nil otherButtonTitles:nil, nil];
-    NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
+    UIAlertView *dialog = [[UIAlertView alloc] initWithTitle:[wonderPushData stringForKey:@"title"] message:[wonderPushData stringForKey:@"message"] delegate:nil cancelButtonTitle:nil otherButtonTitles:nil, nil];
+    NSArray *buttons = [wonderPushData arrayForKey:@"buttons"];
     buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.notificationConfiguration = wonderPushData;
     buttonHandler.buttonConfiguration = buttons;
     dialog.delegate = buttonHandler;
-    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0)
-    {
-        for (NSDictionary *button in buttons)
-        {
-            [dialog addButtonWithTitle:[button objectForKey:@"label"]];
+    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
+        for (NSDictionary *button in buttons) {
+            [dialog addButtonWithTitle:[button stringForKey:@"label"]];
         }
-    }
-    else
-    {
+    } else {
         [dialog addButtonWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL];
     }
     [dialog show];
@@ -706,60 +703,43 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
     //deactivate bounceScroll
     for (id subview in view.subviews)
-        if ([[subview class] isSubclassOfClass: [UIScrollView class]])
+        if ([subview isKindOfClass:[UIScrollView class]])
             ((UIScrollView *)subview).bounces = NO;
 
     [alert setContainerView:view];
 
-    NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
+    NSArray *buttons = [wonderPushData arrayForKey:@"buttons"];
     buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.buttonConfiguration = buttons;
     buttonHandler.notificationConfiguration = wonderPushData;
     [alert setDelegate:buttonHandler];
-    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0)
-    {
+    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
         NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
-        for (NSDictionary *button in buttons)
-        {
+        for (NSDictionary *button in buttons) {
             [textButtons addObject:[button valueForKey:@"label"]];
         }
         [alert setButtonTitles:textButtons];
-    }
-    else
-    {
+    } else {
         [alert setButtonTitles:@[WP_DEFAULT_BUTTON_LOCALIZED_LABEL]];
     }
     [alert show];
 }
 
-+(void) handleMapNotificaiton:(NSDictionary*) wonderPushData
++ (void) handleMapNotification:(NSDictionary*)wonderPushData
 {
-    if (buttonHandler != nil) {
-        // we currently support only one dialog at a time
-        return;
-    }
+    // We currently support only one dialog at a time
+    if (buttonHandler != nil) return;
 
-    NSDictionary *mapData = [wonderPushData objectForKey:@"map"];
-    if (![mapData isKindOfClass:[NSDictionary class]])
-    {
-        return;
-    }
-
-    NSDictionary *place = [mapData objectForKey:@"place"];
-    if (![place isKindOfClass:[NSDictionary class]])
-    {
-        return;
-    }
-
-    NSDictionary *point = [place objectForKey:@"point"];
-    if (![point isKindOfClass:[NSDictionary class]])
-    {
-        return;
-    }
-
+    NSDictionary *mapData = [wonderPushData dictionaryForKey:@"map"] ?: @{};
+    NSDictionary *place = [mapData dictionaryForKey:@"place"] ?: @{};
+    NSDictionary *point = [place dictionaryForKey:@"point"] ?: @{};
+    NSNumber *lat = [point numberForKey:@"lat"];
+    NSNumber *lon = [point numberForKey:@"lon"];
+    NSNumber *zoom = [point numberForKey:@"zoom"];
+    if (!lat || !lon || !zoom) return;
 
     NSString *staticMapUrl = [NSString stringWithFormat:@"http://maps.google.com/maps/api/staticmap?markers=color:red|%f,%f&zoom=%ld&size=260x300&sensor=true",
-                              [[point objectForKey:@"lat"] doubleValue], [[point objectForKey:@"lon"] doubleValue],(long)[[place objectForKey:@"zoom"] integerValue]];
+                              [lat doubleValue], [lon doubleValue], (long)[zoom integerValue]];
 
     NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     UIImage *image = [UIImage imageWithData: [NSData dataWithContentsOfURL:mapUrl]];
@@ -771,93 +751,81 @@ static WPDialogButtonHandler *buttonHandler = nil;
     view.layer.masksToBounds = YES;
     view.layer.cornerRadius = 10;
 
-   [alert setContainerView:view];
+    [alert setContainerView:view];
 
-    NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
+    NSArray *buttons = [wonderPushData arrayForKey:@"buttons"];
     buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.buttonConfiguration = buttons;
     buttonHandler.notificationConfiguration = wonderPushData;
     [alert setDelegate:buttonHandler];
-    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0)
-    {
+    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
         NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
-        for (NSDictionary *button in buttons)
-        {
+        for (NSDictionary *button in buttons) {
             [textButtons addObject:[button valueForKey:@"label"]];
         }
         [alert setButtonTitles:textButtons];
-    }
-    else
-    {
+    } else {
         [alert setButtonTitles:@[WP_DEFAULT_BUTTON_LOCALIZED_LABEL]];
     }
     [alert show];
 }
 
-+ (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *) notification
++ (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
 {
-    NSString *type = [action objectForKey:@"type"];
-    if ([type isEqualToString:WP_ACTION_TRACK])
-    {
-        NSDictionary *event = [action objectForKey:@"event"];
-        if (![event isKindOfClass:[NSDictionary class]]) return;
-        NSString *type = [event objectForKey:@"type"];
-        if (![type isKindOfClass:[NSString class]]) return;
-        NSDictionary *custom = [event objectForKey:@"custom"];
-        if (![custom isKindOfClass:[NSDictionary class]]) custom = nil;
+    NSString *type = [action stringForKey:@"type"];
+    
+    if ([WP_ACTION_TRACK isEqualToString:type]) {
+
+        NSDictionary *event = [action dictionaryForKey:@"event"] ?: @{};
+        NSString *type = [event stringForKey:@"type"];
+        if (!type) return;
+        NSDictionary *custom = [event dictionaryForKey:@"custom"];
         [WonderPush trackEvent:type
                      eventData:@{@"campaignId": notification[@"c"] ?: [NSNull null],
                                  @"notificationId": notification[@"n"] ?: [NSNull null]}
                     customData:custom];
-    }
-    if ([type isEqualToString:WP_ACTION_UPDATE_INSTALLATION])
-    {
-        NSDictionary *custom = [action objectForKey:@"custom"];
-        if (![custom isKindOfClass:[NSDictionary class]]) return;
+
+    } else if ([WP_ACTION_UPDATE_INSTALLATION isEqualToString:type]) {
+
+        NSDictionary *custom = [action dictionaryForKey:@"custom"];
+        if (!custom) return;
         [WonderPush putInstallationCustomProperties:custom];
-    }
-    if ([type isEqualToString:WP_ACTION_RATING])
-    {
-        NSBundle* mainBundle = [NSBundle mainBundle];
-        NSString *itunesAppId = [mainBundle objectForInfoDictionaryKey:WP_ITUNES_APP_ID];
-        if (itunesAppId != nil)
-        {
+
+    } else if ([WP_ACTION_RATING isEqualToString:type]) {
+
+        NSString *itunesAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:WP_ITUNES_APP_ID];
+        if (itunesAppId != nil) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:ITUNES_APP_URL_FORMAT, itunesAppId]]];
         }
 
-    }
-    if ([type isEqualToString:WP_ACTION_METHOD_CALL])
-    {
-        NSString *methodName = [action objectForKey:@"method"];
-        id methodParameter = [action objectForKey:@"methodArg"];
+    } else  if ([WP_ACTION_METHOD_CALL isEqualToString:type]) {
+
+        NSString *methodName = [action stringForKey:@"method"];
+        id methodParameter = [action nullsafeObjectForKey:@"methodArg"];
         NSDictionary *parameters = @{WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter ?: [NSNull null]};
-        [[NSNotificationCenter defaultCenter]  postNotificationName:methodName
-                                                             object:self
-                                                           userInfo:parameters];
-    }
-    if ([type isEqualToString:WP_ACTION_LINK])
-    {
-        NSString *url = [action objectForKey:@"url"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:methodName object:self userInfo:parameters];
+
+    } else if ([WP_ACTION_LINK isEqualToString:WP_ACTION_LINK]) {
+
+        NSString *url = [action stringForKey:@"url"];
        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-    }
-    if ([type isEqualToString:WP_ACTION_MAP_OPEN])
-    {
-        NSDictionary *mapData = [notification objectForKey:@"map"];
-        if (![mapData isKindOfClass:[NSDictionary class]]) return;
 
-        NSDictionary *place = [mapData objectForKey:@"place"];
-        if (![place isKindOfClass:[NSDictionary class]]) return;
+    } else if ([WP_ACTION_MAP_OPEN isEqualToString:type]) {
 
-        NSDictionary *point = [place objectForKey:@"point"];
-        if (![point isKindOfClass:[NSDictionary class]]) return;
-
-        NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [[point objectForKey:@"lat"] doubleValue], [[point objectForKey:@"lon"] doubleValue]];
+        NSDictionary *mapData = [notification dictionaryForKey:@"map"] ?: @{};
+        NSDictionary *place = [mapData dictionaryForKey:@"place"] ?: @{};
+        NSDictionary *point = [place dictionaryForKey:@"point"] ?: @{};
+        NSNumber *lat = [point numberForKey:@"lat"];
+        NSNumber *lon = [point numberForKey:@"lon"];
+        if (!lat || !lon) return;
+        NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [lat doubleValue], [lon doubleValue]];
         WPLog(@"url: %@", url);
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+
     }
 }
 
-+(void) setDeviceToken:(NSString *) deviceToken
++ (void) setDeviceToken:(NSString *)deviceToken
 {
     if (deviceToken) {
         deviceToken = [deviceToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
@@ -964,20 +932,19 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return [self handleNotification:notificationDictionary withOriginalApplicationState:appState];
 }
 
-+ (BOOL) handleNotification:(NSDictionary*) notificationDictionary withOriginalApplicationState:(UIApplicationState)applicationState
++ (BOOL) handleNotification:(NSDictionary*)notificationDictionary withOriginalApplicationState:(UIApplicationState)applicationState
 {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
 
-    NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
-    NSString *type = [wonderpushData objectForKey:@"type"];
-    NSDictionary *apsForeground = [wonderpushData objectForKey:@"apsForeground"];
-    if (![apsForeground isKindOfClass:[NSDictionary class]] || apsForeground.count == 0) apsForeground = nil;
+    NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
+    NSDictionary *apsForeground = [wonderpushData dictionaryForKey:@"apsForeground"];
+    if (!apsForeground || apsForeground.count == 0) apsForeground = nil;
     BOOL apsForegroundAutoOpen = NO;
     BOOL apsForegroundAutoDrop = NO;
     if (apsForeground) {
-        apsForegroundAutoOpen = [[apsForeground objectForKey:@"autoOpen"] isEqual:@YES];
-        apsForegroundAutoDrop = [[apsForeground objectForKey:@"autoDrop"] isEqual:@YES];
+        apsForegroundAutoOpen = [[apsForeground numberForKey:@"autoOpen"] isEqual:@YES];
+        apsForegroundAutoDrop = [[apsForeground numberForKey:@"autoDrop"] isEqual:@YES];
     }
 
     // Should we merely drop this notification if received in foreground?
@@ -986,16 +953,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
         return NO;
     }
 
-    NSDictionary *aps = [notificationDictionary objectForKey:@"aps"];
-    if (![aps isKindOfClass:[NSDictionary class]] || aps.count == 0) aps = nil;
-    id apsAlert = aps ? [aps objectForKey:@"alert"] : nil;
+    NSDictionary *aps = [notificationDictionary dictionaryForKey:@"aps"];
+    if (!aps || aps.count == 0) aps = nil;
+    NSDictionary *apsAlert = aps ? [aps nullsafeObjectForKey:@"alert"] : nil;
 
     // Should we simulate the system alert if the notification is received in foreground?
     if (
         // we only treat the case where the notification is received in foreground
         applicationState == UIApplicationStateActive
         // data notifications should never be displayed by our SDK
-        && ![type isEqualToString:WP_PUSH_NOTIFICATION_DATA]
+        && ![self isDataNotification:notificationDictionary]
         // if we should auto open the notification, skip to the else
         && !apsForegroundAutoOpen
         // we have some text to display
@@ -1010,11 +977,11 @@ static WPDialogButtonHandler *buttonHandler = nil;
         NSString *alert = nil;
         NSString *action = nil;
         if ([apsAlert isKindOfClass:[NSDictionary class]]) {
-            title = [apsAlert objectForKey:@"title-loc-key"];
+            title = [apsAlert stringForKey:@"title-loc-key"];
             if (title) title = NSLocalizedStringWithDefaultValue(title, nil, mainBundle, title, nil);
             if (title) {
-                id locArgsId = [apsAlert objectForKey:@"title-loc-args"];
-                if (locArgsId && [locArgsId isKindOfClass:[NSArray class]]) {
+                id locArgsId = [apsAlert arrayForKey:@"title-loc-args"];
+                if (locArgsId) {
                     NSArray *locArgs = locArgsId;
                     title = [NSString stringWithFormat:title,
                              locArgs.count > 0 ? [locArgs objectAtIndex:0] : nil,
@@ -1030,13 +997,13 @@ static WPDialogButtonHandler *buttonHandler = nil;
                              nil];
                 }
             } else {
-                title = [apsAlert objectForKey:@"title"];
+                title = [apsAlert stringForKey:@"title"];
             }
-            alert = [apsAlert objectForKey:@"loc-key"];
+            alert = [apsAlert stringForKey:@"loc-key"];
             if (alert) alert = NSLocalizedStringWithDefaultValue(alert, nil, mainBundle, alert, nil);
             if (alert) {
-                id locArgsId = [apsAlert objectForKey:@"loc-args"];
-                if (locArgsId && [locArgsId isKindOfClass:[NSArray class]]) {
+                id locArgsId = [apsAlert arrayForKey:@"loc-args"];
+                if (locArgsId) {
                     NSArray *locArgs = locArgsId;
                     alert = [NSString stringWithFormat:alert,
                              locArgs.count > 0 ? [locArgs objectAtIndex:0] : nil,
@@ -1052,19 +1019,19 @@ static WPDialogButtonHandler *buttonHandler = nil;
                              nil];
                 }
             } else {
-                alert = [apsAlert objectForKey:@"body"];
+                alert = [apsAlert stringForKey:@"body"];
             }
-            action = [apsAlert objectForKey:@"action-loc-key"];
+            action = [apsAlert stringForKey:@"action-loc-key"];
             if (action) action = NSLocalizedStringWithDefaultValue(action, nil, mainBundle, action, nil);
         } else if ([apsAlert isKindOfClass:[NSString class]]) {
-            alert = apsAlert;
+            alert = (NSString *)apsAlert;
         }
-        if (!title) title = [localizedInfoDictionary objectForKey:@"CFBundleDisplayName"];
-        if (!title) title = [infoDictionary objectForKey:@"CFBundleDisplayName"];
-        if (!title) title = [localizedInfoDictionary objectForKey:@"CFBundleName"];
-        if (!title) title = [infoDictionary objectForKey:@"CFBundleName"];
-        if (!title) title = [localizedInfoDictionary objectForKey:@"CFBundleExecutable"];
-        if (!title) title = [infoDictionary objectForKey:@"CFBundleExecutable"];
+        if (!title) title = [localizedInfoDictionary stringForKey:@"CFBundleDisplayName"];
+        if (!title) title = [infoDictionary stringForKey:@"CFBundleDisplayName"];
+        if (!title) title = [localizedInfoDictionary stringForKey:@"CFBundleName"];
+        if (!title) title = [infoDictionary stringForKey:@"CFBundleName"];
+        if (!title) title = [localizedInfoDictionary stringForKey:@"CFBundleExecutable"];
+        if (!title) title = [infoDictionary stringForKey:@"CFBundleExecutable"];
 
         if (!action) {
             action = NSLocalizedStringWithDefaultValue(@"VIEW", @"WonderPushLocalizable", wpLocaleBundle, @"View", nil);
@@ -1101,26 +1068,26 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     conf.justOpenedNotification = notificationDictionary;
 
-    NSDictionary *wonderpushData = [notificationDictionary objectForKey:WP_PUSH_NOTIFICATION_KEY];
+    NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
     WPLog(@"Opened notification: %@", notificationDictionary);
 
-    id campagnId      = [wonderpushData objectForKey:@"c"];
-    id notificationId = [wonderpushData objectForKey:@"n"];
+    id campagnId      = [wonderpushData stringForKey:@"c"];
+    id notificationId = [wonderpushData stringForKey:@"n"];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
     [self trackNotificationOpened:notificationInformation];
 
-    id atOpenActions = [wonderpushData objectForKey:@"actions"];
-    if (atOpenActions && [atOpenActions isKindOfClass:[NSArray class]]) {
+    id atOpenActions = [wonderpushData arrayForKey:@"actions"];
+    if (atOpenActions) {
         for (id action in ((NSArray*)atOpenActions)) {
-            if (action && [action isKindOfClass:[NSDictionary class]]) {
+            if ([action isKindOfClass:[NSDictionary class]]) {
                 [self executeAction:action onNotification:wonderpushData];
             }
         }
     }
 
-    NSString *targetUrl = [wonderpushData objectForKey:WP_TARGET_URL_KEY];
+    NSString *targetUrl = [wonderpushData stringForKey:WP_TARGET_URL_KEY];
     if (!targetUrl)
         targetUrl = WP_TARGET_URL_DEFAULT;
     if ([targetUrl hasPrefix:WP_TARGET_URL_SDK_PREFIX]) {
@@ -1137,25 +1104,21 @@ static WPDialogButtonHandler *buttonHandler = nil;
         });
     }
 
-    NSString *type = [wonderpushData objectForKey:@"type"];
-    if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_TEXT])
-    {
+    if ([self isDataNotification:notificationDictionary]) {
+        return NO;
+    }
+    NSString *type = [wonderpushData stringForKey:@"type"];
+    if ([WP_PUSH_NOTIFICATION_SHOW_TEXT isEqualToString:type]) {
         [self handleTextNotification:wonderpushData];
         return YES;
-    }
-    else if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_HTML])
-    {
-        [self handleHtmlNotificaiton:wonderpushData];
+    } else if ([WP_PUSH_NOTIFICATION_SHOW_HTML isEqualToString:type]) {
+        [self handleHtmlNotification:wonderpushData];
         return YES;
-    }
-    else if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_URL])
-    {
-        [self handleHtmlNotificaiton:wonderpushData];
+    } else if ([WP_PUSH_NOTIFICATION_SHOW_URL isEqualToString:type]) {
+        [self handleHtmlNotification:wonderpushData];
         return YES;
-    }
-    else if ([type isEqualToString:WP_PUSH_NOTIFICATION_SHOW_MAP])
-    {
-        [self handleMapNotificaiton:wonderpushData];
+    } else if ([WP_PUSH_NOTIFICATION_SHOW_MAP isEqualToString:type]) {
+        [self handleMapNotification:wonderpushData];
         return YES;
     }
 
@@ -1208,7 +1171,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
             openInfo[@"lastReceivedNotificationTime"] = [[NSNumber alloc] initWithLongLong:now - lastReceivedNotificationTs];
         }
         // Add the information of the clicked notification
-        if (conf.justOpenedNotification && conf.justOpenedNotification[@"_wp"]) {
+        if (conf.justOpenedNotification && [conf.justOpenedNotification[@"_wp"] isKindOfClass:[NSDictionary class]]) {
             openInfo[@"campaignId"]     = conf.justOpenedNotification[@"_wp"][@"c"] ?: [NSNull null];
             openInfo[@"notificationId"] = conf.justOpenedNotification[@"_wp"][@"n"] ?: [NSNull null];
             conf.justOpenedNotification = nil;
@@ -1390,7 +1353,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
                                         encoding:NSUTF8StringEncoding];
 
     BOOL gpsCapability = NO;
-    id kbValue = [gpsCapabilityByCode objectForKey:code];
+    id kbValue = [gpsCapabilityByCode numberForKey:code];
     if (kbValue != nil) {
         gpsCapability = [kbValue boolValue];
     } else {
@@ -1488,7 +1451,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSString* code = [NSString stringWithCString:systemInfo.machine
                                         encoding:NSUTF8StringEncoding];
 
-    NSString* deviceName = [deviceNamesByCode objectForKey:code];
+    NSString* deviceName = [deviceNamesByCode stringForKey:code];
 
     if (!deviceName) {
         // Just use the code name so we don't lose any information

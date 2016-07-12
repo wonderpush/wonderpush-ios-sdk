@@ -30,31 +30,33 @@
     return self;
 }
 
-- (void)executeButtonActions:(NSArray *) actions
+- (void)executeButtonActions:(NSArray *)actions
 {
     if (![actions isKindOfClass:[NSArray class]]) return;
-    for (NSDictionary *action in actions)
-    {
+    for (NSDictionary *action in actions) {
+        if (![action isKindOfClass:[NSDictionary class]]) continue;
         [WonderPush executeAction:action onNotification:notificationConfiguration];
     }
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
     NSDictionary *clickedButton = nil;
     if (buttonConfiguration && buttonIndex >= 0 && buttonIndex < buttonConfiguration.count) {
         clickedButton = [buttonConfiguration objectAtIndex:buttonIndex];
+        if (![clickedButton isKindOfClass:[NSDictionary class]]) clickedButton = nil;
     }
 
     NSNumber *shownTime = [[NSNumber alloc] initWithLong:(long)(([[NSProcessInfo processInfo] systemUptime] - self.showTime) * 1000)];
     [WonderPush trackInternalEvent:@"@NOTIFICATION_ACTION"
-                         eventData:@{@"buttonLabel":[clickedButton objectForKey:@"label"] ?: [NSNull null],
+                         eventData:@{@"buttonLabel":[clickedButton stringForKey:@"label"] ?: [NSNull null],
                                      @"reactionTime":shownTime,
-                                     @"campaignId": [notificationConfiguration objectForKey:@"c"] ?: [NSNull null],
-                                     @"notificationId": [notificationConfiguration objectForKey:@"n"] ?: [NSNull null],
+                                     @"campaignId": [notificationConfiguration stringForKey:@"c"] ?: [NSNull null],
+                                     @"notificationId": [notificationConfiguration stringForKey:@"n"] ?: [NSNull null],
                                      }
                         customData:nil];
 
-    NSArray *clickedButtonAction = [clickedButton objectForKey:@"actions"];
+    NSArray *clickedButtonAction = [clickedButton arrayForKey:@"actions"];
     [self executeButtonActions:clickedButtonAction];
     [WonderPush resetButtonHandler];
 }

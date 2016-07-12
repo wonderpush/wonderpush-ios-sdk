@@ -272,8 +272,14 @@ static NSArray *allowedMethods = nil;
     return NO;
 }
 
-- (void) fetchAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger) nbRetry forUserId:(NSString *)userId {
-    if (YES == self.isFetchingAccessToken) {
+- (void) fetchAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger)nbRetry forUserId:(NSString *)userId
+{
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    NSString *clientId = configuration.clientId;
+    NSString *deviceModel = [WPUtil deviceModel];
+    NSString *deviceId = [WPUtil deviceIdentifier];
+
+    if (!clientId || !deviceId || YES == self.isFetchingAccessToken) {
         HandlerPair *pair = [[HandlerPair alloc] init];
         pair.success = handler;
         pair.error = failure;
@@ -283,12 +289,11 @@ static NSArray *allowedMethods = nil;
         return;
     }
     self.isFetchingAccessToken = YES;
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
 
-    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:@{@"clientId":        configuration.clientId,
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:@{@"clientId":        clientId,
                                                                                     @"devicePlatform":  @"iOS",
-                                                                                    @"deviceModel":     [WPUtil deviceModel],
-                                                                                    @"deviceId":        [WPUtil deviceIdentifier]}];
+                                                                                    @"deviceModel":     deviceModel ?: [NSNull null],
+                                                                                    @"deviceId":        deviceId}];
     if (userId != nil) {
         [params setValue:userId forKeyPath:@"userId"];
     }
@@ -301,8 +306,9 @@ static NSArray *allowedMethods = nil;
         // Success
 
         NSDictionary *responseJson = (NSDictionary *)response;
-        NSString *accessToken = [responseJson valueForKeyPath:@"token"];
-        NSString *sid = [responseJson valueForKeyPath:@"data.sid"];
+        NSString *accessToken = [responseJson stringForKey:@"token"];
+        NSDictionary *data = [responseJson dictionaryForKey:@"data"];
+        NSString *sid = data ? [data stringForKey:@"sid"] : nil;
 
         // Do we have an accessToken and an SID ?
         if (sid && accessToken && sid.length && accessToken.length) {
@@ -311,15 +317,12 @@ static NSArray *allowedMethods = nil;
             [configuration changeUserId:userId];
             configuration.accessToken = accessToken;
             configuration.sid = sid;
-            configuration.installationId = [responseJson valueForKeyPath:@"data.installationId"];
+            configuration.installationId = [data stringForKey:@"installationId"];
 
-            id rawInstallation = [responseJson valueForKey:@"_installation"];
-            if ([rawInstallation isKindOfClass:[NSDictionary class]]) {
-                NSDictionary *installation = (NSDictionary *)rawInstallation;
-                id installationRawUpdateDate = [installation valueForKey:@"updateDate"];
-                NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:([installationRawUpdateDate isKindOfClass:[NSNumber class]] ? [(NSNumber *)installationRawUpdateDate longValue] : 0.) / 1000. ];
-                id rawCustom = [installation valueForKey:@"custom"];
-                NSDictionary * custom        = [rawCustom isKindOfClass:[NSDictionary class]] ? (NSDictionary *)rawCustom : @{};
+            NSDictionary *installation = [responseJson dictionaryForKey:@"_installation"];
+            if (installation) {
+                NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:[[installation numberForKey:@"updateDate"] longValue] / 1000. ];
+                NSDictionary * custom        = [installation dictionaryForKey:@"custom"] ?: @{};
                 NSDictionary * customUpdated = [custom copy];
                 NSDictionary *updated = configuration.cachedInstallationCustomPropertiesUpdated ?: @{};
                 NSDictionary *written = configuration.cachedInstallationCustomPropertiesWritten ?: @{};
@@ -365,8 +368,6 @@ static NSArray *allowedMethods = nil;
         NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if ([errorBody isKindOfClass:[NSData class]]) {
             WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
-        }
-        if ([errorBody isKindOfClass:[NSData class]]) {
             NSError *decodeError = nil;
             jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
             if (decodeError) NSLog(@"WPClient: Error while deserializing: %@", decodeError);
@@ -459,8 +460,8 @@ static NSArray *allowedMethods = nil;
 
                 WPResponse *response = [[WPResponse alloc] init];
                 response.object = responseJSON;
-                NSNumber *_serverTime = [(responseJSON) objectForKey:@"_serverTime"];
-                NSNumber *_serverTook = [(responseJSON) objectForKey:@"_serverTook"];
+                NSNumber *_serverTime = [responseJSON numberForKey:@"_serverTime"];
+                NSNumber *_serverTook = [responseJSON numberForKey:@"_serverTook"];
 
                 if (_serverTime != nil) {
                     NSTimeInterval serverTime = [_serverTime doubleValue] / 1000.;

@@ -83,10 +83,10 @@
         NSArray *requestQueue = [userDefaults objectForKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
 
         // Create queue if doesn't exist
-        if (!requestQueue)
+        if (![requestQueue isKindOfClass:[NSArray class]])
             requestQueue = @[];
 
-        // Build a new queue by appending the given requested, archived
+        // Build a new queue by appending the given request, archived
         requestQueue = [requestQueue arrayByAddingObject:[NSKeyedArchiver archivedDataWithRootObject:request]];
 
         // Save
@@ -98,16 +98,16 @@
 - (void) forget:(WPRequest *)request
 {
     @synchronized(self) {
-
         // Save in NSUserDefaults
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 
         NSArray *requestQueue = [userDefaults objectForKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
-        if (!requestQueue)
+        if (![requestQueue isKindOfClass:[NSArray class]])
             return;
 
         NSArray *newRequestQueue = @[];
         for (NSData *archivedRequestData in requestQueue) {
+            if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
             WPRequest *archivedRequest = [NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData];
 
             // Skip the request to forget
@@ -131,12 +131,13 @@
     NSArray *requestQueue = [userDefaults objectForKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
     NSArray *result = @[];
 
-    if (!requestQueue)
-        return result;
-
-    for (NSData *archivedRequestData in requestQueue) {
-        result = [result arrayByAddingObject:[NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData]];
+    if ([requestQueue isKindOfClass:[NSArray class]]) {
+        for (NSData *archivedRequestData in requestQueue) {
+            if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
+            result = [result arrayByAddingObject:[NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData]];
+        }
     }
+
     return result;
 }
 

@@ -18,6 +18,7 @@
 #import "OpenUDID.h"
 #import "WPConfiguration.h"
 #import "WPLog.h"
+#import "WonderPush_private.h"
 
 #import <sys/utsname.h>
 #import <UIKit/UIApplication.h>
@@ -138,23 +139,22 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
 
 + (NSError *)errorFromJSON:(id)json
 {
-    if (![json isKindOfClass:[NSDictionary class]])
-        return nil;
-    id errorJson = [json valueForKeyPath:@"error"];
-    if (!errorJson)
-        return nil;
-    if ([errorJson isKindOfClass:[NSArray class]])
-    {
-        for (id detailedError in ((NSArray *)errorJson))
-        {
-            if (detailedError && ![detailedError isKindOfClass:[NSNull class]])
-            {
-                return [[NSError alloc] initWithDomain:WPErrorDomain code:[[detailedError valueForKeyPath:@"code"] integerValue] userInfo:@{NSLocalizedDescriptionKey : [detailedError valueForKeyPath:@"message"] ?: [NSNull null]}];
+    if ([json isKindOfClass:[NSDictionary class]]) {
+        NSArray *errorArray = [json arrayForKey:@"error"];
+        NSDictionary *errorDict = [json dictionaryForKey:@"error"];
+        if (errorDict) {
+            errorArray = @[errorDict];
+        }
+        if (errorArray) {
+            for (NSDictionary *detailedError in errorArray) {
+                if (![detailedError isKindOfClass:[NSDictionary class]]) continue;
+                return [[NSError alloc] initWithDomain:WPErrorDomain
+                                                  code:[[detailedError numberForKey:@"code"] integerValue]
+                                              userInfo:@{NSLocalizedDescriptionKey : [detailedError stringForKey:@"message"] ?: [NSNull null]}];
             }
         }
-        return nil;
     }
-    return [[NSError alloc] initWithDomain:WPErrorDomain code:[[errorJson valueForKeyPath:@"code"] integerValue] userInfo:@{NSLocalizedDescriptionKey : [errorJson valueForKeyPath:@"message"] ?: [NSNull null]}];
+    return nil;
 }
 
 

@@ -19,6 +19,7 @@
 
 #import "WonderPush.h"
 #import "WPResponse.h"
+#import "NSDictionary+TypeSafe.h"
 
 
 #define SDK_VERSION @"iOS-1.2.1.0"
