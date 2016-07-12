@@ -63,7 +63,8 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 #pragma mark - Overriding useful methods
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didFinishLaunchingWithOptions:launchOptions];
     BOOL rtn = YES;
@@ -131,7 +132,8 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
     [WonderPush application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application {
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush applicationDidEnterBackground:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
@@ -141,7 +143,8 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application {
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
     WPLog(@"%@", NSStringFromSelector(_cmd));
     [WonderPush applicationDidBecomeActive:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {

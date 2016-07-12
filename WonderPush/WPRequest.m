@@ -43,7 +43,7 @@
     return self;
 }
 
--(id) copyWithZone:(NSZone *)zone
+- (id) copyWithZone:(NSZone *)zone
 {
     WPRequest *copy = [[WPRequest allocWithZone:zone] init];
     copy.userId = self.userId;

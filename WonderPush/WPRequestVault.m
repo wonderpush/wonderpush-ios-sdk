@@ -189,7 +189,7 @@
 
 #pragma mark - Initialized
 
-- (void) initializedNotification:(NSNotification *) notification
+- (void) initializedNotification:(NSNotification *)notification
 {
     WPLog(@"SDK initialized, starting queue to test reachability.");
     [self.operationQueue setSuspended:NO];

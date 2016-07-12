@@ -109,7 +109,8 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
 
 #pragma mark - Device
 
-+ (NSString *)deviceModel {
++ (NSString *)deviceModel
+{
     struct utsname systemInfo;
     uname(&systemInfo);
 
@@ -160,7 +161,7 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
 
 #pragma mark - Application utils
 
-+(BOOL) currentApplicationIsInForeground
++ (BOOL) currentApplicationIsInForeground
 {
     return [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
 }
@@ -231,7 +232,7 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
 
 #pragma mark - SERVER TIME
 
-+(long long) getServerDate
++ (long long) getServerDate
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
 

@@ -48,7 +48,7 @@ static WPConfiguration *sharedConfiguration = nil;
     sharedConfiguration = [[self alloc] init];
 }
 
-+ (WPConfiguration *)sharedConfiguration
++ (WPConfiguration *) sharedConfiguration
 {
     return sharedConfiguration;
 }
@@ -235,7 +235,7 @@ static WPConfiguration *sharedConfiguration = nil;
     return [NSURL URLWithString:PRODUCTION_API_URL];
 }
 
-- (NSString *)accessToken
+- (NSString *) accessToken
 {
     if (_accessToken)
         return _accessToken;
@@ -244,7 +244,7 @@ static WPConfiguration *sharedConfiguration = nil;
     return _accessToken;
 }
 
-- (NSString *)deviceToken
+- (NSString *) deviceToken
 {
     if (_deviceToken)
         return _deviceToken;
@@ -260,12 +260,12 @@ static WPConfiguration *sharedConfiguration = nil;
     [self _setNSString:deviceToken forKey:USER_DEFAULTS_DEVICE_TOKEN_KEY];
 }
 
--(NSDate *) cachedDeviceTokenDate
+- (NSDate *) cachedDeviceTokenDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
 }
 
--(void) setCachedDeviceTokenDate:(NSDate *)cachedDeviceTokenDate
+- (void) setCachedDeviceTokenDate:(NSDate *)cachedDeviceTokenDate
 {
     [self _setNSDate:cachedDeviceTokenDate forKey:USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE];
 }
@@ -298,14 +298,14 @@ static WPConfiguration *sharedConfiguration = nil;
     [self _setNSString:accessToken forKey:USER_DEFAULTS_ACCESS_TOKEN_KEY];
 }
 
--(void) setStoredClientId:(NSString *)clientId;
+- (void) setStoredClientId:(NSString *)clientId
 {
     if (clientId) {
         [self _setNSString:clientId forKey:USER_DEFAULTS_CLIENT_ID_KEY];
     }
 }
 
--(NSString *) getStoredClientId
+- (NSString *) getStoredClientId
 {
     return [self _getNSStringForKey:USER_DEFAULTS_CLIENT_ID_KEY];
 }
@@ -325,7 +325,7 @@ static WPConfiguration *sharedConfiguration = nil;
 
 #pragma mark - INSTALLATION ID
 
--(NSString *) installationId
+- (NSString *) installationId
 {
     if (_installationId)
         return _installationId;
@@ -334,7 +334,7 @@ static WPConfiguration *sharedConfiguration = nil;
     return _installationId;
 }
 
--(void) setInstallationId:(NSString *)installationId
+- (void) setInstallationId:(NSString *)installationId
 {
     _installationId = installationId;
     WPLog(@"Setting installationId: %@", installationId);
@@ -344,7 +344,7 @@ static WPConfiguration *sharedConfiguration = nil;
 
 #pragma mark - USER ID
 
--(NSString *) userId
+- (NSString *) userId
 {
     if (_userId)
         return _userId;
@@ -353,10 +353,9 @@ static WPConfiguration *sharedConfiguration = nil;
     return _userId;
 }
 
--(void) setUserId:(NSString *) userId
+- (void) setUserId:(NSString *)userId
 {
-    if ([@"" isEqualToString:userId])
-    {
+    if ([@"" isEqualToString:userId]) {
         userId = nil;
     }
     _userId = userId;
@@ -417,7 +416,7 @@ static WPConfiguration *sharedConfiguration = nil;
 
 #pragma mark - QUEUED NOTIFICATIONS
 
--(void) addToQueuedNotifications:(NSDictionary *) notification
+- (void) addToQueuedNotifications:(NSDictionary *)notification
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
@@ -435,7 +434,7 @@ static WPConfiguration *sharedConfiguration = nil;
     [defaults synchronize];
 }
 
--(NSMutableArray *) getQueuedNotifications
+- (NSMutableArray *) getQueuedNotifications
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
@@ -454,7 +453,7 @@ static WPConfiguration *sharedConfiguration = nil;
     return [NSMutableArray new];
 }
 
--(void) clearQueuedNotifications
+- (void) clearQueuedNotifications
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults removeObjectForKey:USER_DEFAULTS_QUEUED_NOTIFICATIONS];
@@ -464,32 +463,32 @@ static WPConfiguration *sharedConfiguration = nil;
 
 #pragma mark - CACHED INSTALLATION CORE PROPERTIES
 
--(NSDictionary *) cachedInstallationCoreProperties
+- (NSDictionary *) cachedInstallationCoreProperties
 {
     return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
 }
 
--(void) setCachedInstallationCoreProperties:(NSDictionary *)cachedInstallationCoreProperties
+- (void) setCachedInstallationCoreProperties:(NSDictionary *)cachedInstallationCoreProperties
 {
     [self _setNSDictionaryAsJSON:cachedInstallationCoreProperties forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES];
 }
 
--(NSDate *) cachedInstallationCorePropertiesDate
+- (NSDate *) cachedInstallationCorePropertiesDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
 }
 
--(void) setCachedInstallationCorePropertiesDate:(NSDate *)cachedInstallationCorePropertiesDate
+- (void) setCachedInstallationCorePropertiesDate:(NSDate *)cachedInstallationCorePropertiesDate
 {
     [self _setNSDate:cachedInstallationCorePropertiesDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE];
 }
 
--(NSString *) cachedInstallationCorePropertiesAccessToken
+- (NSString *) cachedInstallationCorePropertiesAccessToken
 {
     return [self _getNSStringForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN];
 }
 
--(void) setCachedInstallationCorePropertiesAccessToken:(NSString *)cachedInstallationCorePropertiesAccessToken
+- (void) setCachedInstallationCorePropertiesAccessToken:(NSString *)cachedInstallationCorePropertiesAccessToken
 {
     [self _setNSString:cachedInstallationCorePropertiesAccessToken forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN];
 }
@@ -497,132 +496,132 @@ static WPConfiguration *sharedConfiguration = nil;
 
 #pragma mark - CACHED INSTALLATION CUSTOM PROPERTIES
 
--(NSDictionary *) cachedInstallationCustomPropertiesWritten
+- (NSDictionary *) cachedInstallationCustomPropertiesWritten
 {
     return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
 }
 
--(void) setCachedInstallationCustomPropertiesWritten:(NSDictionary *)cachedInstallationCustomPropertiesWritten
+- (void) setCachedInstallationCustomPropertiesWritten:(NSDictionary *)cachedInstallationCustomPropertiesWritten
 {
     [self _setNSDictionaryAsJSON:cachedInstallationCustomPropertiesWritten forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN];
 }
 
--(NSDate *) cachedInstallationCustomPropertiesWrittenDate
+- (NSDate *) cachedInstallationCustomPropertiesWrittenDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
 }
 
--(void) setCachedInstallationCustomPropertiesWrittenDate:(NSDate *)cachedInstallationCustomPropertiesWrittenDate
+- (void) setCachedInstallationCustomPropertiesWrittenDate:(NSDate *)cachedInstallationCustomPropertiesWrittenDate
 {
     [self _setNSDate:cachedInstallationCustomPropertiesWrittenDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE];
 }
 
--(NSDictionary *) cachedInstallationCustomPropertiesUpdated
+- (NSDictionary *) cachedInstallationCustomPropertiesUpdated
 {
     return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
 }
 
--(void) setCachedInstallationCustomPropertiesUpdated:(NSDictionary *)cachedInstallationCustomPropertiesUpdated
+- (void) setCachedInstallationCustomPropertiesUpdated:(NSDictionary *)cachedInstallationCustomPropertiesUpdated
 {
     [self _setNSDictionaryAsJSON:cachedInstallationCustomPropertiesUpdated forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED];
 }
 
--(NSDate *) cachedInstallationCustomPropertiesUpdatedDate
+- (NSDate *) cachedInstallationCustomPropertiesUpdatedDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
 }
 
--(void) setCachedInstallationCustomPropertiesUpdatedDate:(NSDate *)cachedInstallationCustomPropertiesUpdatedDate
+- (void) setCachedInstallationCustomPropertiesUpdatedDate:(NSDate *)cachedInstallationCustomPropertiesUpdatedDate
 {
     [self _setNSDate:cachedInstallationCustomPropertiesUpdatedDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE];
 }
 
--(NSDate *) cachedInstallationCustomPropertiesFirstDelayedWriteDate
+- (NSDate *) cachedInstallationCustomPropertiesFirstDelayedWriteDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
 }
 
--(void) setCachedInstallationCustomPropertiesFirstDelayedWriteDate:(NSDate *)cachedInstallationCustomPropertiesFirstDelayedWriteDate
+- (void) setCachedInstallationCustomPropertiesFirstDelayedWriteDate:(NSDate *)cachedInstallationCustomPropertiesFirstDelayedWriteDate
 {
     [self _setNSDate:cachedInstallationCustomPropertiesFirstDelayedWriteDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
 }
 
--(NSDate *) lastReceivedNotificationDate
+- (NSDate *) lastReceivedNotificationDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
 }
 
--(void) setLastReceivedNotificationDate:(NSDate *)lastReceivedNotificationDate
+- (void) setLastReceivedNotificationDate:(NSDate *)lastReceivedNotificationDate
 {
     [self _setNSDate:lastReceivedNotificationDate forKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
 }
 
--(NSDictionary *) lastReceivedNotification
+- (NSDictionary *) lastReceivedNotification
 {
     return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
 }
 
--(void) setLastReceivedNotification:(NSDictionary *)lastReceivedNotification
+- (void) setLastReceivedNotification:(NSDictionary *)lastReceivedNotification
 {
     [self _setNSDictionaryAsJSON:lastReceivedNotification forKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION];
 }
 
--(NSDate *) lastOpenedNotificationDate
+- (NSDate *) lastOpenedNotificationDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_LAST_OPENED_NOTIFICATION_DATE];
 }
 
--(void) setLastOpenedNotificationDate:(NSDate *)lastOpenedNotificationDate
+- (void) setLastOpenedNotificationDate:(NSDate *)lastOpenedNotificationDate
 {
     [self _setNSDate:lastOpenedNotificationDate forKey:USER_DEFAULTS_LAST_OPENED_NOTIFICATION_DATE];
 }
 
--(NSDictionary *) lastOpenedNotification
+- (NSDictionary *) lastOpenedNotification
 {
     return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_LAST_OPENED_NOTIFICATION];
 }
 
--(void) setLastOpenedNotification:(NSDictionary *)lastOpenedNotification
+- (void) setLastOpenedNotification:(NSDictionary *)lastOpenedNotification
 {
     [self _setNSDictionaryAsJSON:lastOpenedNotification forKey:USER_DEFAULTS_LAST_OPENED_NOTIFICATION];
 }
 
--(NSDate *) lastInteractionDate
+- (NSDate *) lastInteractionDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_LAST_INTERACTION_DATE];
 }
 
--(void) setLastInteractionDate:(NSDate *)lastInteractionDate
+- (void) setLastInteractionDate:(NSDate *)lastInteractionDate
 {
     [self _setNSDate:lastInteractionDate forKey:USER_DEFAULTS_LAST_INTERACTION_DATE];
 }
 
--(NSDictionary *) lastAppOpenInfo
+- (NSDictionary *) lastAppOpenInfo
 {
     return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_LAST_APP_OPEN_INFO];
 }
 
--(void) setLastAppOpenInfo:(NSDictionary *)lastAppOpenInfo
+- (void) setLastAppOpenInfo:(NSDictionary *)lastAppOpenInfo
 {
     [self _setNSDictionaryAsJSON:lastAppOpenInfo forKey:USER_DEFAULTS_LAST_APP_OPEN_INFO];
 }
 
--(NSDate *) lastAppOpenDate
+- (NSDate *) lastAppOpenDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_LAST_APP_OPEN_DATE];
 }
 
--(void) setLastAppOpenDate:(NSDate *)lastAppOpenDate
+- (void) setLastAppOpenDate:(NSDate *)lastAppOpenDate
 {
     [self _setNSDate:lastAppOpenDate forKey:USER_DEFAULTS_LAST_APP_OPEN_DATE];
 }
 
--(NSDate *) lastAppCloseDate
+- (NSDate *) lastAppCloseDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_LAST_APP_CLOSE_DATE];
 }
 
--(void) setLastAppCloseDate:(NSDate *)lastAppCloseDate
+- (void) setLastAppCloseDate:(NSDate *)lastAppCloseDate
 {
     [self _setNSDate:lastAppCloseDate forKey:USER_DEFAULTS_LAST_APP_CLOSE_DATE];
 }

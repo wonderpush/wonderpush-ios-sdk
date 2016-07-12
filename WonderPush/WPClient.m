@@ -255,7 +255,8 @@ static NSArray *allowedMethods = nil;
 
 #pragma mark - Access Token
 
-- (BOOL)fetchAccessTokenIfNeededForUserId:(NSString *)userId {
+- (BOOL)fetchAccessTokenIfNeededForUserId:(NSString *)userId
+{
     if (![WPConfiguration sharedConfiguration].accessToken) {
         [self fetchAccessTokenAndCall:nil failure:nil nbRetry:0 forUserId:userId];
         return YES;

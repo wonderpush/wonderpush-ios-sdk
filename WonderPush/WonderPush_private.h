@@ -124,7 +124,7 @@
 
 @interface WonderPush (private)
 
-+ (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *) notification;
++ (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification;
 
 + (void) updateInstallationCoreProperties;
 
@@ -132,9 +132,9 @@
 
 + (void) setIsReachable:(BOOL)isReachable;
 
-+ (NSString *)languageCode;
++ (NSString *) languageCode;
 
-+ (void) setLanguageCode:(NSString *) languageCode;
++ (void) setLanguageCode:(NSString *)languageCode;
 
 + (NSString *) getSDKVersionNumber;
 
@@ -158,14 +158,14 @@
  @param properties a collection of properties to add
  @param overwrite if true all the installation will be cleaned before update
  */
-+ (void) updateInstallation:(NSDictionary *) properties shouldOverwrite:(BOOL) overwrite;
++ (void) updateInstallation:(NSDictionary *)properties shouldOverwrite:(BOOL)overwrite;
 
 /**
  Tracks an internal event, starting with a @ sign.
  @param eventData A collection of properties to add directly to the event body.
  @param customData A collection of custom properties to add to the `custom` field of the event.
  */
-+(void) trackInternalEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData;
++ (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData;
 
 /**
  Whether the user has already been prompted for permission by the OS.

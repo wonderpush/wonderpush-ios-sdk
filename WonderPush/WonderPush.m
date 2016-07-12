@@ -205,7 +205,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
     return _isInitialized;
 }
 
-+ (void) setIsInitialized:(BOOL)isInitialized {
++ (void) setIsInitialized:(BOOL)isInitialized
+{
     _isInitialized = isInitialized;
 }
 
@@ -214,7 +215,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
     return _isReady;
 }
 
-+ (void) setIsReady:(BOOL)isReady {
++ (void) setIsReady:(BOOL)isReady
+{
     _isReady = isReady;
 }
 
@@ -223,11 +225,12 @@ static NSDictionary* gpsCapabilityByCode = nil;
     return _isReachable;
 }
 
-+ (void) setIsReachable:(BOOL)isReachable {
++ (void) setIsReachable:(BOOL)isReachable
+{
     _isReachable = isReachable;
 }
 
-+ (void) setUserId:(NSString *) userId
++ (void) setUserId:(NSString *)userId
 {
     if ([@"" isEqualToString:userId]) userId = nil;
     if (![self isInitialized]) {
@@ -245,7 +248,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
     } // else: nothing needs to be done
 }
 
-+ (void) setClientId:(NSString *)clientId secret:(NSString *)secret{
++ (void) setClientId:(NSString *)clientId secret:(NSString *)secret
+{
     NSException* invalidArgumentException = nil;
 
     if (clientId == nil) {
@@ -278,14 +282,15 @@ static NSDictionary* gpsCapabilityByCode = nil;
     [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
 }
 
-+ (void) initForNewUser:(NSString *)userId {
++ (void) initForNewUser:(NSString *)userId
+{
     [self setIsReady:NO];
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
         [self putInstallationCustomProperties_inner];
     }
     [configuration changeUserId:userId];
-    void (^init)(void)= ^{
+    void (^init)(void) = ^{
         [self setIsReady:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                             object:self
@@ -308,7 +313,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     return sharedConfiguration.notificationEnabled;
 }
 
-+ (void) setNotificationEnabled:(BOOL) enabled
++ (void) setNotificationEnabled:(BOOL)enabled
 {
     WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
     BOOL previousValue = sharedConfiguration.notificationEnabled;
@@ -462,30 +467,30 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 #pragma mark - Core information
 
-+(NSString *) userId
++ (NSString *) userId
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     return configuration.userId;
 }
 
-+(NSString *) installationId
++ (NSString *) installationId
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     return configuration.installationId;
 }
 
-+(NSString *) deviceId
++ (NSString *) deviceId
 {
     return [WPUtil deviceIdentifier];
 }
 
-+(NSString *) pushToken
++ (NSString *) pushToken
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     return configuration.deviceToken;
 }
 
-+(NSString *) accessToken
++ (NSString *) accessToken
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     return configuration.accessToken;
@@ -503,7 +508,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
     }
 }
 
-+(void) updateInstallation:(NSDictionary *) properties shouldOverwrite:(BOOL) overwrite {
++ (void) updateInstallation:(NSDictionary *)properties shouldOverwrite:(BOOL)overwrite
+{
     if (!overwrite && (![properties isKindOfClass:[NSDictionary class]] || !properties.count)) return;
     NSString *installationEndPoint = @"/installation";
     [self postEventually:installationEndPoint params:@{@"body":properties, @"overwrite":[NSNumber numberWithBool:overwrite]}];
@@ -511,15 +517,13 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 static NSObject *_putInstallationCustomProperties_lock; //= [NSObject new];
 static int _putInstallationCustomProperties_blockId = 0;
-+ (void) putInstallationCustomProperties:(NSDictionary *) customProperties
++ (void) putInstallationCustomProperties:(NSDictionary *)customProperties
 {
     [self onInteraction];
     @synchronized (_putInstallationCustomProperties_lock) {
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-        NSDictionary *updatedRef = conf.cachedInstallationCustomPropertiesUpdated;
-        if (updatedRef == nil) updatedRef = [NSDictionary new];
-        NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated;
-        if (updated == nil) updated = [NSDictionary new];
+        NSDictionary *updatedRef = conf.cachedInstallationCustomPropertiesUpdated ?: @{};
+        NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated ?: @{};
         updated = [WPJsonUtil merge:updated with:customProperties];
         if ([updated isEqual:updatedRef]) {
             return;
@@ -527,7 +531,7 @@ static int _putInstallationCustomProperties_blockId = 0;
         int currentBlockId = ++_putInstallationCustomProperties_blockId;
         NSDate *now = [NSDate date];
         NSDate *firstWrite = conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate;
-        if (firstWrite == nil) {
+        if (!firstWrite) {
             firstWrite = now;
             conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate = firstWrite;
         }
@@ -563,7 +567,7 @@ static int _putInstallationCustomProperties_blockId = 0;
     }
 }
 
-+ (void) trackNotificationOpened:(NSDictionary *) notificationInformation
++ (void) trackNotificationOpened:(NSDictionary *)notificationInformation
 {
     [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:notificationInformation customData:nil];
 }
@@ -585,17 +589,16 @@ static int _putInstallationCustomProperties_blockId = 0;
     [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
 }
 
-+(void) trackInternalEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData
++ (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
-    if ([type characterAtIndex:0] != '@')
-    {
+    if ([type characterAtIndex:0] != '@') {
         @throw [NSException exceptionWithName:@"illegal argument" reason:@"This method must only be called for internal events, starting with an '@'" userInfo:nil];
     }
 
     [self trackEvent:type eventData:data customData:customData];
 }
 
-+ (void) trackEvent:(NSString *) type eventData:(NSDictionary *) data customData:(NSDictionary *) customData
++ (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
     if (![type isKindOfClass:[NSString class]]) return;
     NSString *eventEndPoint = @"/events";
@@ -642,12 +645,12 @@ static int _putInstallationCustomProperties_blockId = 0;
 // We can only have one dialog on screen so having only one reference is no problem
 static WPDialogButtonHandler *buttonHandler = nil;
 
-+(void) resetButtonHandler
++ (void) resetButtonHandler
 {
     buttonHandler = nil;
 }
 
-+(void) handleTextNotification:(NSDictionary *) wonderPushData
++ (void) handleTextNotification:(NSDictionary *)wonderPushData
 {
     if (buttonHandler != nil) {
         // we currently support only one dialog at a time
@@ -670,7 +673,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     [dialog show];
 }
 
-+(void) handleHtmlNotificaiton:(NSDictionary*) wonderPushData
++ (void) handleHtmlNotification:(NSDictionary*)wonderPushData
 {
     if (buttonHandler != nil) {
         // we currently support only one dialog at a time
@@ -682,16 +685,11 @@ static WPDialogButtonHandler *buttonHandler = nil;
 //    view.scalesPageToFit = YES;
     NSString *message = [wonderPushData valueForKey:@"message"];
     NSString *url = [wonderPushData valueForKey:@"url"];
-    if (message != nil)
-    {
+    if (message != nil) {
         [view loadHTMLString:[wonderPushData valueForKey:@"message"] baseURL:nil];
-    }
-    else if (url != nil)
-    {
+    } else if (url != nil) {
         [view loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]]];
-    }
-    else
-    {
+    } else {
         WPLog(@"Error the link / url provided is null");
         return;
     }
@@ -850,9 +848,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
         [sharedConfiguration setDeviceTokenAssociatedToUserId:sharedConfiguration.userId];
         [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
         [sharedConfiguration setCachedDeviceTokenAccessToken:sharedConfiguration.accessToken];
-        [self updateInstallation:@{@"pushToken": @{@"data":
-                                                       deviceToken ?: [NSNull null]
-                                                   }}
+        [self updateInstallation:@{@"pushToken": @{@"data": deviceToken ?: [NSNull null]}}
                  shouldOverwrite:NO];
     }
 }
@@ -879,10 +875,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
 {
     if (![self hasAcceptedVisibleNotifications]) return;
     if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerForRemoteNotifications)]) {
-        NSLog(@"Calling [UIApplication registerForRemoteNotifications]");
         [[UIApplication sharedApplication] registerForRemoteNotifications];
     } else {
-        NSLog(@"Calling [UIApplication registerForRemoteNotificationTypes:%lu]", (unsigned long)[[UIApplication sharedApplication] enabledRemoteNotificationTypes]);
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:[[UIApplication sharedApplication] enabledRemoteNotificationTypes]];
     }
 }
@@ -897,7 +891,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     }
 }
 
-+ (BOOL) handleNotification:(NSDictionary*) notificationDictionary
++ (BOOL) handleNotification:(NSDictionary*)notificationDictionary
 {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
@@ -1059,7 +1053,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
-+ (BOOL) handleNotificationOpened:(NSDictionary*) notificationDictionary
++ (BOOL) handleNotificationOpened:(NSDictionary*)notificationDictionary
 {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
@@ -1185,7 +1179,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 #pragma mark - Information mining
 
-+(void) updateInstallationCoreProperties
++ (void) updateInstallationCoreProperties
 {
     NSNull *null = [NSNull null];
     NSDictionary *apple = @{@"apsEnvironment": [WPUtil getEntitlement:@"aps-environment"] ?: null,
@@ -1272,11 +1266,10 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return result;
 }
 
-+(BOOL) getProximitySensorSupported
++ (BOOL) getProximitySensorSupported
 {
     UIDevice *device = [UIDevice currentDevice];
-    if (device)
-    {
+    if (device) {
         device.proximityMonitoringEnabled = YES;
         if (device.proximityMonitoringEnabled == YES) {
             device.proximityMonitoringEnabled = NO;
@@ -1286,7 +1279,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
-+(BOOL) getGyroscopeSupported
++ (BOOL) getGyroscopeSupported
 {
 #ifdef __IPHONE_4_0
     CMMotionManager *motionManager = [[CMMotionManager alloc] init];
@@ -1296,7 +1289,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
 #endif
 }
 
-+(BOOL) getCompassSupported
++ (BOOL) getCompassSupported
 {
     BOOL compassAvailable = NO;
 
@@ -1309,17 +1302,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return compassAvailable;
 }
 
-+(BOOL) getMicrophoneSupported
++ (BOOL) getMicrophoneSupported
 {
     NSArray *availableInputs = [[AVAudioSession sharedInstance] availableInputs];
-    if (availableInputs)
-    {
-        for (AVAudioSessionPortDescription *port in availableInputs)
-        {
+    if (availableInputs) {
+        for (AVAudioSessionPortDescription *port in availableInputs) {
             if (!port) continue;
             if ([port.portType isEqualToString:AVAudioSessionPortBuiltInMic] ||
-                [port.portType isEqualToString:AVAudioSessionPortHeadsetMic])
-            {
+                [port.portType isEqualToString:AVAudioSessionPortHeadsetMic]
+            ) {
                 return YES;
             }
         }
@@ -1327,22 +1318,17 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
-+(BOOL) getCameraSupported
++ (BOOL) getCameraSupported
 {
-    if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera])
-        return YES;
-    return NO;
+    return [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
 }
 
-+(BOOL) getFrontCameraSupported
++ (BOOL) getFrontCameraSupported
 {
-    if( [UIImagePickerController isCameraDeviceAvailable: UIImagePickerControllerCameraDeviceFront ])
-        return YES;
-
-    return NO;
+    return [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront];
 }
 
-+(BOOL) getGPSSupported
++ (BOOL) getGPSSupported
 {
     struct utsname systemInfo;
 
@@ -1360,14 +1346,11 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
         if ([code rangeOfString:@"iPod"].location != NSNotFound) {
             gpsCapability = NO;
-        }
-        else if([code rangeOfString:@"iPad"].location != NSNotFound) {
+        } else if([code rangeOfString:@"iPad"].location != NSNotFound) {
             gpsCapability = YES; // this is not sure but let's assume the future will tend to that
-        }
-        else if([code rangeOfString:@"iPhone"].location != NSNotFound){
+        } else if([code rangeOfString:@"iPhone"].location != NSNotFound){
             gpsCapability = YES;
-        }
-        else {
+        } else {
             gpsCapability = NO;
         }
     }
@@ -1375,7 +1358,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return gpsCapability;
 }
 
-+(BOOL) getTelephoneCDMASupported
++ (BOOL) getTelephoneCDMASupported
 {
     NSString *model = [self getDeviceModel];
     if ([model rangeOfString:@"CDMA"].location != NSNotFound ||
@@ -1385,7 +1368,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
-+(BOOL) getTelephonyGSMSupported
++ (BOOL) getTelephonyGSMSupported
 {
     NSString *model = [self getDeviceModel];
     if ([model rangeOfString:@"GSM"].location != NSNotFound ||
@@ -1396,12 +1379,12 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
-+(BOOL) getTelephonySupported
++ (BOOL) getTelephonySupported
 {
     return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tel://"]];
 }
 
-+(BOOL) getNFCSupported
++ (BOOL) getNFCSupported
 {
     // Right now (18/10/2014) iphone 6 has been announced with NFC support however it seems that there is now opened API for developpers to use it,
     // It seems only limited to Apple Pay, the device name by code is not yet available so returning false for now
@@ -1409,7 +1392,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
-+(BOOL) getBluetoothLeSupported
++ (BOOL) getBluetoothLeSupported
 {
     UIDevice *currentDevice = [UIDevice currentDevice];
     if (currentDevice)
@@ -1424,24 +1407,24 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return NO;
 }
 
-+(BOOL) getBluetoothSupported
++ (BOOL) getBluetoothSupported
 {
     // right now we will assume that all apple iOS device have bluetooth as just iPod touch 1st gen and apple tv2 seems not to have any bluetooth
     return YES;
 }
 
-+(BOOL) getFingerprintScannerSupported
++ (BOOL) getFingerprintScannerSupported
 {
     // will be supported on iOS 8.0
     return NO;
 }
 
-+(NSString *) getDeviceName
++ (NSString *) getDeviceName
 {
     return [[UIDevice currentDevice] name];
 }
 
-+(NSString *) getDeviceModel
++ (NSString *) getDeviceModel
 {
     struct utsname systemInfo;
 
@@ -1460,24 +1443,24 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return deviceName;
 }
 
-+(CGRect) getScreenSize
++ (CGRect) getScreenSize
 {
     return [[UIScreen mainScreen] bounds];
 }
 
-+(NSInteger) getScreenDensity
++ (NSInteger) getScreenDensity
 {
     CGFloat density = [[UIScreen mainScreen] scale];
     return density;
 }
 
-+(NSString *) getTimezone
++ (NSString *) getTimezone
 {
     NSTimeZone *timeZone = [NSTimeZone localTimeZone];
     return [timeZone name];
 }
 
-+(NSString *) getCarrierName
++ (NSString *) getCarrierName
 {
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     CTCarrier *carrier = [netinfo subscriberCellularProvider];
@@ -1490,27 +1473,27 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return carrierName;
 }
 
-+(NSString *) getVersionString
++ (NSString *) getVersionString
 {
     return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
 }
 
-+(NSString *) getLocale
++ (NSString *) getLocale
 {
     return [[NSLocale currentLocale] localeIdentifier];
 }
 
-+(NSString *) getCountry
++ (NSString *) getCountry
 {
     return [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
 }
 
-+(NSString *) getCurrency
++ (NSString *) getCurrency
 {
     return [[NSLocale currentLocale] objectForKey:NSLocaleCurrencyCode];
 }
 
-+(NSString *) getOsVersion
++ (NSString *) getOsVersion
 {
     return [[UIDevice currentDevice] systemVersion];
 }
@@ -1523,7 +1506,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
-    [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
     request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"POST";
     request.resource = resource;
@@ -1538,7 +1521,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
-    [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
     request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"GET";
     request.resource = resource;
@@ -1552,7 +1535,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
-    [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
     request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"DELETE";
     request.resource = resource;
@@ -1566,7 +1549,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
-    [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
     request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"PUT";
     request.resource = resource;
@@ -1580,7 +1563,7 @@ static WPDialogButtonHandler *buttonHandler = nil;
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
-    [parameters setObject:[NSString stringWithFormat:@"%lld", [WPUtil getServerDate]] forKey:@"timestamp"];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
     request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"POST";
     request.resource = resource;
@@ -1600,11 +1583,11 @@ static WPDialogButtonHandler *buttonHandler = nil;
     return [self wonderpushLanguageCodeForLocaleLanguageCode:preferredLanguageCodes.count ? [preferredLanguageCodes objectAtIndex:0] : @"en"];
 }
 
-+(void) setLanguageCode:(NSString *) languageCode {
++ (void) setLanguageCode:(NSString *)languageCode
+{
     if ([validLanguageCodes containsObject:languageCode]) {
         _currentLanguageCode = languageCode;
     }
-    return;
 }
 
 + (NSString *)wonderpushLanguageCodeForLocaleLanguageCode:(NSString *)localeLanguageCode

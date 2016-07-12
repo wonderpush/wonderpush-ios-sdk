@@ -114,15 +114,15 @@
 - (void) setDeviceToken:(NSString *)deviceToken;
 - (void) setDeviceTokenAssociatedToUserId:(NSString *)userId;
 
--(void) setStoredClientId:(NSString *)clientId;
+- (void) setStoredClientId:(NSString *)clientId;
 
--(NSString *) getStoredClientId;
+- (NSString *) getStoredClientId;
 
--(void) addToQueuedNotifications:(NSDictionary *) notification;
+- (void) addToQueuedNotifications:(NSDictionary *)notification;
 
--(NSMutableArray *) getQueuedNotifications;
+- (NSMutableArray *) getQueuedNotifications;
 
--(void) clearQueuedNotifications;
+- (void) clearQueuedNotifications;
 
 - (NSString *) getAccessTokenForUserId:(NSString *)userId;
 
