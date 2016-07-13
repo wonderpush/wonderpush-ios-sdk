@@ -444,6 +444,11 @@ static NSDictionary* gpsCapabilityByCode = nil;
     if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
 
+    @synchronized (_putInstallationCustomProperties_lock) {
+        ++_putInstallationCustomProperties_blockId; // prevents any currently pending block from executing
+        [self putInstallationCustomProperties_inner];
+    }
+
     // Send queued notifications as LocalNotifications
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
