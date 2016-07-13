@@ -303,6 +303,11 @@ static NSArray *allowedMethods = nil;
 
     WPLog(@"Fetching access token");
 
+    UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"WP-FetchAccessToken" expirationHandler:^{
+        // Avoid being killed by saying we are done
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+    }];
+
     [self.jsonHttpClient POST:resource parameters:params progress:nil success:^(NSURLSessionTask *task, id response) {
         // Success
 
@@ -362,6 +367,8 @@ static NSArray *allowedMethods = nil;
             }
         }
 
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+
     } failure:^(NSURLSessionTask *task, NSError *error) {
         // Error
         WPLog(@"Could not fetch access token: %@", error);
@@ -397,6 +404,12 @@ static NSArray *allowedMethods = nil;
                 }
                 [tokenFetchedHandlers removeAllObjects];
             }
+            abort = YES;
+        }
+
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+
+        if (abort) {
             return;
         }
 
@@ -442,6 +455,11 @@ static NSArray *allowedMethods = nil;
     }
 
     // We have an access token
+
+    UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        // Avoid being killed by saying we are done
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+    }];
 
     NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:request.params];
     [params setObject:accessToken forKey:@"accessToken"];
@@ -489,6 +507,8 @@ static NSArray *allowedMethods = nil;
 
             }
         }
+
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
     };
 
     // The failure handler
@@ -540,6 +560,8 @@ static NSArray *allowedMethods = nil;
         } else if (request.handler) {
             request.handler(nil, error);
         }
+
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
     };
 
     // Run the request
