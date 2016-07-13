@@ -20,6 +20,7 @@
 #import <CoreTelephony/CTCarrier.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMotion/CoreMotion.h>
+#import <LocalAuthentication/LocalAuthentication.h>
 #import <sys/utsname.h>
 #import "WPUtil.h"
 #import "WonderPush_private.h"
@@ -1430,8 +1431,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (BOOL) getFingerprintScannerSupported
 {
-    // will be supported on iOS 8.0
-    return NO;
+    LAContext *context = [LAContext new];
+    return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
 }
 
 + (NSString *) getDeviceName
