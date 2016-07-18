@@ -96,8 +96,6 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) setUserId:(NSString *)userId;
 
-+ (void) initialize;
-
 /**
  Returns whether the WonderPush SDK is ready to operate.
  Returns YES when the WP_NOTIFICATION_INITIALIZED is sent.
