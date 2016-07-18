@@ -97,6 +97,15 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (void) setUserId:(NSString *)userId;
 
 /**
+ Returns whether the WonderPush SDK has been given the clientId and clientSecret.
+ Will be `YES` as soon as `[WonderPush setClientId:secret:]` is called.
+ No network can be performed before the SDK is initialized.
+ Further use of the SDK methods will be dropped until initialized. Such call will be ignored and logged in the device console.
+ @return The initialization state as a BOOL
+ */
++ (BOOL) isInitialized;
+
+/**
  Returns whether the WonderPush SDK is ready to operate.
  Returns YES when the WP_NOTIFICATION_INITIALIZED is sent.
  @return The initialization state as a BOOL

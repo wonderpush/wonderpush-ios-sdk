@@ -48,6 +48,11 @@ static NSArray *allowedMethods = nil;
     if ([@"GET" isEqualToString:method])
         return nil;
 
+    if (![WonderPush isInitialized]) {
+        NSLog(@"WonderPush: Authorization header cannot be calculated because the SDK is not initialized");
+        return nil;
+    }
+
     // Step 1: add HTTP method uppercase
     NSMutableString *buffer = [[NSMutableString alloc] initWithString:method];
     [buffer appendString:@"&"];

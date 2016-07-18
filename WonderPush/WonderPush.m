@@ -322,6 +322,11 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) setNotificationEnabled:(BOOL)enabled
 {
+    if (![self isInitialized]) {
+        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        return;
+    }
+
     WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
     BOOL previousValue = sharedConfiguration.notificationEnabled;
     sharedConfiguration.notificationEnabled = enabled;
@@ -369,6 +374,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    if (![self isInitialized]) return NO;
     if ([WPAppDelegate isAlreadyRunning]) return NO;
     if ([self getNotificationEnabled]) {
         [self registerToPushNotifications];
@@ -394,6 +400,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
+    if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     [WonderPush handleNotification:userInfo];
     if (completionHandler) {
@@ -403,18 +410,21 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
+    if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     [WonderPush handleNotification:notification.userInfo withOriginalApplicationState:UIApplicationStateInactive];
 }
 
 + (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
+    if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     [self handleNotification:userInfo];
 }
 
 + (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     NSString *newToken = [deviceToken description];
     [WonderPush setDeviceToken:newToken];
@@ -422,6 +432,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
+    if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     WPLog(@"Failed to register to push notifications: %@", error);
     [WonderPush setDeviceToken:nil];
@@ -429,6 +440,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) applicationDidBecomeActive:(UIApplication *)application;
 {
+    if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     BOOL comesBackFromTemporaryInactive = _previousApplicationState == UIApplicationStateActive;
     _previousApplicationState = UIApplicationStateActive;
@@ -448,6 +460,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) applicationDidEnterBackground:(UIApplication *)application
 {
+    if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
 
@@ -532,6 +545,10 @@ static NSObject *_putInstallationCustomProperties_lock; //= [NSObject new];
 static int _putInstallationCustomProperties_blockId = 0;
 + (void) putInstallationCustomProperties:(NSDictionary *)customProperties
 {
+    if (![self isInitialized]) {
+        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        return;
+    }
     [self onInteraction];
     @synchronized (_putInstallationCustomProperties_lock) {
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
@@ -613,6 +630,11 @@ static int _putInstallationCustomProperties_blockId = 0;
 
 + (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
+    if (![self isInitialized]) {
+        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        return;
+    }
+
     if (![type isKindOfClass:[NSString class]]) return;
     NSString *eventEndPoint = @"/events";
     long long date = [WPUtil getServerDate];
@@ -1140,6 +1162,11 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) onInteraction
 {
+    if (![self isInitialized]) {
+        // Do not remember last interaction altogether, so that a proper @APP_OPEN can be tracked once we get initialized
+        return;
+    }
+
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     NSDate *lastInteractionDate = conf.lastInteractionDate;
     long long lastInteractionTs = lastInteractionDate ? (long long)([lastInteractionDate timeIntervalSince1970] * 1000) : 0;
@@ -1519,6 +1546,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) post:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
+    if (![WonderPush isInitialized]) {
+        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        if (handler) {
+            handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
+                                                    code:0
+                                                userInfo:@{NSLocalizedDescriptionKey: @"The SDK is not initialized"}]);
+        }
+        return;
+    }
+
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
@@ -1534,6 +1571,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) get:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
+    if (![WonderPush isInitialized]) {
+        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        if (handler) {
+            handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
+                                                    code:0
+                                                userInfo:@{NSLocalizedDescriptionKey: @"The SDK is not initialized"}]);
+        }
+        return;
+    }
+
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
@@ -1548,6 +1595,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) delete:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
+    if (![WonderPush isInitialized]) {
+        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        if (handler) {
+            handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
+                                                    code:0
+                                                userInfo:@{NSLocalizedDescriptionKey: @"The SDK is not initialized"}]);
+        }
+        return;
+    }
+
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
@@ -1562,6 +1619,16 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) put:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
+    if (![WonderPush isInitialized]) {
+        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        if (handler) {
+            handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
+                                                    code:0
+                                                userInfo:@{NSLocalizedDescriptionKey: @"The SDK is not initialized"}]);
+        }
+        return;
+    }
+
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
@@ -1576,6 +1643,11 @@ static WPDialogButtonHandler *buttonHandler = nil;
 
 + (void) postEventually:(NSString *)resource params:(id)params
 {
+    if (![WonderPush isInitialized]) {
+        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        return;
+    }
+
     WPClient *client = [WPClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
