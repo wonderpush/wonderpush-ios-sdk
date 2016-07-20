@@ -29,9 +29,10 @@
 #import "WPDialogButtonHandler.h"
 #import "WPAlertViewDelegateBlock.h"
 #import "WPClient.h"
-#import "CustomIOSAlertView.h"
+#import "PKAlertController.h"
 #import "WPJsonUtil.h"
 #import "WPLog.h"
+#import "WPWebView.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -715,49 +716,69 @@ static WPDialogButtonHandler *buttonHandler = nil;
         // we currently support only one dialog at a time
         return;
     }
-    CustomIOSAlertView *alert = [[CustomIOSAlertView alloc] init];
-    UIWebView *view = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 260, 300)];
-    [view sizeToFit];
-//    view.scalesPageToFit = YES;
+    WPWebView *view = [WPWebView new];
+    // NSString *title = [wonderPushData stringForKey:@"title"];
     NSString *message = [wonderPushData stringForKey:@"message"];
-    NSString *url = [wonderPushData stringForKey:@"url"];
+    NSString *url = [wonderPushData valueForKey:@"url"];
     if (message != nil) {
-        [view loadHTMLString:[wonderPushData stringForKey:@"message"] baseURL:nil];
+        [view loadHTMLString:message baseURL:nil];
     } else if (url != nil) {
         [view loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]]];
     } else {
         WPLog(@"Error the link / url provided is null");
         return;
     }
-    [view setBackgroundColor:[UIColor clearColor]];
 
-    // setting rounded corners
-    view.layer.cornerRadius = 10;
-    view.scrollView.layer.cornerRadius = 10;
-
-    //deactivate bounceScroll
-    for (id subview in view.subviews)
-        if ([subview isKindOfClass:[UIScrollView class]])
-            ((UIScrollView *)subview).bounces = NO;
-
-    [alert setContainerView:view];
-
-    NSArray *buttons = [wonderPushData arrayForKey:@"buttons"];
+    NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
     buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.buttonConfiguration = buttons;
     buttonHandler.notificationConfiguration = wonderPushData;
-    [alert setDelegate:buttonHandler];
+    NSMutableArray *alertButtons = [[NSMutableArray alloc] initWithCapacity:MIN(1, [buttons count])];
     if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
-        NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
+        int i = -1;
         for (NSDictionary *button in buttons) {
-            if (![button isKindOfClass:[NSDictionary class]]) continue;
-            [textButtons addObject:[button stringForKey:@"label"]];
+            ++i;
+            [alertButtons addObject:[PKAlertAction actionWithTitle:[button valueForKey:@"label"] handler:^(PKAlertAction *action, BOOL closed) {
+                if (!closed) {
+                    [buttonHandler alertView:nil clickedButtonAtIndex:i];
+                } else {
+                    [buttonHandler alertView:nil clickedButtonAtIndex:-1];
+                }
+                buttonHandler = nil;
+            }]];
         }
-        [alert setButtonTitles:textButtons];
     } else {
-        [alert setButtonTitles:@[WP_DEFAULT_BUTTON_LOCALIZED_LABEL]];
+        [alertButtons addObject:[PKAlertAction actionWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL handler:^(PKAlertAction *action, BOOL closed) {
+            if (!closed) {
+                [buttonHandler alertView:nil clickedButtonAtIndex:0];
+            } else {
+                [buttonHandler alertView:nil clickedButtonAtIndex:-1];
+            }
+            buttonHandler = nil;
+        }]];
     }
-    [alert show];
+
+    PKAlertViewController *alert = [PKAlertViewController alertControllerWithConfigurationBlock:^(PKAlertControllerConfiguration *configuration) {
+        // configuration.title = title; // TODO support title in addition to UIWebView
+        configuration.customView = view;
+        configuration.preferredStyle = PKAlertControllerStyleAlert;
+        configuration.presentationTransitionStyle = PKAlertControllerPresentationTransitionStyleFocusIn;
+        configuration.dismissTransitionStyle = PKAlertControllerDismissTransitionStyleZoomOut;
+        configuration.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
+        configuration.scrollViewTransparentEdgeEnabled = NO;
+        [configuration addActions:alertButtons];
+    }];
+
+    __block __weak void(^weakBlock)(void);
+    __block        void(^    block)(void);
+    weakBlock = block = ^{
+        if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), weakBlock);
+        } else {
+            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
+        }
+    };
+    dispatch_async(dispatch_get_main_queue(), block);
 }
 
 + (void) handleMapNotification:(NSDictionary*)wonderPushData
@@ -765,6 +786,8 @@ static WPDialogButtonHandler *buttonHandler = nil;
     // We currently support only one dialog at a time
     if (buttonHandler != nil) return;
 
+    // NSString *title = [wonderPushData stringForKey:@"title"];
+    // NSString *message = [wonderPushData stringForKey:@"message"];
     NSDictionary *mapData = [wonderPushData dictionaryForKey:@"map"] ?: @{};
     NSDictionary *place = [mapData dictionaryForKey:@"place"] ?: @{};
     NSDictionary *point = [place dictionaryForKey:@"point"] ?: @{};
@@ -773,37 +796,65 @@ static WPDialogButtonHandler *buttonHandler = nil;
     NSNumber *zoom = [point numberForKey:@"zoom"];
     if (!lat || !lon || !zoom) return;
 
-    NSString *staticMapUrl = [NSString stringWithFormat:@"http://maps.google.com/maps/api/staticmap?markers=color:red|%f,%f&zoom=%ld&size=260x300&sensor=true",
+    NSString *staticMapUrl = [NSString stringWithFormat:@"http://maps.google.com/maps/api/staticmap?markers=color:red|%f,%f&zoom=%ld&size=290x290&sensor=true",
                               [lat doubleValue], [lon doubleValue], (long)[zoom integerValue]];
 
     NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     UIImage *image = [UIImage imageWithData: [NSData dataWithContentsOfURL:mapUrl]];
 
-
-    CustomIOSAlertView *alert = [[CustomIOSAlertView alloc] init];
     UIImageView * view = [[UIImageView alloc] initWithImage:image];
-    // setting rounded corners
-    view.layer.masksToBounds = YES;
-    view.layer.cornerRadius = 10;
 
-    [alert setContainerView:view];
-
-    NSArray *buttons = [wonderPushData arrayForKey:@"buttons"];
+    NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
     buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.buttonConfiguration = buttons;
     buttonHandler.notificationConfiguration = wonderPushData;
-    [alert setDelegate:buttonHandler];
+    NSMutableArray *alertButtons = [[NSMutableArray alloc] initWithCapacity:MIN(1, [buttons count])];
     if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
-        NSMutableArray *textButtons = [[NSMutableArray alloc] initWithCapacity:[buttons count]];
+        int i = -1;
         for (NSDictionary *button in buttons) {
-            if (![button isKindOfClass:[NSDictionary class]]) continue;
-            [textButtons addObject:[button stringForKey:@"label"]];
+            ++i;
+            [alertButtons addObject:[PKAlertAction actionWithTitle:[button valueForKey:@"label"] handler:^(PKAlertAction *action, BOOL closed) {
+                if (!closed) {
+                    [buttonHandler alertView:nil clickedButtonAtIndex:i];
+                } else {
+                    [buttonHandler alertView:nil clickedButtonAtIndex:-1];
+                }
+                buttonHandler = nil;
+            }]];
         }
-        [alert setButtonTitles:textButtons];
     } else {
-        [alert setButtonTitles:@[WP_DEFAULT_BUTTON_LOCALIZED_LABEL]];
+        [alertButtons addObject:[PKAlertAction actionWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL handler:^(PKAlertAction *action, BOOL closed) {
+            if (!closed) {
+                [buttonHandler alertView:nil clickedButtonAtIndex:0];
+            } else {
+                [buttonHandler alertView:nil clickedButtonAtIndex:-1];
+            }
+            buttonHandler = nil;
+        }]];
     }
-    [alert show];
+
+    PKAlertViewController *alert = [PKAlertViewController alertControllerWithConfigurationBlock:^(PKAlertControllerConfiguration *configuration) {
+        // configuration.title = title; // TODO support title in addition to UIImageView
+        // configuration.message = message; // TODO support title in addition to UIImageView
+        configuration.customView = (UIView<PKAlertViewLayoutAdapter> *) view;
+        configuration.preferredStyle = PKAlertControllerStyleAlert;
+        configuration.presentationTransitionStyle = PKAlertControllerPresentationTransitionStyleFocusIn;
+        configuration.dismissTransitionStyle = PKAlertControllerDismissTransitionStyleZoomOut;
+        configuration.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
+        configuration.scrollViewTransparentEdgeEnabled = NO;
+        [configuration addActions:alertButtons];
+    }];
+
+    __block __weak void(^weakBlock)(void);
+    __block        void(^    block)(void);
+    weakBlock = block = ^{
+        if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), weakBlock);
+        } else {
+            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
+        }
+    };
+    dispatch_async(dispatch_get_main_queue(), block);
 }
 
 + (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification

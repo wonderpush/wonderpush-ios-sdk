@@ -14,17 +14,17 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - CustomIOSAlertView (0.9.3)
   - DTFoundation/Core (1.7.10)
   - DTFoundation/DTASN1 (1.7.10):
     - DTFoundation/Core
   - OpenUDID (1.0.0)
+  - PKAlertController (0.6.0)
   - TCMobileProvision (1.0.0):
     - DTFoundation/DTASN1 (~> 1.6)
   - WonderPush (2.1.0):
     - AFNetworking (~> 3.0)
-    - CustomIOSAlertView (~> 0.9.3)
     - OpenUDID (~> 1.0.0)
+    - PKAlertController (~> 0.6)
     - TCMobileProvision (~> 1.0.0)
 
 DEPENDENCIES:
@@ -36,11 +36,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  CustomIOSAlertView: 94d2401e34fcfb0ac0134679d6947f5e251b0446
   DTFoundation: 3b6b1b817d2a7fb02e7eaf2596c922a68145bd43
   OpenUDID: e7cb6984c7304906ad20f3a36bf087b025896b6b
+  PKAlertController: 8867a57e032592bf077965dcd519fe1694ba3a02
   TCMobileProvision: 2a8962b38821a20fad53b9d7851bbc9ae8c52995
-  WonderPush: 447bf64db97479b0993eccaaa06f62dbd0bc8689
+  WonderPush: a7a8027557e0a275c49abd4c6dddfda33d2e4a73
 
 PODFILE CHECKSUM: c90fece9176b8480e413cc0ef638f14b942bf43d
 

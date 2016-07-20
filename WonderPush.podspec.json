@@ -36,7 +36,7 @@
     "TCMobileProvision": "~> 1.0.0",
     "OpenUDID": "~> 1.0.0",
     "AFNetworking": "~>3.0",
-    "CustomIOSAlertView": "~> 0.9.3"
+    "PKAlertController": "~> 0.6"
   },
   "public_header_files": "WonderPush/WonderPush.h",
   "source_files": [

@@ -16,15 +16,13 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "CustomIOSAlertView.h"
+#import "PKAlertController.h"
 
-@interface WPDialogButtonHandler : NSObject<UIAlertViewDelegate, CustomIOSAlertViewDelegate>
+@interface WPDialogButtonHandler : NSObject<UIAlertViewDelegate>
 
 - (id)init;
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex;
-
-- (void)customIOS7dialogButtonTouchUpInside: (CustomIOSAlertView *)alertView clickedButtonAtIndex: (NSInteger)buttonIndex;
 
 @property (nonatomic) NSTimeInterval showTime;
 @property (strong, nonatomic) NSArray *buttonConfiguration;
