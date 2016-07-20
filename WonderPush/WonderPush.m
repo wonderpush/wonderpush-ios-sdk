@@ -680,6 +680,7 @@ static int _putInstallationCustomProperties_blockId = 0;
 // We need to keep a reference on the DialogButtonHandler as the UIAlertView just keep a weak reference.
 // We can only have one dialog on screen so having only one reference is no problem
 static WPDialogButtonHandler *buttonHandler = nil;
+static void(^presentBlock)(void) = nil;
 
 + (void) resetButtonHandler
 {
@@ -769,16 +770,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
         [configuration addActions:alertButtons];
     }];
 
-    __block __weak void(^weakBlock)(void);
-    __block        void(^    block)(void);
-    weakBlock = block = ^{
+    presentBlock = ^{
         if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), weakBlock);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
         } else {
             [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
+            presentBlock = nil;
         }
     };
-    dispatch_async(dispatch_get_main_queue(), block);
+    dispatch_async(dispatch_get_main_queue(), presentBlock);
 }
 
 + (void) handleMapNotification:(NSDictionary*)wonderPushData
@@ -845,16 +845,15 @@ static WPDialogButtonHandler *buttonHandler = nil;
         [configuration addActions:alertButtons];
     }];
 
-    __block __weak void(^weakBlock)(void);
-    __block        void(^    block)(void);
-    weakBlock = block = ^{
+    presentBlock = ^{
         if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), weakBlock);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
         } else {
             [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
+            presentBlock = nil;
         }
     };
-    dispatch_async(dispatch_get_main_queue(), block);
+    dispatch_async(dispatch_get_main_queue(), presentBlock);
 }
 
 + (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
