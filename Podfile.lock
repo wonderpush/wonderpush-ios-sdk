@@ -21,7 +21,7 @@ PODS:
   - PKAlertController (0.6.0)
   - TCMobileProvision (1.0.0):
     - DTFoundation/DTASN1 (~> 1.6)
-  - WonderPush (2.1.0):
+  - WonderPush (2.1.1):
     - AFNetworking (~> 3.0)
     - OpenUDID (~> 1.0.0)
     - PKAlertController (~> 0.6)
@@ -40,7 +40,7 @@ SPEC CHECKSUMS:
   OpenUDID: e7cb6984c7304906ad20f3a36bf087b025896b6b
   PKAlertController: 8867a57e032592bf077965dcd519fe1694ba3a02
   TCMobileProvision: 2a8962b38821a20fad53b9d7851bbc9ae8c52995
-  WonderPush: a7a8027557e0a275c49abd4c6dddfda33d2e4a73
+  WonderPush: 4ec8f05bbc81381cb72defc9701a4150b6656be3
 
 PODFILE CHECKSUM: c90fece9176b8480e413cc0ef638f14b942bf43d
 
