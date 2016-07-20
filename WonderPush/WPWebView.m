@@ -33,7 +33,6 @@
 
     _spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     _spinner.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-    _spinner.layoutMargins = UIEdgeInsetsMake(15, 15, 15, 15);
     [_spinner startAnimating];
     [self addSubview:_spinner];
     [self bringSubviewToFront:_spinner];
@@ -69,10 +68,13 @@
 - (CGSize)getSize
 {
     CGSize rtn;
-    if (!_contentLoaded) {
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
+        // The resize after webViewDidFinishLoad does not work on iPhone 7 somehow
+        rtn = CGSizeMake(self.frame.size.width, 276); // 276 is the max height with 3 buttons on an iPhone 4
+    } else if (!_contentLoaded) {
         rtn = _spinner.frame.size;
-        rtn.width  += _spinner.layoutMargins.left + _spinner.layoutMargins.right;
-        rtn.height += _spinner.layoutMargins.top  + _spinner.layoutMargins.bottom;
+        rtn.width  += 30;
+        rtn.height += 30;
     } else {
         rtn = self.scrollView.subviews.firstObject.frame.size;
     }
