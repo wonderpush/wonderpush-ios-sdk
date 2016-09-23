@@ -1290,18 +1290,13 @@ static void(^presentBlock)(void) = nil;
                                     @"currency": [self getCurrency] ?: null,
                                     @"locale": [self getLocale] ?: null};
 
-    NSDictionary *capabilities = @{@"bluetooth": [NSNumber numberWithBool:[self getBluetoothSupported]] ?: null,
-                                   @"bluetoothLe": [NSNumber numberWithBool:[self getBluetoothLeSupported]] ?: null,
-                                   @"nfc": [NSNumber numberWithBool:[self getNFCSupported]] ?: null,
-                                   @"telephony": [NSNumber numberWithBool:[self getTelephonySupported]] ?: null,
+    NSDictionary *capabilities = @{@"telephony": [NSNumber numberWithBool:[self getTelephonySupported]] ?: null,
                                    @"telephonyGsm": [NSNumber numberWithBool:[self getTelephonyGSMSupported]] ?: null,
                                    @"telephonyCdma": [NSNumber numberWithBool:[self getTelephoneCDMASupported]] ?: null,
                                    @"wifi": @YES, // all have wifi otherwise how did we install the app
                                    @"wifiDirect": @NO, // not supported by Apple
                                    @"gps": [NSNumber numberWithBool:[self getGPSSupported]] ?: null,
                                    @"networkLocation": @YES,
-                                   @"camera": [NSNumber numberWithBool:[self getCameraSupported]] ?: null,
-                                   @"frontCamera": [NSNumber numberWithBool:[self getFrontCameraSupported]] ?: null,
                                    @"microphone": [NSNumber numberWithBool:[self getMicrophoneSupported]] ?: null,
                                    @"sensorAccelerometer":@YES,
                                    @"sensorBarometer": @NO,
@@ -1411,16 +1406,6 @@ static void(^presentBlock)(void) = nil;
     return NO;
 }
 
-+ (BOOL) getCameraSupported
-{
-    return [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
-}
-
-+ (BOOL) getFrontCameraSupported
-{
-    return [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront];
-}
-
 + (BOOL) getGPSSupported
 {
     struct utsname systemInfo;
@@ -1475,35 +1460,6 @@ static void(^presentBlock)(void) = nil;
 + (BOOL) getTelephonySupported
 {
     return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tel://"]];
-}
-
-+ (BOOL) getNFCSupported
-{
-    // Right now (18/10/2014) iphone 6 has been announced with NFC support however it seems that there is now opened API for developpers to use it,
-    // It seems only limited to Apple Pay, the device name by code is not yet available so returning false for now
-    // but will have to return true if iPhone 6 as soon as utsname.machine code for iPhone6 is known
-    return NO;
-}
-
-+ (BOOL) getBluetoothLeSupported
-{
-    UIDevice *currentDevice = [UIDevice currentDevice];
-    if (currentDevice)
-    {
-        if ([currentDevice.model rangeOfString:@"Simulator"].location == NSNotFound) {
-            CBCentralManager *btManager = [[CBCentralManager alloc] initWithDelegate:nil queue:nil options:nil];
-            if ([btManager state] == CBCentralManagerStateUnknown || [btManager state] == CBCentralManagerStateUnsupported) {
-                return YES;
-            }
-        }
-    }
-    return NO;
-}
-
-+ (BOOL) getBluetoothSupported
-{
-    // right now we will assume that all apple iOS device have bluetooth as just iPod touch 1st gen and apple tv2 seems not to have any bluetooth
-    return YES;
 }
 
 + (BOOL) getFingerprintScannerSupported
