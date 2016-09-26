@@ -252,12 +252,50 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
 }
 
 static NSBundle *wpLocaleBundle = nil;
+static bool wpLocaleBundleLoaded = NO;
 + (NSString *) wpLocalizedString:(NSString *)key withDefault:(NSString *)defaultValue
 {
-    if (!wpLocaleBundle) {
-        wpLocaleBundle = [NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"WonderPush" ofType:@"bundle"]];
+    if (!wpLocaleBundleLoaded) {
+        wpLocaleBundle = [NSBundle bundleForClass:[WonderPush class]];
+        wpLocaleBundle = [NSBundle bundleWithPath:[wpLocaleBundle pathForResource:@"WonderPush" ofType:@"bundle"]] ?: wpLocaleBundle;
+        if (!wpLocaleBundle) {
+            WPLog(@"Failed to load WonderPush resource bundle with the classic method");
+            // https://github.com/haifengkao/PodAsset
+            for (NSBundle *bundle in [NSBundle allBundles]) {
+                WPLog(@"Testing bundle %@", [bundle bundlePath]);
+                NSString *bundlePath = [bundle pathForResource:@"WonderPush" ofType:@"bundle"];
+                WPLog(@"  WonderPush.bundle bundlePath: %@", bundlePath);
+                if (bundlePath) {
+                    wpLocaleBundle = [NSBundle bundleWithPath:bundlePath];
+                    WPLog(@"  Used that one. Bundle is %@", wpLocaleBundle);
+                    wpLocaleBundleLoaded = YES;
+                    break;
+                }
+                // Find first WonderPush.bundle in the current bundle and use it
+                NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:[bundle bundlePath]];
+                NSString *filePath;
+                while ((filePath = [enumerator nextObject]) != nil) {
+                    if ([filePath.lastPathComponent isEqualToString:@"WonderPush.bundle"]) {
+                        WPLog(@"  Found %@", filePath);
+                        wpLocaleBundle = [NSBundle bundleWithPath:[[bundle bundlePath] stringByAppendingPathComponent:filePath]];
+                        WPLog(@"  Used that one. Bundle is %@", wpLocaleBundle);
+                        wpLocaleBundleLoaded = YES;
+                        break;
+                    }
+                }
+                if (wpLocaleBundleLoaded) break;
+            }
+        }
+        if (!wpLocaleBundleLoaded) {
+            NSLog(@"Could not load WonderPush resource bundle");
+            wpLocaleBundleLoaded = YES; // even if we failed, don't retry next time
+        }
     }
-    return NSLocalizedStringWithDefaultValue(key, @"WonderPushLocalizable", wpLocaleBundle, defaultValue, nil);
+    if (!wpLocaleBundle) {
+        // We have to handle the case where wpLocaleBundle is nil, otherwise we get back nil instead of the default value!
+        return defaultValue;
+    }
+    return [wpLocaleBundle localizedStringForKey:key value:defaultValue table:@"WonderPushLocalizable"];
 }
 
 
