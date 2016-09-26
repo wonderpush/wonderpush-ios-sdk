@@ -475,10 +475,10 @@ static NSArray *allowedMethods = nil;
         if ([response isKindOfClass:[NSDictionary class]]) {
             NSDictionary *responseJSON = (NSDictionary *)response;
 
-            NSError *jsonError = [WPUtil errorFromJSON:responseJSON];
-            if (jsonError) {
+            NSError *wpError = [WPUtil errorFromJSON:responseJSON];
+            if (wpError) {
                 if (request.handler)
-                    request.handler(nil, jsonError);
+                    request.handler(nil, wpError);
 
             } else {
 
@@ -518,14 +518,15 @@ static NSArray *allowedMethods = nil;
 
     // The failure handler
     void(^failure)(NSURLSessionTask *, NSError *) = ^(NSURLSessionTask *task, NSError *error) {
-        id jsonError = nil;
+        NSDictionary *jsonError = nil;
         NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if ([errorBody isKindOfClass:[NSData class]]) {
             WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
         }
         if ([errorBody isKindOfClass:[NSData class]]) {
             NSError *decodeError = nil;
-            jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
+            id decoded = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
+            if ([decoded isKindOfClass:[NSDictionary class]]) jsonError = decoded;
             if (decodeError) NSLog(@"WPClient: Error while deserializing: %@", decodeError);
         }
 
@@ -559,7 +560,7 @@ static NSArray *allowedMethods = nil;
                 NSLog(@"Please check your WonderPush clientId and clientSecret!");
 
             } else if (request.handler) {
-                request.handler(nil, jsonError);
+                request.handler(nil, wpError);
             }
 
         } else if (request.handler) {

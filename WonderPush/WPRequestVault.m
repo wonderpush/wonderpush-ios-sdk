@@ -221,7 +221,7 @@
     requestCopy.handler = ^(WPResponse *response, NSError *error) {
 
         WPLog(@"WPRequestVaultOperation complete with response:%@ error:%@", response, error);
-        if (error) {
+        if ([error isKindOfClass:[NSError class]]) {
             NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
             if ([errorBody isKindOfClass:[NSData class]]) {
                 WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
@@ -229,7 +229,7 @@
         }
 
         // Handle network errors
-        if (error && [NSURLErrorDomain isEqualToString:error.domain] && error.code <= NSURLErrorBadURL) {
+        if ([error isKindOfClass:[NSError class]] && [NSURLErrorDomain isEqualToString:error.domain] && error.code <= NSURLErrorBadURL) {
             // Make sure to stop the queue
             if (![WonderPush isReachable]) {
                 WPLog(@"Declaring not reachable");
