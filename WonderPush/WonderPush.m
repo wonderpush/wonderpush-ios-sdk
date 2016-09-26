@@ -946,7 +946,10 @@ static void(^presentBlock)(void) = nil;
     if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)]) {
         return [[UIApplication sharedApplication] currentUserNotificationSettings].types != 0;
     } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         return [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != 0;
+#pragma clang diagnostic pop
     }
 }
 
@@ -955,7 +958,10 @@ static void(^presentBlock)(void) = nil;
     if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
         return [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
     } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         return [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != 0;
+#pragma clang diagnostic pop
     }
 }
 
@@ -965,7 +971,10 @@ static void(^presentBlock)(void) = nil;
     if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerForRemoteNotifications)]) {
         [[UIApplication sharedApplication] registerForRemoteNotifications];
     } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:[[UIApplication sharedApplication] enabledRemoteNotificationTypes]];
+#pragma clang diagnostic pop
     }
 }
 
@@ -975,7 +984,10 @@ static void(^presentBlock)(void) = nil;
         [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
         [[UIApplication sharedApplication] registerForRemoteNotifications];
     } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+#pragma clang diagnostic pop
     }
 }
 
