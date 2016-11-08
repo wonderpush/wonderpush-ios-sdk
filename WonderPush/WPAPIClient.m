@@ -308,7 +308,7 @@ static NSArray *allowedMethods = nil;
 
     WPLog(@"Fetching access token");
 
-    UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"WP-FetchAccessToken" expirationHandler:^{
+    __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"WP-FetchAccessToken" expirationHandler:^{
         // Avoid being killed by saying we are done
         [[UIApplication sharedApplication] endBackgroundTask:bgTask];
     }];
@@ -461,7 +461,7 @@ static NSArray *allowedMethods = nil;
 
     // We have an access token
 
-    UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+    __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
         // Avoid being killed by saying we are done
         [[UIApplication sharedApplication] endBackgroundTask:bgTask];
     }];
