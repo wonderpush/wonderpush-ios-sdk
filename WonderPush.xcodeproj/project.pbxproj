@@ -20,7 +20,7 @@
 		3DFEA88E1C46E09E00E27404 /* WPAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */; };
 		A1E3E0DA19E42B3E00A4EE09 /* WPDialogButtonHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */; };
 		A1E3E0DB19E42B3F00A4EE09 /* WPRequestVault.m in Sources */ = {isa = PBXBuildFile; fileRef = A189375319C998D100F91DDD /* WPRequestVault.m */; };
-		A1E3E0DC19E42B3F00A4EE09 /* WPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A189375019C997CA00F91DDD /* WPClient.m */; };
+		A1E3E0DC19E42B3F00A4EE09 /* WPAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A189375019C997CA00F91DDD /* WPAPIClient.m */; };
 		A1E3E0DD19E42B3F00A4EE09 /* WPUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33F819C97CFA00E4E158 /* WPUtil.m */; };
 		A1E3E0DE19E42B3F00A4EE09 /* WPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33F219C97BE700E4E158 /* WPRequest.m */; };
 		A1E3E0DF19E42B3F00A4EE09 /* WPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = A16E33F419C97BE700E4E158 /* WPResponse.m */; };
@@ -91,8 +91,8 @@
 		A16E33F419C97BE700E4E158 /* WPResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPResponse.m; sourceTree = "<group>"; };
 		A16E33F719C97CFA00E4E158 /* WPUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPUtil.h; sourceTree = "<group>"; };
 		A16E33F819C97CFA00E4E158 /* WPUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPUtil.m; sourceTree = "<group>"; };
-		A189374F19C997CA00F91DDD /* WPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPClient.h; sourceTree = "<group>"; };
-		A189375019C997CA00F91DDD /* WPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPClient.m; sourceTree = "<group>"; };
+		A189374F19C997CA00F91DDD /* WPAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAPIClient.h; sourceTree = "<group>"; };
+		A189375019C997CA00F91DDD /* WPAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAPIClient.m; sourceTree = "<group>"; };
 		A189375219C998D100F91DDD /* WPRequestVault.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPRequestVault.h; sourceTree = "<group>"; };
 		A189375319C998D100F91DDD /* WPRequestVault.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPRequestVault.m; sourceTree = "<group>"; };
 		A189379D19C9E0C600F91DDD /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -185,8 +185,8 @@
 				A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */,
 				A189375219C998D100F91DDD /* WPRequestVault.h */,
 				A189375319C998D100F91DDD /* WPRequestVault.m */,
-				A189374F19C997CA00F91DDD /* WPClient.h */,
-				A189375019C997CA00F91DDD /* WPClient.m */,
+				A189374F19C997CA00F91DDD /* WPAPIClient.h */,
+				A189375019C997CA00F91DDD /* WPAPIClient.m */,
 				A16E33F719C97CFA00E4E158 /* WPUtil.h */,
 				A16E33F819C97CFA00E4E158 /* WPUtil.m */,
 				A16E33F119C97BE700E4E158 /* WPRequest.h */,
@@ -377,7 +377,7 @@
 				3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */,
 				A1E3E0DA19E42B3E00A4EE09 /* WPDialogButtonHandler.m in Sources */,
 				A1E3E0DB19E42B3F00A4EE09 /* WPRequestVault.m in Sources */,
-				A1E3E0DC19E42B3F00A4EE09 /* WPClient.m in Sources */,
+				A1E3E0DC19E42B3F00A4EE09 /* WPAPIClient.m in Sources */,
 				3DFEA88E1C46E09E00E27404 /* WPAppDelegate.m in Sources */,
 				A1E3E0DD19E42B3F00A4EE09 /* WPUtil.m in Sources */,
 				3D0A08781D340CFA001289BD /* NSDictionary+TypeSafe.m in Sources */,

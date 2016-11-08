@@ -18,7 +18,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import <AFNetworking/AFNetworking.h>
 #import "WPUtil.h"
-#import "WPClient.h"
+#import "WPAPIClient.h"
 #import "WPConfiguration.h"
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
@@ -181,9 +181,9 @@ static NSArray *allowedMethods = nil;
 @end
 
 
-#pragma mark - WPClient
+#pragma mark - WPAPIClient
 
-@interface WPClient ()
+@interface WPAPIClient ()
 
 /**
  The designated initializer
@@ -201,7 +201,7 @@ static NSArray *allowedMethods = nil;
 
 @end
 
-@implementation WPClient
+@implementation WPAPIClient
 
 + (void) initialize
 {
@@ -212,14 +212,14 @@ static NSArray *allowedMethods = nil;
     });
 }
 
-+ (WPClient *)sharedClient
++ (WPAPIClient *)sharedClient
 {
-    static WPClient *sharedClient = nil;
+    static WPAPIClient *sharedClient = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSURL *baseURL = [WPConfiguration sharedConfiguration].baseURL;
         WPLog(@"WonderPush base URL: %@", baseURL);
-        sharedClient = [[WPClient alloc] initWithBaseURL:baseURL];
+        sharedClient = [[WPAPIClient alloc] initWithBaseURL:baseURL];
     });
     return sharedClient;
 }
@@ -383,7 +383,7 @@ static NSArray *allowedMethods = nil;
             WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
             NSError *decodeError = nil;
             jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
-            if (decodeError) NSLog(@"WPClient: Error while deserializing: %@", decodeError);
+            if (decodeError) NSLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
         }
 
         BOOL abort = NO;
@@ -527,7 +527,7 @@ static NSArray *allowedMethods = nil;
             NSError *decodeError = nil;
             id decoded = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
             if ([decoded isKindOfClass:[NSDictionary class]]) jsonError = decoded;
-            if (decodeError) NSLog(@"WPClient: Error while deserializing: %@", decodeError);
+            if (decodeError) NSLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
         }
 
         NSError *wpError = [WPUtil errorFromJSON:jsonError];

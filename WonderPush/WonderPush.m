@@ -28,7 +28,7 @@
 #import "WPConfiguration.h"
 #import "WPDialogButtonHandler.h"
 #import "WPAlertViewDelegateBlock.h"
-#import "WPClient.h"
+#import "WPAPIClient.h"
 #import "PKAlertController.h"
 #import "WPJsonUtil.h"
 #import "WPLog.h"
@@ -307,7 +307,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
         [self refreshDeviceTokenIfPossible];
     };
     // Fetch anonymous access token right away
-    BOOL isFetching = [[WPClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
+    BOOL isFetching = [[WPAPIClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
         init();
     } failure:^(NSURLSessionTask *task, NSError *error) {} forUserId:userId];
     if (NO == isFetching) {
@@ -1574,7 +1574,7 @@ static void(^presentBlock)(void) = nil;
         return;
     }
 
-    WPClient *client = [WPClient sharedClient];
+    WPAPIClient *client = [WPAPIClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
@@ -1599,7 +1599,7 @@ static void(^presentBlock)(void) = nil;
         return;
     }
 
-    WPClient *client = [WPClient sharedClient];
+    WPAPIClient *client = [WPAPIClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
@@ -1623,7 +1623,7 @@ static void(^presentBlock)(void) = nil;
         return;
     }
 
-    WPClient *client = [WPClient sharedClient];
+    WPAPIClient *client = [WPAPIClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
@@ -1647,7 +1647,7 @@ static void(^presentBlock)(void) = nil;
         return;
     }
 
-    WPClient *client = [WPClient sharedClient];
+    WPAPIClient *client = [WPAPIClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
@@ -1666,7 +1666,7 @@ static void(^presentBlock)(void) = nil;
         return;
     }
 
-    WPClient *client = [WPClient sharedClient];
+    WPAPIClient *client = [WPAPIClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];

@@ -52,7 +52,7 @@
 
 @implementation WPRequestVault
 
-- (id) initWithClient:(WPClient *)client
+- (id) initWithClient:(WPAPIClient *)client
 {
     if (self = [super init]) {
         self.client = client;

@@ -19,9 +19,9 @@
 #import "WPRequest.h"
 
 /**
- WPClient is an implementation of AFHTTPClient that handles authentication to the API.
+ WPAPIClient is an implementation of AFHTTPClient that handles authentication to the API.
  */
-@interface WPClient : NSObject
+@interface WPAPIClient : NSObject
 
 
 ///---------------
@@ -29,9 +29,9 @@
 ///---------------
 
 /**
- The default `WPClient`, configured with the values you supplied to [WonderPush setClientId:secret:].
+ The default `WPAPIClient`, configured with the values you supplied to [WonderPush setClientId:secret:].
  */
-+ (WPClient *)sharedClient;
++ (WPAPIClient *)sharedClient;
 
 
 ///-----------------------------

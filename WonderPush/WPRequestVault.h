@@ -16,16 +16,16 @@
 
 #import <Foundation/Foundation.h>
 #import "WPRequest.h"
-#import "WPClient.h"
+#import "WPAPIClient.h"
 
 #define USER_DEFAULTS_REQUEST_VAULT_QUEUE @"__wonderpush_request_vault"
 
 
 @interface WPRequestVault : NSObject
 
-@property (nonatomic, weak) WPClient *client;
+@property (nonatomic, weak) WPAPIClient *client;
 
-- (id) initWithClient:(WPClient *)client;
+- (id) initWithClient:(WPAPIClient *)client;
 
 - (void) reachabilityChanged:(AFNetworkReachabilityStatus)status;
 
