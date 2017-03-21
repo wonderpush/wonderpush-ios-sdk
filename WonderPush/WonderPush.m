@@ -21,10 +21,12 @@
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMotion/CoreMotion.h>
 #import <LocalAuthentication/LocalAuthentication.h>
+#import <UserNotifications/UserNotifications.h>
 #import <sys/utsname.h>
 #import "WPUtil.h"
 #import "WonderPush_private.h"
 #import "WPAppDelegate.h"
+#import "WPNotificationCenterDelegate.h"
 #import "WPConfiguration.h"
 #import "WPDialogButtonHandler.h"
 #import "WPAlertViewDelegateBlock.h"
@@ -42,6 +44,8 @@ static BOOL _isReachable = NO;
 
 static BOOL _beforeInitializationUserIdSet = NO;
 static NSString *_beforeInitializationUserId = nil;
+
+static BOOL _userNotificationCenterDelegateInstalled = NO;
 
 static NSString *_notificationFromAppLaunchCampaignId = nil;
 static NSString *_notificationFromAppLaunchNotificationId = nil;
@@ -377,6 +381,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 {
     if (![self isInitialized]) return NO;
     if ([WPAppDelegate isAlreadyRunning]) return NO;
+
     if ([self getNotificationEnabled]) {
         [self registerToPushNotifications];
     }
@@ -489,6 +494,68 @@ static NSDictionary* gpsCapabilityByCode = nil;
     [configuration clearQueuedNotifications];
 
     [self onInteraction];
+}
+
+
+#pragma mark - UserNotificationCenter delegate
+
++ (void) setupDelegateForUserNotificationCenter
+{
+    if (!_userNotificationCenterDelegateInstalled) {
+        WPLog(@"Setting the notification center delegate");
+        [WPNotificationCenterDelegate setupDelegateForNotificationCenter:[UNUserNotificationCenter currentNotificationCenter]];
+    }
+}
+
++ (void) setUserNotificationCenterDelegateInstalled:(BOOL)enabled
+{
+    _userNotificationCenterDelegateInstalled = enabled;
+}
+
+
++ (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+    WPLog(@"userNotificationCenter:%@ willPresentNotification:%@ withCompletionHandler:", center, notification);
+    NSDictionary *userInfo = notification.request.content.userInfo;
+    WPLog(@"              userInfo:%@", userInfo);
+
+    UNNotificationPresentationOptions presentationOptions = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
+
+    if (![self isNotificationForWonderPush:userInfo]) {
+        WPLog(@"Notification is not for WonderPush");
+        if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+            WPLog(@"Defaulting to not showing the notification");
+            presentationOptions = UNNotificationPresentationOptionNone;
+        }
+        completionHandler(presentationOptions);
+        return;
+    }
+
+    // Ensure that we display the notification even if the application is in foreground
+    NSDictionary *wpData = [userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
+    NSDictionary *apsForeground = [wpData dictionaryForKey:@"apsForeground"];
+    if (!apsForeground || apsForeground.count == 0) apsForeground = nil;
+    BOOL apsForegroundAutoOpen = NO;
+    BOOL apsForegroundAutoDrop = NO;
+    if (apsForeground) {
+        apsForegroundAutoOpen = [[apsForeground numberForKey:@"autoOpen"] isEqual:@YES];
+        apsForegroundAutoDrop = [[apsForeground numberForKey:@"autoDrop"] isEqual:@YES];
+    }
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && (apsForegroundAutoDrop || apsForegroundAutoOpen)) {
+        WPLog(@"NOT displaying the notification");
+        presentationOptions = UNNotificationPresentationOptionNone;
+    } else {
+        WPLog(@"WILL display the notification");
+    }
+
+    completionHandler(presentationOptions);
+}
+
++ (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler
+{
+    WPLog(@"userNotificationCenter:%@ didReceiveNotificationResponse:%@ withCompletionHandler:", center, response);
+    [self handleNotificationOpened:response.notification.request.content.userInfo];
+    completionHandler();
 }
 
 
@@ -995,6 +1062,7 @@ static void(^presentBlock)(void) = nil;
 {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
+    WPLog(@"handleNotification:%@", notificationDictionary);
 
     UIApplicationState appState = [UIApplication sharedApplication].applicationState;
 
@@ -1030,6 +1098,7 @@ static void(^presentBlock)(void) = nil;
 {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
+    WPLog(@"handleNotification:%@ withOriginalApplicationState:%d", notificationDictionary, applicationState);
 
     NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
     NSDictionary *apsForeground = [wonderpushData dictionaryForKey:@"apsForeground"];
@@ -1050,6 +1119,10 @@ static void(^presentBlock)(void) = nil;
     NSDictionary *aps = [notificationDictionary dictionaryForKey:@"aps"];
     if (!aps || aps.count == 0) aps = nil;
     NSDictionary *apsAlert = aps ? [aps nullsafeObjectForKey:@"alert"] : nil;
+
+    if (_userNotificationCenterDelegateInstalled && !apsForegroundAutoOpen) {
+        return YES;
+    } // else (if _userNotificationCenterDelegateInstalled), we must continue for autoOpen support
 
     // Should we simulate the system alert if the notification is received in foreground?
     if (

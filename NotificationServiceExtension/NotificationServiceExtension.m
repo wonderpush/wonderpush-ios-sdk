@@ -42,6 +42,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
 + (BOOL)serviceExtension:(UNNotificationServiceExtension *)extension didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
     @try {
         NSLog(@"didReceiveNotificationRequest:%@", request);
+        NSLog(@"                     userInfo:%@", request.content.userInfo);
 
         UNMutableNotificationContent *content = [request.content mutableCopy];
         [self setContentHandler:contentHandler forExtension:extension];
@@ -52,21 +53,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
             return NO;
         }
 
-        // Ensure that we display the notification even if the application is in foreground
         NSDictionary *wpData = [content.userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
-        NSDictionary *apsForeground = [wpData dictionaryForKey:@"apsForeground"];
-        if (!apsForeground || apsForeground.count == 0) apsForeground = nil;
-        BOOL apsForegroundAutoOpen = NO;
-        BOOL apsForegroundAutoDrop = NO;
-        if (apsForeground) {
-            apsForegroundAutoOpen = [[apsForeground numberForKey:@"autoOpen"] isEqual:@YES];
-            apsForegroundAutoDrop = [[apsForeground numberForKey:@"autoDrop"] isEqual:@YES];
-        }
-        if (!apsForegroundAutoDrop || !apsForegroundAutoOpen) {
-            // TODO: Fix notification already delivered to the application (maybe even before the extension has run...)
-            //NSLog(@"Setting to display when app is foreground");
-            //[content setValue:@YES forKey:@"shouldAlwaysAlertWhileAppIsForeground"];
-        }
 
         NSArray *attachments = [wpData arrayForKey:@"attachments"];
         if (attachments && attachments.count > 0) {

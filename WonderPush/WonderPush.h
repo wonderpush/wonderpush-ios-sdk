@@ -18,6 +18,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
+#import <UserNotifications/UserNotifications.h>
 
 FOUNDATION_EXPORT double WonderPushVersionNumber;
 FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
@@ -60,7 +61,10 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Make sure you properly installed the WonderPush SDK, as described in [the guide](../index.html).
 
  You must call `<setClientId:secret:>` before using any other method.
+
  You must also either call `<setupDelegateForApplication:>`, preferably in the `application:willFinishLaunchingWithOptions:` method of your `AppDelegate` just after calling the previously mentioned method, or override every method listed under [Manual AppDelegate forwarding](#task_Manual AppDelegate forwarding).
+
+ You must also either call `<setupDelegateForUserNotificationCenter>`, preferably along with `<setupDelegateForApplication:>` in the `application:willFinishLaunchingWithOptions:` method of your `AppDelegate`, or override every method listed under [Manual UserNotificationCenter delegate forwarding](#task_Manual UserNotificationCenter delegate forwarding).
 
  Troubleshooting tip: As the SDK should not interfere with your application other than when a notification is to be shown, make sure to monitor your logs for WonderPush output during development, if things did not went as smoothly as they should have.
  */
@@ -249,6 +253,8 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  This eases your setup, you can call this from your
  `- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions` method.
 
+ Do not forget to also setup the UserNotificationCenter delegate with `[WonderPush setupDelegateForUserNotificationCenter]`.
+
  @param application The application parameter from your AppDelegate.
  */
 + (void) setupDelegateForApplication:(UIApplication *)application;
@@ -346,5 +352,52 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (void) applicationDidEnterBackground:(UIApplication *)application;
 
 
-@end
+///-----------------------------------------------------------
+/// @name Automatic UserNotificationCenter delegate forwarding
+///-----------------------------------------------------------
 
+/**
+ Setup UNUserNotificationCenterDelegate override, so that calls from the UNUserNotificationCenter are automatically transmitted to the WonderPush SDK.
+
+ You must call this from either `application:willFinishLaunchingWithOptions:` or `application:didFinishLaunchingWithOptions:` of your AppDelegate.
+ Simply call it along with `[WonderPush setupDelegateForApplication:]`.
+ */
++ (void) setupDelegateForUserNotificationCenter;
+
+
+///--------------------------------------------------------
+/// @name Manual UserNotificationCenter delegate forwarding
+///--------------------------------------------------------
+
+/**
+ You must instruct the WonderPush SDK whether you have manually forwarded the UserNotificationCenter delegate.
+ The SDK would otherwise not be able to properly handle notifications in some cases.
+
+ @param enabled Use `YES` if you have manually forwarded the UserNotificationCenter delegate methods to the WonderPush SDK.
+ */
++ (void) setUserNotificationCenterDelegateInstalled:(BOOL)enabled;
+
+/**
+ Forwards a UserNotificationCenter delegate to the SDK.
+
+ Method to call in your `userNotificationCenter:willPresentNotification:withCompletionHandler:` method of your `NotificationCenterDelegate`.
+
+ @param center Same parameter as in the forwarded delegate method.
+ @param notification Same parameter as in the forwarded delegate method.
+ @param completionHandler Same parameter as in the forwarded delegate method.
+ */
++ (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler;
+
+/**
+ Forwards a UserNotificationCenter delegate to the SDK.
+
+ Method to call in your `userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:` method of your `NotificationCenterDelegate`.
+
+ @param center Same parameter as in the forwarded delegate method.
+ @param response Same parameter as in the forwarded delegate method.
+ @param completionHandler Same parameter as in the forwarded delegate method.
+ */
++ (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler;
+
+
+@end
