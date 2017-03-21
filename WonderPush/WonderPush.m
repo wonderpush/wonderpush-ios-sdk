@@ -93,6 +93,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
                               @"iPhone8,1"   : @"iPhone 6S",
                               @"iPhone8,2"   : @"iPhone 6S Plus",
                               @"iPhone8,4"   : @"iPhone SE",
+                              @"iPhone9,1"   : @"iPhone 7 (Global)",
+                              @"iPhone9,3"   : @"iPhone 7 (GSM)",
+                              @"iPhone9,2"   : @"iPhone 7 Plus (Global)",
+                              @"iPhone9,4"   : @"iPhone 7 Plus (GSM)",
                               @"iPod1,1"     : @"iPod Touch 1G",
                               @"iPod2,1"     : @"iPod Touch 2G",
                               @"iPod3,1"     : @"iPod Touch 3G",
@@ -136,6 +140,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
                               @"AppleTV5,3"  : @"Apple TV 4G",
                               @"Watch1,1"    : @"Apple Watch 38mm",
                               @"Watch1,2"    : @"Apple Watch 42mm",
+                              @"Watch2,3"    : @"Apple Watch Series 1 38mm",
+                              @"Watch2,4"    : @"Apple Watch Series 1 42mm",
+                              @"Watch2,6"    : @"Apple Watch Series 2 38mm",
+                              @"Watch2,7"    : @"Apple Watch Series 2 42mm",
                               @"i386"        : @"Simulator",
                               @"x86_64"      : @"Simulator"
                               };
@@ -157,6 +165,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
                                 @"iPhone8,1"   : @YES,
                                 @"iPhone8,2"   : @YES,
                                 @"iPhone8,4"   : @YES,
+                                @"iPhone9,1"   : @YES,
+                                @"iPhone9,3"   : @YES,
+                                @"iPhone9,2"   : @YES,
+                                @"iPhone9,4"   : @YES,
                                 @"iPod1,1"     : @NO,
                                 @"iPod2,1"     : @NO,
                                 @"iPod3,1"     : @NO,
@@ -198,6 +210,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
                                 @"AppleTV5,3"  : @NO,
                                 @"Watch1,1"    : @NO,
                                 @"Watch1,2"    : @NO,
+                                @"Watch2,3"    : @NO,
+                                @"Watch2,4"    : @NO,
+                                @"Watch2,6"    : @NO,
+                                @"Watch2,7"    : @NO,
                                 @"i386"        : @NO,
                                 @"x86_64"      : @NO
                                 };
