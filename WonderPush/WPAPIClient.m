@@ -364,8 +364,8 @@ static NSArray *allowedMethods = nil;
                 handler(task, response);
             }
             @synchronized(self.tokenFetchedHandlers) {
-                NSArray *tokens = [NSArray arrayWithArray:self.tokenFetchedHandlers];
-                for (HandlerPair *pair in tokens) {
+                NSArray *handlers = [NSArray arrayWithArray:self.tokenFetchedHandlers];
+                for (HandlerPair *pair in handlers) {
                     if (nil != pair.success)
                         pair.success(task, response);
                 }
