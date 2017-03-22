@@ -28,7 +28,6 @@
 
 #pragma mark - WPJSONRequestOperation
 
-static NSMutableArray *tokenFetchedHandlers;
 static NSArray *allowedMethods = nil;
 
 
@@ -184,6 +183,7 @@ static NSArray *allowedMethods = nil;
 #pragma mark - WPAPIClient
 
 @interface WPAPIClient ()
+@property (strong, nonatomic) NSMutableArray *tokenFetchedHandlers;
 
 /**
  The designated initializer
@@ -228,7 +228,7 @@ static NSArray *allowedMethods = nil;
 {
     if (self = [super init]) {
         self.isFetchingAccessToken = false;
-        tokenFetchedHandlers = [[NSMutableArray alloc] init];
+        self.tokenFetchedHandlers = [[NSMutableArray alloc] init];
 
         WPRequestVault *wpRequestVault = [[WPRequestVault alloc] initWithClient:self];
         self.requestVault = wpRequestVault;
@@ -289,8 +289,8 @@ static NSArray *allowedMethods = nil;
         HandlerPair *pair = [[HandlerPair alloc] init];
         pair.success = handler;
         pair.error = failure;
-        @synchronized(tokenFetchedHandlers) {
-            [tokenFetchedHandlers addObject:pair];
+        @synchronized(self.tokenFetchedHandlers) {
+            [self.tokenFetchedHandlers addObject:pair];
         }
         return;
     }
@@ -363,12 +363,13 @@ static NSArray *allowedMethods = nil;
             if (nil != handler) {
                 handler(task, response);
             }
-            @synchronized(tokenFetchedHandlers) {
-                for (HandlerPair *pair in tokenFetchedHandlers) {
+            @synchronized(self.tokenFetchedHandlers) {
+                NSArray *tokens = [NSArray arrayWithArray:self.tokenFetchedHandlers];
+                for (HandlerPair *pair in tokens) {
                     if (nil != pair.success)
                         pair.success(task, response);
                 }
-                [tokenFetchedHandlers removeAllObjects];
+                [self.tokenFetchedHandlers removeAllObjects];
             }
         }
 
@@ -402,12 +403,13 @@ static NSArray *allowedMethods = nil;
             if (failure) {
                 failure(task, error);
             }
-            @synchronized(tokenFetchedHandlers) {
-                for (HandlerPair *pair in tokenFetchedHandlers) {
+            @synchronized(self.tokenFetchedHandlers) {
+                NSArray *handlers = [NSArray arrayWithArray:self.tokenFetchedHandlers];
+                for (HandlerPair *pair in handlers) {
                     if (nil != pair.error)
                         pair.error(task, error);
                 }
-                [tokenFetchedHandlers removeAllObjects];
+                [self.tokenFetchedHandlers removeAllObjects];
             }
             abort = YES;
         }
