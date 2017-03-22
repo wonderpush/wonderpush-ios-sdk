@@ -220,7 +220,10 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
  In order to remove a value, don't forget to use `[NSNull null]` as value.
 
- @param customProperties The partial object containing only the properties to update.
+ @param customProperties The partial object containing only the custom properties to update.
+
+ The keys should be prefixed according to the type of their values.
+ You can find the details in the [Concepts > Custom fields](https://www.wonderpush.com/docs/guide/custom-fields) section of the documentation.
  */
 + (void) putInstallationCustomProperties:(NSDictionary *)customProperties;
 
@@ -236,9 +239,10 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
  @param type The event type, or name. Event types starting with an `@` character are reserved.
  @param data A dictionary containing custom properties to be attached to the event.
-     Prefer using a few custom properties over a plethora of event type variants.
-     The keys should be prefixed according to the type of their values.
-     You can find the details here: http://www.wonderpush.com/docs/guide/custom-fields
+ Prefer using a few custom properties over a plethora of event type variants.
+
+ The keys should be prefixed according to the type of their values.
+ You can find the details in the [Concepts > Custom fields](https://www.wonderpush.com/docs/guide/custom-fields) section of the documentation.
  */
 + (void) trackEvent:(NSString*)type withData:(NSDictionary *)data;
 
