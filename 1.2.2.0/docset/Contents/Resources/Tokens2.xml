@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Classes/WonderPush.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/cl/WonderPush</TokenIdentifier>
+			<Abstract type="html">WonderPush is your main interface to the WonderPush SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+            
+			
+			<NodeRef refid="2"/>
+		</Token>
+		
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setClientId:secret:</TokenIdentifier>
+			<Abstract type="html">Initializes the WonderPush SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)setClientId:(NSString *)clientId secret:(NSString *)secret</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>clientId</Name>
+					<Abstract type="html">Your WonderPush client id</Abstract>
+				</Parameter><Parameter>
+					<Name>secret</Name>
+					<Abstract type="html">Your WonderPush client secret</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setClientId:secret:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setUserId:</TokenIdentifier>
+			<Abstract type="html">Sets the user id, used to identify a single identity across multiple devices, and to correctly identify multiple users on a single device.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)setUserId:(NSString *)userId</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>userId</Name>
+					<Abstract type="html">The user id, unique to your application. Use nil for anonymous users.
+     You are strongly encouraged to use your own unique internal identifier.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setUserId:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/isInitialized</TokenIdentifier>
+			<Abstract type="html">Returns whether the WonderPush SDK has been given the clientId and clientSecret.
+Will be YES as soon as [WonderPush setClientId:secret:] is called.
+No network can be performed before the SDK is initialized.
+Further use of the SDK methods will be dropped until initialized. Such call will be ignored and logged in the device console.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)isInitialized</Declaration>
+			
+			<ReturnValue><Abstract type="html">The initialization state as a BOOL</Abstract></ReturnValue>
+			<Anchor>//api/name/isInitialized</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/isReady</TokenIdentifier>
+			<Abstract type="html">Returns whether the WonderPush SDK is ready to operate.
+Returns YES when the WPNOTIFICATIONINITIALIZED is sent.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)isReady</Declaration>
+			
+			<ReturnValue><Abstract type="html">The initialization state as a BOOL</Abstract></ReturnValue>
+			<Anchor>//api/name/isReady</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setLogging:</TokenIdentifier>
+			<Abstract type="html">Controls SDK logging.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)setLogging:(BOOL)enable</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>enable</Name>
+					<Abstract type="html">Whether to enable logs.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setLogging:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/userId</TokenIdentifier>
+			<Abstract type="html">Returns the userId currently in use, nil by default.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (NSString *)userId</Declaration>
+			
+			
+			<Anchor>//api/name/userId</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/installationId</TokenIdentifier>
+			<Abstract type="html">Returns the installationId identifying your application on a device, bond to a specific userId.
+If you want to store this information on your servers, keep the corresponding userId with it.
+Will return nil until the SDK is properly initialized.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (NSString *)installationId</Declaration>
+			
+			
+			<Anchor>//api/name/installationId</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/deviceId</TokenIdentifier>
+			<Abstract type="html">Returns the unique device identifier.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (NSString *)deviceId</Declaration>
+			
+			
+			<Anchor>//api/name/deviceId</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/pushToken</TokenIdentifier>
+			<Abstract type="html">Returns the push token, or device token in Apple lingo.
+Returns nil if the user is not opt-in.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (NSString *)pushToken</Declaration>
+			
+			
+			<Anchor>//api/name/pushToken</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/accessToken</TokenIdentifier>
+			<Abstract type="html">Returns the currently used access token.
+Returns nil until the SDK is properly initialized.
+This together with your client secret gives entire control to the current installation and associated user,
+you should not disclose it unnecessarily.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (NSString *)accessToken</Declaration>
+			
+			
+			<Anchor>//api/name/accessToken</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/getNotificationEnabled</TokenIdentifier>
+			<Abstract type="html">Returns whether the notifications are enabled.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)getNotificationEnabled</Declaration>
+			
+			
+			<Anchor>//api/name/getNotificationEnabled</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setNotificationEnabled:</TokenIdentifier>
+			<Abstract type="html">Activates or deactivates the push notification on the device (if the user accepts) and registers the device token with WondePush.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)setNotificationEnabled:(BOOL)enabled</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>enabled</Name>
+					<Abstract type="html">The new activation state of push notifications.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setNotificationEnabled:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/isNotificationForWonderPush:</TokenIdentifier>
+			<Abstract type="html">Returns whether the given notification is to be consumed by the WonderPush SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)isNotificationForWonderPush:(NSDictionary *)userInfo</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>userInfo</Name>
+					<Abstract type="html">The notification dictionary as read from some UIApplicationDelegate method parameters.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/isNotificationForWonderPush:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/isDataNotification:</TokenIdentifier>
+			<Abstract type="html">Returns whether the notification is a data notification sent by WonderPush.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)isDataNotification:(NSDictionary *)userInfo</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>userInfo</Name>
+					<Abstract type="html">The notification dictionary as read from some UIApplicationDelegate method parameters.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/isDataNotification:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/getInstallationCustomProperties</TokenIdentifier>
+			<Abstract type="html">Returns the latest known custom properties attached to the current installation object stored by WonderPush.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (NSDictionary *)getInstallationCustomProperties</Declaration>
+			
+			
+			<Anchor>//api/name/getInstallationCustomProperties</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/putInstallationCustomProperties:</TokenIdentifier>
+			<Abstract type="html">Updates the custom properties attached to the current installation object stored by WonderPush.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)putInstallationCustomProperties:(NSDictionary *)customProperties</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>customProperties</Name>
+					<Abstract type="html">The partial object containing only the custom properties to update.
+
+The keys should be prefixed according to the type of their values.
+You can find the details in the Concepts &gt; Custom fields section of the documentation.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/putInstallationCustomProperties:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/trackEvent:</TokenIdentifier>
+			<Abstract type="html">Send an event to be tracked to WonderPush.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)trackEvent:(NSString *)type</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>type</Name>
+					<Abstract type="html">The event type, or name. Event types starting with an @ character are reserved.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/trackEvent:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/trackEvent:withData:</TokenIdentifier>
+			<Abstract type="html">Send an event to be tracked to WonderPush.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)trackEvent:(NSString *)type withData:(NSDictionary *)data</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>type</Name>
+					<Abstract type="html">The event type, or name. Event types starting with an @ character are reserved.</Abstract>
+				</Parameter><Parameter>
+					<Name>data</Name>
+					<Abstract type="html">A dictionary containing custom properties to be attached to the event.
+Prefer using a few custom properties over a plethora of event type variants.
+
+The keys should be prefixed according to the type of their values.
+You can find the details in the Concepts &gt; Custom fields section of the documentation.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/trackEvent:withData:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setupDelegateForApplication:</TokenIdentifier>
+			<Abstract type="html">Setup UIApplicationDelegate override, so that calls from your UIApplicationDelegate are automatically transmitted to the WonderPush SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)setupDelegateForApplication:(UIApplication *)application</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>application</Name>
+					<Abstract type="html">The application parameter from your AppDelegate.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setupDelegateForApplication:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/application:didFinishLaunchingWithOptions:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>application</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>launchOptions</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/application:didFinishLaunchingWithOptions:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/application:didReceiveRemoteNotification:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>application</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>userInfo</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/application:didReceiveRemoteNotification:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/application:didRegisterForRemoteNotificationsWithDeviceToken:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>application</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>deviceToken</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/application:didRegisterForRemoteNotificationsWithDeviceToken:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/application:didFailToRegisterForRemoteNotificationsWithError:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>application</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>error</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/application:didFailToRegisterForRemoteNotificationsWithError:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/application:didReceiveLocalNotification:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>application</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>notification</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/application:didReceiveLocalNotification:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/application:didReceiveRemoteNotification:fetchCompletionHandler:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void ( ^ ) ( UIBackgroundFetchResult ))completionHandler</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>application</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>userInfo</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>completionHandler</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/application:didReceiveRemoteNotification:fetchCompletionHandler:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/applicationDidBecomeActive:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)applicationDidBecomeActive:(UIApplication *)application</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>application</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/applicationDidBecomeActive:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/applicationDidEnterBackground:</TokenIdentifier>
+			<Abstract type="html">Forwards an application delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)applicationDidEnterBackground:(UIApplication *)application</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>application</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/applicationDidEnterBackground:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setupDelegateForUserNotificationCenter</TokenIdentifier>
+			<Abstract type="html">Setup UNUserNotificationCenterDelegate override, so that calls from the UNUserNotificationCenter are automatically transmitted to the WonderPush SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)setupDelegateForUserNotificationCenter</Declaration>
+			
+			
+			<Anchor>//api/name/setupDelegateForUserNotificationCenter</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/setUserNotificationCenterDelegateInstalled:</TokenIdentifier>
+			<Abstract type="html">You must instruct the WonderPush SDK whether you have manually forwarded the UserNotificationCenter delegate.
+The SDK would otherwise not be able to properly handle notifications in some cases.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)setUserNotificationCenterDelegateInstalled:(BOOL)enabled</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>enabled</Name>
+					<Abstract type="html">Use YES if you have manually forwarded the UserNotificationCenter delegate methods to the WonderPush SDK.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setUserNotificationCenterDelegateInstalled:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/userNotificationCenter:willPresentNotification:withCompletionHandler:</TokenIdentifier>
+			<Abstract type="html">Forwards a UserNotificationCenter delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void ( ^ ) ( UNNotificationPresentationOptions options ))completionHandler</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>center</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>notification</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>completionHandler</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/userNotificationCenter:willPresentNotification:withCompletionHandler:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPush/userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:</TokenIdentifier>
+			<Abstract type="html">Forwards a UserNotificationCenter delegate to the SDK.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>+ (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void ( ^ ) ( ))completionHandler</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>center</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>response</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter><Parameter>
+					<Name>completionHandler</Name>
+					<Abstract type="html">Same parameter as in the forwarded delegate method.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:</Anchor>
+            <NodeRef refid="2"/>
+		</Token>
+		
+        
+        
+	</File>
+</Tokens>
