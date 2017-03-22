@@ -21,7 +21,7 @@
   },
   "requires_arc": true,
   "module_name": "WonderPush",
-  "default_subspec": "Core",
+  "default_subspecs": ["Core"],
   "subspecs": [
     {
       "name": "Core",
