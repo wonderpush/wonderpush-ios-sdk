@@ -698,6 +698,30 @@ static int _putInstallationCustomProperties_blockId = 0;
     }
 }
 
++ (void)receivedFullInstallationCustomPropertiesFromServer:(NSDictionary *)custom updateDate:(NSDate *)installationUpdateDate
+{
+    WPLogDebug(@"Synchronizing installation custom fields");
+    custom = custom ?: @{};
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    @synchronized (_putInstallationCustomProperties_lock) {
+        WPLogDebug(@"Received custom: %@", custom);
+        NSDictionary *updated = configuration.cachedInstallationCustomPropertiesUpdated ?: @{};
+        WPLogDebug(@"We had custom: %@", configuration.cachedInstallationCustomPropertiesUpdated);
+        NSDictionary *written = configuration.cachedInstallationCustomPropertiesWritten ?: @{};
+        NSDate *updatedDate = configuration.cachedInstallationCustomPropertiesUpdatedDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
+        NSDate *writtenDate = configuration.cachedInstallationCustomPropertiesWrittenDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
+        NSDictionary * diff = [WPJsonUtil diff:written with:updated];
+        WPLogDebug(@"Pending custom diff was: %@", diff);
+        NSDictionary *customUpdated = [WPJsonUtil merge:custom with:diff];
+        WPLogDebug(@"New custom after applying pending diff: %@", customUpdated);
+        configuration.cachedInstallationCustomPropertiesUpdated = customUpdated;
+        WPLogDebug(@"We now have custom: %@", configuration.cachedInstallationCustomPropertiesUpdated);
+        configuration.cachedInstallationCustomPropertiesWritten = custom;
+        configuration.cachedInstallationCustomPropertiesUpdatedDate = [updatedDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? updatedDate : installationUpdateDate;
+        configuration.cachedInstallationCustomPropertiesWrittenDate = [writtenDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? writtenDate : installationUpdateDate;
+    }
+}
+
 + (void) trackNotificationOpened:(NSDictionary *)notificationInformation
 {
     [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:notificationInformation customData:nil];

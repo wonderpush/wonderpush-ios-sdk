@@ -154,6 +154,11 @@
 ///---------------------
 
 /**
+Called when receiving the full state of the installation custom properties
+ */
++ (void)receivedFullInstallationCustomPropertiesFromServer:(NSDictionary *)custom updateDate:(NSDate *)installationUpdateDate;
+
+/**
  Updates or add properties to the current installation
  @param properties a collection of properties to add
  @param overwrite if true all the installation will be cleaned before update
