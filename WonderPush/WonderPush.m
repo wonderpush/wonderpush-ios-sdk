@@ -620,7 +620,9 @@ static NSDictionary* gpsCapabilityByCode = nil;
     [self onInteraction];
     @synchronized (_putInstallationCustomProperties_lock) {
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-        return [(conf.cachedInstallationCustomPropertiesUpdated ?: @{}) copy];
+        id rtn = [(conf.cachedInstallationCustomPropertiesUpdated ?: @{}) copy];
+        WPLogDebug(@"%@ -> %d", NSStringFromSelector(_cmd), rtn);
+        return rtn;
     }
 }
 
