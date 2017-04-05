@@ -334,30 +334,24 @@ static NSArray *allowedMethods = nil;
 
             NSDictionary *installation = [responseJson dictionaryForKey:@"_installation"];
             if (installation) {
-                WPLogDebug(@"%@: Synchronizing installation custom fields", NSStringFromSelector(_cmd));
+                WPLogDebug(@"Synchronizing installation custom fields");
                 NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:[[installation numberForKey:@"updateDate"] longValue] / 1000. ];
                 NSDictionary * custom        = [installation dictionaryForKey:@"custom"] ?: @{};
-                WPLogDebug(@"%@: custom received: %@", NSStringFromSelector(_cmd), custom);
+                WPLogDebug(@"Received custom: %@", custom);
                 NSDictionary *updated = configuration.cachedInstallationCustomPropertiesUpdated ?: @{};
-                WPLogDebug(@"%@: cachedInstallationCustomPropertiesUpdated: %@", NSStringFromSelector(_cmd), updated);
+                WPLogDebug(@"We had custom: %@", configuration.cachedInstallationCustomPropertiesUpdated);
                 NSDictionary *written = configuration.cachedInstallationCustomPropertiesWritten ?: @{};
-                WPLogDebug(@"%@: cachedInstallationCustomPropertiesWritten: %@", NSStringFromSelector(_cmd), written);
                 NSDate *updatedDate = configuration.cachedInstallationCustomPropertiesUpdatedDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
-                WPLogDebug(@"%@: cachedInstallationCustomPropertiesUpdatedDate: %@", NSStringFromSelector(_cmd), updatedDate);
                 NSDate *writtenDate = configuration.cachedInstallationCustomPropertiesWrittenDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
-                WPLogDebug(@"%@: cachedInstallationCustomPropertiesWrittenDate: %@", NSStringFromSelector(_cmd), writtenDate);
                 NSDictionary * diff = [WPJsonUtil diff:written with:updated];
-                WPLogDebug(@"%@: pending diff: %@", NSStringFromSelector(_cmd), diff);
+                WPLogDebug(@"Pending custom diff was: %@", diff);
                 NSDictionary *customUpdated = [WPJsonUtil merge:custom with:diff];
-                WPLogDebug(@"%@: new custom after applying pending diff: %@", NSStringFromSelector(_cmd), customUpdated);
+                WPLogDebug(@"New custom after applying pending diff: %@", customUpdated);
                 configuration.cachedInstallationCustomPropertiesUpdated = customUpdated;
-                WPLogDebug(@"%@: cachedInstallationCustomPropertiesUpdated <- %@", NSStringFromSelector(_cmd), configuration.cachedInstallationCustomPropertiesUpdated);
+                WPLogDebug(@"We now have custom: %@", configuration.cachedInstallationCustomPropertiesUpdated);
                 configuration.cachedInstallationCustomPropertiesWritten = custom;
-                WPLogDebug(@"%@: cachedInstallationCustomPropertiesWritten <- %@", NSStringFromSelector(_cmd), configuration.cachedInstallationCustomPropertiesWritten);
                 configuration.cachedInstallationCustomPropertiesUpdatedDate = [updatedDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? updatedDate : installationUpdateDate;
-                WPLogDebug(@"%@: cachedInstallationCustomPropertiesUpdatedDate <- %@", NSStringFromSelector(_cmd), configuration.cachedInstallationCustomPropertiesUpdatedDate);
                 configuration.cachedInstallationCustomPropertiesWrittenDate = [writtenDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? writtenDate : installationUpdateDate;
-                WPLogDebug(@"%@: cachedInstallationCustomPropertiesWrittenDate <- %@", NSStringFromSelector(_cmd), configuration.cachedInstallationCustomPropertiesWrittenDate);
             }
 
             [configuration changeUserId:prevUserId];

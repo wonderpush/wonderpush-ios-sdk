@@ -280,7 +280,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) setClientId:(NSString *)clientId secret:(NSString *)secret
 {
-    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
+    WPLogDebug(@"setClientId:%@ secret:<redacted>", clientId);
     NSException* invalidArgumentException = nil;
 
     if (clientId == nil) {
@@ -301,6 +301,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     configuration.clientId = clientId;
     configuration.clientSecret = secret;
+configuration.accessToken = nil;
     if ((configuration.clientId == nil && [configuration getStoredClientId] != nil)
         || (configuration.clientId != nil && ![configuration.clientId isEqualToString: [configuration getStoredClientId]]))
     {
@@ -616,12 +617,11 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (NSDictionary *) getInstallationCustomProperties
 {
-    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [self onInteraction];
     @synchronized (_putInstallationCustomProperties_lock) {
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
         id rtn = [(conf.cachedInstallationCustomPropertiesUpdated ?: @{}) copy];
-        WPLogDebug(@"%@ -> %d", NSStringFromSelector(_cmd), rtn);
+        WPLogDebug(@"getInstallationCustomProperties -> %d", rtn);
         return rtn;
     }
 }
@@ -643,17 +643,13 @@ static int _putInstallationCustomProperties_blockId = 0;
         return;
     }
     [self onInteraction];
-    WPLogDebug(@"%@ entering @synchronized", NSStringFromSelector(_cmd));
     @synchronized (_putInstallationCustomProperties_lock) {
-        WPLogDebug(@"%@ entered @synchronized", NSStringFromSelector(_cmd));
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
         NSDictionary *updatedRef = conf.cachedInstallationCustomPropertiesUpdated ?: @{};
-        WPLogDebug(@"%@ cachedInstallationCustomPropertiesUpdated: %@", NSStringFromSelector(_cmd), updatedRef);
         NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated ?: @{};
         updated = [WPJsonUtil merge:updated with:customProperties];
-        WPLogDebug(@"%@ cachedInstallationCustomPropertiesUpdated becomes: %@", NSStringFromSelector(_cmd), updated);
         if ([updated isEqual:updatedRef]) {
-            WPLogDebug(@"%@ no difference, exit", NSStringFromSelector(_cmd));
+            WPLogDebug(@"Custom properties did not change");
             return;
         }
         int currentBlockId = ++_putInstallationCustomProperties_blockId;
@@ -664,56 +660,43 @@ static int _putInstallationCustomProperties_blockId = 0;
             conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate = firstWrite;
         }
         conf.cachedInstallationCustomPropertiesUpdated = updated;
+        WPLogDebug(@"New custom properties: %@", conf.cachedInstallationCustomPropertiesUpdated);
         conf.cachedInstallationCustomPropertiesUpdatedDate = now;
-        WPLogDebug(@"%@ cachedInstallationCustomPropertiesUpdatedDate: %@", NSStringFromSelector(_cmd), now);
         NSTimeInterval delay = MIN(CACHED_INSTALLATION_CUSTOM_PROPERTIES_MIN_DELAY,
                                    [firstWrite timeIntervalSinceReferenceDate] + CACHED_INSTALLATION_CUSTOM_PROPERTIES_MAX_DELAY
                                    - [now timeIntervalSinceReferenceDate]);
-        WPLogDebug(@"%@ delaying %lfs for blockId %d", NSStringFromSelector(_cmd), delay, currentBlockId);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            WPLogDebug(@"%@ (delayed block %d) entering @synchronized", NSStringFromSelector(_cmd), currentBlockId);
             @synchronized (_putInstallationCustomProperties_lock) {
-                WPLogDebug(@"%@ (delayed block %d) entered @synchronized", NSStringFromSelector(_cmd), currentBlockId);
                 if (_putInstallationCustomProperties_blockId == currentBlockId) {
-                    WPLogDebug(@"%@ (delayed block %d) performing put", NSStringFromSelector(_cmd), currentBlockId);
+                    WPLogDebug(@"Performing delayed update of custom properties");
                     [self putInstallationCustomProperties_inner];
-                } else {
-                    WPLogDebug(@"%@ (delayed block %d) latest blockId is %d, dropping this block", NSStringFromSelector(_cmd), currentBlockId, _putInstallationCustomProperties_blockId);
                 }
             }
-            WPLogDebug(@"%@ (delayed block %d) left @synchronized", NSStringFromSelector(_cmd), currentBlockId);
         });
     }
-    WPLogDebug(@"%@ left @synchronized", NSStringFromSelector(_cmd));
 }
 
 + (void) putInstallationCustomProperties_inner
 {
-    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
-    WPLogDebug(@"%@ entering @synchronized", NSStringFromSelector(_cmd));
+    WPLogDebug(@"Performing update of custom properties");
     @synchronized (_putInstallationCustomProperties_lock) {
-        WPLogDebug(@"%@ entered @synchronized", NSStringFromSelector(_cmd));
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
         NSDictionary *written = conf.cachedInstallationCustomPropertiesWritten;
-        WPLogDebug(@"%@ cachedInstallationCustomPropertiesWritten: %@", NSStringFromSelector(_cmd), written);
+        WPLogDebug(@"The server should have custom: %@", written);
         NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated;
-        WPLogDebug(@"%@ cachedInstallationCustomPropertiesUpdated: %@", NSStringFromSelector(_cmd), updated);
+        WPLogDebug(@"The SDK has custom: %@", updated);
         NSDictionary *customProperties = [WPJsonUtil diff:written with:updated];
-        WPLogDebug(@"%@ diff: %@", NSStringFromSelector(_cmd), customProperties);
+        WPLogDebug(@"Custom diff: %@", customProperties);
         if (customProperties != nil && ![customProperties isEqual:@{}]) {
             [self updateInstallation:@{@"custom": customProperties} shouldOverwrite:NO];
             NSDate *now = [NSDate date];
             conf.cachedInstallationCustomPropertiesWritten = updated;
-            WPLogDebug(@"%@ cachedInstallationCustomPropertiesWritten <- %@", NSStringFromSelector(_cmd), updated);
             conf.cachedInstallationCustomPropertiesWrittenDate = now;
-            WPLogDebug(@"%@ cachedInstallationCustomPropertiesWritten <- %@", NSStringFromSelector(_cmd), now);
         } else {
-            WPLogDebug(@"%@ no diff to send", NSStringFromSelector(_cmd));
+            WPLogDebug(@"No diff to send");
         }
         conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate = nil;
-        WPLogDebug(@"%@ cachedInstallationCustomPropertiesFirstDelayedWriteDate <- nil", NSStringFromSelector(_cmd));
     }
-    WPLogDebug(@"%@ left @synchronized", NSStringFromSelector(_cmd));
 }
 
 + (void) trackNotificationOpened:(NSDictionary *)notificationInformation
