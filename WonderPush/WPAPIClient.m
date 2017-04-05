@@ -307,6 +307,7 @@ static NSArray *allowedMethods = nil;
     NSString *resource = @"authentication/accessToken";
 
     WPLogDebug(@"Fetching access token");
+    WPLogDebug(@"POST %@ with params %@", resource, params);
 
     __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"WP-FetchAccessToken" expirationHandler:^{
         // Avoid being killed by saying we are done
@@ -315,6 +316,7 @@ static NSArray *allowedMethods = nil;
 
     [self.jsonHttpClient POST:resource parameters:params progress:nil success:^(NSURLSessionTask *task, id response) {
         // Success
+        WPLogDebug(@"Got access token response: %@", response);
 
         NSDictionary *responseJson = (NSDictionary *)response;
         NSString *accessToken = [responseJson stringForKey:@"token"];
@@ -332,19 +334,31 @@ static NSArray *allowedMethods = nil;
 
             NSDictionary *installation = [responseJson dictionaryForKey:@"_installation"];
             if (installation) {
+                WPLogDebug(@"%@: Synchronizing installation custom fields", NSStringFromSelector(_cmd));
                 NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:[[installation numberForKey:@"updateDate"] longValue] / 1000. ];
                 NSDictionary * custom        = [installation dictionaryForKey:@"custom"] ?: @{};
                 NSDictionary * customUpdated = [custom copy];
+                WPLogDebug(@"%@: custom received: %@", NSStringFromSelector(_cmd), custom);
                 NSDictionary *updated = configuration.cachedInstallationCustomPropertiesUpdated ?: @{};
+                WPLogDebug(@"%@: cachedInstallationCustomPropertiesUpdated: %@", NSStringFromSelector(_cmd), updated);
                 NSDictionary *written = configuration.cachedInstallationCustomPropertiesWritten ?: @{};
+                WPLogDebug(@"%@: cachedInstallationCustomPropertiesWritten: %@", NSStringFromSelector(_cmd), written);
                 NSDate *updatedDate = configuration.cachedInstallationCustomPropertiesUpdatedDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
+                WPLogDebug(@"%@: cachedInstallationCustomPropertiesUpdatedDate: %@", NSStringFromSelector(_cmd), updatedDate);
                 NSDate *writtenDate = configuration.cachedInstallationCustomPropertiesWrittenDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
+                WPLogDebug(@"%@: cachedInstallationCustomPropertiesWrittenDate: %@", NSStringFromSelector(_cmd), writtenDate);
                 NSDictionary * diff = [WPJsonUtil diff:written with:updated];
+                WPLogDebug(@"%@: pending diff: %@", NSStringFromSelector(_cmd), diff);
                 [WPJsonUtil merge:customUpdated with:diff];
+                WPLogDebug(@"%@: new custom after applying pending diff: %@", NSStringFromSelector(_cmd), customUpdated);
                 configuration.cachedInstallationCustomPropertiesUpdated = customUpdated;
+                WPLogDebug(@"%@: cachedInstallationCustomPropertiesUpdated <- %@", NSStringFromSelector(_cmd), configuration.cachedInstallationCustomPropertiesUpdated);
                 configuration.cachedInstallationCustomPropertiesWritten = custom;
+                WPLogDebug(@"%@: cachedInstallationCustomPropertiesWritten <- %@", NSStringFromSelector(_cmd), configuration.cachedInstallationCustomPropertiesWritten);
                 configuration.cachedInstallationCustomPropertiesUpdatedDate = [updatedDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? updatedDate : installationUpdateDate;
+                WPLogDebug(@"%@: cachedInstallationCustomPropertiesUpdatedDate <- %@", NSStringFromSelector(_cmd), configuration.cachedInstallationCustomPropertiesUpdatedDate);
                 configuration.cachedInstallationCustomPropertiesWrittenDate = [writtenDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? writtenDate : installationUpdateDate;
+                WPLogDebug(@"%@: cachedInstallationCustomPropertiesWrittenDate <- %@", NSStringFromSelector(_cmd), configuration.cachedInstallationCustomPropertiesWrittenDate);
             }
 
             [configuration changeUserId:prevUserId];
@@ -371,6 +385,8 @@ static NSArray *allowedMethods = nil;
                 }
                 [self.tokenFetchedHandlers removeAllObjects];
             }
+        } else {
+            WPLog(@"Malformed access token response: %@", response);
         }
 
         [[UIApplication sharedApplication] endBackgroundTask:bgTask];
