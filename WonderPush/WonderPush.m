@@ -262,11 +262,13 @@ static NSDictionary* gpsCapabilityByCode = nil;
 {
     if ([@"" isEqualToString:userId]) userId = nil;
     if (![self isInitialized]) {
+        WPLogDebug(@"setUserId:%@ (before initialization)", userId);
         _beforeInitializationUserIdSet = YES;
         _beforeInitializationUserId = userId;
         // Now we wait for [WonderPush setClientId:secret:] to be called
         return;
     }
+    WPLogDebug(@"setUserId:%@ (after initialization)", userId);
     _beforeInitializationUserIdSet = NO;
     _beforeInitializationUserId = nil;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
@@ -278,6 +280,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) setClientId:(NSString *)clientId secret:(NSString *)secret
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     NSException* invalidArgumentException = nil;
 
     if (clientId == nil) {
@@ -312,6 +315,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) initForNewUser:(NSString *)userId
 {
+    WPLogDebug(@"initForNewUser:%@", userId);
     [self setIsReady:NO];
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
@@ -343,6 +347,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) setNotificationEnabled:(BOOL)enabled
 {
+    WPLogDebug(@"setNotificationEnabled:%@", enabled ? @"YES" : @"NO");
     if (![self isInitialized]) {
         WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
@@ -611,6 +616,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (NSDictionary *) getInstallationCustomProperties
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [self onInteraction];
     @synchronized (_putInstallationCustomProperties_lock) {
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
@@ -629,6 +635,7 @@ static NSObject *_putInstallationCustomProperties_lock; //= [NSObject new];
 static int _putInstallationCustomProperties_blockId = 0;
 + (void) putInstallationCustomProperties:(NSDictionary *)customProperties
 {
+    WPLogDebug(@"putInstallationCustomProperties: %@", customProperties);
     if (![self isInitialized]) {
         WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
@@ -747,12 +754,14 @@ static int _putInstallationCustomProperties_blockId = 0;
 
 + (void) trackEvent:(NSString*)type
 {
+    WPLogDebug(@"trackEvent:%@", type);
     [self trackEvent:type eventData:nil customData:nil];
     [self onInteraction];
 }
 
 + (void) trackEvent:(NSString*)type withData:(NSDictionary *)data
 {
+    WPLogDebug(@"trackEvent:%@ withData:%@", type, data);
     [self trackEvent:type eventData:nil customData:data];
     [self onInteraction];
 }
