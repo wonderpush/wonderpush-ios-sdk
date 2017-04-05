@@ -301,7 +301,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     configuration.clientId = clientId;
     configuration.clientSecret = secret;
-configuration.accessToken = nil;
     if ((configuration.clientId == nil && [configuration getStoredClientId] != nil)
         || (configuration.clientId != nil && ![configuration.clientId isEqualToString: [configuration getStoredClientId]]))
     {
