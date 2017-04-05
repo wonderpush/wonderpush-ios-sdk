@@ -17,4 +17,5 @@
 #import <Foundation/Foundation.h>
 
 void WPLogEnable(BOOL enabled);
+void WPLogDebug(NSString *format, ...);
 void WPLog(NSString *format, ...);

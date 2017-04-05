@@ -162,7 +162,7 @@
 
 - (void) addToQueue:(WPRequest *)request
 {
-    WPLog(@"Adding request to queue: %@", request);
+    WPLogDebug(@"Adding request to queue: %@", request);
 
     WPRequestVaultOperation *operation = [[WPRequestVaultOperation alloc] initWithRequest:request vault:self];
     [self.operationQueue addOperation:operation];
@@ -176,12 +176,12 @@
     switch (status) {
         case AFNetworkReachabilityStatusNotReachable:
         case AFNetworkReachabilityStatusUnknown:
-            WPLog(@"Reachability changed to %i, stopping queue.", status);
+            WPLogDebug(@"Reachability changed to %i, stopping queue.", status);
             [self.operationQueue setSuspended:YES];
             break;
 
         default:
-            WPLog(@"Reachability changed to %i, starting queue.", status);
+            WPLogDebug(@"Reachability changed to %i, starting queue.", status);
             [self.operationQueue setSuspended:NO];
             break;
     }
@@ -193,7 +193,7 @@
 
 - (void) initializedNotification:(NSNotification *)notification
 {
-    WPLog(@"SDK initialized, starting queue to test reachability.");
+    WPLogDebug(@"SDK initialized, starting queue to test reachability.");
     [self.operationQueue setSuspended:NO];
 }
 
@@ -217,14 +217,14 @@
 - (void) main
 {
     WPRequest *requestCopy = [self.request copy];
-    WPLog(@"in main of request operation");
+    WPLogDebug(@"in main of request operation");
     requestCopy.handler = ^(WPResponse *response, NSError *error) {
 
-        WPLog(@"WPRequestVaultOperation complete with response:%@ error:%@", response, error);
+        WPLogDebug(@"WPRequestVaultOperation complete with response:%@ error:%@", response, error);
         if ([error isKindOfClass:[NSError class]]) {
             NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
             if ([errorBody isKindOfClass:[NSData class]]) {
-                WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+                WPLogDebug(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
             }
         }
 
@@ -232,7 +232,7 @@
         if ([error isKindOfClass:[NSError class]] && [NSURLErrorDomain isEqualToString:error.domain] && error.code <= NSURLErrorBadURL) {
             // Make sure to stop the queue
             if (![WonderPush isReachable]) {
-                WPLog(@"Declaring not reachable");
+                WPLogDebug(@"Declaring not reachable");
                 [self.vault reachabilityChanged:AFNetworkReachabilityStatusNotReachable];
             }
             [self.vault addToQueue:self.request];

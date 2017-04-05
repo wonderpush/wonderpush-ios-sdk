@@ -65,7 +65,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    WPLog(@"%@", NSStringFromSelector(_cmd));
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didFinishLaunchingWithOptions:launchOptions];
     BOOL rtn = YES;
     if ([self.nextDelegate respondsToSelector:_cmd]) {
@@ -78,7 +78,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-    WPLog(@"%@", NSStringFromSelector(_cmd));
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didReceiveLocalNotification:notification];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         _WPAppDelegateAlreadyRunning = YES;
@@ -89,7 +89,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 - (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    WPLog(@"%@", NSStringFromSelector(_cmd));
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         _WPAppDelegateAlreadyRunning = YES;
@@ -100,7 +100,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    WPLog(@"%@", NSStringFromSelector(_cmd));
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didFailToRegisterForRemoteNotificationsWithError:error];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         _WPAppDelegateAlreadyRunning = YES;
@@ -111,7 +111,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    WPLog(@"%@", NSStringFromSelector(_cmd));
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didReceiveRemoteNotification:userInfo];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         _WPAppDelegateAlreadyRunning = YES;
@@ -122,7 +122,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    WPLog(@"%@", NSStringFromSelector(_cmd));
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         _WPAppDelegateAlreadyRunning = YES;
         [self.nextDelegate application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
@@ -134,7 +134,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    WPLog(@"%@", NSStringFromSelector(_cmd));
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [WonderPush applicationDidEnterBackground:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         _WPAppDelegateAlreadyRunning = YES;
@@ -145,7 +145,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    WPLog(@"%@", NSStringFromSelector(_cmd));
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [WonderPush applicationDidBecomeActive:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         _WPAppDelegateAlreadyRunning = YES;

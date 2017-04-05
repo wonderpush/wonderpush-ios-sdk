@@ -16,6 +16,8 @@
 
 #import "NotificationServiceExtension.h"
 
+#import "WPLog.h"
+
 #import <objc/runtime.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <CoreMedia/CoreMedia.h>
@@ -41,15 +43,15 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
 
 + (BOOL)serviceExtension:(UNNotificationServiceExtension *)extension didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
     @try {
-        NSLog(@"didReceiveNotificationRequest:%@", request);
-        NSLog(@"                     userInfo:%@", request.content.userInfo);
+        WPLog(@"didReceiveNotificationRequest:%@", request);
+        WPLog(@"                     userInfo:%@", request.content.userInfo);
 
         UNMutableNotificationContent *content = [request.content mutableCopy];
         [self setContentHandler:contentHandler forExtension:extension];
         [self setContent:content forExtension:extension];
 
         if (![self isNotificationForWonderPush:content.userInfo]) {
-            NSLog(@"Notification not for WonderPush");
+            WPLog(@"Notification not for WonderPush");
             return NO;
         }
 
@@ -83,7 +85,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                     NSURL *fileURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@.%@", attachmentId, attachmentURL.pathExtension ?: @""] relativeToURL:documentsDirectoryURL];
                     [attachmentData writeToURL:fileURL options:NSDataWritingAtomic error:&error];
                     if (error != nil) {
-                        NSLog(@"Failed to write attachment to disk: %@", error);
+                        WPLog(@"Failed to write attachment to disk: %@", error);
                         continue;
                     }
                     @try {
@@ -92,35 +94,35 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                                                                                                           options:attachmentOptions
                                                                                                             error:&error];
                         if (error != nil) {
-                            NSLog(@"Failed to create attachment: %@", error);
+                            WPLog(@"Failed to create attachment: %@", error);
                             continue;
                         }
                         if (attachment) {
-                            NSLog(@"Adding attachment: %@", attachment);
+                            WPLog(@"Adding attachment: %@", attachment);
                             [contentAttachments addObject:attachment];
                             content.attachments = contentAttachments;
                         }
                     } @catch (NSException *exception) {
-                        NSLog(@"WonderPush/NotificationServiceExtension didReceiveNotificationRequest:withContentHandler: exception when adding attachment: %@", exception);
+                        WPLog(@"WonderPush/NotificationServiceExtension didReceiveNotificationRequest:withContentHandler: exception when adding attachment: %@", exception);
                     }
                 } @catch (NSException *exception) {
-                    NSLog(@"WonderPush/NotificationServiceExtension didReceiveNotificationRequest:withContentHandler: exception when processing %dth attachment: %@", index, exception);
+                    WPLog(@"WonderPush/NotificationServiceExtension didReceiveNotificationRequest:withContentHandler: exception when processing %dth attachment: %@", index, exception);
                 }
             }
         }
 
-        NSLog(@"Final content: %@", content);
+        WPLog(@"Final content: %@", content);
         contentHandler(content);
         return YES;
     } @catch (NSException *exception) {
-        NSLog(@"WonderPush/NotificationServiceExtension didReceiveNotificationRequest:withContentHandler: exception: %@", exception);
+        WPLog(@"WonderPush/NotificationServiceExtension didReceiveNotificationRequest:withContentHandler: exception: %@", exception);
         return NO;
     }
 }
 
 + (BOOL)serviceExtensionTimeWillExpire:(UNNotificationServiceExtension *)extension {
     @try {
-        NSLog(@"serviceExtensionTimeWillExpire");
+        WPLog(@"serviceExtensionTimeWillExpire");
         UNMutableNotificationContent *content = [self getContentForExtension:extension];
         ContentHandler contentHandler = [self getContentHandlerForExtension:extension];
 
@@ -128,11 +130,11 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
             return NO;
         }
 
-        NSLog(@"Final content: %@", content);
+        WPLog(@"Final content: %@", content);
         contentHandler(content);
         return YES;
     } @catch (NSException *exception) {
-        NSLog(@"WonderPush/NotificationServiceExtension serviceExtensionTimeWillExpire exception: %@", exception);
+        WPLog(@"WonderPush/NotificationServiceExtension serviceExtensionTimeWillExpire exception: %@", exception);
         return NO;
     }
 }

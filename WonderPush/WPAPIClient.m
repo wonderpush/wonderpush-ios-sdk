@@ -48,7 +48,7 @@ static NSArray *allowedMethods = nil;
         return nil;
 
     if (![WonderPush isInitialized]) {
-        NSLog(@"WonderPush: Authorization header cannot be calculated because the SDK is not initialized");
+        WPLog(@"Authorization header cannot be calculated because the SDK is not initialized");
         return nil;
     }
 
@@ -93,7 +93,7 @@ static NSArray *allowedMethods = nil;
 
     // Add body if Content-Type is not application/x-www-form-urlencoded
     [buffer appendString:@"&"];
-    //WPLog(@"%@", buffer);
+    //WPLogDebug(@"%@", buffer);
     // body will be hmac-ed directly after buffer
 
     // Sign the buffer with the client secret using HMacSha1
@@ -104,7 +104,7 @@ static NSArray *allowedMethods = nil;
     CCHmacInit(&hmacCtx, kCCHmacAlgSHA1, cKey, strlen(cKey));
     CCHmacUpdate(&hmacCtx, cData, strlen(cData));
     if (dBody) {
-        //WPLog(@"%@", [[NSString alloc] initWithData:dBody encoding:NSUTF8StringEncoding]);
+        //WPLogDebug(@"%@", [[NSString alloc] initWithData:dBody encoding:NSUTF8StringEncoding]);
         CCHmacUpdate(&hmacCtx, dBody.bytes, dBody.length);
     }
     CCHmacFinal(&hmacCtx, cHMAC);
@@ -218,7 +218,7 @@ static NSArray *allowedMethods = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSURL *baseURL = [WPConfiguration sharedConfiguration].baseURL;
-        WPLog(@"WonderPush base URL: %@", baseURL);
+        WPLogDebug(@"WonderPush base URL: %@", baseURL);
         sharedClient = [[WPAPIClient alloc] initWithBaseURL:baseURL];
     });
     return sharedClient;
@@ -306,7 +306,7 @@ static NSArray *allowedMethods = nil;
 
     NSString *resource = @"authentication/accessToken";
 
-    WPLog(@"Fetching access token");
+    WPLogDebug(@"Fetching access token");
 
     __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"WP-FetchAccessToken" expirationHandler:^{
         // Avoid being killed by saying we are done
@@ -377,14 +377,14 @@ static NSArray *allowedMethods = nil;
 
     } failure:^(NSURLSessionTask *task, NSError *error) {
         // Error
-        WPLog(@"Could not fetch access token: %@", error);
+        WPLogDebug(@"Could not fetch access token: %@", error);
         id jsonError = nil;
         NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if ([errorBody isKindOfClass:[NSData class]]) {
-            WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+            WPLogDebug(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
             NSError *decodeError = nil;
             jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
-            if (decodeError) NSLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
+            if (decodeError) WPLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
         }
 
         BOOL abort = NO;
@@ -392,8 +392,8 @@ static NSArray *allowedMethods = nil;
         if (wpError) {
             // Handle invalid credentials
             if (wpError.code == WPErrorInvalidCredentials) {
-                WPLog(@"Invalid client credentials: %@", jsonError);
-                NSLog(@"Please check your WonderPush clientId and clientSecret!");
+                WPLogDebug(@"Invalid client credentials: %@", jsonError);
+                WPLog(@"Please check your WonderPush clientId and clientSecret!");
                 abort = YES;
             }
         }
@@ -458,7 +458,7 @@ static NSArray *allowedMethods = nil;
         [self fetchAccessTokenAndRunRequest:request];
         return;
     } else {
-        WPLog(@"accessToken: %@", accessToken);
+        WPLogDebug(@"accessToken: %@", accessToken);
     }
 
     // We have an access token
@@ -523,13 +523,13 @@ static NSArray *allowedMethods = nil;
         NSDictionary *jsonError = nil;
         NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if ([errorBody isKindOfClass:[NSData class]]) {
-            WPLog(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+            WPLogDebug(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
         }
         if ([errorBody isKindOfClass:[NSData class]]) {
             NSError *decodeError = nil;
             id decoded = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
             if ([decoded isKindOfClass:[NSDictionary class]]) jsonError = decoded;
-            if (decodeError) NSLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
+            if (decodeError) WPLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
         }
 
         NSError *wpError = [WPUtil errorFromJSON:jsonError];
@@ -538,7 +538,7 @@ static NSArray *allowedMethods = nil;
             // Handle invalid access token by requesting a new one.
             if (wpError.code == WPErrorInvalidAccessToken) {
 
-                WPLog(@"Invalid access token: %@", jsonError);
+                WPLogDebug(@"Invalid access token: %@", jsonError);
 
                 // null out the access token
                 WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
@@ -558,8 +558,8 @@ static NSArray *allowedMethods = nil;
 
             } else if (wpError.code == WPErrorInvalidCredentials) {
 
-                WPLog(@"Invalid client credentials: %@", jsonError);
-                NSLog(@"Please check your WonderPush clientId and clientSecret!");
+                WPLogDebug(@"Invalid client credentials: %@", jsonError);
+                WPLog(@"Please check your WonderPush clientId and clientSecret!");
 
             } else if (request.handler) {
                 request.handler(nil, wpError);
@@ -578,7 +578,7 @@ static NSArray *allowedMethods = nil;
 
     [self checkMethod:request];
 
-    WPLog(@"Performing request: %@", request);
+    WPLogDebug(@"Performing request: %@", request);
 
     if ([@"POST" isEqualToString:method]) {
         [self.jsonHttpClient POST:request.resource parameters:params progress:nil success:success failure:failure];

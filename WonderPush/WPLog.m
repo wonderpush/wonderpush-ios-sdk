@@ -25,11 +25,24 @@ void WPLogEnable(BOOL enabled)
     _loggingEnabled = enabled;
 }
 
-void WPLog(NSString *format, ...)
+void WPLogv(NSString *format, va_list args)
+{
+    NSLogv([@"[WonderPush] " stringByAppendingString:format], args);
+}
+
+void WPLogDebug(NSString *format, ...)
 {
     if (!_loggingEnabled) return;
     va_list ap;
     va_start(ap, format);
-    NSLogv(format, ap);
+    WPLogv(format, ap);
+    va_end(ap);
+}
+
+void WPLog(NSString *format, ...)
+{
+    va_list ap;
+    va_start(ap, format);
+    WPLogv(format, ap);
     va_end(ap);
 }

@@ -185,7 +185,7 @@ static NSNumber *hasBackgroundMode = nil;
         if (backgroundModes != nil) {
             for (NSString *value in backgroundModes) {
                 if ([value isEqual:@"remote-notification"]) {
-                    WPLog(@"Has background mode remote-notification");
+                    WPLogDebug(@"Has background mode remote-notification");
                     hasBackgroundMode = [NSNumber numberWithBool:YES];
                     break;
                 }
@@ -214,7 +214,7 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
         hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler =
         [NSNumber numberWithBool:[[UIApplication sharedApplication].delegate
                                   respondsToSelector:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)]];
-        WPLog(@"Has implemented [application:didReceiveRemoteNotification:fetchCompletionHandler:] = %@", hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler);
+        WPLogDebug(@"Has implemented [application:didReceiveRemoteNotification:fetchCompletionHandler:] = %@", hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler);
     }
     return [hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler boolValue];
 }
@@ -259,15 +259,15 @@ static bool wpLocaleBundleLoaded = NO;
         wpLocaleBundle = [NSBundle bundleForClass:[WonderPush class]];
         wpLocaleBundle = [NSBundle bundleWithPath:[wpLocaleBundle pathForResource:@"WonderPush" ofType:@"bundle"]] ?: wpLocaleBundle;
         if (!wpLocaleBundle) {
-            WPLog(@"Failed to load WonderPush resource bundle with the classic method");
+            WPLogDebug(@"Failed to load WonderPush resource bundle with the classic method");
             // https://github.com/haifengkao/PodAsset
             for (NSBundle *bundle in [NSBundle allBundles]) {
-                WPLog(@"Testing bundle %@", [bundle bundlePath]);
+                WPLogDebug(@"Testing bundle %@", [bundle bundlePath]);
                 NSString *bundlePath = [bundle pathForResource:@"WonderPush" ofType:@"bundle"];
-                WPLog(@"  WonderPush.bundle bundlePath: %@", bundlePath);
+                WPLogDebug(@"  WonderPush.bundle bundlePath: %@", bundlePath);
                 if (bundlePath) {
                     wpLocaleBundle = [NSBundle bundleWithPath:bundlePath];
-                    WPLog(@"  Used that one. Bundle is %@", wpLocaleBundle);
+                    WPLogDebug(@"  Used that one. Bundle is %@", wpLocaleBundle);
                     wpLocaleBundleLoaded = YES;
                     break;
                 }
@@ -276,9 +276,9 @@ static bool wpLocaleBundleLoaded = NO;
                 NSString *filePath;
                 while ((filePath = [enumerator nextObject]) != nil) {
                     if ([filePath.lastPathComponent isEqualToString:@"WonderPush.bundle"]) {
-                        WPLog(@"  Found %@", filePath);
+                        WPLogDebug(@"  Found %@", filePath);
                         wpLocaleBundle = [NSBundle bundleWithPath:[[bundle bundlePath] stringByAppendingPathComponent:filePath]];
-                        WPLog(@"  Used that one. Bundle is %@", wpLocaleBundle);
+                        WPLogDebug(@"  Used that one. Bundle is %@", wpLocaleBundle);
                         wpLocaleBundleLoaded = YES;
                         break;
                     }
@@ -287,7 +287,7 @@ static bool wpLocaleBundleLoaded = NO;
             }
         }
         if (!wpLocaleBundleLoaded) {
-            NSLog(@"Could not load WonderPush resource bundle");
+            WPLog(@"Could not load WonderPush resource bundle");
             wpLocaleBundleLoaded = YES; // even if we failed, don't retry next time
         }
     }

@@ -65,10 +65,10 @@ static WPConfiguration *sharedConfiguration = nil;
     } else if ([rawValue isKindOfClass:[NSData class]]) {
         NSError *error = NULL;
         NSDictionary *value = [NSJSONSerialization JSONObjectWithData:(NSData *)rawValue options:kNilOptions error:&error];
-        if (error) NSLog(@"WPConfiguration: Error while deserializing %@: %@", key, error);
+        if (error) WPLog(@"WPConfiguration: Error while deserializing %@: %@", key, error);
         return value;
     }
-    NSLog(@"WonderPush expected an NSDictionary of JSON NSData but got: (%@) %@", [rawValue class], rawValue);
+    WPLog(@"WPConfiguration: Expected an NSDictionary of JSON NSData but got: (%@) %@, for key %@", [rawValue class], rawValue, key);
     return nil;
 }
 
@@ -79,7 +79,7 @@ static WPConfiguration *sharedConfiguration = nil;
     if (value) {
         NSError *error = NULL;
         NSData *data = [NSJSONSerialization dataWithJSONObject:value options:kNilOptions error:&error];
-        if (error) NSLog(@"WPConfiguration: Error while serializing %@: %@", key, error);
+        if (error) WPLog(@"WPConfiguration: Error while serializing %@: %@", key, error);
         [defaults setValue:data forKeyPath:key];
     } else {
         [defaults removeObjectForKey:key];
@@ -256,7 +256,7 @@ static WPConfiguration *sharedConfiguration = nil;
 - (void) setDeviceToken:(NSString *)deviceToken
 {
     _deviceToken = deviceToken;
-    WPLog(@"Setting device token: %@", deviceToken);
+    WPLogDebug(@"Setting device token: %@", deviceToken);
     [self _setNSString:deviceToken forKey:USER_DEFAULTS_DEVICE_TOKEN_KEY];
 }
 
@@ -294,7 +294,7 @@ static WPConfiguration *sharedConfiguration = nil;
 - (void) setAccessToken:(NSString *)accessToken
 {
     _accessToken = accessToken;
-    WPLog(@"Setting access token: %@", accessToken);
+    WPLogDebug(@"Setting access token: %@", accessToken);
     [self _setNSString:accessToken forKey:USER_DEFAULTS_ACCESS_TOKEN_KEY];
 }
 
@@ -337,7 +337,7 @@ static WPConfiguration *sharedConfiguration = nil;
 - (void) setInstallationId:(NSString *)installationId
 {
     _installationId = installationId;
-    WPLog(@"Setting installationId: %@", installationId);
+    WPLogDebug(@"Setting installationId: %@", installationId);
     [self _setNSString:installationId forKey:USER_DEFAULTS_INSTALLATION_ID];
 }
 
@@ -360,7 +360,7 @@ static WPConfiguration *sharedConfiguration = nil;
     }
     _userId = userId;
 
-    WPLog(@"Setting userId: %@", userId);
+    WPLogDebug(@"Setting userId: %@", userId);
     [self _setNSString:userId forKey:USER_DEFAULTS_USER_ID_KEY];
 }
 
@@ -379,7 +379,7 @@ static WPConfiguration *sharedConfiguration = nil;
 - (void) setSid:(NSString *)sid
 {
     _sid = sid;
-    WPLog(@"Setting sid: %@", sid);
+    WPLogDebug(@"Setting sid: %@", sid);
     [self _setNSString:sid forKey:USER_DEFAULTS_SID_KEY];
 }
 
@@ -425,7 +425,7 @@ static WPConfiguration *sharedConfiguration = nil;
     NSError *error = NULL;
     NSData *queuedNotificationsData = [NSJSONSerialization dataWithJSONObject:queuedNotifications options:0 error:&error];
     if (error) {
-        WPLog(@"Error while serializing queued notifications: %@", error);
+        WPLogDebug(@"Error while serializing queued notifications: %@", error);
         return;
     }
     NSString *queuedNotificationsJson = [[NSString alloc] initWithData:queuedNotificationsData encoding:NSUTF8StringEncoding];
@@ -444,7 +444,7 @@ static WPConfiguration *sharedConfiguration = nil;
         NSError *error = NULL;
         id queuedNotifications = [NSJSONSerialization JSONObjectWithData:queuedNotificationsData options:NSJSONReadingMutableContainers error:&error];
         if (error) {
-            WPLog(@"Error while reading queued notifications: %@", error);
+            WPLogDebug(@"Error while reading queued notifications: %@", error);
         }
         if (queuedNotifications) {
             return queuedNotifications;

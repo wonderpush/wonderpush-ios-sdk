@@ -344,7 +344,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 + (void) setNotificationEnabled:(BOOL)enabled
 {
     if (![self isInitialized]) {
-        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
     }
 
@@ -373,7 +373,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
         NSDictionary *wonderpushData = [userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
         return !!wonderpushData;
     } else {
-        WPLog(@"isNotificationForWonderPush: received a non NSDictionary: %@", userInfo);
+        WPLogDebug(@"isNotificationForWonderPush: received a non NSDictionary: %@", userInfo);
     }
     return NO;
 }
@@ -456,7 +456,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 {
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
-    WPLog(@"Failed to register to push notifications: %@", error);
+    WPLogDebug(@"Failed to register to push notifications: %@", error);
     [WonderPush setDeviceToken:nil];
 }
 
@@ -518,7 +518,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 + (void) setupDelegateForUserNotificationCenter
 {
     if (!_userNotificationCenterDelegateInstalled) {
-        WPLog(@"Setting the notification center delegate");
+        WPLogDebug(@"Setting the notification center delegate");
         [WPNotificationCenterDelegate setupDelegateForNotificationCenter:[UNUserNotificationCenter currentNotificationCenter]];
     }
 }
@@ -531,16 +531,16 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-    WPLog(@"userNotificationCenter:%@ willPresentNotification:%@ withCompletionHandler:", center, notification);
+    WPLogDebug(@"userNotificationCenter:%@ willPresentNotification:%@ withCompletionHandler:", center, notification);
     NSDictionary *userInfo = notification.request.content.userInfo;
-    WPLog(@"              userInfo:%@", userInfo);
+    WPLogDebug(@"              userInfo:%@", userInfo);
 
     UNNotificationPresentationOptions presentationOptions = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
 
     if (![self isNotificationForWonderPush:userInfo]) {
-        WPLog(@"Notification is not for WonderPush");
+        WPLogDebug(@"Notification is not for WonderPush");
         if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-            WPLog(@"Defaulting to not showing the notification");
+            WPLogDebug(@"Defaulting to not showing the notification");
             presentationOptions = UNNotificationPresentationOptionNone;
         }
         completionHandler(presentationOptions);
@@ -558,10 +558,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
         apsForegroundAutoDrop = [[apsForeground numberForKey:@"autoDrop"] isEqual:@YES];
     }
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && (apsForegroundAutoDrop || apsForegroundAutoOpen)) {
-        WPLog(@"NOT displaying the notification");
+        WPLogDebug(@"NOT displaying the notification");
         presentationOptions = UNNotificationPresentationOptionNone;
     } else {
-        WPLog(@"WILL display the notification");
+        WPLogDebug(@"WILL display the notification");
     }
 
     completionHandler(presentationOptions);
@@ -569,7 +569,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler
 {
-    WPLog(@"userNotificationCenter:%@ didReceiveNotificationResponse:%@ withCompletionHandler:", center, response);
+    WPLogDebug(@"userNotificationCenter:%@ didReceiveNotificationResponse:%@ withCompletionHandler:", center, response);
     [self handleNotificationOpened:response.notification.request.content.userInfo];
     completionHandler();
 }
@@ -630,7 +630,7 @@ static int _putInstallationCustomProperties_blockId = 0;
 + (void) putInstallationCustomProperties:(NSDictionary *)customProperties
 {
     if (![self isInitialized]) {
-        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
     }
     [self onInteraction];
@@ -715,7 +715,7 @@ static int _putInstallationCustomProperties_blockId = 0;
 + (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
     if (![self isInitialized]) {
-        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
     }
 
@@ -809,7 +809,7 @@ static void(^presentBlock)(void) = nil;
     } else if (url != nil) {
         [view loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]]];
     } else {
-        WPLog(@"Error the link / url provided is null");
+        WPLogDebug(@"Error the link / url provided is null");
         return;
     }
 
@@ -988,7 +988,7 @@ static void(^presentBlock)(void) = nil;
         NSNumber *lon = [point numberForKey:@"lon"];
         if (!lat || !lon) return;
         NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [lat doubleValue], [lon doubleValue]];
-        WPLog(@"url: %@", url);
+        WPLogDebug(@"url: %@", url);
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 
     }
@@ -1078,7 +1078,7 @@ static void(^presentBlock)(void) = nil;
 {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
-    WPLog(@"handleNotification:%@", notificationDictionary);
+    WPLogDebug(@"handleNotification:%@", notificationDictionary);
 
     UIApplicationState appState = [UIApplication sharedApplication].applicationState;
 
@@ -1114,7 +1114,7 @@ static void(^presentBlock)(void) = nil;
 {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
-    WPLog(@"handleNotification:%@ withOriginalApplicationState:%d", notificationDictionary, applicationState);
+    WPLogDebug(@"handleNotification:%@ withOriginalApplicationState:%d", notificationDictionary, applicationState);
 
     NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
     NSDictionary *apsForeground = [wonderpushData dictionaryForKey:@"apsForeground"];
@@ -1128,7 +1128,7 @@ static void(^presentBlock)(void) = nil;
 
     // Should we merely drop this notification if received in foreground?
     if (applicationState == UIApplicationStateActive && apsForegroundAutoDrop) {
-        WPLog(@"Dropping notification received in foreground like demanded");
+        WPLogDebug(@"Dropping notification received in foreground like demanded");
         return NO;
     }
 
@@ -1251,7 +1251,7 @@ static void(^presentBlock)(void) = nil;
     conf.justOpenedNotification = notificationDictionary;
 
     NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
-    WPLog(@"Opened notification: %@", notificationDictionary);
+    WPLogDebug(@"Opened notification: %@", notificationDictionary);
 
     id campagnId      = [wonderpushData stringForKey:@"c"];
     id notificationId = [wonderpushData stringForKey:@"n"];
@@ -1274,14 +1274,14 @@ static void(^presentBlock)(void) = nil;
         targetUrl = WP_TARGET_URL_DEFAULT;
     if ([targetUrl hasPrefix:WP_TARGET_URL_SDK_PREFIX]) {
         if ([targetUrl isEqualToString:WP_TARGET_URL_BROADCAST]) {
-            WPLog(@"Broadcasting");
+            WPLogDebug(@"Broadcasting");
             [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_OPENED_BROADCAST object:nil userInfo:notificationDictionary];
         } else { //if ([targetUrl isEqualToString:WP_TARGET_URL_DEFAULT]) and the rest
             // noop!
         }
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
-            WPLog(@"Opening url: %@", targetUrl);
+            WPLogDebug(@"Opening url: %@", targetUrl);
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:targetUrl]];
         });
     }
@@ -1654,7 +1654,7 @@ static void(^presentBlock)(void) = nil;
 + (void) post:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
     if (![WonderPush isInitialized]) {
-        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         if (handler) {
             handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
                                                     code:0
@@ -1679,7 +1679,7 @@ static void(^presentBlock)(void) = nil;
 + (void) get:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
     if (![WonderPush isInitialized]) {
-        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         if (handler) {
             handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
                                                     code:0
@@ -1703,7 +1703,7 @@ static void(^presentBlock)(void) = nil;
 + (void) delete:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
     if (![WonderPush isInitialized]) {
-        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         if (handler) {
             handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
                                                     code:0
@@ -1727,7 +1727,7 @@ static void(^presentBlock)(void) = nil;
 + (void) put:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
     if (![WonderPush isInitialized]) {
-        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         if (handler) {
             handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
                                                     code:0
@@ -1751,7 +1751,7 @@ static void(^presentBlock)(void) = nil;
 + (void) postEventually:(NSString *)resource params:(id)params
 {
     if (![WonderPush isInitialized]) {
-        NSLog(@"WonderPush: %@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
     }
 
