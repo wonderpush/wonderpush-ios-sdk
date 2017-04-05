@@ -667,7 +667,7 @@ static int _putInstallationCustomProperties_blockId = 0;
         NSTimeInterval delay = MIN(CACHED_INSTALLATION_CUSTOM_PROPERTIES_MIN_DELAY,
                                    [firstWrite timeIntervalSinceReferenceDate] + CACHED_INSTALLATION_CUSTOM_PROPERTIES_MAX_DELAY
                                    - [now timeIntervalSinceReferenceDate]);
-        WPLogDebug(@"%@ delaying %@ for blockId %d", delay, currentBlockId);
+        WPLogDebug(@"%@ delaying %lfs for blockId %d", NSStringFromSelector(_cmd), delay, currentBlockId);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             WPLogDebug(@"%@ (delayed block %d) entering @synchronized", NSStringFromSelector(_cmd), currentBlockId);
             @synchronized (_putInstallationCustomProperties_lock) {
