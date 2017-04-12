@@ -20,6 +20,8 @@
 
 + (NSDictionary *) merge:(NSDictionary *)base with:(NSDictionary *)diff;
 
++ (NSDictionary *) merge:(NSDictionary *)base with:(NSDictionary *)diff nullFieldRemoves:(BOOL)nullFieldRemoves;
+
 + (NSDictionary *) diff:(NSDictionary *)from with:(NSDictionary *)to;
 
 @end

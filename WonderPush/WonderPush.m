@@ -35,6 +35,7 @@
 #import "WPJsonUtil.h"
 #import "WPLog.h"
 #import "WPWebView.h"
+#import "WPJsonSyncInstallationCustom.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -219,7 +220,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
                                 };
         // Initialize other variables
         LocationManager = [[CLLocationManager alloc] init];
-        _putInstallationCustomProperties_lock = [NSObject new];
     });
 }
 
@@ -318,10 +318,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
     WPLogDebug(@"initForNewUser:%@", userId);
     [self setIsReady:NO];
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    if (configuration.cachedInstallationCustomPropertiesFirstDelayedWriteDate != nil) {
-        [self putInstallationCustomProperties_inner];
-    }
     [configuration changeUserId:userId];
+    [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
     void (^init)(void) = ^{
         [self setIsReady:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
@@ -491,10 +489,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
 
-    @synchronized (_putInstallationCustomProperties_lock) {
-        ++_putInstallationCustomProperties_blockId; // prevents any currently pending block from executing
-        [self putInstallationCustomProperties_inner];
-    }
+    [WPJsonSyncInstallationCustom flush];
 
     // Send queued notifications as LocalNotifications
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
@@ -617,12 +612,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 + (NSDictionary *) getInstallationCustomProperties
 {
     [self onInteraction];
-    @synchronized (_putInstallationCustomProperties_lock) {
-        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-        id rtn = [(conf.cachedInstallationCustomPropertiesUpdated ?: @{}) copy];
-        WPLogDebug(@"getInstallationCustomProperties -> %d", rtn);
-        return rtn;
-    }
+    return [[WPJsonSyncInstallationCustom forCurrentUser].sdkState copy];
 }
 
 + (void) updateInstallation:(NSDictionary *)properties shouldOverwrite:(BOOL)overwrite
@@ -632,8 +622,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
     [self postEventually:installationEndPoint params:@{@"body":properties, @"overwrite":[NSNumber numberWithBool:overwrite]}];
 }
 
-static NSObject *_putInstallationCustomProperties_lock; //= [NSObject new];
-static int _putInstallationCustomProperties_blockId = 0;
 + (void) putInstallationCustomProperties:(NSDictionary *)customProperties
 {
     WPLogDebug(@"putInstallationCustomProperties:%@", customProperties);
@@ -642,84 +630,14 @@ static int _putInstallationCustomProperties_blockId = 0;
         return;
     }
     [self onInteraction];
-    @synchronized (_putInstallationCustomProperties_lock) {
-        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-        NSDictionary *updatedRef = conf.cachedInstallationCustomPropertiesUpdated ?: @{};
-        NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated ?: @{};
-        updated = [WPJsonUtil merge:updated with:customProperties];
-        if ([updated isEqual:updatedRef]) {
-            WPLogDebug(@"Custom properties did not change");
-            return;
-        }
-        int currentBlockId = ++_putInstallationCustomProperties_blockId;
-        NSDate *now = [NSDate date];
-        NSDate *firstWrite = conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate;
-        if (!firstWrite) {
-            firstWrite = now;
-            conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate = firstWrite;
-        }
-        conf.cachedInstallationCustomPropertiesUpdated = updated;
-        WPLogDebug(@"New custom properties: %@", conf.cachedInstallationCustomPropertiesUpdated);
-        conf.cachedInstallationCustomPropertiesUpdatedDate = now;
-        NSTimeInterval delay = MIN(CACHED_INSTALLATION_CUSTOM_PROPERTIES_MIN_DELAY,
-                                   [firstWrite timeIntervalSinceReferenceDate] + CACHED_INSTALLATION_CUSTOM_PROPERTIES_MAX_DELAY
-                                   - [now timeIntervalSinceReferenceDate]);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            @synchronized (_putInstallationCustomProperties_lock) {
-                if (_putInstallationCustomProperties_blockId == currentBlockId) {
-                    WPLogDebug(@"Performing delayed update of custom properties");
-                    [self putInstallationCustomProperties_inner];
-                }
-            }
-        });
-    }
-}
-
-+ (void) putInstallationCustomProperties_inner
-{
-    WPLogDebug(@"Performing update of custom properties");
-    @synchronized (_putInstallationCustomProperties_lock) {
-        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-        NSDictionary *written = conf.cachedInstallationCustomPropertiesWritten;
-        WPLogDebug(@"The server should have custom: %@", written);
-        NSDictionary *updated = conf.cachedInstallationCustomPropertiesUpdated;
-        WPLogDebug(@"The SDK has custom: %@", updated);
-        NSDictionary *customProperties = [WPJsonUtil diff:written with:updated];
-        WPLogDebug(@"Custom diff: %@", customProperties);
-        if (customProperties != nil && ![customProperties isEqual:@{}]) {
-            [self updateInstallation:@{@"custom": customProperties} shouldOverwrite:NO];
-            NSDate *now = [NSDate date];
-            conf.cachedInstallationCustomPropertiesWritten = updated;
-            conf.cachedInstallationCustomPropertiesWrittenDate = now;
-        } else {
-            WPLogDebug(@"No diff to send");
-        }
-        conf.cachedInstallationCustomPropertiesFirstDelayedWriteDate = nil;
-    }
+    [[WPJsonSyncInstallationCustom forCurrentUser] put:customProperties];
 }
 
 + (void)receivedFullInstallationCustomPropertiesFromServer:(NSDictionary *)custom updateDate:(NSDate *)installationUpdateDate
 {
     WPLogDebug(@"Synchronizing installation custom fields");
     custom = custom ?: @{};
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    @synchronized (_putInstallationCustomProperties_lock) {
-        WPLogDebug(@"Received custom: %@", custom);
-        NSDictionary *updated = configuration.cachedInstallationCustomPropertiesUpdated ?: @{};
-        WPLogDebug(@"We had custom: %@", configuration.cachedInstallationCustomPropertiesUpdated);
-        NSDictionary *written = configuration.cachedInstallationCustomPropertiesWritten ?: @{};
-        NSDate *updatedDate = configuration.cachedInstallationCustomPropertiesUpdatedDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
-        NSDate *writtenDate = configuration.cachedInstallationCustomPropertiesWrittenDate ?: [[NSDate alloc] initWithTimeIntervalSince1970:0];
-        NSDictionary * diff = [WPJsonUtil diff:written with:updated];
-        WPLogDebug(@"Pending custom diff was: %@", diff);
-        NSDictionary *customUpdated = [WPJsonUtil merge:custom with:diff];
-        WPLogDebug(@"New custom after applying pending diff: %@", customUpdated);
-        configuration.cachedInstallationCustomPropertiesUpdated = customUpdated;
-        WPLogDebug(@"We now have custom: %@", configuration.cachedInstallationCustomPropertiesUpdated);
-        configuration.cachedInstallationCustomPropertiesWritten = custom;
-        configuration.cachedInstallationCustomPropertiesUpdatedDate = [updatedDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? updatedDate : installationUpdateDate;
-        configuration.cachedInstallationCustomPropertiesWrittenDate = [writtenDate timeIntervalSinceReferenceDate] >= [installationUpdateDate timeIntervalSinceReferenceDate] ? writtenDate : installationUpdateDate;
-    }
+    [[WPJsonSyncInstallationCustom forCurrentUser] receiveState:custom resetSdkState:false];
 }
 
 + (void) trackNotificationOpened:(NSDictionary *)notificationInformation
@@ -1693,6 +1611,31 @@ static void(^presentBlock)(void) = nil;
 
 
 #pragma mark - REST API Access
+
++ (void) requestForUser:(NSString *)userId method:(NSString *)method resource:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
+{
+    if (![WonderPush isInitialized]) {
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        if (handler) {
+            handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
+                                                    code:0
+                                                userInfo:@{NSLocalizedDescriptionKey: @"The SDK is not initialized"}]);
+        }
+        return;
+    }
+
+    WPAPIClient *client = [WPAPIClient sharedClient];
+    WPRequest *request = [[WPRequest alloc] init];
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
+    request.userId = userId;
+    request.method = method;
+    request.resource = resource;
+    request.handler = handler;
+    request.params = parameters;
+
+    [client requestAuthenticated:request];
+}
 
 + (void) post:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {

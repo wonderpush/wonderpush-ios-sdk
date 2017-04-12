@@ -39,6 +39,7 @@
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED @"_wonderpush_cachedInstallationCustomPropertiesUpdated"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED_DATE @"_wonderpush_cachedInstallationCustomPropertiesUpdatedDate"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE @"_wonderpush_cachedInstallationCustomPropertiesFirstDelayedWriteDate"
+#define USER_DEFAULTS_INSTALLATION_CUSTOM_SYNC_STATE_PER_USER_ID_KEY @"__wonderpush_installationCustomSyncStatePerUserId"
 #define USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION @"_wonderpush_lastReceivedNotification"
 #define USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE @"_wonderpush_lastReceivedNotificationDate"
 #define USER_DEFAULTS_LAST_OPENED_NOTIFICATION @"_wonderpush_lastOpenedNotification"
@@ -96,6 +97,7 @@
 @property (nonatomic, strong) NSDictionary *cachedInstallationCustomPropertiesUpdated;
 @property (nonatomic, strong) NSDate *cachedInstallationCustomPropertiesUpdatedDate;
 @property (nonatomic, strong) NSDate *cachedInstallationCustomPropertiesFirstDelayedWriteDate;
+@property (nonatomic, strong) NSDictionary *installationCustomSyncStatePerUserId;
 
 @property (nonatomic, strong) NSDictionary *lastReceivedNotification;
 @property (nonatomic, strong) NSDate *lastReceivedNotificationDate;
@@ -108,6 +110,7 @@
 @property (nonatomic, strong) NSDate *lastAppCloseDate;
 
 - (void) changeUserId:(NSString *)newUserId;
+- (NSArray *) listKnownUserIds;
 
 - (void) setAccessToken:(NSString *)accessToken;
 

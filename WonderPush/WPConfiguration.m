@@ -228,6 +228,14 @@ static WPConfiguration *sharedConfiguration = nil;
     self.lastAppCloseDate    = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_APP_CLOSE_DATE]];
 }
 
+// Uses @"" for nil userId
+- (NSArray *) listKnownUserIds
+{
+    NSDictionary *usersArchive = [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY] ?: @{};
+    return [usersArchive allKeys];
+}
+
+
 #pragma mark - Access token
 
 - (NSURL *) baseURL
@@ -624,6 +632,16 @@ static WPConfiguration *sharedConfiguration = nil;
 - (void) setLastAppCloseDate:(NSDate *)lastAppCloseDate
 {
     [self _setNSDate:lastAppCloseDate forKey:USER_DEFAULTS_LAST_APP_CLOSE_DATE];
+}
+
+- (NSDictionary *) installationCustomSyncStatePerUserId
+{
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_INSTALLATION_CUSTOM_SYNC_STATE_PER_USER_ID_KEY];
+}
+
+- (void) setInstallationCustomSyncStatePerUserId:(NSDictionary *)installationCustomSyncStatePerUserId
+{
+    [self _setNSDictionaryAsJSON:installationCustomSyncStatePerUserId forKey:USER_DEFAULTS_INSTALLATION_CUSTOM_SYNC_STATE_PER_USER_ID_KEY];
 }
 
 

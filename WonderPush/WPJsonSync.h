@@ -1,0 +1,38 @@
+#ifndef WPJsonSync_h
+#define WPJsonSync_h
+
+#import <Foundation/Foundation.h>
+
+
+
+typedef void (^WPJsonSyncCallback)();
+typedef void (^WPJsonSyncSaveCallback)(NSDictionary *state);
+typedef void (^WPJsonSyncServerPatchCallback)(NSDictionary *diff, WPJsonSyncCallback onSuccess, WPJsonSyncCallback onFailure);
+
+
+
+@interface WPJsonSync : NSObject
+
+
+@property (readonly, copy) NSDictionary *sdkState;
+@property (readonly, copy) NSDictionary *serverState;
+@property (readonly) bool scheduledPatchCall;
+@property (readonly) bool inflightPatchCall;
+
+
+- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback;
+- (instancetype) initFromSdkState:(NSDictionary *)sdkState andServerState:(NSDictionary *)serverState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback;
+
+
+- (void) put:(NSDictionary *)diff;
+- (void) receiveState:(NSDictionary *)state resetSdkState:(bool)reset;
+- (void) receiveDiff:(NSDictionary *)diff;
+
+- (bool) performScheduledPatchCall;
+
+
+@end
+
+
+
+#endif /* WPJsonSync_h */

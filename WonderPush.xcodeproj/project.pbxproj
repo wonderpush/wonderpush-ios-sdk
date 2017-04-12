@@ -12,6 +12,9 @@
 		3D0A08441D33D9B2001289BD /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08461D33D9B2001289BD /* WonderPushLocalizable.strings */; };
 		3D0A08771D340CFA001289BD /* NSDictionary+TypeSafe.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0A08751D340CFA001289BD /* NSDictionary+TypeSafe.h */; };
 		3D0A08781D340CFA001289BD /* NSDictionary+TypeSafe.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0A08761D340CFA001289BD /* NSDictionary+TypeSafe.m */; };
+		3D0A92641E9D18A800784273 /* WPJsonSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0A92631E9D18A800784273 /* WPJsonSync.m */; };
+		3D0A92681E9D33AF00784273 /* WPJsonSyncInstallationCustom.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0A92661E9D33AF00784273 /* WPJsonSyncInstallationCustom.h */; };
+		3D0A92691E9D33AF00784273 /* WPJsonSyncInstallationCustom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0A92671E9D33AF00784273 /* WPJsonSyncInstallationCustom.m */; };
 		3D2E2D1D1E5EF6B7004BC253 /* NotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2E2D1C1E5EF6B7004BC253 /* NotificationServiceExtension.m */; };
 		3D2E2D241E5F0A1B004BC253 /* NSDictionary+TypeSafe.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2E2D231E5F0A1B004BC253 /* NSDictionary+TypeSafe.m */; };
 		3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
@@ -72,6 +75,10 @@
 		3D0A08671D33F543001289BD /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/WonderPushLocalizable.strings; sourceTree = "<group>"; };
 		3D0A08751D340CFA001289BD /* NSDictionary+TypeSafe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+TypeSafe.h"; sourceTree = "<group>"; };
 		3D0A08761D340CFA001289BD /* NSDictionary+TypeSafe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+TypeSafe.m"; sourceTree = "<group>"; };
+		3D0A92631E9D18A800784273 /* WPJsonSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonSync.m; sourceTree = "<group>"; };
+		3D0A92651E9D18D900784273 /* WPJsonSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonSync.h; sourceTree = "<group>"; };
+		3D0A92661E9D33AF00784273 /* WPJsonSyncInstallationCustom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPJsonSyncInstallationCustom.h; sourceTree = "<group>"; };
+		3D0A92671E9D33AF00784273 /* WPJsonSyncInstallationCustom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonSyncInstallationCustom.m; sourceTree = "<group>"; };
 		3D2E2D191E5EF6B7004BC253 /* NotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D2E2D1B1E5EF6B7004BC253 /* NotificationServiceExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationServiceExtension.h; sourceTree = "<group>"; };
 		3D2E2D1C1E5EF6B7004BC253 /* NotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationServiceExtension.m; sourceTree = "<group>"; };
@@ -254,6 +261,10 @@
 				3D0A08761D340CFA001289BD /* NSDictionary+TypeSafe.m */,
 				3D77BBAF1E60760300CA7915 /* WPNotificationCenterDelegate.h */,
 				3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */,
+				3D0A92651E9D18D900784273 /* WPJsonSync.h */,
+				3D0A92631E9D18A800784273 /* WPJsonSync.m */,
+				3D0A92661E9D33AF00784273 /* WPJsonSyncInstallationCustom.h */,
+				3D0A92671E9D33AF00784273 /* WPJsonSyncInstallationCustom.m */,
 			);
 			path = WonderPush;
 			sourceTree = "<group>";
@@ -277,6 +288,7 @@
 				3D92E83F1D3F0A5F009D3AAA /* WPWebView.h in Headers */,
 				3D0A08771D340CFA001289BD /* NSDictionary+TypeSafe.h in Headers */,
 				A1E3E0E219E42B4800A4EE09 /* WonderPush.h in Headers */,
+				3D0A92681E9D33AF00784273 /* WPJsonSyncInstallationCustom.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -494,6 +506,8 @@
 				3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */,
 				A1E3E0DA19E42B3E00A4EE09 /* WPDialogButtonHandler.m in Sources */,
 				A1E3E0DB19E42B3F00A4EE09 /* WPRequestVault.m in Sources */,
+				3D0A92641E9D18A800784273 /* WPJsonSync.m in Sources */,
+				3D0A92691E9D33AF00784273 /* WPJsonSyncInstallationCustom.m in Sources */,
 				A1E3E0DC19E42B3F00A4EE09 /* WPAPIClient.m in Sources */,
 				3D77BBB11E60761600CA7915 /* WPNotificationCenterDelegate.m in Sources */,
 				3DFEA88E1C46E09E00E27404 /* WPAppDelegate.m in Sources */,

@@ -20,6 +20,11 @@
 
 + (NSDictionary *)merge:(NSDictionary *)base with:(NSDictionary *)diff
 {
+    return [self merge:base with:diff nullFieldRemoves:YES];
+}
+
++ (NSDictionary *)merge:(NSDictionary *)base with:(NSDictionary *)diff nullFieldRemoves:(BOOL)nullFieldRemoves
+{
     if (base == nil) return nil;
     if (diff == nil) return base;
 
@@ -30,11 +35,20 @@
         id vDiff = [diff objectForKey:key];
         id vBase = [rtn objectForKey:key];
         if (vBase == nil) {
-            [rtn setObject:vDiff forKey:key];
+            if (vDiff == [NSNull null] && nullFieldRemoves) {
+                // The field already does not exist
+            } else {
+                [rtn setObject:vDiff forKey:key];
+            }
         } else if ([vDiff isKindOfClass:[NSDictionary class]] && [vBase isKindOfClass:[NSDictionary class]]) {
             [rtn setObject:[self merge:vBase with:vDiff] forKey:key];
         } else {
-            [rtn setObject:vDiff forKey:key];
+            if (vDiff == [NSNull null] && nullFieldRemoves) {
+                // We should remove the field
+                [rtn removeObjectForKey:key];
+            } else {
+                [rtn setObject:vDiff forKey:key];
+            }
         }
     }
 
