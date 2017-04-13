@@ -1001,10 +1001,10 @@ static void(^presentBlock)(void) = nil;
         NSDictionary *parameters = @{WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter ?: [NSNull null]};
         [[NSNotificationCenter defaultCenter] postNotificationName:methodName object:self userInfo:parameters];
 
-    } else if ([WP_ACTION_LINK isEqualToString:WP_ACTION_LINK]) {
+    } else if ([WP_ACTION_LINK isEqualToString:type]) {
 
         NSString *url = [action stringForKey:@"url"];
-       [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 
     } else if ([WP_ACTION_MAP_OPEN isEqualToString:type]) {
 
