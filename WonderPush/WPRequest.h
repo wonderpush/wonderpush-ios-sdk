@@ -44,4 +44,6 @@ typedef void(^WPRequestHandler)(WPResponse *response, NSError *error);
 
 @property (readonly) NSString *requestId;
 
+- (NSDictionary *) toJSON;
+
 @end

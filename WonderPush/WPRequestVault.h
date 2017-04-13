@@ -33,4 +33,6 @@
 
 - (void) reset;
 
++ (NSArray *) savedRequests;
+
 @end

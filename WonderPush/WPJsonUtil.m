@@ -15,6 +15,7 @@
  */
 
 #import "WPJsonUtil.h"
+#import "WPLog.h"
 
 @implementation WPJsonUtil
 
@@ -95,5 +96,76 @@
 
     return rtn;
 }
+
++ (id) ensureJSONEncodable:(id)data
+{
+    if (data == nil) {
+        return [NSNull null];
+    }
+    // From [NSJSONSerialization isValidJSONObject:] documentation:
+    // - Top level object is an NSArray or NSDictionary
+    // - All objects are NSString, NSNumber, NSArray, NSDictionary, or NSNull
+    // - All dictionary keys are NSStrings
+    // - NSNumbers are not NaN or infinity
+    if ([data isKindOfClass:[NSNull class]]) {
+        return data;
+    } else if ([data isKindOfClass:[NSString class]]) {
+        return data;
+    } else if ([data isKindOfClass:[NSNumber class]]) {
+        if (isfinite([(NSNumber *)data doubleValue])) {
+            return data;
+        }
+    } else if ([data isKindOfClass:[NSDictionary class]]) {
+
+        // Recurse inside dictionaries
+        NSMutableDictionary *rtn = [NSMutableDictionary new];
+        [(NSDictionary *)data enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            if (![key isKindOfClass:[NSString class]]) {
+                key = [NSString stringWithFormat:@"%@", key];
+            }
+            rtn[key] = [self ensureJSONEncodable:obj];
+        }];
+        return [NSDictionary dictionaryWithDictionary:rtn];
+
+    } else if ([data isKindOfClass:[NSArray class]]) {
+
+        // Recurse inside arrays
+        NSMutableArray *rtn = [[NSMutableArray alloc] initWithCapacity:[(NSArray *)data count]];
+        [(NSArray *)data enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [rtn addObject:[self ensureJSONEncodable:obj]];
+        }];
+        return [NSArray arrayWithArray:rtn];
+
+    } else if ([data isKindOfClass:[NSDate class]]) {
+
+        // Dates as millisecond unix timestamps
+        return [NSNumber numberWithLongLong:(long long)([(NSDate *)data timeIntervalSince1970] * 1000)];
+
+    } else if ([data isKindOfClass:[NSData class]]) {
+
+        // Try as JSON first
+        @try {
+            NSError *error = NULL;
+            NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:(NSData *)data options:kNilOptions error:&error];
+            if (!error) {
+                return dict;
+            }
+        } @catch (NSException *exception) {}
+
+        // Try as UTF-8 string
+        NSString *str = [[NSString alloc] initWithData:(NSData *)data encoding:NSUTF8StringEncoding];
+        if (str) {
+            return str;
+        }
+
+        // Base64 encode binary data
+        return [(NSData *)data base64EncodedStringWithOptions:kNilOptions];
+
+    }
+
+    // Generic string representation as last resort
+    return [NSString stringWithFormat:@"%@", data];
+}
+
 
 @end

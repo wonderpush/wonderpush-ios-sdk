@@ -57,6 +57,7 @@
 @interface WPConfiguration : NSObject
 
 + (WPConfiguration *)sharedConfiguration;
+- (NSDictionary *) dumpState;
 
 @property (strong, nonatomic) NSString *clientId;
 

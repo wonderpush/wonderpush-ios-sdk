@@ -119,12 +119,20 @@ static NSArray *allowedMethods = nil;
     NSMutableURLRequest *mutableRequest = [request mutableCopy];
     NSMutableDictionary *mutableParameters = [parameters mutableCopy];
     for (NSString *key in parameters) {
-        id value = parameters[key];
+        id value = [WPJsonUtil ensureJSONEncodable:parameters[key]];
         if ([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSArray class]]) {
-            NSError *err;
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:&err];
-            NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            mutableParameters[key] = jsonString;
+            @try {
+                NSError *err;
+                NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:&err];
+                if (err != nil) {
+                    WPLog(@"Failed to serialize parameter %@=%@: %@", key, value, err);
+                } else {
+                    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                    mutableParameters[key] = jsonString;
+                }
+            } @catch (NSException *exception) {
+                WPLog(@"Failed to serialize parameter %@=%@: %@", key, value, exception);
+            }
         }
     }
 

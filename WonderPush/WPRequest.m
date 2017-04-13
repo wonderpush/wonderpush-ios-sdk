@@ -94,6 +94,18 @@
     return self;
 }
 
+- (NSDictionary *) toJSON
+{
+    return @{
+             @"requestId": self.requestId ?: [NSNull null],
+             @"userId": self.userId ?: [NSNull null],
+             @"method": self.method ?: [NSNull null],
+             @"resource": self.resource ?: [NSNull null],
+             @"params": self.params ?: [NSNull null],
+             };
+}
+
+
 
 #pragma mark - Parameters
 

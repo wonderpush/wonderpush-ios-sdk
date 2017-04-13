@@ -126,7 +126,7 @@
     }
 }
 
-- (NSArray *) savedRequests
++ (NSArray *) savedRequests
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 

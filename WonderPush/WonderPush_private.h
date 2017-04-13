@@ -72,6 +72,11 @@
 #define WP_ACTION_RESYNC_INSTALLATION @"resyncInstallation"
 
 /**
+ Dump installation state as an event
+ */
+#define WP_ACTION__DUMP_STATE @"_dumpState"
+
+/**
  Key to set in your .plist file to allow rating button action
  */
 #define WP_ITUNES_APP_ID @"itunesAppID"

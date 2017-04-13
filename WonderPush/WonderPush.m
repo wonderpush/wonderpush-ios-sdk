@@ -1018,6 +1018,14 @@ static void(^presentBlock)(void) = nil;
         WPLogDebug(@"url: %@", url);
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 
+    } else if ([WP_ACTION__DUMP_STATE isEqualToString:type]) {
+
+        NSDictionary *stateDump = [[WPConfiguration sharedConfiguration] dumpState] ?: @{};
+        WPLog(@"STATE DUMP: %@", stateDump);
+        [WonderPush trackInternalEvent:@"@DEBUG_DUMP_STATE"
+                             eventData:nil
+                            customData:@{@"ignore_sdkStateDump": stateDump}];
+
     } else {
         WPLogDebug(@"Unhandled action type %@", type);
     }
