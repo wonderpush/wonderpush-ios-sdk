@@ -130,13 +130,19 @@ static WPConfiguration *sharedConfiguration = nil;
 - (id) _NSDateToJSON:(NSDate *)date
 {
     if (!date) return [NSNull null];
-    return [NSNumber numberWithInt:(int)([date timeIntervalSince1970] * 1000)];
+    return [NSNumber numberWithLongLong:(long long)([date timeIntervalSince1970] * 1000)];
 }
 
 - (NSDate *) _JSONToNSDate:(id)value
 {
-    if ([value isKindOfClass:[NSNumber class]])
-        return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value intValue]];
+    if ([value isKindOfClass:[NSNumber class]]) {
+        if ([value longLongValue] == INT_MAX) {
+            WPLogDebug(@"Returning nil date instead of 2038-01-19T03:14:07Z (INT_MAX)");
+            // Previous version of -[WPConfiguration _NSDateToJSON:] gave INT_MAX for any reasonable dates
+            return nil;
+        }
+        return [NSDate dateWithTimeIntervalSince1970:([(NSNumber *)value longLongValue]/1000)];
+    }
     return nil;
 }
 
