@@ -1055,10 +1055,24 @@ static void(^presentBlock)(void) = nil;
         //   but the application state is actually inactive too, test the previous state to distinguish.
         if (appState != UIApplicationStateInactive || _previousApplicationState == UIApplicationStateActive) {
             [WonderPush trackNotificationReceived:notificationDictionary];
+
+            NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
+            id atReceptionActions = [wonderpushData arrayForKey:@"receiveActions"];
+            if (atReceptionActions) {
+                for (id action in ((NSArray*)atReceptionActions)) {
+                    if ([action isKindOfClass:[NSDictionary class]]) {
+                        [self executeAction:action onNotification:wonderpushData];
+                    }
+                }
+            }
         }
     }
 
     if (appState == UIApplicationStateBackground) {
+        // The application won't run long enough to perform any scheduled updates of custom properties to the server
+        // that may have been asked by receiveActions, flush now.
+        // If we had no such modifications, this is still an opportunity to flush any interrupted calls.
+        [WPJsonSyncInstallationCustom flush];
         return YES;
     }
 
@@ -1085,6 +1099,20 @@ static void(^presentBlock)(void) = nil;
     if (apsForeground) {
         apsForegroundAutoOpen = [[apsForeground numberForKey:@"autoOpen"] isEqual:@YES];
         apsForegroundAutoDrop = [[apsForeground numberForKey:@"autoDrop"] isEqual:@YES];
+    }
+
+    if (![WPUtil hasBackgroundModeRemoteNotification]) {
+        // We have no remote-notification background execution mode but we try our best to honor receiveActions when we can
+        // (they will not be honored for silent notifications, nor for regular notifications that are not clicked)
+        NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
+        id atReceptionActions = [wonderpushData arrayForKey:@"receiveActions"];
+        if (atReceptionActions) {
+            for (id action in ((NSArray*)atReceptionActions)) {
+                if ([action isKindOfClass:[NSDictionary class]]) {
+                    [self executeAction:action onNotification:wonderpushData];
+                }
+            }
+        }
     }
 
     // Should we merely drop this notification if received in foreground?
