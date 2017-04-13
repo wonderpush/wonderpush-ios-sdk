@@ -67,6 +67,11 @@
 #define WP_ACTION_UPDATE_INSTALLATION @"updateInstallation"
 
 /**
+ Resynchronize installation
+ */
+#define WP_ACTION_RESYNC_INSTALLATION @"resyncInstallation"
+
+/**
  Key to set in your .plist file to allow rating button action
  */
 #define WP_ITUNES_APP_ID @"itunesAppID"

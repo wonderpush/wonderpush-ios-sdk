@@ -902,6 +902,7 @@ static void(^presentBlock)(void) = nil;
 
 + (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
 {
+    WPLogDebug(@"Running action %@", action);
     NSString *type = [action stringForKey:@"type"];
 
     if ([WP_ACTION_TRACK isEqualToString:type]) {
@@ -917,9 +918,74 @@ static void(^presentBlock)(void) = nil;
 
     } else if ([WP_ACTION_UPDATE_INSTALLATION isEqualToString:type]) {
 
-        NSDictionary *custom = [action dictionaryForKey:@"custom"];
+        NSDictionary *custom = [([action dictionaryForKey:@"installation"] ?: action) dictionaryForKey:@"custom"];
         if (!custom) return;
-        [WonderPush putInstallationCustomProperties:custom];
+        NSNumber *appliedServerSide = [action numberForKey:@"appliedServerSide"];
+        if ([appliedServerSide isEqual:@YES]) {
+            WPLogDebug(@"Received server custom properties diff: %@", custom);
+            [[WPJsonSyncInstallationCustom forCurrentUser] receiveDiff:custom];
+        } else {
+            WPLogDebug(@"Putting custom properties diff: %@", custom);
+            [[WPJsonSyncInstallationCustom forCurrentUser] put:custom];
+        }
+
+    } else if ([WP_ACTION_RESYNC_INSTALLATION isEqualToString:type]) {
+
+        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+        void (^cont)(NSDictionary *action) = ^(NSDictionary *action){
+            WPLogDebug(@"Running enriched action %@", action);
+            NSDictionary *installation = [action dictionaryForKey:@"installation"] ?: @{};
+            NSDictionary *custom = [installation dictionaryForKey:@"custom"] ?: @{};
+            NSNumber *reset = [action numberForKey:@"reset"];
+
+            // Take or reset custom
+            [[WPJsonSyncInstallationCustom forCurrentUser] receiveState:custom resetSdkState:[reset isEqual:@YES]];
+
+            // Refresh core properties
+            conf.cachedInstallationCoreProperties = @{};
+            [WonderPush updateInstallationCoreProperties];
+
+            // Refresh push token
+            id oldDeviceToken = conf.deviceToken;
+            conf.deviceToken = nil;
+            [WonderPush setDeviceToken:oldDeviceToken];
+
+            // Refresh preferences
+            if (conf.notificationEnabled) {
+                [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}} shouldOverwrite:NO];
+            } else {
+                [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}} shouldOverwrite:NO];
+            }
+        };
+
+        NSDictionary *installation = [action dictionaryForKey:@"installation"];
+        if (installation) {
+            cont(action);
+        } else {
+
+            WPLogDebug(@"Fetching installation for action %@", type);
+            [WonderPush get:@"/installation" params:nil handler:^(WPResponse *response, NSError *error) {
+                if (error) {
+                    WPLog(@"Failed to fetch installation for running action %@: %@", action, error);
+                    return;
+                }
+                if (![response.object isKindOfClass:[NSDictionary class]]) {
+                    WPLog(@"Failed to fetch installation for running action %@, got: %@", action, response.object);
+                    return;
+                }
+                NSMutableDictionary *installation = [(NSDictionary *)response.object mutableCopy];
+                // Filter other fields starting with _ like _serverTime and _serverTook
+                [installation removeObjectsForKeys:[installation.allKeys filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+                    return [evaluatedObject isKindOfClass:[NSString class]] && [(NSString*)evaluatedObject hasPrefix:@"_"];
+                }]]];
+                NSMutableDictionary *actionFilled = [[NSMutableDictionary alloc] initWithDictionary:action];
+                actionFilled[@"installation"] = [NSDictionary dictionaryWithDictionary:installation];
+                cont(actionFilled);
+                // We added async processing, we need to ensure that we flush it too, especially in case we're running receiveActions in the background
+                [WPJsonSyncInstallationCustom flush];
+            }];
+
+        }
 
     } else if ([WP_ACTION_RATING isEqualToString:type]) {
 
@@ -952,6 +1018,8 @@ static void(^presentBlock)(void) = nil;
         WPLogDebug(@"url: %@", url);
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 
+    } else {
+        WPLogDebug(@"Unhandled action type %@", type);
     }
 }
 
