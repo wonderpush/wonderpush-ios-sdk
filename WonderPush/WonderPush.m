@@ -1345,7 +1345,8 @@ static void(^presentBlock)(void) = nil;
             // noop!
         }
     } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        // dispatch_async is necessary, before iOS 10, but dispatch_after 9ms is the minimum that seems necessary to avoid a 10s delay + possible crash with iOS 10...
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             WPLogDebug(@"Opening url: %@", targetUrl);
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:targetUrl]];
         });
