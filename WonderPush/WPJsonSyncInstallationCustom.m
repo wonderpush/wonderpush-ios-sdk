@@ -73,11 +73,13 @@ static NSMutableDictionary *instancePerUserId = nil;
 
 + (void) flush {
     WPLogDebug(@"Flushing delayed updates of custom properties for all known users");
-    for (NSString *userId in instancePerUserId) {
-        id obj = instancePerUserId[userId];
-        if ([obj isKindOfClass:[WPJsonSyncInstallationCustom class]]) {
-            WPJsonSyncInstallationCustom *sync = (WPJsonSyncInstallationCustom *) obj;
-            [sync flush];
+    @synchronized (instancePerUserId) {
+        for (NSString *userId in instancePerUserId) {
+            id obj = instancePerUserId[userId];
+            if ([obj isKindOfClass:[WPJsonSyncInstallationCustom class]]) {
+                WPJsonSyncInstallationCustom *sync = (WPJsonSyncInstallationCustom *) obj;
+                [sync flush];
+            }
         }
     }
 }
