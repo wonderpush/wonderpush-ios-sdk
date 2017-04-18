@@ -937,9 +937,14 @@ static void(^presentBlock)(void) = nil;
             NSDictionary *installation = [action dictionaryForKey:@"installation"] ?: @{};
             NSDictionary *custom = [installation dictionaryForKey:@"custom"] ?: @{};
             NSNumber *reset = [action numberForKey:@"reset"];
+            NSNumber *force = [action numberForKey:@"force"];
 
             // Take or reset custom
-            [[WPJsonSyncInstallationCustom forCurrentUser] receiveState:custom resetSdkState:[reset isEqual:@YES]];
+            if ([reset isEqual:@YES]) {
+                [[WPJsonSyncInstallationCustom forCurrentUser] receiveState:custom resetSdkState:[force isEqual:@YES]];
+            } else {
+                [[WPJsonSyncInstallationCustom forCurrentUser] receiveServerState:custom];
+            }
 
             // Refresh core properties
             conf.cachedInstallationCoreProperties = @{};

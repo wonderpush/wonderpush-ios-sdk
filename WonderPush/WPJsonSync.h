@@ -26,6 +26,7 @@ typedef void (^WPJsonSyncServerPatchCallback)(NSDictionary *diff, WPJsonSyncCall
 
 - (void) put:(NSDictionary *)diff;
 - (void) receiveState:(NSDictionary *)state resetSdkState:(bool)reset;
+- (void) receiveServerState:(NSDictionary *)state;
 - (void) receiveDiff:(NSDictionary *)diff;
 
 - (bool) performScheduledPatchCall;

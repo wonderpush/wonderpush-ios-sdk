@@ -123,6 +123,13 @@
     }
 }
 
+- (void) receiveServerState:(NSDictionary *)state {
+    @synchronized (self) {
+        _serverState = [state copy];
+        [self schedulePatchCallAndSave];
+    }
+}
+
 - (void) receiveDiff:(NSDictionary *)diff {
     @synchronized (self) {
         // The diff is already server-side, by contract
