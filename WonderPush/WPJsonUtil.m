@@ -97,6 +97,11 @@
     return rtn;
 }
 
++ (NSDictionary *)stripNulls:(NSDictionary *)base
+{
+    return [self merge:base with:base nullFieldRemoves:YES];
+}
+
 + (id) ensureJSONEncodable:(id)data
 {
     if (data == nil) {

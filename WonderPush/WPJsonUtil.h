@@ -24,6 +24,8 @@
 
 + (NSDictionary *) diff:(NSDictionary *)from with:(NSDictionary *)to;
 
++ (NSDictionary *) stripNulls:(NSDictionary *)base;
+
 + (id) ensureJSONEncodable:(id)data;
 
 @end

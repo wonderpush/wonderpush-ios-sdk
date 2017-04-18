@@ -76,8 +76,8 @@
         _saveCallback = saveCallback;
         _schedulePatchCallCallback = schedulePatchCallCallback;
 
-        _sdkState = sdkState ?: @{};
-        _serverState = serverState ?: @{};
+        _sdkState = [WPJsonUtil stripNulls:sdkState ?: @{}];
+        _serverState = [WPJsonUtil stripNulls:serverState ?: @{}];
         _putAccumulator = [WPJsonUtil diff:_serverState with:_sdkState];
         _inflightDiff = @{};
         _inflightPutAccumulator = @{};
@@ -112,7 +112,7 @@
 
 - (void) receiveState:(NSDictionary *)state resetSdkState:(bool)reset {
     @synchronized (self) {
-        _serverState = [state copy];
+        _serverState = [WPJsonUtil stripNulls:[state copy]];
         _sdkState = [_serverState copy];
         if (reset) {
             _putAccumulator = @{};
@@ -125,7 +125,7 @@
 
 - (void) receiveServerState:(NSDictionary *)state {
     @synchronized (self) {
-        _serverState = [state copy];
+        _serverState = [WPJsonUtil stripNulls:[state copy]];
         [self schedulePatchCallAndSave];
     }
 }
