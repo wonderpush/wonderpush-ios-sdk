@@ -1,5 +1,6 @@
 {
   "name": "WonderPush",
+  "module_name": "WonderPush",
   "documentation_url": "http://wonderpush.github.io/wonderpush-ios-sdk/",
   "version": "2.2.0",
   "license": {
@@ -20,7 +21,6 @@
     "tag": "v1.2.2.0"
   },
   "requires_arc": true,
-  "module_name": "WonderPush",
   "default_subspecs": ["Core"],
   "subspecs": [
     {
@@ -49,16 +49,6 @@
       "resource_bundles": {
         "WonderPush": "WonderPush/*.lproj"
       }
-    },
-    {
-      "name": "NotificationServiceExtension",
-      "frameworks": [],
-      "dependencies": {},
-      "public_header_files": "NotificationServiceExtension/NotificationServiceExtension.h",
-      "source_files": [
-        "NotificationServiceExtension/*.{m,h}"
-      ],
-      "resource_bundles": {}
     }
   ]
 }

@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import "NotificationServiceExtension.h"
+#import "../NotificationServiceExtension.h"
 
 @implementation WPNotificationService
 
