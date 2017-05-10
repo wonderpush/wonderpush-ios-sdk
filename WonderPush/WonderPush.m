@@ -655,15 +655,15 @@ static NSDictionary* gpsCapabilityByCode = nil;
 + (void) trackNotificationReceived:(NSDictionary *)userInfo
 {
     if (![WonderPush isNotificationForWonderPush:userInfo]) return;
+    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     NSDictionary *wpData = [userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
-    id receipt        = [wpData nullsafeObjectForKey:@"receipt"];
+    id receipt        = conf.overrideNotificationReceipt ?: [wpData nullsafeObjectForKey:@"receipt"];
     if (receipt && [[receipt class] isEqual:[@YES class]] && [receipt isEqual:@NO]) return; // lengthy but warning-free test for `receipt == @NO`, both properly distinguishes 0 from @NO, whereas `[receipt isEqual:@NO]` alone does not
     id campagnId      = [wpData stringForKey:@"c"];
     id notificationId = [wpData stringForKey:@"n"];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
-    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     conf.lastReceivedNotificationDate = [NSDate date];
     conf.lastReceivedNotification = notificationInformation;
     [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
@@ -1045,6 +1045,12 @@ static void(^presentBlock)(void) = nil;
             WPLogEnable([force boolValue]);
         }
 
+    } else if ([WP_ACTION__OVERRIDE_NOTIFICATION_RECEIPT isEqualToString:type]) {
+
+        NSNumber *force = [action numberForKey:@"force"];
+        WPLog(@"OVERRIDE notification receipt: %@", force);
+        [WPConfiguration sharedConfiguration].overrideNotificationReceipt = force;
+
     } else {
         WPLogDebug(@"Unhandled action type %@", type);
     }
@@ -1149,8 +1155,6 @@ static void(^presentBlock)(void) = nil;
         // - if the user is switching between apps, we are called just like if the app was active,
         //   but the application state is actually inactive too, test the previous state to distinguish.
         if (appState != UIApplicationStateInactive || _previousApplicationState == UIApplicationStateActive) {
-            [WonderPush trackNotificationReceived:notificationDictionary];
-
             NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
             id atReceptionActions = [wonderpushData arrayForKey:@"receiveActions"];
             if (atReceptionActions) {
@@ -1160,6 +1164,8 @@ static void(^presentBlock)(void) = nil;
                     }
                 }
             }
+
+            [WonderPush trackNotificationReceived:notificationDictionary];
         }
     }
 

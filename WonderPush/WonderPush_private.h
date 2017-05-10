@@ -82,6 +82,11 @@
 #define WP_ACTION__OVERRIDE_SET_LOGGING @"_overrideSetLogging"
 
 /**
+ Override notification receipt
+ */
+#define WP_ACTION__OVERRIDE_NOTIFICATION_RECEIPT @"_overrideNotificationReceipt"
+
+/**
  Key to set in your .plist file to allow rating button action
  */
 #define WP_ITUNES_APP_ID @"itunesAppID"

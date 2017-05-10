@@ -490,6 +490,19 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 
+#pragma mark - OVERRIDE NOTIFICATION RECEIPT
+
+- (NSNumber *) overrideNotificationReceipt
+{
+    return [self _getNSNumberForKey:USER_DEFAULTS_OVERRIDE_NOTIFICATION_RECEIPT_KEY];
+}
+
+- (void) setOverrideNotificationReceipt:(NSNumber *)overrideNotificationReceipt
+{
+    [self _setNSNumber:overrideNotificationReceipt forKey:USER_DEFAULTS_OVERRIDE_NOTIFICATION_RECEIPT_KEY];
+}
+
+
 #pragma mark - QUEUED NOTIFICATIONS
 
 - (void) addToQueuedNotifications:(NSDictionary *)notification

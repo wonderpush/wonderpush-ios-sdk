@@ -32,6 +32,7 @@
 #define USER_DEFAULTS_SID_KEY @"__wonderpush_sid"
 #define USER_DEFAULTS_NOTIFICATION_ENABLED_KEY @"__wonderpush_notification_enabled"
 #define USER_DEFAULTS_OVERRIDE_SET_LOGGING_KEY @"__wonderpush_overrideSetLogging"
+#define USER_DEFAULTS_OVERRIDE_NOTIFICATION_RECEIPT_KEY @"__wonderpush_overrideNotificationReceipt"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES @"_wonderpush_cachedInstallationCoreProperties"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE @"_wonderpush_cachedInstallationCorePropertiesDate"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN @"_wonderpush_cachedInstallationCorePropertiesAccessToken"
@@ -91,6 +92,7 @@
 @property (nonatomic) BOOL notificationEnabled;
 
 @property (nonatomic, strong) NSNumber *overrideSetLogging;
+@property (nonatomic, strong) NSNumber *overrideNotificationReceipt;
 
 @property (nonatomic, strong) NSDictionary *cachedInstallationCoreProperties;
 @property (nonatomic, strong) NSDate *cachedInstallationCorePropertiesDate;
