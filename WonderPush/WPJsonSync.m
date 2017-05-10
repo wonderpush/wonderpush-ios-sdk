@@ -104,6 +104,7 @@
 
 - (void) put:(NSDictionary *)diff {
     @synchronized (self) {
+        diff = diff ?: @{};
         _sdkState = [WPJsonUtil merge:_sdkState with:diff];
         _putAccumulator = [WPJsonUtil merge:_putAccumulator with:diff nullFieldRemoves:NO];
         [self schedulePatchCallAndSave];
@@ -112,6 +113,7 @@
 
 - (void) receiveState:(NSDictionary *)state resetSdkState:(bool)reset {
     @synchronized (self) {
+        state = state ?: @{};
         _serverState = [WPJsonUtil stripNulls:[state copy]];
         _sdkState = [_serverState copy];
         if (reset) {
@@ -125,6 +127,7 @@
 
 - (void) receiveServerState:(NSDictionary *)state {
     @synchronized (self) {
+        state = state ?: @{};
         _serverState = [WPJsonUtil stripNulls:[state copy]];
         [self schedulePatchCallAndSave];
     }
@@ -132,6 +135,7 @@
 
 - (void) receiveDiff:(NSDictionary *)diff {
     @synchronized (self) {
+        diff = diff ?: @{};
         // The diff is already server-side, by contract
         _serverState = [WPJsonUtil merge:_serverState with:diff];
         [self put:diff];
