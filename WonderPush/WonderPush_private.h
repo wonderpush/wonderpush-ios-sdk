@@ -77,6 +77,11 @@
 #define WP_ACTION__DUMP_STATE @"_dumpState"
 
 /**
+ Override [WonderPush setLogging:]
+ */
+#define WP_ACTION__OVERRIDE_SET_LOGGING @"_overrideSetLogging"
+
+/**
  Key to set in your .plist file to allow rating button action
  */
 #define WP_ITUNES_APP_ID @"itunesAppID"

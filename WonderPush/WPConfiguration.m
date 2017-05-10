@@ -126,6 +126,26 @@ static WPConfiguration *sharedConfiguration = nil;
     [defaults synchronize];
 }
 
+- (NSNumber *) _getNSNumberForKey:(NSString *)key
+{
+    id value = [[NSUserDefaults standardUserDefaults] valueForKey:key];
+    if (![value isKindOfClass:[NSNumber class]]) value = nil;
+    return (NSNumber *)value;
+}
+
+- (void) _setNSNumber:(NSNumber *)value forKey:(NSString *)key
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (value) {
+        [defaults setValue:value forKeyPath:key];
+    } else {
+        [defaults removeObjectForKey:key];
+    }
+
+    [defaults synchronize];
+}
+
 - (NSDictionary *) dumpState
 {
     NSMutableDictionary *rtn = [NSMutableDictionary new];
@@ -456,6 +476,18 @@ static WPConfiguration *sharedConfiguration = nil;
     [defaults synchronize];
 }
 
+
+#pragma mark - OVERRIDE SET LOGGING
+
+- (NSNumber *) overrideSetLogging
+{
+    return [self _getNSNumberForKey:USER_DEFAULTS_OVERRIDE_SET_LOGGING_KEY];
+}
+
+- (void) setOverrideSetLogging:(NSNumber *)overrideSetLogging
+{
+    [self _setNSNumber:overrideSetLogging forKey:USER_DEFAULTS_OVERRIDE_SET_LOGGING_KEY];
+}
 
 
 #pragma mark - QUEUED NOTIFICATIONS

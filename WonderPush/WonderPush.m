@@ -64,6 +64,11 @@ static NSDictionary* gpsCapabilityByCode = nil;
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;
+        if (overrideSetLogging != nil) {
+            WPLog(@"OVERRIDE setLogging: %@", overrideSetLogging);
+            WPLogEnable([overrideSetLogging boolValue]);
+        }
         // Initialize some constants
         validLanguageCodes = @[@"af", @"ar", @"be",
                                @"bg", @"bn", @"ca", @"cs", @"da", @"de", @"el", @"en", @"en_GB", @"en_US",
@@ -225,6 +230,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) setLogging:(BOOL)enable
 {
+    NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;
+    if (overrideSetLogging != nil) {
+        enable = [overrideSetLogging boolValue];
+    }
     WPLogEnable(enable);
 }
 
@@ -1026,6 +1035,15 @@ static void(^presentBlock)(void) = nil;
         [WonderPush trackInternalEvent:@"@DEBUG_DUMP_STATE"
                              eventData:nil
                             customData:@{@"ignore_sdkStateDump": stateDump}];
+
+    } else if ([WP_ACTION__OVERRIDE_SET_LOGGING isEqualToString:type]) {
+
+        NSNumber *force = [action numberForKey:@"force"];
+        WPLog(@"OVERRIDE setLogging: %@", force);
+        [WPConfiguration sharedConfiguration].overrideSetLogging = force;
+        if (force != nil) {
+            WPLogEnable([force boolValue]);
+        }
 
     } else {
         WPLogDebug(@"Unhandled action type %@", type);

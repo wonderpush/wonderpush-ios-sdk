@@ -18,7 +18,7 @@
 
 #import <Foundation/Foundation.h>
 
-static BOOL _loggingEnabled;
+static BOOL _loggingEnabled = NO;
 
 void WPLogEnable(BOOL enabled)
 {
