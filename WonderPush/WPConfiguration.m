@@ -282,12 +282,9 @@ static WPConfiguration *sharedConfiguration = nil;
 {
     NSDictionary *usersArchive = [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY] ?: @{};
     NSMutableArray *mutable = [[NSMutableArray alloc] initWithArray:[usersArchive allKeys]];
-    NSLog(@"USERS: %@", mutable);
     if (![mutable containsObject:self.userId ?: @""]) {
-        NSLog(@"ADDING %@", self.userId ?: @"(empty)");
         [mutable addObject:self.userId ?: @""];
     }
-    NSLog(@"USERS: %@", mutable);
     return [[NSArray alloc] initWithArray:mutable];
 }
 
