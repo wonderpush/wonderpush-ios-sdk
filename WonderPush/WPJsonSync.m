@@ -165,6 +165,7 @@
             } else {
                 WPLogDebug(@"Server PATCH call already inflight, and already scheduled");
             }
+            [self save];
             return;
         }
         _scheduledPatchCall = false;
@@ -172,6 +173,7 @@
         _inflightDiff = [WPJsonUtil diff:_serverState with:_sdkState];
         if (_inflightDiff.count == 0) {
             WPLogDebug(@"No diff to send to server");
+            [self save];
             return;
         }
         _inflightPatchCall = true;
