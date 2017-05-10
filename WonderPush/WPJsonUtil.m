@@ -27,7 +27,7 @@
 + (NSDictionary *)merge:(NSDictionary *)base with:(NSDictionary *)diff nullFieldRemoves:(BOOL)nullFieldRemoves
 {
     if (base == nil) return nil;
-    if (diff == nil) return base;
+    if (diff == nil) diff = @{};
 
     NSMutableDictionary *rtn = [base mutableCopy];
     NSString *key;
