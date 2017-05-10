@@ -480,7 +480,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     }
     [configuration clearQueuedNotifications];
 
-    [self onInteraction];
+    [self onInteractionLeaving:NO];
 }
 
 + (void) applicationDidEnterBackground:(UIApplication *)application
@@ -509,7 +509,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     }
     [configuration clearQueuedNotifications];
 
-    [self onInteraction];
+    [self onInteractionLeaving:YES];
 }
 
 
@@ -611,7 +611,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (NSDictionary *) getInstallationCustomProperties
 {
-    [self onInteraction];
     return [[WPJsonSyncInstallationCustom forCurrentUser].sdkState copy];
 }
 
@@ -629,7 +628,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
         WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
     }
-    [self onInteraction];
     [[WPJsonSyncInstallationCustom forCurrentUser] put:customProperties];
 }
 
@@ -708,14 +706,12 @@ static NSDictionary* gpsCapabilityByCode = nil;
 {
     WPLogDebug(@"trackEvent:%@", type);
     [self trackEvent:type eventData:nil customData:nil];
-    [self onInteraction];
 }
 
 + (void) trackEvent:(NSString*)type withData:(NSDictionary *)data
 {
     WPLogDebug(@"trackEvent:%@ withData:%@", type, data);
     [self trackEvent:type eventData:nil customData:data];
-    [self onInteraction];
 }
 
 
@@ -1382,7 +1378,7 @@ static void(^presentBlock)(void) = nil;
 #pragma mark - Session app open/close
 
 
-+ (void) onInteraction
++ (void) onInteractionLeaving:(BOOL)leaving
 {
     if (![self isInitialized]) {
         // Do not remember last interaction altogether, so that a proper @APP_OPEN can be tracked once we get initialized
@@ -1401,45 +1397,56 @@ static void(^presentBlock)(void) = nil;
     NSDate *date = [NSDate date];
     long long now = [date timeIntervalSince1970] * 1000;
 
-    if (
+    BOOL shouldInjectAppOpen =
         now - lastInteractionTs >= DIFFERENT_SESSION_REGULAR_MIN_TIME_GAP
         || (
             [WPUtil hasBackgroundModeRemoteNotification]
             && lastReceivedNotificationTs > lastInteractionTs
             && now - lastInteractionTs >= DIFFERENT_SESSION_NOTIFICATION_MIN_TIME_GAP
         )
-    ) {
-        // We will track a new app open event
+    ;
 
-        // We must first close the possibly still-open previous session
-        if (lastAppCloseTs < lastAppOpenTs) {
-            NSDictionary *openInfo = conf.lastAppOpenInfo;
-            NSMutableDictionary *closeInfo = [[NSMutableDictionary alloc] initWithDictionary:openInfo];
-            long long appCloseDate = lastInteractionTs;
-            closeInfo[@"actionDate"] = [[NSNumber alloc] initWithLongLong:appCloseDate];
-            closeInfo[@"openedTime"] = [[NSNumber alloc] initWithLongLong:appCloseDate - lastAppOpenTs];
-            // [WonderPush trackInternalEvent:@"@APP_CLOSE" eventData:closeInfo customData:nil];
-            conf.lastAppCloseDate = [[NSDate alloc] initWithTimeIntervalSince1970:appCloseDate / 1000.];
+    if (leaving) {
+
+        // Note the current time as the most accurate hint of last interaction
+        conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
+
+    } else {
+
+        if (shouldInjectAppOpen) {
+            // We will track a new app open event
+
+            // We must first close the possibly still-open previous session
+            if (lastAppCloseTs < lastAppOpenTs) {
+                NSDictionary *openInfo = conf.lastAppOpenInfo;
+                NSMutableDictionary *closeInfo = [[NSMutableDictionary alloc] initWithDictionary:openInfo];
+                long long appCloseDate = lastInteractionTs;
+                closeInfo[@"actionDate"] = [[NSNumber alloc] initWithLongLong:appCloseDate];
+                closeInfo[@"openedTime"] = [[NSNumber alloc] initWithLongLong:appCloseDate - lastAppOpenTs];
+                // [WonderPush trackInternalEvent:@"@APP_CLOSE" eventData:closeInfo customData:nil];
+                conf.lastAppCloseDate = [[NSDate alloc] initWithTimeIntervalSince1970:appCloseDate / 1000.];
+            }
+
+            // Track the new app open event
+            NSMutableDictionary *openInfo = [NSMutableDictionary new];
+            // Add the elapsed time between the last received notification
+            if ([WPUtil hasBackgroundModeRemoteNotification] && lastReceivedNotificationTs <= now) {
+                openInfo[@"lastReceivedNotificationTime"] = [[NSNumber alloc] initWithLongLong:now - lastReceivedNotificationTs];
+            }
+            // Add the information of the clicked notification
+            if (conf.justOpenedNotification && [conf.justOpenedNotification[@"_wp"] isKindOfClass:[NSDictionary class]]) {
+                openInfo[@"campaignId"]     = conf.justOpenedNotification[@"_wp"][@"c"] ?: [NSNull null];
+                openInfo[@"notificationId"] = conf.justOpenedNotification[@"_wp"][@"n"] ?: [NSNull null];
+                conf.justOpenedNotification = nil;
+            }
+            [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil];
+            conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
+            conf.lastAppOpenInfo = openInfo;
         }
 
-        // Track the new app open event
-        NSMutableDictionary *openInfo = [NSMutableDictionary new];
-        // Add the elapsed time between the last received notification
-        if ([WPUtil hasBackgroundModeRemoteNotification] && lastReceivedNotificationTs <= now) {
-            openInfo[@"lastReceivedNotificationTime"] = [[NSNumber alloc] initWithLongLong:now - lastReceivedNotificationTs];
-        }
-        // Add the information of the clicked notification
-        if (conf.justOpenedNotification && [conf.justOpenedNotification[@"_wp"] isKindOfClass:[NSDictionary class]]) {
-            openInfo[@"campaignId"]     = conf.justOpenedNotification[@"_wp"][@"c"] ?: [NSNull null];
-            openInfo[@"notificationId"] = conf.justOpenedNotification[@"_wp"][@"n"] ?: [NSNull null];
-            conf.justOpenedNotification = nil;
-        }
-        [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil];
-        conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
-        conf.lastAppOpenInfo = openInfo;
+        conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
+
     }
-
-    conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
 }
 
 #pragma mark - Information mining
