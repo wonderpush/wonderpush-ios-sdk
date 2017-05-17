@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Classes/WonderPushNotificationServiceExtension.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/cl/WonderPushNotificationServiceExtension</TokenIdentifier>
+			<Abstract type="html">WonderPushNotificationServiceExtension is your main interface to the WonderPush NotificationServiceExtension SDK.</Abstract>
+			<DeclaredIn>NotificationServiceExtension.h</DeclaredIn>
+            
+			
+			<NodeRef refid="3"/>
+		</Token>
+		
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPushNotificationServiceExtension/serviceExtension:didReceiveNotificationRequest:withContentHandler:</TokenIdentifier>
+			<Abstract type="html">Forwards a NotificationServiceExtension call to the SDK.</Abstract>
+			<DeclaredIn>NotificationServiceExtension.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)serviceExtension:(UNNotificationServiceExtension *)extension didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void ( ^ ) ( UNNotificationContent *contentToDeliver ))contentHandler</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>extension</Name>
+					<Abstract type="html">Simply pass self from your NotificationService class.</Abstract>
+				</Parameter><Parameter>
+					<Name>request</Name>
+					<Abstract type="html">Same parameter as in the forwarded protocol method.</Abstract>
+				</Parameter><Parameter>
+					<Name>contentHandler</Name>
+					<Abstract type="html">Same parameter as in the forwarded protocol method.</Abstract>
+				</Parameter>
+			</Parameters>
+			<ReturnValue><Abstract type="html">YES if the call was handled by WonderPush, NO otherwise.</Abstract></ReturnValue>
+			<Anchor>//api/name/serviceExtension:didReceiveNotificationRequest:withContentHandler:</Anchor>
+            <NodeRef refid="3"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/clm/WonderPushNotificationServiceExtension/serviceExtensionTimeWillExpire:</TokenIdentifier>
+			<Abstract type="html">Forwards a NotificationServiceExtension call to the SDK.</Abstract>
+			<DeclaredIn>NotificationServiceExtension.h</DeclaredIn>
+			
+			<Declaration>+ (BOOL)serviceExtensionTimeWillExpire:(UNNotificationServiceExtension *)extension</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>extension</Name>
+					<Abstract type="html">Simply pass self from your NotificationService class.</Abstract>
+				</Parameter>
+			</Parameters>
+			<ReturnValue><Abstract type="html">YES if the call was handled by WonderPush, NO otherwise.</Abstract></ReturnValue>
+			<Anchor>//api/name/serviceExtensionTimeWillExpire:</Anchor>
+            <NodeRef refid="3"/>
+		</Token>
+		
+        
+        
+	</File>
+</Tokens>

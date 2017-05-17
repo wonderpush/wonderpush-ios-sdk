@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Classes/WPNotificationService.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/cl/WPNotificationService</TokenIdentifier>
+			<Abstract type="html">Make your NotificationService class extend this class to delegate entirely all processing
+to the WonderPush NotificaitonServiceExtension SDK, without writing code.</Abstract>
+			<DeclaredIn>NotificationServiceExtension.h</DeclaredIn>
+            
+			
+			<NodeRef refid="1"/>
+		</Token>
+		
+		
+        
+        
+	</File>
+</Tokens>
