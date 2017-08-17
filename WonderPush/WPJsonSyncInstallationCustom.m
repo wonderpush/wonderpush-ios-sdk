@@ -177,7 +177,7 @@ static NSMutableDictionary *instancePerUserId = nil;
                      WPLogDebug(@"Succeded to send diff for user %@: %@", _userId, responseJson);
                      onSuccess();
                  } else {
-                     WPLogDebug(@"Failed to send diff for user %@: error %@, response %@", error, response);
+                     WPLogDebug(@"Failed to send diff for user %@: error %@, response %@", _userId, error, response);
                      onFailure();
                  }
              }];
