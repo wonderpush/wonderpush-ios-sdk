@@ -154,5 +154,18 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+{
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
+    BOOL rtn = YES;
+    if ([self.nextDelegate respondsToSelector:_cmd]) {
+        _WPAppDelegateAlreadyRunning = YES;
+        rtn = [self.nextDelegate application:application
+                        continueUserActivity:userActivity
+                          restorationHandler:restorationHandler];
+        _WPAppDelegateAlreadyRunning = NO;
+    }
+    return rtn;
+}
 
 @end
