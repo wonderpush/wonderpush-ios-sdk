@@ -54,6 +54,19 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 #define WP_NOTIFICATION_OPENED_BROADCAST @"_wonderpushNotificationOpenedBroadcast"
 
+/**
+ The `WonderPushDelegate` protocol lets you customize various aspects of the WonderPush behavior at runtime.
+ */
+@protocol WonderPushDelegate <NSObject>
+
+/**
+ Lets you overwrite URLs that WonderPush will open using `UIApplication:openURL:`.
+ @param URL The URL that WonderPush is about to open.
+ @return A URL to open, or nil to avoid opening anything. Just return the value of the URL parameter to use the default WonderPush behavior.
+ */
+@optional
+- ( NSURL * _Nullable ) wonderPushWillOpenURL:( NSURL * _Nonnull )URL;
+@end
 
 /**
  `WonderPush` is your main interface to the WonderPush SDK.
@@ -99,6 +112,13 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
      You are strongly encouraged to use your own unique internal identifier.
  */
 + (void) setUserId:(NSString *)userId;
+
+/**
+ Sets the delegate for the WonderPushSDK. Setting the delegate lets you control various behaviors of the WonderPushSDK at runtime.
+ It is advised to set the delegate as early as possible, preferably in application:didFinishLaunchingWithOptions
+ @param delegate The delegate.
+ */
++ (void) setDelegate:(__weak __nullable id<WonderPushDelegate>) delegate;
 
 /**
  Returns whether the WonderPush SDK has been given the clientId and clientSecret.

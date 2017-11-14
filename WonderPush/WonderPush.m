@@ -50,7 +50,7 @@ static BOOL _userNotificationCenterDelegateInstalled = NO;
 
 static NSString *_notificationFromAppLaunchCampaignId = nil;
 static NSString *_notificationFromAppLaunchNotificationId = nil;
-
+__weak static id<WonderPushDelegate> _delegate = nil;
 
 @implementation WonderPush
 
@@ -397,6 +397,12 @@ static NSDictionary* gpsCapabilityByCode = nil;
     return [WP_PUSH_NOTIFICATION_DATA isEqualToString:[([userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY] ?: @{}) stringForKey:WP_PUSH_NOTIFICATION_TYPE_KEY]];
 }
 
+
+#pragma mark - WonderPushDelegate
++ (void) setDelegate:(id<WonderPushDelegate>)delegate
+{
+    _delegate = delegate;
+}
 
 #pragma mark - Application delegate
 
@@ -1001,7 +1007,7 @@ static void(^presentBlock)(void) = nil;
 
         NSString *itunesAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:WP_ITUNES_APP_ID];
         if (itunesAppId != nil) {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:ITUNES_APP_URL_FORMAT, itunesAppId]]];
+            [self openURL:[NSURL URLWithString:[NSString stringWithFormat:ITUNES_APP_URL_FORMAT, itunesAppId]]];
         }
 
     } else  if ([WP_ACTION_METHOD_CALL isEqualToString:type]) {
@@ -1014,7 +1020,7 @@ static void(^presentBlock)(void) = nil;
     } else if ([WP_ACTION_LINK isEqualToString:type]) {
 
         NSString *url = [action stringForKey:@"url"];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+        [self openURL:[NSURL URLWithString:url]];
 
     } else if ([WP_ACTION_MAP_OPEN isEqualToString:type]) {
 
@@ -1026,7 +1032,7 @@ static void(^presentBlock)(void) = nil;
         if (!lat || !lon) return;
         NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [lat doubleValue], [lon doubleValue]];
         WPLogDebug(@"url: %@", url);
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+        [self openURL:[NSURL URLWithString:url]];
 
     } else if ([WP_ACTION__DUMP_STATE isEqualToString:type]) {
 
@@ -1373,7 +1379,7 @@ static void(^presentBlock)(void) = nil;
         // dispatch_async is necessary, before iOS 10, but dispatch_after 9ms is the minimum that seems necessary to avoid a 10s delay + possible crash with iOS 10...
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             WPLogDebug(@"Opening url: %@", targetUrl);
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:targetUrl]];
+            [self openURL:[NSURL URLWithString:targetUrl]];
         });
     }
 
@@ -1931,6 +1937,17 @@ static void(^presentBlock)(void) = nil;
         return nil;
     }
     return location;
+}
+
+#pragma mark - Open URL
++ (BOOL) openURL:(NSURL *)URL
+{
+    NSURL *URLToOpen = URL;
+    if (_delegate && [_delegate respondsToSelector:@selector(wonderPushWillOpenURL:)]) {
+        URLToOpen = [_delegate wonderPushWillOpenURL:URLToOpen];
+    }
+    if (!URLToOpen) return NO;
+    return [[UIApplication sharedApplication] openURL:URLToOpen];
 }
 
 @end
