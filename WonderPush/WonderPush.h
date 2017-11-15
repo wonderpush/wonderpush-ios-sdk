@@ -65,7 +65,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @return A URL to open, or nil to avoid opening anything. Just return the value of the URL parameter to use the default WonderPush behavior.
  */
 @optional
-- ( NSURL * _Nullable ) wonderPushWillOpenURL:( NSURL * _Nonnull )URL;
+- ( NSURL * ) wonderPushWillOpenURL:( NSURL * )URL;
 @end
 
 /**
@@ -118,7 +118,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  It is advised to set the delegate as early as possible, preferably in application:didFinishLaunchingWithOptions
  @param delegate The delegate.
  */
-+ (void) setDelegate:(__weak __nullable id<WonderPushDelegate>) delegate;
++ (void) setDelegate:(__weak id<WonderPushDelegate>) delegate;
 
 /**
  Returns whether the WonderPush SDK has been given the clientId and clientSecret.
