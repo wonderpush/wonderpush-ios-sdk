@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Protocols/WonderPushDelegate.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/intf/WonderPushDelegate</TokenIdentifier>
+			<Abstract type="html">The WonderPushDelegate protocol lets you customize various aspects of the WonderPush behavior at runtime.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+            
+			
+			<NodeRef refid="4"/>
+		</Token>
+		
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/intfm/WonderPushDelegate/wonderPushWillOpenURL:</TokenIdentifier>
+			<Abstract type="html">Lets you overwrite URLs that WonderPush will open using UIApplication:openURL:.</Abstract>
+			<DeclaredIn>WonderPush.h</DeclaredIn>
+			
+			<Declaration>- (NSURL *_Nullable)wonderPushWillOpenURL:(NSURL *_Nonnull)URL</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>URL</Name>
+					<Abstract type="html">The URL that WonderPush is about to open.</Abstract>
+				</Parameter>
+			</Parameters>
+			<ReturnValue><Abstract type="html">A URL to open, or nil to avoid opening anything. Just return the value of the URL parameter to use the default WonderPush behavior.</Abstract></ReturnValue>
+			<Anchor>//api/name/wonderPushWillOpenURL:</Anchor>
+            <NodeRef refid="4"/>
+		</Token>
+		
+        
+        
+	</File>
+</Tokens>
