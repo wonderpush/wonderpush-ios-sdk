@@ -187,7 +187,7 @@ Called when receiving the full state of the installation custom properties
 
 /**
  Tracks an internal event, starting with a @ sign.
- @param eventData A collection of properties to add directly to the event body.
+ @param data A collection of properties to add directly to the event body.
  @param customData A collection of custom properties to add to the `custom` field of the event.
  */
 + (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData;

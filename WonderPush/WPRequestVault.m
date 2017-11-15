@@ -176,12 +176,12 @@
     switch (status) {
         case AFNetworkReachabilityStatusNotReachable:
         case AFNetworkReachabilityStatusUnknown:
-            WPLogDebug(@"Reachability changed to %i, stopping queue.", status);
+            WPLogDebug(@"Reachability changed to %ld, stopping queue.", (long)status);
             [self.operationQueue setSuspended:YES];
             break;
 
         default:
-            WPLogDebug(@"Reachability changed to %i, starting queue.", status);
+            WPLogDebug(@"Reachability changed to %ld, starting queue.", (long)status);
             [self.operationQueue setSuspended:NO];
             break;
     }

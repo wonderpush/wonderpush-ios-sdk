@@ -1196,7 +1196,7 @@ static void(^presentBlock)(void) = nil;
 {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
-    WPLogDebug(@"handleNotification:%@ withOriginalApplicationState:%d", notificationDictionary, applicationState);
+    WPLogDebug(@"handleNotification:%@ withOriginalApplicationState:%ld", notificationDictionary, (long)applicationState);
 
     NSDictionary *wonderpushData = [notificationDictionary dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
     NSDictionary *apsForeground = [wonderpushData dictionaryForKey:@"apsForeground"];
