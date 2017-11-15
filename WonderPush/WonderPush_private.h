@@ -22,7 +22,7 @@
 #import "NSDictionary+TypeSafe.h"
 
 
-#define SDK_VERSION @"iOS-1.2.2.1"
+#define SDK_VERSION @"iOS-1.2.3.0"
 #define PRODUCTION_API_DOMAIN @"api.wonderpush.com"
 #define PRODUCTION_API_URL @"https://" PRODUCTION_API_DOMAIN @"/v1/"
 
