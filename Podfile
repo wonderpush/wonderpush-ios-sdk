@@ -6,9 +6,13 @@ target 'WonderPush' do
     pod 'WonderPush', :path => '.'
 end
 
-# This target has no parent target so CocoaPods will not integrate it
-#target 'NotificationServiceExtension' do
-#    platform :ios, '7.0'
-#
-#    pod 'WonderPushExtension/NotificationService', :path => '.'
-#end
+target 'NotificationServiceExtension' do
+    platform :ios, '7.0'
+
+    pod 'WonderPushExtension/NotificationService', :path => '.'
+end
+
+# This target exists only so that the NotificationServiceExtension target can be added to this Podfile
+target 'WonderPushSDKDummyApp' do
+    platform :ios, '7.0'
+end

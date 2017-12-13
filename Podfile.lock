@@ -28,12 +28,16 @@ PODS:
     - OpenUDID (~> 1.0.0)
     - PKAlertController (~> 0.6)
     - TCMobileProvision (~> 1.0.0)
+  - WonderPushExtension/NotificationService (2.3.0)
 
 DEPENDENCIES:
   - WonderPush (from `.`)
+  - WonderPushExtension/NotificationService (from `.`)
 
 EXTERNAL SOURCES:
   WonderPush:
+    :path: .
+  WonderPushExtension:
     :path: .
 
 SPEC CHECKSUMS:
@@ -43,7 +47,8 @@ SPEC CHECKSUMS:
   PKAlertController: 8867a57e032592bf077965dcd519fe1694ba3a02
   TCMobileProvision: 2a8962b38821a20fad53b9d7851bbc9ae8c52995
   WonderPush: b71ba6fe323938ba85bf90364c9cc4740fe59159
+  WonderPushExtension: dc46160238b06adf51425130f01ac6b2519f88cc
 
-PODFILE CHECKSUM: 5e5761442a88cbd2c608826dffc401e102f35421
+PODFILE CHECKSUM: 47a28c3dc3f28dd1f0023b0f240b25eadf661ed9
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.3.1
