@@ -1,40 +1,11 @@
-WonderPush iOS SDK
-==================
+# WonderPush iOS SDK
 
-Push notifications allow your users to opt-in to timely updates from your application
-and allow you to effectively re-engage them with customized, engaging content,
-even when your application is not currently foreground.
+[WonderPush](https://www.wonderpush.com) is an advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. [Start for free](https://dashboard.wonderpush.com/account/signup).
 
+This an iOS SDK.
 
-WonderPush iOS SDK Guide
-------------------------
-
-The guide for SDK integration is available on WonderPush website:
-https://www.wonderpush.com/docs/ios/getting-started.
-
-
-Demo application
-----------------
-
-A sample project is available here:
-https://github.com/wonderpush/wonderpush-ios-demo.
-
-
-SDK documentation
------------------
-
-The SDK documentation in an AppleDoc format available in the `gh-pages` branch, and is served at:
-http://wonderpush.github.io/wonderpush-ios-sdk/.
-
-
-API Reference
--------------
-
-All references for the WonderPush API are available on the WonderPush documentation pages:
-http://www.wonderpush.com/docs/reference/api/v1.
-
-
-Need some help?
----------------
-
-Ask us by chat at: https://www.wonderpush.com/.
+Quick links:
+* [**Getting started guide**](https://www.wonderpush.com/docs/ios/getting-started)
+* [**Latest SDK documentation**](https://wonderpush.github.io/wonderpush-ios-sdk/)
+* [**Latest API reference**](https://wonderpush.github.io/wonderpush-ios-sdk/api.html)
+* [**Demo application**](https://github.com/wonderpush/wonderpush-ios-demo)
