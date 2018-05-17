@@ -237,17 +237,6 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
     return [hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler boolValue];
 }
 
-#pragma mark - UUID
-
-+ (NSString *)UUIDString
-{
-    CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
-    NSString *result = (NSString *)CFBridgingRelease(CFUUIDCreateString(kCFAllocatorDefault, uuid));
-    CFRelease(uuid);
-    return result;
-}
-
-
 #pragma mark - SERVER TIME
 
 + (long long) getServerDate

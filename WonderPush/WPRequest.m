@@ -38,7 +38,7 @@
 - (id) init
 {
     if (self = [super init]) {
-        self.requestId = [WPUtil UUIDString];
+        self.requestId = [[NSUUID UUID] UUIDString];
     }
     return self;
 }
