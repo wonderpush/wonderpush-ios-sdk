@@ -154,9 +154,9 @@ static NSMutableDictionary *instancePerUserId = nil;
                                    [_firstDelayedWriteDate timeIntervalSinceReferenceDate] + CACHED_INSTALLATION_CUSTOM_PROPERTIES_MAX_DELAY
                                    - [now timeIntervalSinceReferenceDate]);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            @synchronized (_blockId_lock) {
-                if (_blockId == currentBlockId) {
-                    _firstDelayedWriteDate = nil;
+            @synchronized (self->_blockId_lock) {
+                if (self->_blockId == currentBlockId) {
+                    self->_firstDelayedWriteDate = nil;
                     WPLogDebug(@"Performing delayed update of custom properties");
                     [self performScheduledPatchCall];
                 }
@@ -174,10 +174,10 @@ static NSMutableDictionary *instancePerUserId = nil;
              handler:^(WPResponse *response, NSError *error) {
                  NSDictionary *responseJson = (NSDictionary *)response.object;
                  if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[responseJson numberForKey:@"success"] boolValue]) {
-                     WPLogDebug(@"Succeded to send diff for user %@: %@", _userId, responseJson);
+                     WPLogDebug(@"Succeded to send diff for user %@: %@", self->_userId, responseJson);
                      onSuccess();
                  } else {
-                     WPLogDebug(@"Failed to send diff for user %@: error %@, response %@", _userId, error, response);
+                     WPLogDebug(@"Failed to send diff for user %@: error %@, response %@", self->_userId, error, response);
                      onFailure();
                  }
              }];

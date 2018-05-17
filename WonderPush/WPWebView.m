@@ -56,9 +56,9 @@
 {
     // Asynchronously change the view height to match the alert scrollview so both horizontal and vertical scrolling are handled by the webview
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.frame.size.height != _alertScrollView.frame.size.height) {
+        if (self.frame.size.height != self->_alertScrollView.frame.size.height) {
             CGRect frame = self.frame;
-            frame.size.height = _alertScrollView.frame.size.height;
+            frame.size.height = self->_alertScrollView.frame.size.height;
             [self setFrame:frame];
         }
     });
