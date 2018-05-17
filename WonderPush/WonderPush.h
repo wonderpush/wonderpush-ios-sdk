@@ -386,7 +386,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  You must call this from either `application:willFinishLaunchingWithOptions:` or `application:didFinishLaunchingWithOptions:` of your AppDelegate.
  Simply call it along with `[WonderPush setupDelegateForApplication:]`.
  */
-+ (void) setupDelegateForUserNotificationCenter;
++ (void) setupDelegateForUserNotificationCenter __IOS_AVAILABLE(10.0);
 
 
 ///--------------------------------------------------------
@@ -410,7 +410,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param notification Same parameter as in the forwarded delegate method.
  @param completionHandler Same parameter as in the forwarded delegate method.
  */
-+ (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler;
++ (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler __IOS_AVAILABLE(10.0);
 
 /**
  Forwards a UserNotificationCenter delegate to the SDK.
@@ -421,7 +421,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param response Same parameter as in the forwarded delegate method.
  @param completionHandler Same parameter as in the forwarded delegate method.
  */
-+ (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler;
++ (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0);
 
 
 @end

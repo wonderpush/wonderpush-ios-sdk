@@ -5,7 +5,7 @@
 
 
 
-typedef void (^WPJsonSyncCallback)();
+typedef void (^WPJsonSyncCallback)(void);
 typedef void (^WPJsonSyncSaveCallback)(NSDictionary *state);
 typedef void (^WPJsonSyncServerPatchCallback)(NSDictionary *diff, WPJsonSyncCallback onSuccess, WPJsonSyncCallback onFailure);
 

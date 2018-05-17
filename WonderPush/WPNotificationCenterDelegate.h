@@ -12,6 +12,7 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
+API_AVAILABLE(ios(10.0))
 @interface WPNotificationCenterDelegate : UIResponder <UNUserNotificationCenterDelegate>
 
 @property (strong, nonatomic) id<UNUserNotificationCenterDelegate> nextDelegate;

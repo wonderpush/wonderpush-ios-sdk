@@ -530,7 +530,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 #pragma mark - UserNotificationCenter delegate
 
-+ (void) setupDelegateForUserNotificationCenter
++ (void) setupDelegateForUserNotificationCenter __IOS_AVAILABLE(10.0)
 {
     if (!_userNotificationCenterDelegateInstalled) {
         WPLogDebug(@"Setting the notification center delegate");
@@ -582,7 +582,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     completionHandler(presentationOptions);
 }
 
-+ (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler
++ (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler
 {
     WPLogDebug(@"userNotificationCenter:%@ didReceiveNotificationResponse:%@ withCompletionHandler:", center, response);
     [self handleNotificationOpened:response.notification.request.content.userInfo];
