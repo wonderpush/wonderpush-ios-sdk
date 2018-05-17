@@ -384,6 +384,19 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 
+#pragma mark - DEVICE ID
+
+- (NSString *) deviceId
+{
+    return [self _getNSStringForKey:USER_DEFAULTS_DEVICE_ID_KEY];
+}
+
+- (void) setDeviceId:(NSString *)deviceId
+{
+    [self _setNSString:deviceId forKey:USER_DEFAULTS_DEVICE_ID_KEY];
+}
+
+
 #pragma mark - INSTALLATION ID
 
 - (NSString *) installationId

@@ -15,7 +15,6 @@
  */
 
 #import "WPUtil.h"
-#import "OpenUDID.h"
 #import "WPConfiguration.h"
 #import "WPLog.h"
 #import "WonderPush_private.h"
@@ -120,7 +119,26 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
 
 + (NSString *)deviceIdentifier
 {
-    return [OpenUDID value];
+    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+    NSString *deviceId = conf.deviceId;
+    if (deviceId == nil) {
+        // Read from local OpenUDID storage to keep a smooth transition off using OpenUDID
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        id localDict = [defaults objectForKey:@"OpenUDID"];
+        if ([localDict isKindOfClass:[NSDictionary class]]) {
+            id optedOutDate = [localDict objectForKey:@"OpenUDID_optOutTS"];
+            if (optedOutDate == nil) {
+                deviceId = [localDict objectForKey:@"OpenUDID"];
+            }
+        }
+        if (deviceId == nil) {
+            // Generate an UUIDv4
+            deviceId = [[NSUUID UUID] UUIDString];
+        }
+        // Store device id
+        conf.deviceId = deviceId;
+    }
+    return deviceId;
 }
 
 
