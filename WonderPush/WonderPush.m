@@ -1550,6 +1550,7 @@ static void(^presentBlock)(void) = nil;
 
     CGRect screenSize = [self getScreenSize];
     NSDictionary *device = @{@"id": [WPUtil deviceIdentifier] ?: null,
+                             @"federatedId": [WPUtil federatedId] ? [NSString stringWithFormat:@"0:%@", [WPUtil federatedId]] : null,
                              @"platform": @"iOS",
                              @"osVersion": [self getOsVersion] ?: null,
                              @"brand": @"Apple",
