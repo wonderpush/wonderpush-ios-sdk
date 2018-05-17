@@ -27,6 +27,7 @@
 
  Look at [the guide](https://www.wonderpush.com/docs/ios/getting-started#ios-getting-started-rich-notifications) for more information.
  */
+API_AVAILABLE(ios(10.0))
 @interface WPNotificationService : UNNotificationServiceExtension
 
 @end
@@ -39,6 +40,7 @@
 
  The easiest way to integrate is to make your `NotificationService` extend `WPNotificationService` and remove all code inside it.
  */
+API_AVAILABLE(ios(10.0))
 @interface WonderPushNotificationServiceExtension : NSObject
 
 /**
