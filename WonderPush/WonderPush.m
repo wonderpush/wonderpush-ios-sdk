@@ -408,11 +408,13 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) setupDelegateForApplication:(UIApplication *)application
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [WPAppDelegate setupDelegateForApplication:application];
 }
 
 + (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return NO;
     if ([WPAppDelegate isAlreadyRunning]) return NO;
 
@@ -440,6 +442,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     [WonderPush handleNotification:userInfo];
@@ -450,6 +453,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     [WonderPush handleNotification:notification.userInfo withOriginalApplicationState:UIApplicationStateInactive];
@@ -457,6 +461,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     [self handleNotification:userInfo];
@@ -464,6 +469,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     NSString *newToken = [deviceToken description];
@@ -472,6 +478,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     WPLogDebug(@"Failed to register to push notifications: %@", error);
@@ -480,6 +487,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) applicationDidBecomeActive:(UIApplication *)application;
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     BOOL comesBackFromTemporaryInactive = _previousApplicationState == UIApplicationStateActive;
@@ -500,6 +508,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) applicationDidEnterBackground:(UIApplication *)application
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
@@ -532,6 +541,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) setupDelegateForUserNotificationCenter __IOS_AVAILABLE(10.0)
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (!_userNotificationCenterDelegateInstalled) {
         WPLogDebug(@"Setting the notification center delegate");
         [WPNotificationCenterDelegate setupDelegateForNotificationCenter:[UNUserNotificationCenter currentNotificationCenter]];
@@ -540,6 +550,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) setUserNotificationCenterDelegateInstalled:(BOOL)enabled
 {
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     _userNotificationCenterDelegateInstalled = enabled;
 }
 
@@ -1149,6 +1160,7 @@ static void(^presentBlock)(void) = nil;
     WPLogDebug(@"handleNotification:%@", notificationDictionary);
 
     UIApplicationState appState = [UIApplication sharedApplication].applicationState;
+    WPLogDebug(@"handleNotification: appState=%ld", (long)appState);
 
     // Reception tracking:
     // - only if background mode remote notification is enabled,
@@ -1180,15 +1192,18 @@ static void(^presentBlock)(void) = nil;
         // that may have been asked by receiveActions, flush now.
         // If we had no such modifications, this is still an opportunity to flush any interrupted calls.
         [WPJsonSyncInstallationCustom flush];
+        WPLogDebug(@"handleNotification: return YES because state == background");
         return YES;
     }
 
     if (appState == UIApplicationStateInactive) {
         WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
         [configuration addToQueuedNotifications:notificationDictionary];
+        WPLogDebug(@"handleNotification: queuing and returning YES because state == inactive");
         return YES;
     }
 
+    WPLogDebug(@"handleNotification: continuing");
     return [self handleNotification:notificationDictionary withOriginalApplicationState:appState];
 }
 
@@ -1233,6 +1248,7 @@ static void(^presentBlock)(void) = nil;
     NSDictionary *apsAlert = aps ? [aps nullsafeObjectForKey:@"alert"] : nil;
 
     if (_userNotificationCenterDelegateInstalled && !apsForegroundAutoOpen) {
+        WPLogDebug(@"handleNotification:withOriginalApplicationState: leaving to userNotificationCenter");
         return YES;
     } // else (if _userNotificationCenterDelegateInstalled), we must continue for autoOpen support
 
@@ -1247,6 +1263,7 @@ static void(^presentBlock)(void) = nil;
         // we have some text to display
         && aps && apsAlert
     ) {
+        WPLogDebug(@"handleNotification:withOriginalApplicationState: simulating system alert");
 
         NSBundle *mainBundle = [NSBundle mainBundle];
         NSDictionary *infoDictionary = [mainBundle infoDictionary];
@@ -1331,6 +1348,7 @@ static void(^presentBlock)(void) = nil;
 
     } else {
 
+        WPLogDebug(@"handleNotification:withOriginalApplicationState: auto open");
         return [self handleNotificationOpened:notificationDictionary];
 
     }
@@ -1342,6 +1360,7 @@ static void(^presentBlock)(void) = nil;
 {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
+    WPLogDebug(@"handleNotificationOpened:%@", notificationDictionary);
 
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     conf.justOpenedNotification = notificationDictionary;
@@ -1368,7 +1387,9 @@ static void(^presentBlock)(void) = nil;
     NSString *targetUrl = [wonderpushData stringForKey:WP_TARGET_URL_KEY];
     if (!targetUrl)
         targetUrl = WP_TARGET_URL_DEFAULT;
+    WPLogDebug(@"handleNotificationOpened: targetUrl:%@", targetUrl);
     if ([targetUrl hasPrefix:WP_TARGET_URL_SDK_PREFIX]) {
+        WPLogDebug(@"handleNotificationOpened: targetUrl has SDK prefix");
         if ([targetUrl isEqualToString:WP_TARGET_URL_BROADCAST]) {
             WPLogDebug(@"Broadcasting");
             [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_OPENED_BROADCAST object:nil userInfo:notificationDictionary];
@@ -1376,6 +1397,7 @@ static void(^presentBlock)(void) = nil;
             // noop!
         }
     } else {
+        WPLogDebug(@"handleNotificationOpened: targetUrl will use openURL");
         // dispatch_async is necessary, before iOS 10, but dispatch_after 9ms is the minimum that seems necessary to avoid a 10s delay + possible crash with iOS 10...
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             WPLogDebug(@"Opening url: %@", targetUrl);
@@ -1384,19 +1406,24 @@ static void(^presentBlock)(void) = nil;
     }
 
     if ([self isDataNotification:notificationDictionary]) {
+        WPLogDebug(@"handleNotificationOpened: data notification stopping");
         return NO;
     }
     NSString *type = [wonderpushData stringForKey:@"type"];
     if ([WP_PUSH_NOTIFICATION_SHOW_TEXT isEqualToString:type]) {
+        WPLogDebug(@"handleNotificationOpened: showing text in-app");
         [self handleTextNotification:wonderpushData];
         return YES;
     } else if ([WP_PUSH_NOTIFICATION_SHOW_HTML isEqualToString:type]) {
+        WPLogDebug(@"handleNotificationOpened: showing HTML in-app");
         [self handleHtmlNotification:wonderpushData];
         return YES;
     } else if ([WP_PUSH_NOTIFICATION_SHOW_URL isEqualToString:type]) {
+        WPLogDebug(@"handleNotificationOpened: showing URL in-app");
         [self handleHtmlNotification:wonderpushData];
         return YES;
     } else if ([WP_PUSH_NOTIFICATION_SHOW_MAP isEqualToString:type]) {
+        WPLogDebug(@"handleNotificationOpened: showing map in-app");
         [self handleMapNotification:wonderpushData];
         return YES;
     }
