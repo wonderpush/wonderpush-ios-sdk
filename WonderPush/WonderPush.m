@@ -1555,7 +1555,6 @@ static void(^presentBlock)(void) = nil;
                              @"osVersion": [self getOsVersion] ?: null,
                              @"brand": @"Apple",
                              @"model": [self getDeviceModel] ?: null,
-                             @"name": [self getDeviceName] ?: null,
                              @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width] ?: null,
                              @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height] ?: null,
                              @"screenDensity": [NSNumber numberWithInt:(int)[self getScreenDensity]] ?: null,
@@ -1703,11 +1702,6 @@ static void(^presentBlock)(void) = nil;
 {
     LAContext *context = [LAContext new];
     return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-}
-
-+ (NSString *) getDeviceName
-{
-    return [[UIDevice currentDevice] name];
 }
 
 + (NSString *) getDeviceModel
