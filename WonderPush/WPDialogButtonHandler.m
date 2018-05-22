@@ -55,7 +55,6 @@
 
     NSArray *clickedButtonAction = [clickedButton arrayForKey:@"actions"];
     [self executeButtonActions:clickedButtonAction];
-    [WonderPush resetButtonHandler];
 }
 
 @end

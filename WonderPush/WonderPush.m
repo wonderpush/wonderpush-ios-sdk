@@ -742,22 +742,12 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 #pragma mark - push notification types handling
 
-// We need to keep a reference on the DialogButtonHandler as the UIAlertView just keep a weak reference.
-// We can only have one dialog on screen so having only one reference is no problem
-static WPDialogButtonHandler *buttonHandler = nil;
-static void(^presentBlock)(void) = nil;
-
-+ (void) resetButtonHandler
-{
-    buttonHandler = nil;
-}
-
 + (void) handleTextNotification:(NSDictionary *)wonderPushData
 {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:[wonderPushData stringForKey:@"title"] message:[wonderPushData stringForKey:@"message"] preferredStyle:UIAlertControllerStyleAlert];
 
     NSArray *buttons = [wonderPushData arrayForKey:@"buttons"];
-    buttonHandler = [[WPDialogButtonHandler alloc] init];
+    WPDialogButtonHandler *buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.notificationConfiguration = wonderPushData;
     buttonHandler.buttonConfiguration = buttons;
     if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
@@ -775,9 +765,9 @@ static void(^presentBlock)(void) = nil;
         }]];
     }
 
-    presentBlock = ^{
+    __block void (^presentBlock)(void) = ^{
         if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
         } else {
             [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
             presentBlock = nil;
@@ -788,10 +778,6 @@ static void(^presentBlock)(void) = nil;
 
 + (void) handleHtmlNotification:(NSDictionary*)wonderPushData
 {
-    if (buttonHandler != nil) {
-        // we currently support only one dialog at a time
-        return;
-    }
     WPWebView *view = [WPWebView new];
     // NSString *title = [wonderPushData stringForKey:@"title"];
     NSString *message = [wonderPushData stringForKey:@"message"];
@@ -806,7 +792,7 @@ static void(^presentBlock)(void) = nil;
     }
 
     NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
-    buttonHandler = [[WPDialogButtonHandler alloc] init];
+    WPDialogButtonHandler *buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.buttonConfiguration = buttons;
     buttonHandler.notificationConfiguration = wonderPushData;
     NSMutableArray *alertButtons = [[NSMutableArray alloc] initWithCapacity:MIN(1, [buttons count])];
@@ -820,7 +806,6 @@ static void(^presentBlock)(void) = nil;
                 } else {
                     [buttonHandler clickedButtonAtIndex:-1];
                 }
-                buttonHandler = nil;
             }]];
         }
     } else {
@@ -830,7 +815,6 @@ static void(^presentBlock)(void) = nil;
             } else {
                 [buttonHandler clickedButtonAtIndex:-1];
             }
-            buttonHandler = nil;
         }]];
     }
 
@@ -845,9 +829,9 @@ static void(^presentBlock)(void) = nil;
         [configuration addActions:alertButtons];
     }];
 
-    presentBlock = ^{
+    __block void (^presentBlock)(void) = ^{
         if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
         } else {
             [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
             presentBlock = nil;
@@ -858,9 +842,6 @@ static void(^presentBlock)(void) = nil;
 
 + (void) handleMapNotification:(NSDictionary*)wonderPushData
 {
-    // We currently support only one dialog at a time
-    if (buttonHandler != nil) return;
-
     // NSString *title = [wonderPushData stringForKey:@"title"];
     // NSString *message = [wonderPushData stringForKey:@"message"];
     NSDictionary *mapData = [wonderPushData dictionaryForKey:@"map"] ?: @{};
@@ -880,7 +861,7 @@ static void(^presentBlock)(void) = nil;
     UIImageView * view = [[UIImageView alloc] initWithImage:image];
 
     NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
-    buttonHandler = [[WPDialogButtonHandler alloc] init];
+    WPDialogButtonHandler *buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.buttonConfiguration = buttons;
     buttonHandler.notificationConfiguration = wonderPushData;
     NSMutableArray *alertButtons = [[NSMutableArray alloc] initWithCapacity:MIN(1, [buttons count])];
@@ -894,7 +875,6 @@ static void(^presentBlock)(void) = nil;
                 } else {
                     [buttonHandler clickedButtonAtIndex:-1];
                 }
-                buttonHandler = nil;
             }]];
         }
     } else {
@@ -904,7 +884,6 @@ static void(^presentBlock)(void) = nil;
             } else {
                 [buttonHandler clickedButtonAtIndex:-1];
             }
-            buttonHandler = nil;
         }]];
     }
 
@@ -920,9 +899,9 @@ static void(^presentBlock)(void) = nil;
         [configuration addActions:alertButtons];
     }];
 
-    presentBlock = ^{
+    __block void (^presentBlock)(void) = ^{
         if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
         } else {
             [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
             presentBlock = nil;
@@ -1365,9 +1344,9 @@ static void(^presentBlock)(void) = nil;
                 [WonderPush handleNotificationOpened:notificationDictionary];
             }]];
 
-            presentBlock = ^{
+            __block void (^presentBlock)(void) = ^{
                 if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
                 } else {
                     [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:systemLikeAlert animated:YES completion:nil];
                     presentBlock = nil;

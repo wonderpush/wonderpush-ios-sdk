@@ -158,8 +158,6 @@
 
 + (NSString *) getSDKVersionNumber;
 
-+ (void) resetButtonHandler;
-
 + (void) initForNewUser:(NSString *)userId;
 
 /**
