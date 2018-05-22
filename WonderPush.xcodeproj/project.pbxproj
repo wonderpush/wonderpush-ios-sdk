@@ -26,7 +26,6 @@
 		3D77BBB11E60761600CA7915 /* WPNotificationCenterDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */; };
 		3D92E83F1D3F0A5F009D3AAA /* WPWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92E83D1D3F0A5F009D3AAA /* WPWebView.h */; };
 		3D92E8401D3F0A5F009D3AAA /* WPWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D92E83E1D3F0A5F009D3AAA /* WPWebView.m */; };
-		3DCC286C1B6F773C00D2778E /* WPAlertViewDelegateBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */; };
 		3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
 		3DFEA88E1C46E09E00E27404 /* WPAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */; };
 		3DFF25DE1EB37B9500124483 /* WonderPushExtension in Resources */ = {isa = PBXBuildFile; fileRef = 3DFF25DD1EB37B9500124483 /* WonderPushExtension */; };
@@ -146,8 +145,6 @@
 		3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPNotificationCenterDelegate.m; sourceTree = "<group>"; };
 		3D92E83D1D3F0A5F009D3AAA /* WPWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPWebView.h; sourceTree = "<group>"; };
 		3D92E83E1D3F0A5F009D3AAA /* WPWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPWebView.m; sourceTree = "<group>"; };
-		3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPAlertViewDelegateBlock.h; sourceTree = "<group>"; };
-		3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAlertViewDelegateBlock.m; sourceTree = "<group>"; };
 		3DDE66D51B4AE73200B5DC44 /* WPLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPLog.m; sourceTree = "<group>"; };
 		3DDE66D61B4AE73200B5DC44 /* WPLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPLog.h; sourceTree = "<group>"; };
 		3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAppDelegate.m; sourceTree = "<group>"; };
@@ -317,8 +314,6 @@
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
 				3DDE66D61B4AE73200B5DC44 /* WPLog.h */,
 				3DDE66D51B4AE73200B5DC44 /* WPLog.m */,
-				3DCC28691B6F773C00D2778E /* WPAlertViewDelegateBlock.h */,
-				3DCC286A1B6F773C00D2778E /* WPAlertViewDelegateBlock.m */,
 				3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */,
 				3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */,
 				A16E33A919C886A700E4E158 /* Supporting Files */,
@@ -701,7 +696,6 @@
 				A1E3E0DF19E42B3F00A4EE09 /* WPResponse.m in Sources */,
 				A1E3E0E019E42B3F00A4EE09 /* WPConfiguration.m in Sources */,
 				A1E3E0E119E42B3F00A4EE09 /* WonderPush.m in Sources */,
-				3DCC286C1B6F773C00D2778E /* WPAlertViewDelegateBlock.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -29,7 +29,6 @@
 #import "WPNotificationCenterDelegate.h"
 #import "WPConfiguration.h"
 #import "WPDialogButtonHandler.h"
-#import "WPAlertViewDelegateBlock.h"
 #import "WPAPIClient.h"
 #import "PKAlertController.h"
 #import "WPJsonUtil.h"
@@ -755,26 +754,36 @@ static void(^presentBlock)(void) = nil;
 
 + (void) handleTextNotification:(NSDictionary *)wonderPushData
 {
-    if (buttonHandler != nil) {
-        // we currently support only one dialog at a time
-        return;
-    }
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[wonderPushData stringForKey:@"title"] message:[wonderPushData stringForKey:@"message"] preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertView *dialog = [[UIAlertView alloc] initWithTitle:[wonderPushData stringForKey:@"title"] message:[wonderPushData stringForKey:@"message"] delegate:nil cancelButtonTitle:nil otherButtonTitles:nil, nil];
     NSArray *buttons = [wonderPushData arrayForKey:@"buttons"];
     buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.notificationConfiguration = wonderPushData;
     buttonHandler.buttonConfiguration = buttons;
-    dialog.delegate = buttonHandler;
     if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
+        int i = -1;
         for (NSDictionary *button in buttons) {
+            int index = ++i;
             if (![button isKindOfClass:[NSDictionary class]]) continue;
-            [dialog addButtonWithTitle:[button stringForKey:@"label"]];
+            [alert addAction:[UIAlertAction actionWithTitle:[button stringForKey:@"label"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                [buttonHandler clickedButtonAtIndex:index];
+            }]];
         }
     } else {
-        [dialog addButtonWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL];
+        [alert addAction:[UIAlertAction actionWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [buttonHandler clickedButtonAtIndex:-1];
+        }]];
     }
-    [dialog show];
+
+    presentBlock = ^{
+        if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
+        } else {
+            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
+            presentBlock = nil;
+        }
+    };
+    dispatch_async(dispatch_get_main_queue(), presentBlock);
 }
 
 + (void) handleHtmlNotification:(NSDictionary*)wonderPushData
@@ -807,9 +816,9 @@ static void(^presentBlock)(void) = nil;
             ++i;
             [alertButtons addObject:[PKAlertAction actionWithTitle:[button valueForKey:@"label"] handler:^(PKAlertAction *action, BOOL closed) {
                 if (!closed) {
-                    [buttonHandler alertView:nil clickedButtonAtIndex:i];
+                    [buttonHandler clickedButtonAtIndex:i];
                 } else {
-                    [buttonHandler alertView:nil clickedButtonAtIndex:-1];
+                    [buttonHandler clickedButtonAtIndex:-1];
                 }
                 buttonHandler = nil;
             }]];
@@ -817,9 +826,9 @@ static void(^presentBlock)(void) = nil;
     } else {
         [alertButtons addObject:[PKAlertAction actionWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL handler:^(PKAlertAction *action, BOOL closed) {
             if (!closed) {
-                [buttonHandler alertView:nil clickedButtonAtIndex:0];
+                [buttonHandler clickedButtonAtIndex:0];
             } else {
-                [buttonHandler alertView:nil clickedButtonAtIndex:-1];
+                [buttonHandler clickedButtonAtIndex:-1];
             }
             buttonHandler = nil;
         }]];
@@ -881,9 +890,9 @@ static void(^presentBlock)(void) = nil;
             ++i;
             [alertButtons addObject:[PKAlertAction actionWithTitle:[button valueForKey:@"label"] handler:^(PKAlertAction *action, BOOL closed) {
                 if (!closed) {
-                    [buttonHandler alertView:nil clickedButtonAtIndex:i];
+                    [buttonHandler clickedButtonAtIndex:i];
                 } else {
-                    [buttonHandler alertView:nil clickedButtonAtIndex:-1];
+                    [buttonHandler clickedButtonAtIndex:-1];
                 }
                 buttonHandler = nil;
             }]];
@@ -891,9 +900,9 @@ static void(^presentBlock)(void) = nil;
     } else {
         [alertButtons addObject:[PKAlertAction actionWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL handler:^(PKAlertAction *action, BOOL closed) {
             if (!closed) {
-                [buttonHandler alertView:nil clickedButtonAtIndex:0];
+                [buttonHandler clickedButtonAtIndex:0];
             } else {
-                [buttonHandler alertView:nil clickedButtonAtIndex:-1];
+                [buttonHandler clickedButtonAtIndex:-1];
             }
             buttonHandler = nil;
         }]];
@@ -1350,17 +1359,21 @@ static void(^presentBlock)(void) = nil;
             action = [WPUtil wpLocalizedString:@"VIEW" withDefault:@"View"];
         }
         if (alert) {
-            UIAlertView *systemLikeAlert = [[UIAlertView alloc] initWithTitle:title
-                                                                      message:alert
-                                                                     delegate:nil
-                                                            cancelButtonTitle:[WPUtil wpLocalizedString:@"CLOSE" withDefault:@"Close"]
-                                                            otherButtonTitles:action, nil];
-            [WPAlertViewDelegateBlock forAlert:systemLikeAlert withBlock:^(UIAlertView *alertView, NSInteger buttonIndex) {
-                if (buttonIndex == 1) {
-                    [WonderPush handleNotificationOpened:notificationDictionary];
+            UIAlertController *systemLikeAlert = [UIAlertController alertControllerWithTitle:title message:alert preferredStyle:UIAlertControllerStyleAlert];
+            [systemLikeAlert addAction:[UIAlertAction actionWithTitle:[WPUtil wpLocalizedString:@"CLOSE" withDefault:@"Close"] style:UIAlertActionStyleCancel handler:nil]];
+            [systemLikeAlert addAction:[UIAlertAction actionWithTitle:action style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                [WonderPush handleNotificationOpened:notificationDictionary];
+            }]];
+
+            presentBlock = ^{
+                if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
+                } else {
+                    [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:systemLikeAlert animated:YES completion:nil];
+                    presentBlock = nil;
                 }
-            }];
-            [systemLikeAlert show];
+            };
+            dispatch_async(dispatch_get_main_queue(), presentBlock);
             return YES;
         }
 

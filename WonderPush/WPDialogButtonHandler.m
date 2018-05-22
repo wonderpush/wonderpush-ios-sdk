@@ -23,10 +23,7 @@
 
 - (id)init
 {
-    self = [super init];
-    if (self) {
-        self.showTime = [[NSProcessInfo processInfo] systemUptime];
-    }
+    self.showTime = [[NSProcessInfo processInfo] systemUptime];
     return self;
 }
 
@@ -39,7 +36,7 @@
     }
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSDictionary *clickedButton = nil;
     if (buttonConfiguration && buttonIndex >= 0 && buttonIndex < buttonConfiguration.count) {

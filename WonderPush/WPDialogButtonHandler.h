@@ -18,11 +18,11 @@
 #import <UIKit/UIKit.h>
 #import "PKAlertController.h"
 
-@interface WPDialogButtonHandler : NSObject<UIAlertViewDelegate>
+@interface WPDialogButtonHandler : NSObject
 
 - (id)init;
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex;
+- (void)clickedButtonAtIndex:(NSInteger)buttonIndex;
 
 @property (nonatomic) NSTimeInterval showTime;
 @property (strong, nonatomic) NSArray *buttonConfiguration;
