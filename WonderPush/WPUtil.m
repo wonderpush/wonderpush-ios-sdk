@@ -82,11 +82,11 @@ NSInteger const WPErrorInvalidAccessToken = 11003;
         NSString *val;
 
         if (pos.location == NSNotFound) {
-            key = [kvp stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            key = [kvp stringByRemovingPercentEncoding];
             val = @"";
         } else {
-            key = [[kvp substringToIndex:pos.location]  stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            val = [[kvp substringFromIndex:pos.location + pos.length]  stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            key = [[kvp substringToIndex:pos.location] stringByRemovingPercentEncoding];
+            val = [[kvp substringFromIndex:pos.location + pos.length] stringByRemovingPercentEncoding];
         }
 
         if (!key || !val) {

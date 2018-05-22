@@ -76,6 +76,8 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
     return rtn;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
@@ -86,6 +88,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
         _WPAppDelegateAlreadyRunning = NO;
     }
 }
+#pragma clang diagnostic pop
 
 - (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
@@ -109,6 +112,8 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
@@ -119,6 +124,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
         _WPAppDelegateAlreadyRunning = NO;
     }
 }
+#pragma clang diagnostic pop
 
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {

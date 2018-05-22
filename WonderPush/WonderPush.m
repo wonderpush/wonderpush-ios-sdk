@@ -865,7 +865,7 @@ static void(^presentBlock)(void) = nil;
     NSString *staticMapUrl = [NSString stringWithFormat:@"http://maps.google.com/maps/api/staticmap?markers=color:red|%f,%f&zoom=%ld&size=290x290&sensor=true",
                               [lat doubleValue], [lon doubleValue], (long)[zoom integerValue]];
 
-    NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]]];
     UIImage *image = [UIImage imageWithData: [NSData dataWithContentsOfURL:mapUrl]];
 
     UIImageView * view = [[UIImageView alloc] initWithImage:image];
@@ -1105,8 +1105,13 @@ static void(^presentBlock)(void) = nil;
 
 + (BOOL) hasAcceptedVisibleNotifications
 {
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)]) {
-        return [[UIApplication sharedApplication] currentUserNotificationSettings].types != 0;
+    if (@available(iOS 8.0, *)) {
+        if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)]) {
+            return [[UIApplication sharedApplication] currentUserNotificationSettings].types != 0;
+        } else {
+            WPLog(@"Cannot resolve currentUserNotificationSettings");
+            return NO;
+        }
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -1117,8 +1122,13 @@ static void(^presentBlock)(void) = nil;
 
 + (BOOL) isRegisteredForRemoteNotifications
 {
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
-        return [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
+    if (@available(iOS 8.0, *)) {
+        if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+            return [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
+        } else {
+            WPLog(@"Cannot resolve isRegisteredForRemoteNotifications");
+            return NO;
+        }
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -1130,8 +1140,12 @@ static void(^presentBlock)(void) = nil;
 + (void) refreshDeviceTokenIfPossible
 {
     if (![self hasAcceptedVisibleNotifications]) return;
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerForRemoteNotifications)]) {
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
+    if (@available(iOS 8.0, *)) {
+        if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerForRemoteNotifications)]) {
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        } else {
+            WPLog(@"Cannot resolve registerForRemoteNotifications");
+        }
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -1142,9 +1156,13 @@ static void(^presentBlock)(void) = nil;
 
 + (void) registerToPushNotifications
 {
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
+    if (@available(iOS 8.0, *)) {
+        if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+            [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        } else {
+            WPLog(@"Cannot resolve registerUserNotificationSettings");
+        }
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -1700,8 +1718,12 @@ static void(^presentBlock)(void) = nil;
 
 + (BOOL) getFingerprintScannerSupported
 {
-    LAContext *context = [LAContext new];
-    return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
+    if (@available(iOS 8.0, *)) {
+        LAContext *context = [LAContext new];
+        return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
+    } else {
+        return NO;
+    }
 }
 
 + (NSString *) getDeviceModel
@@ -1969,7 +1991,16 @@ static void(^presentBlock)(void) = nil;
         URLToOpen = [_delegate wonderPushWillOpenURL:URLToOpen];
     }
     if (!URLToOpen) return NO;
-    return [[UIApplication sharedApplication] openURL:URLToOpen];
+    if (![[UIApplication sharedApplication] canOpenURL:URLToOpen]) return NO;
+    if (@available(iOS 10.0, *)) {
+        [[UIApplication sharedApplication] openURL:URLToOpen options:@{} completionHandler:nil];
+        return YES;
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        return [[UIApplication sharedApplication] openURL:URLToOpen];
+#pragma clang diagnostic pop
+    }
 }
 
 @end
