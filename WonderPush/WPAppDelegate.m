@@ -78,6 +78,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
@@ -113,6 +114,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 }
 
 #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {

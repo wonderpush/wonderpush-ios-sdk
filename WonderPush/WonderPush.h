@@ -330,6 +330,8 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 /**
  Forwards an application delegate to the SDK.
 
@@ -341,6 +343,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param notification Same parameter as in the forwarded delegate method.
  */
 + (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
+#pragma clang diagnostic pop
 
 /**
  Forwards an application delegate to the SDK.

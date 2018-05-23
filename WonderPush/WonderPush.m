@@ -450,7 +450,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
     }
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 + (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+#pragma clang diagnostic pop
 {
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
@@ -519,6 +522,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
     NSArray *queuedNotifications = [configuration getQueuedNotifications];
     for (NSDictionary *userInfo in queuedNotifications) {
         if (![userInfo isKindOfClass:[NSDictionary class]]) continue;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         UILocalNotification *notification = [[UILocalNotification alloc] init];
         if (![WPUtil currentApplicationIsInForeground]) {
             NSDictionary *aps = [userInfo dictionaryForKey:@"aps"];
@@ -528,6 +533,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
             notification.soundName = [aps stringForKey:@"sound"];
             notification.userInfo = userInfo;
             [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+#pragma clang diagnostic pop
         }
     }
     [configuration clearQueuedNotifications];
@@ -1095,7 +1101,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
 {
     if (@available(iOS 8.0, *)) {
         if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             return [[UIApplication sharedApplication] currentUserNotificationSettings].types != 0;
+#pragma clang diagnostic pop
         } else {
             WPLog(@"Cannot resolve currentUserNotificationSettings");
             return NO;
@@ -1146,7 +1155,10 @@ static NSDictionary* gpsCapabilityByCode = nil;
 {
     if (@available(iOS 8.0, *)) {
         if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+#pragma clang diagnostic pop
             [[UIApplication sharedApplication] registerForRemoteNotifications];
         } else {
             WPLog(@"Cannot resolve registerUserNotificationSettings");
