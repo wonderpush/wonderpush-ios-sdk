@@ -194,7 +194,7 @@ Called when receiving the full state of the installation custom properties
  Whether the user has already been prompted for permission by the OS.
  This asks the OS itself, so it can detect a situation for an application updating from pre-WonderPush push-enabled version.
  */
-+ (BOOL) hasAcceptedVisibleNotifications;
++ (void) hasAcceptedVisibleNotificationsWithCompletionHandler:(void(^)(BOOL result))handler;
 
 /**
  Whether iOS has granted a device token (or should have, for iOS 7).
