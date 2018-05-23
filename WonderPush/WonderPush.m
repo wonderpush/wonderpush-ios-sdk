@@ -984,13 +984,11 @@ static NSDictionary* gpsCapabilityByCode = nil;
             [WonderPush setDeviceToken:oldDeviceToken];
 
             // Refresh preferences
-            [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL result) {
-                if (result) {
-                    [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}} shouldOverwrite:NO];
-                } else {
-                    [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}} shouldOverwrite:NO];
-                }
-            }];
+            if (conf.notificationEnabled) {
+                [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}} shouldOverwrite:NO];
+            } else {
+                [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}} shouldOverwrite:NO];
+            }
         };
 
         NSDictionary *installation = [action dictionaryForKey:@"installation"];
@@ -1111,7 +1109,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
     }
 }
 
-//+ (void) hasAcceptedVisibleNotificationsWithCompletionHandler:(^handler)(BOOL result)
 + (void) hasAcceptedVisibleNotificationsWithCompletionHandler:(void(^)(BOOL result))handler;
 {
     if (@available(iOS 10.0, *)) {
