@@ -32,20 +32,27 @@ DEPENDENCIES:
   - WonderPush (from `.`)
   - WonderPushExtension/NotificationService (from `.`)
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - AFNetworking
+    - DTFoundation
+    - PKAlertController
+    - TCMobileProvision
+
 EXTERNAL SOURCES:
   WonderPush:
-    :path: .
+    :path: "."
   WonderPushExtension:
-    :path: .
+    :path: "."
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   DTFoundation: 26a164ef510877387906fb92bff524a792db4bf8
   PKAlertController: 8867a57e032592bf077965dcd519fe1694ba3a02
   TCMobileProvision: 2a8962b38821a20fad53b9d7851bbc9ae8c52995
-  WonderPush: 49154393495b6ce05fff423a2c8c8fb1f5ece6b2
-  WonderPushExtension: dc46160238b06adf51425130f01ac6b2519f88cc
+  WonderPush: 73416fcf49a1319dbf43dc3130d78d9a3ee49ad2
+  WonderPushExtension: 5217dce40acde00dc4b1b9efd1a3c0813eb8f7cf
 
-PODFILE CHECKSUM: 47a28c3dc3f28dd1f0023b0f240b25eadf661ed9
+PODFILE CHECKSUM: 35827661f79149395a945264a56413c92f2c9229
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.5.2
