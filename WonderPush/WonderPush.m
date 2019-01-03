@@ -1573,28 +1573,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
                                     @"currency": [self getCurrency] ?: null,
                                     @"locale": [self getLocale] ?: null};
 
-    NSDictionary *capabilities = @{@"telephony": [NSNumber numberWithBool:[self getTelephonySupported]] ?: null,
-                                   @"telephonyGsm": [NSNumber numberWithBool:[self getTelephonyGSMSupported]] ?: null,
-                                   @"telephonyCdma": [NSNumber numberWithBool:[self getTelephoneCDMASupported]] ?: null,
-                                   @"wifi": @YES, // all have wifi otherwise how did we install the app
-                                   @"wifiDirect": @NO, // not supported by Apple
-                                   @"gps": [NSNumber numberWithBool:[self getGPSSupported]] ?: null,
-                                   @"networkLocation": @YES,
-                                   @"microphone": [NSNumber numberWithBool:[self getMicrophoneSupported]] ?: null,
-                                   @"sensorAccelerometer":@YES,
-                                   @"sensorBarometer": @NO,
-                                   @"sensorCompass": [NSNumber numberWithBool:[self getCompassSupported]] ?: null,
-                                   @"sensorGyroscope": [NSNumber numberWithBool:[self getGyroscopeSupported]] ?: null,
-                                   @"sensorLight": @YES,
-                                   @"sensorProximity": [NSNumber numberWithBool:[self getProximitySensorSupported]] ?: null,
-                                   @"sensorStepDetector": @NO,
-                                   @"touchscreen": @YES,
-                                   @"touchscreenTwoFingers": @YES,
-                                   @"touchscreenDistinct": @YES,
-                                   @"touchscreenFullHand": @YES,
-                                   @"figerprintScanner":[NSNumber numberWithBool:[self getFingerprintScannerSupported]] ?: null
-                                   };
-
     CGRect screenSize = [self getScreenSize];
     NSDictionary *device = @{@"id": [WPUtil deviceIdentifier] ?: null,
                              @"federatedId": [WPUtil federatedId] ? [NSString stringWithFormat:@"0:%@", [WPUtil federatedId]] : null,
@@ -1606,7 +1584,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
                              @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height] ?: null,
                              @"screenDensity": [NSNumber numberWithInt:(int)[self getScreenDensity]] ?: null,
                              @"configuration": configuration,
-                             @"capabilities": capabilities,
                              };
 
     NSDictionary *properties = @{@"application": application,
@@ -1635,124 +1612,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
     NSString *result;
     result = SDK_VERSION;
     return result;
-}
-
-+ (BOOL) getProximitySensorSupported
-{
-    UIDevice *device = [UIDevice currentDevice];
-    if (device) {
-        device.proximityMonitoringEnabled = YES;
-        if (device.proximityMonitoringEnabled == YES) {
-            device.proximityMonitoringEnabled = NO;
-            return YES;
-        }
-    }
-    return NO;
-}
-
-+ (BOOL) getGyroscopeSupported
-{
-#ifdef __IPHONE_4_0
-    CMMotionManager *motionManager = [[CMMotionManager alloc] init];
-    return motionManager.gyroAvailable;
-#else
-    return NO;
-#endif
-}
-
-+ (BOOL) getCompassSupported
-{
-    BOOL compassAvailable = NO;
-
-#ifdef __IPHONE_3_0
-	compassAvailable = [CLLocationManager headingAvailable];
-#else
-	CLLocationManager *cl = [[CLLocationManager alloc] init];
-	compassAvailable = cl.headingAvailable;
-#endif
-    return compassAvailable;
-}
-
-+ (BOOL) getMicrophoneSupported
-{
-    NSArray *availableInputs = [[AVAudioSession sharedInstance] availableInputs];
-    if (availableInputs) {
-        for (AVAudioSessionPortDescription *port in availableInputs) {
-            if (!port) continue;
-            if ([port.portType isEqualToString:AVAudioSessionPortBuiltInMic] ||
-                [port.portType isEqualToString:AVAudioSessionPortHeadsetMic]
-            ) {
-                return YES;
-            }
-        }
-    }
-    return NO;
-}
-
-+ (BOOL) getGPSSupported
-{
-    struct utsname systemInfo;
-
-    uname(&systemInfo);
-
-    NSString* code = [NSString stringWithCString:systemInfo.machine
-                                        encoding:NSUTF8StringEncoding];
-
-    BOOL gpsCapability = NO;
-    id kbValue = [gpsCapabilityByCode numberForKey:code];
-    if (kbValue != nil) {
-        gpsCapability = [kbValue boolValue];
-    } else {
-        // Not found on database. At least guess main device type from string contents:
-
-        if ([code rangeOfString:@"iPod"].location != NSNotFound) {
-            gpsCapability = NO;
-        } else if([code rangeOfString:@"iPad"].location != NSNotFound) {
-            gpsCapability = YES; // this is not sure but let's assume the future will tend to that
-        } else if([code rangeOfString:@"iPhone"].location != NSNotFound){
-            gpsCapability = YES;
-        } else {
-            gpsCapability = NO;
-        }
-    }
-
-    return gpsCapability;
-}
-
-+ (BOOL) getTelephoneCDMASupported
-{
-    NSString *model = [self getDeviceModel];
-    if ([model rangeOfString:@"CDMA"].location != NSNotFound ||
-        [model isEqualToString:@"Verizon iPhone 4"]) {
-        return YES;
-    }
-    return NO;
-}
-
-+ (BOOL) getTelephonyGSMSupported
-{
-    NSString *model = [self getDeviceModel];
-    if ([model rangeOfString:@"GSM"].location != NSNotFound ||
-        [model isEqualToString:@"iPhone 1G"] || [model isEqualToString:@"iPhone 3G"] ||
-        [model isEqualToString:@"iPhone 3GS"] || [model isEqualToString:@"iPhone 4"]) {
-        return YES;
-    }
-    return NO;
-}
-
-+ (BOOL) getTelephonySupported
-{
-    return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tel://"]];
-}
-
-+ (BOOL) getFingerprintScannerSupported
-{
-    if (@available(iOS 8.0, *)) {
-        LAContext *context = [LAContext new];
-        return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-    } else {
-        return NO;
-    }
 }
 
 + (NSString *) getDeviceModel
