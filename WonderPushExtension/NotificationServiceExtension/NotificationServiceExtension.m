@@ -30,6 +30,16 @@
  */
 #define WP_PUSH_NOTIFICATION_KEY @"_wp"
 
+@interface WonderPushFileDownloader: NSObject
+@property (nonatomic, strong) NSURL *downloadURL;
+@property (nonatomic, strong) NSURL *fileURL;
+@property (nonatomic, strong) NSURLSessionDownloadTask *task;
+@property (nonatomic, strong) NSError *error;
+@property (nonatomic, strong) dispatch_semaphore_t semaphore;
+- (instancetype) initWithDownloadURL: (NSURL*) downloadURL fileURL: (NSURL*) fileURL;
+- (void) download:(NSError **)error;
+@end
+
 
 @implementation WonderPushNotificationServiceExtension
 
@@ -80,12 +90,12 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                     }
                     NSString *attachmentId = [attachment stringForKey:@"id"] ?: [NSString stringWithFormat:@"%d", index];
                     NSError *error = nil;
-                    NSData *attachmentData = [[NSData alloc] initWithContentsOfURL:attachmentURL];
-                    if (!attachmentData) continue;
+                    WPLog(@"downloading %@", attachmentURL);
                     NSURL *fileURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@.%@", attachmentId, attachmentURL.pathExtension ?: @""] relativeToURL:documentsDirectoryURL];
-                    [attachmentData writeToURL:fileURL options:NSDataWritingAtomic error:&error];
+                    WonderPushFileDownloader *downloader = [[WonderPushFileDownloader alloc] initWithDownloadURL:attachmentURL fileURL:fileURL];
+                    [downloader download:&error];
                     if (error != nil) {
-                        WPLog(@"Failed to write attachment to disk: %@", error);
+                        WPLog(@"Failed download attachment: %@", error);
                         continue;
                     }
                     @try {
@@ -233,6 +243,33 @@ static const NSString *UTTypeAVIMovie = @"public.avi";
         return !!wonderpushData;
     }
     return NO;
+}
+
+@end
+
+
+@implementation WonderPushFileDownloader
+- (instancetype) initWithDownloadURL: (NSURL*) downloadURL fileURL: (NSURL*) fileURL {
+    self = [super init];
+    self.fileURL = fileURL;
+    self.downloadURL = downloadURL;
+    self.error = nil;
+    self.task = [[NSURLSession sharedSession] downloadTaskWithURL:downloadURL completionHandler:^(NSURL *downloadedFileURL, NSURLResponse *response, NSError *error) {
+        self.error = error;
+        if (!error && downloadedFileURL) {
+            NSError *moveError = nil;
+            [[NSFileManager defaultManager] moveItemAtURL:downloadedFileURL toURL:fileURL error:&moveError];
+            self.error = moveError;
+        }
+        dispatch_semaphore_signal(self.semaphore);
+    }];
+    return self;
+}
+- (void) download:(NSError *__autoreleasing *)error {
+    self.semaphore = dispatch_semaphore_create(0);
+    [self.task resume];
+    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+    *error = self.error;
 }
 
 @end
