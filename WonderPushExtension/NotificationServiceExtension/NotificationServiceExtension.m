@@ -33,6 +33,7 @@
 @interface WonderPushFileDownloader: NSObject
 @property (nonatomic, strong) NSURL *downloadURL;
 @property (nonatomic, strong) NSURL *fileURL;
+@property (nonatomic, strong) NSURLResponse *response;
 @property (nonatomic, strong) NSURLSessionDownloadTask *task;
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
@@ -249,6 +250,7 @@ static const NSString *UTTypeAVIMovie = @"public.avi";
 
 
 @implementation WonderPushFileDownloader
+
 - (instancetype) initWithDownloadURL: (NSURL*) downloadURL fileURL: (NSURL*) fileURL {
     self = [super init];
     self.fileURL = fileURL;
@@ -256,6 +258,7 @@ static const NSString *UTTypeAVIMovie = @"public.avi";
     self.error = nil;
     self.task = [[NSURLSession sharedSession] downloadTaskWithURL:downloadURL completionHandler:^(NSURL *downloadedFileURL, NSURLResponse *response, NSError *error) {
         self.error = error;
+        self.response = response;
         if (!error && downloadedFileURL) {
             NSError *moveError = nil;
             NSFileManager *fileManager = [NSFileManager defaultManager];
