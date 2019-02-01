@@ -258,7 +258,9 @@ static const NSString *UTTypeAVIMovie = @"public.avi";
         self.error = error;
         if (!error && downloadedFileURL) {
             NSError *moveError = nil;
-            [[NSFileManager defaultManager] moveItemAtURL:downloadedFileURL toURL:fileURL error:&moveError];
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            [fileManager removeItemAtURL:fileURL error:nil];
+            [fileManager moveItemAtURL:downloadedFileURL toURL:fileURL error:&moveError];
             self.error = moveError;
         }
         dispatch_semaphore_signal(self.semaphore);
