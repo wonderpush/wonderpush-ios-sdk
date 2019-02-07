@@ -52,6 +52,7 @@ __weak static id<WonderPushDelegate> _delegate = nil;
 
 static NSString *_currentLanguageCode = nil;
 static NSArray *validLanguageCodes = nil;
+static BOOL _requiresUserConsent = NO;
 static id<WonderPushAPI> wonderPushAPI = nil;
 + (void) initialize
 {
@@ -79,7 +80,25 @@ static id<WonderPushAPI> wonderPushAPI = nil;
         }];
     });
 }
-
++ (void) setRequiresUserConsent:(BOOL)requiresUserConsent
+{
+    _requiresUserConsent = requiresUserConsent;
+    if (_isInitialized) {
+        WPLog(@"Calling setRequiresUserConsent after `setClientId:secret:` is wrong. Please update your code.");
+    }
+}
++ (void) setUserConsent:(BOOL)userConsent
+{
+    [[WPConfiguration sharedConfiguration] setUserConsent:userConsent];
+}
++ (BOOL) getUserConsent
+{
+    return [WPConfiguration sharedConfiguration].userConsent;
+}
++ (BOOL) hasUserConsent
+{
+    return !_requiresUserConsent || [self getUserConsent];
+}
 + (void) setLogging:(BOOL)enable
 {
     NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;

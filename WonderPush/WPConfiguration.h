@@ -27,6 +27,7 @@
 #define USER_DEFAULTS_PER_USER_ARCHIVE_KEY @"__wonderpush_per_user_archive"
 #define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
 #define USER_DEFAULTS_ACCESS_TOKEN_IS_ANONYMOUS_KEY @"__wonderpush_access_token_is_anonymous"
+#define USER_DEFAULTS_USER_CONSENT_KEY @"__wonderpush_user_consent"
 #define USER_DEFAULTS_DEVICE_ID_KEY @"_wonderpush_deviceId"
 #define USER_DEFAULTS_USER_ID_KEY @"__wonderpush_userid"
 #define USER_DEFAULTS_INSTALLATION_ID @"_wonderpush_installationId"
@@ -93,6 +94,8 @@
 @property (nonatomic, strong) NSString *installationId;
 
 @property (nonatomic) BOOL notificationEnabled;
+@property (nonatomic) BOOL userConsent;
+
 
 @property (nonatomic, strong) NSNumber *overrideSetLogging;
 @property (nonatomic, strong) NSNumber *overrideNotificationReceipt;

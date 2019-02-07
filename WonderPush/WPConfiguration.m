@@ -230,7 +230,15 @@ static WPConfiguration *sharedConfiguration = nil;
     return [value isKindOfClass:[NSDictionary class]] ? value : nil;
 }
 
-
+#pragma mark - User consent
+- (BOOL) userConsent
+{
+    return [[self _getNSNumberForKey:USER_DEFAULTS_USER_CONSENT_KEY] boolValue];
+}
+- (void) setUserConsent:(BOOL)userConsent
+{
+    [self _setNSNumber:[NSNumber numberWithBool:userConsent] forKey:USER_DEFAULTS_USER_CONSENT_KEY];
+}
 #pragma mark - Change user id
 
 - (void) changeUserId:(NSString *)newUserId

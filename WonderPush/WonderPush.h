@@ -88,6 +88,30 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 ///---------------------
 
 /**
+ Sets whether user consent is required before the SDK is allowed to work.
+ Call this method before `setClientId:secret:`
+ @param requiresUserConsent Whether user consent is required before the SDK is allowed to work.
+ @see `setUserConsent:`
+ */
++ (void) setRequiresUserConsent:(BOOL)requiresUserConsent;
+/**
+ Provides or withdraws user consent.
+ Call this method after `setClientId:secret:`.
+ @param userConsent Whether the user provided or withdrew consent.
+ @see `setRequiresUserConsent:`
+ */
++ (void) setUserConsent:(BOOL)userConsent;
+/**
+ Returns whether user has already provided consent.
+ Call this method after `setClientId:secret:`.
+ */
++ (BOOL) getUserConsent;
+/**
+ Returns YES whenever user has already provided consent or consent is not necessary.
+ Call this method after `setClientId:secret:`.
+ */
++ (BOOL) hasUserConsent;
+/**
  Initializes the WonderPush SDK.
 
  Initialization should occur at the earliest possible time, when your application starts.
