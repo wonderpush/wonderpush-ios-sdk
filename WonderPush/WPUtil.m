@@ -22,6 +22,7 @@
 #import <sys/utsname.h>
 #import <UIKit/UIApplication.h>
 #import <TCMobileProvision/TCMobileProvision.h>
+#import <UserNotifications/UserNotifications.h>
 
 
 NSString * const WPErrorDomain = @"WPErrorDomain";
@@ -317,6 +318,35 @@ static bool wpLocaleBundleLoaded = NO;
         return defaultValue;
     }
     return [wpLocaleBundle localizedStringForKey:key value:defaultValue table:@"WonderPushLocalizable"];
+}
+
++ (void) registerToPushNotifications
+{
+    if (@available(iOS 10.0, *)) {
+        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            if (error != nil) {
+                WPLog(@"[UNUserNotificationCenter requestAuthorizationWithOptions:completionHandler:] returned an error: %@", error.localizedDescription);
+            }
+            if (granted) {
+                [[UIApplication sharedApplication] registerForRemoteNotifications];
+            }
+        }];
+    } else if (@available(iOS 8.0, *)) {
+        if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+#pragma clang diagnostic pop
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        } else {
+            WPLog(@"Cannot resolve registerUserNotificationSettings");
+        }
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+#pragma clang diagnostic pop
+    }
 }
 
 

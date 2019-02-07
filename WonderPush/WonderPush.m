@@ -16,13 +16,9 @@
 
 #import <CoreGraphics/CGGeometry.h>
 #import <UIKit/UIKit.h>
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#import <CoreTelephony/CTCarrier.h>
 #import <AVFoundation/AVFoundation.h>
-#import <CoreMotion/CoreMotion.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <UserNotifications/UserNotifications.h>
-#import <sys/utsname.h>
 #import "WPUtil.h"
 #import "WonderPush_private.h"
 #import "WPAppDelegate.h"
@@ -35,6 +31,7 @@
 #import "WPLog.h"
 #import "WPWebView.h"
 #import "WPJsonSyncInstallationCustom.h"
+#import "ConcreteWonderPushAPI.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -54,15 +51,13 @@ __weak static id<WonderPushDelegate> _delegate = nil;
 @implementation WonderPush
 
 static NSString *_currentLanguageCode = nil;
-static CLLocationManager *LocationManager = nil;
 static NSArray *validLanguageCodes = nil;
-static NSDictionary *deviceNamesByCode = nil;
-static NSDictionary* gpsCapabilityByCode = nil;
-
+static id<WonderPushAPI> wonderPushAPI = nil;
 + (void) initialize
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        wonderPushAPI = [ConcreteWonderPushAPI new];
         NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;
         if (overrideSetLogging != nil) {
             WPLog(@"OVERRIDE setLogging: %@", overrideSetLogging);
@@ -77,153 +72,11 @@ static NSDictionary* gpsCapabilityByCode = nil;
                                @"ru", @"sk", @"sl", @"sq", @"sr", @"sv", @"sw", @"ta", @"th", @"tl", @"tr",
                                @"uk", @"vi", @"zh", @"zh_CN", @"zh_TW", @"zh_HK",
                                ];
-        // Source: http://www.enterpriseios.com/wiki/iOS_Devices
-        // Source: https://www.theiphonewiki.com/wiki/Models
-        deviceNamesByCode = @{
-                              @"iPhone1,1"   : @"iPhone 1G",
-                              @"iPhone1,2"   : @"iPhone 3G",
-                              @"iPhone2,1"   : @"iPhone 3GS",
-                              @"iPhone3,1"   : @"iPhone 4",
-                              @"iPhone3,2"   : @"iPhone 4",
-                              @"iPhone3,3"   : @"Verizon iPhone 4",
-                              @"iPhone4,1"   : @"iPhone 4S",
-                              @"iPhone5,1"   : @"iPhone 5 (GSM)",
-                              @"iPhone5,2"   : @"iPhone 5 (GSM+CDMA)",
-                              @"iPhone5,3"   : @"iPhone 5c (GSM)",
-                              @"iPhone5,4"   : @"iPhone 5c (Global)",
-                              @"iPhone6,1"   : @"iPhone 5s (GSM)",
-                              @"iPhone6,2"   : @"iPhone 5s (Global)",
-                              @"iPhone7,1"   : @"iPhone 6 Plus",
-                              @"iPhone7,2"   : @"iPhone 6",
-                              @"iPhone8,1"   : @"iPhone 6S",
-                              @"iPhone8,2"   : @"iPhone 6S Plus",
-                              @"iPhone8,4"   : @"iPhone SE",
-                              @"iPhone9,1"   : @"iPhone 7 (Global)",
-                              @"iPhone9,3"   : @"iPhone 7 (GSM)",
-                              @"iPhone9,2"   : @"iPhone 7 Plus (Global)",
-                              @"iPhone9,4"   : @"iPhone 7 Plus (GSM)",
-                              @"iPod1,1"     : @"iPod Touch 1G",
-                              @"iPod2,1"     : @"iPod Touch 2G",
-                              @"iPod3,1"     : @"iPod Touch 3G",
-                              @"iPod4,1"     : @"iPod Touch 4G",
-                              @"iPod5,1"     : @"iPod Touch 5G",
-                              @"iPod7,1"     : @"iPod Touch 6",
-                              @"iPad1,1"     : @"iPad",
-                              @"iPad2,1"     : @"iPad 2 (WiFi)",
-                              @"iPad2,2"     : @"iPad 2 (GSM)",
-                              @"iPad2,3"     : @"iPad 2 (CDMA)",
-                              @"iPad2,4"     : @"iPad 2 (WiFi)",
-                              @"iPad2,5"     : @"iPad Mini (WiFi)",
-                              @"iPad2,6"     : @"iPad Mini (GSM)",
-                              @"iPad2,7"     : @"iPad Mini (GSM+CDMA)",
-                              @"iPad3,1"     : @"iPad 3 (WiFi)",
-                              @"iPad3,2"     : @"iPad 3 (GSM+CDMA)",
-                              @"iPad3,3"     : @"iPad 3 (GSM)",
-                              @"iPad3,4"     : @"iPad 4 (WiFi)",
-                              @"iPad3,5"     : @"iPad 4 (GSM)",
-                              @"iPad3,6"     : @"iPad 4 (GSM+CDMA)",
-                              @"iPad4,1"     : @"iPad Air (WiFi)",
-                              @"iPad4,2"     : @"iPad Air (GSM)",
-                              @"iPad4,3"     : @"iPad Air",
-                              @"iPad4,4"     : @"iPad Mini Retina (WiFi)",
-                              @"iPad4,5"     : @"iPad Mini Retina (GSM)",
-                              @"iPad4,6"     : @"iPad Mini 2G",
-                              @"iPad4,7"     : @"iPad Mini 3 (WiFi)",
-                              @"iPad4,8"     : @"iPad Mini 3 (Cellular)",
-                              @"iPad4,9"     : @"iPad Mini 3 (China)",
-                              @"iPad5,1"     : @"iPad Mini 4 (WiFi)",
-                              @"iPad5,2"     : @"iPad Mini 4 (Cellular)",
-                              @"iPad5,3"     : @"iPad Air 2 (WiFi)",
-                              @"iPad5,4"     : @"iPad Air 2 (Cellular)",
-                              @"iPad6,3"     : @"iPad Pro 9.7-inch (WiFi)",
-                              @"iPad6,4"     : @"iPad Pro 9.7-inch (Cellular)",
-                              @"iPad6,7"     : @"iPad Pro (WiFi)",
-                              @"iPad6,8"     : @"iPad Pro (Cellular)",
-                              @"AppleTV2,1"  : @"Apple TV 2G",
-                              @"AppleTV3,1"  : @"Apple TV 3",
-                              @"AppleTV3,2"  : @"Apple TV 3 (2013)",
-                              @"AppleTV5,3"  : @"Apple TV 4G",
-                              @"Watch1,1"    : @"Apple Watch 38mm",
-                              @"Watch1,2"    : @"Apple Watch 42mm",
-                              @"Watch2,3"    : @"Apple Watch Series 1 38mm",
-                              @"Watch2,4"    : @"Apple Watch Series 1 42mm",
-                              @"Watch2,6"    : @"Apple Watch Series 2 38mm",
-                              @"Watch2,7"    : @"Apple Watch Series 2 42mm",
-                              @"i386"        : @"Simulator",
-                              @"x86_64"      : @"Simulator"
-                              };
-        gpsCapabilityByCode = @{
-                                @"iPhone1,1"   : @NO,
-                                @"iPhone1,2"   : @YES,
-                                @"iPhone2,1"   : @YES,
-                                @"iPhone3,1"   : @YES,
-                                @"iPhone3,3"   : @YES,
-                                @"iPhone4,1"   : @YES,
-                                @"iPhone5,1"   : @YES,
-                                @"iPhone5,2"   : @YES,
-                                @"iPhone5,3"   : @YES,
-                                @"iPhone5,4"   : @YES,
-                                @"iPhone6,1"   : @YES,
-                                @"iPhone6,2"   : @YES,
-                                @"iPhone7,1"   : @YES,
-                                @"iPhone7,2"   : @YES,
-                                @"iPhone8,1"   : @YES,
-                                @"iPhone8,2"   : @YES,
-                                @"iPhone8,4"   : @YES,
-                                @"iPhone9,1"   : @YES,
-                                @"iPhone9,3"   : @YES,
-                                @"iPhone9,2"   : @YES,
-                                @"iPhone9,4"   : @YES,
-                                @"iPod1,1"     : @NO,
-                                @"iPod2,1"     : @NO,
-                                @"iPod3,1"     : @NO,
-                                @"iPod4,1"     : @NO,
-                                @"iPod5,1"     : @NO,
-                                @"iPod7,1"     : @NO,
-                                @"iPad1,1"     : @NO,
-                                @"iPad2,1"     : @NO,
-                                @"iPad2,2"     : @YES,
-                                @"iPad2,3"     : @YES,
-                                @"iPad2,4"     : @NO,
-                                @"iPad2,5"     : @NO,
-                                @"iPad2,6"     : @YES,
-                                @"iPad2,7"     : @YES,
-                                @"iPad3,1"     : @NO,
-                                @"iPad3,2"     : @YES,
-                                @"iPad3,3"     : @YES,
-                                @"iPad3,4"     : @NO,
-                                @"iPad3,5"     : @YES,
-                                @"iPad3,6"     : @YES,
-                                @"iPad4,1"     : @NO,
-                                @"iPad4,2"     : @YES,
-                                @"iPad4,3"     : @YES,
-                                @"iPad4,4"     : @YES,
-                                @"iPad4,5"     : @YES,
-                                @"iPad4,6"     : @YES,
-                                @"iPad4,7"     : @YES,
-                                @"iPad4,8"     : @YES,
-                                @"iPad4,9"     : @YES,
-                                @"iPad5,3"     : @NO,
-                                @"iPad5,4"     : @YES,
-                                @"iPad6,3"     : @YES,
-                                @"iPad6,4"     : @YES,
-                                @"iPad6,6"     : @YES,
-                                @"iPad6,7"     : @YES,
-                                @"AppleTV2,1"  : @NO,
-                                @"AppleTV3,1"  : @NO,
-                                @"AppleTV3,2"  : @NO,
-                                @"AppleTV5,3"  : @NO,
-                                @"Watch1,1"    : @NO,
-                                @"Watch1,2"    : @NO,
-                                @"Watch2,3"    : @NO,
-                                @"Watch2,4"    : @NO,
-                                @"Watch2,6"    : @NO,
-                                @"Watch2,7"    : @NO,
-                                @"i386"        : @NO,
-                                @"x86_64"      : @NO
-                                };
-        // Initialize other variables
-        LocationManager = [[CLLocationManager alloc] init];
+
+        // setIsReady:YES when initialization notification received
+        [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_INITIALIZED object:nil queue:nil usingBlock:^(NSNotification *note) {
+            [self setIsReady:YES];
+        }];
     });
 }
 
@@ -279,11 +132,12 @@ static NSDictionary* gpsCapabilityByCode = nil;
     WPLogDebug(@"setUserId:%@ (after initialization)", userId);
     _beforeInitializationUserIdSet = NO;
     _beforeInitializationUserId = nil;
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    if ((userId == nil && configuration.userId != nil)
-        || (userId != nil && ![userId isEqualToString:configuration.userId])) {
-        [self initForNewUser:userId];
-    } // else: nothing needs to be done
+    
+    if ((userId == nil && wonderPushAPI.userId != nil)
+        || (userId != nil && ![userId isEqualToString:wonderPushAPI.userId])) {
+        [wonderPushAPI setUserId:userId];
+        [wonderPushAPI initWonderPush];
+    }
 }
 
 + (void) setClientId:(NSString *)clientId secret:(NSString *)secret
@@ -318,37 +172,14 @@ static NSDictionary* gpsCapabilityByCode = nil;
         configuration.sid = nil;
     }
     [self setIsInitialized:YES];
-    [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
-}
-
-+ (void) initForNewUser:(NSString *)userId
-{
-    WPLogDebug(@"initForNewUser:%@", userId);
     [self setIsReady:NO];
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    [configuration changeUserId:userId];
-    [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
-    void (^init)(void) = ^{
-        [self setIsReady:YES];
-        [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
-                                                            object:self
-                                                          userInfo:nil];
-        [WonderPush updateInstallationCoreProperties];
-        [self refreshDeviceTokenIfPossible];
-    };
-    // Fetch anonymous access token right away
-    BOOL isFetching = [[WPAPIClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
-        init();
-    } failure:^(NSURLSessionTask *task, NSError *error) {} forUserId:userId];
-    if (NO == isFetching) {
-        init();
-    }
+    [wonderPushAPI setUserId:_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId];
+    [wonderPushAPI initWonderPush];
 }
 
 + (BOOL) getNotificationEnabled
 {
-    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    return sharedConfiguration.notificationEnabled;
+    return [wonderPushAPI getNotificationEnabled];
 }
 
 + (void) setNotificationEnabled:(BOOL)enabled
@@ -358,24 +189,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
         WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
     }
+    [wonderPushAPI setNotificationEnabled:enabled];
 
-    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    BOOL previousValue = sharedConfiguration.notificationEnabled;
-    sharedConfiguration.notificationEnabled = enabled;
-
-    // Update the subscriptionStatus if it changed
-    if (enabled != previousValue) {
-        if (enabled) {
-            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}} shouldOverwrite:NO];
-        } else {
-            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}} shouldOverwrite:NO];
-        }
-    }
-
-    // Whether or not there is a change, register to push notifications if enabled
-    if (enabled) {
-        [self registerToPushNotifications];
-    }
 }
 
 + (BOOL) isNotificationForWonderPush:(NSDictionary *)userInfo
@@ -396,6 +211,15 @@ static NSDictionary* gpsCapabilityByCode = nil;
     return [WP_PUSH_NOTIFICATION_DATA isEqualToString:[([userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY] ?: @{}) stringForKey:WP_PUSH_NOTIFICATION_TYPE_KEY]];
 }
 
++ (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+{
+    [wonderPushAPI trackInternalEvent:type eventData:data customData:customData];
+}
+
++ (void) refreshDeviceTokenIfPossible
+{
+    [wonderPushAPI refreshDeviceTokenIfPossible];
+}
 
 #pragma mark - WonderPushDelegate
 + (void) setDelegate:(id<WonderPushDelegate>)delegate
@@ -418,7 +242,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     if ([WPAppDelegate isAlreadyRunning]) return NO;
 
     if ([self getNotificationEnabled]) {
-        [self registerToPushNotifications];
+        [WPUtil registerToPushNotifications];
     }
 
     if (![WPUtil hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler] // didReceiveRemoteNotification will be called in such a case
@@ -622,31 +446,27 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (NSString *) userId
 {
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    return configuration.userId;
+    return [wonderPushAPI userId];
 }
 
 + (NSString *) installationId
 {
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    return configuration.installationId;
+    return [wonderPushAPI installationId];
 }
 
 + (NSString *) deviceId
 {
-    return [WPUtil deviceIdentifier];
+    return [wonderPushAPI deviceId];
 }
 
 + (NSString *) pushToken
 {
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    return configuration.deviceToken;
+    return [wonderPushAPI pushToken];
 }
 
 + (NSString *) accessToken
 {
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    return configuration.accessToken;
+    return [wonderPushAPI accessToken];
 }
 
 
@@ -654,14 +474,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (NSDictionary *) getInstallationCustomProperties
 {
-    return [[WPJsonSyncInstallationCustom forCurrentUser].sdkState copy];
-}
-
-+ (void) updateInstallation:(NSDictionary *)properties shouldOverwrite:(BOOL)overwrite
-{
-    if (!overwrite && (![properties isKindOfClass:[NSDictionary class]] || !properties.count)) return;
-    NSString *installationEndPoint = @"/installation";
-    [self postEventually:installationEndPoint params:@{@"body":properties, @"overwrite":[NSNumber numberWithBool:overwrite]}];
+    return [wonderPushAPI getInstallationCustomProperties];
 }
 
 + (void) putInstallationCustomProperties:(NSDictionary *)customProperties
@@ -671,7 +484,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
         WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
     }
-    [[WPJsonSyncInstallationCustom forCurrentUser] put:customProperties];
+    [wonderPushAPI putInstallationCustomProperties:customProperties];
 }
 
 + (void)receivedFullInstallationCustomPropertiesFromServer:(NSDictionary *)custom updateDate:(NSDate *)installationUpdateDate
@@ -703,58 +516,24 @@ static NSDictionary* gpsCapabilityByCode = nil;
     [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
 }
 
-+ (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
-{
-    if ([type characterAtIndex:0] != '@') {
-        @throw [NSException exceptionWithName:@"illegal argument" reason:@"This method must only be called for internal events, starting with an '@'" userInfo:nil];
-    }
-
-    [self trackEvent:type eventData:data customData:customData];
-}
-
-+ (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
++ (void) trackEvent:(NSString*)type
 {
     if (![self isInitialized]) {
         WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
         return;
     }
-
-    if (![type isKindOfClass:[NSString class]]) return;
-    NSString *eventEndPoint = @"/events";
-    long long date = [WPUtil getServerDate];
-    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:@{@"type": type,
-                                                                                    @"actionDate": [NSNumber numberWithLongLong:date]}];
-
-    if ([data isKindOfClass:[NSDictionary class]]) {
-        for (NSString *key in data) {
-            [params setValue:[data objectForKey:key] forKey:key];
-        }
-    }
-
-    if ([customData isKindOfClass:[NSDictionary class]]) {
-        [params setValue:customData forKey:@"custom"];
-    }
-
-    CLLocation *location = [self location];
-    if (location != nil) {
-        params[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
-                                @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
-    }
-
-    [self postEventually:eventEndPoint params:@{@"body":params}];
-
-}
-
-+ (void) trackEvent:(NSString*)type
-{
     WPLogDebug(@"trackEvent:%@", type);
-    [self trackEvent:type eventData:nil customData:nil];
+    [wonderPushAPI trackEvent:type];
 }
 
 + (void) trackEvent:(NSString*)type withData:(NSDictionary *)data
 {
+    if (![self isInitialized]) {
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        return;
+    }
     WPLogDebug(@"trackEvent:%@ withData:%@", type, data);
-    [self trackEvent:type eventData:nil customData:data];
+    [wonderPushAPI trackEvent:type withData:data];
 }
 
 
@@ -930,183 +709,12 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
 {
-    WPLogDebug(@"Running action %@", action);
-    NSString *type = [action stringForKey:@"type"];
-
-    if ([WP_ACTION_TRACK isEqualToString:type]) {
-
-        NSDictionary *event = [action dictionaryForKey:@"event"] ?: @{};
-        NSString *type = [event stringForKey:@"type"];
-        if (!type) return;
-        NSDictionary *custom = [event dictionaryForKey:@"custom"];
-        [WonderPush trackEvent:type
-                     eventData:@{@"campaignId": notification[@"c"] ?: [NSNull null],
-                                 @"notificationId": notification[@"n"] ?: [NSNull null]}
-                    customData:custom];
-
-    } else if ([WP_ACTION_UPDATE_INSTALLATION isEqualToString:type]) {
-
-        NSDictionary *custom = [([action dictionaryForKey:@"installation"] ?: action) dictionaryForKey:@"custom"];
-        if (!custom) return;
-        NSNumber *appliedServerSide = [action numberForKey:@"appliedServerSide"];
-        if ([appliedServerSide isEqual:@YES]) {
-            WPLogDebug(@"Received server custom properties diff: %@", custom);
-            [[WPJsonSyncInstallationCustom forCurrentUser] receiveDiff:custom];
-        } else {
-            WPLogDebug(@"Putting custom properties diff: %@", custom);
-            [[WPJsonSyncInstallationCustom forCurrentUser] put:custom];
-        }
-
-    } else if ([WP_ACTION_RESYNC_INSTALLATION isEqualToString:type]) {
-
-        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-        void (^cont)(NSDictionary *action) = ^(NSDictionary *action){
-            WPLogDebug(@"Running enriched action %@", action);
-            NSDictionary *installation = [action dictionaryForKey:@"installation"] ?: @{};
-            NSDictionary *custom = [installation dictionaryForKey:@"custom"] ?: @{};
-            NSNumber *reset = [action numberForKey:@"reset"];
-            NSNumber *force = [action numberForKey:@"force"];
-
-            // Take or reset custom
-            if ([reset isEqual:@YES]) {
-                [[WPJsonSyncInstallationCustom forCurrentUser] receiveState:custom resetSdkState:[force isEqual:@YES]];
-            } else {
-                [[WPJsonSyncInstallationCustom forCurrentUser] receiveServerState:custom];
-            }
-
-            // Refresh core properties
-            conf.cachedInstallationCoreProperties = @{};
-            [WonderPush updateInstallationCoreProperties];
-
-            // Refresh push token
-            id oldDeviceToken = conf.deviceToken;
-            conf.deviceToken = nil;
-            [WonderPush setDeviceToken:oldDeviceToken];
-
-            // Refresh preferences
-            if (conf.notificationEnabled) {
-                [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}} shouldOverwrite:NO];
-            } else {
-                [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}} shouldOverwrite:NO];
-            }
-        };
-
-        NSDictionary *installation = [action dictionaryForKey:@"installation"];
-        if (installation) {
-            cont(action);
-        } else {
-
-            WPLogDebug(@"Fetching installation for action %@", type);
-            [WonderPush get:@"/installation" params:nil handler:^(WPResponse *response, NSError *error) {
-                if (error) {
-                    WPLog(@"Failed to fetch installation for running action %@: %@", action, error);
-                    return;
-                }
-                if (![response.object isKindOfClass:[NSDictionary class]]) {
-                    WPLog(@"Failed to fetch installation for running action %@, got: %@", action, response.object);
-                    return;
-                }
-                NSMutableDictionary *installation = [(NSDictionary *)response.object mutableCopy];
-                // Filter other fields starting with _ like _serverTime and _serverTook
-                [installation removeObjectsForKeys:[installation.allKeys filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-                    return [evaluatedObject isKindOfClass:[NSString class]] && [(NSString*)evaluatedObject hasPrefix:@"_"];
-                }]]];
-                NSMutableDictionary *actionFilled = [[NSMutableDictionary alloc] initWithDictionary:action];
-                actionFilled[@"installation"] = [NSDictionary dictionaryWithDictionary:installation];
-                cont(actionFilled);
-                // We added async processing, we need to ensure that we flush it too, especially in case we're running receiveActions in the background
-                [WPJsonSyncInstallationCustom flush];
-            }];
-
-        }
-
-    } else if ([WP_ACTION_RATING isEqualToString:type]) {
-
-        NSString *itunesAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:WP_ITUNES_APP_ID];
-        if (itunesAppId != nil) {
-            [self openURL:[NSURL URLWithString:[NSString stringWithFormat:ITUNES_APP_URL_FORMAT, itunesAppId]]];
-        }
-
-    } else  if ([WP_ACTION_METHOD_CALL isEqualToString:type]) {
-
-        NSString *methodName = [action stringForKey:@"method"];
-        id methodParameter = [action nullsafeObjectForKey:@"methodArg"];
-        NSDictionary *parameters = @{WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter ?: [NSNull null]};
-        [[NSNotificationCenter defaultCenter] postNotificationName:methodName object:self userInfo:parameters];
-
-    } else if ([WP_ACTION_LINK isEqualToString:type]) {
-
-        NSString *url = [action stringForKey:@"url"];
-        [self openURL:[NSURL URLWithString:url]];
-
-    } else if ([WP_ACTION_MAP_OPEN isEqualToString:type]) {
-
-        NSDictionary *mapData = [notification dictionaryForKey:@"map"] ?: @{};
-        NSDictionary *place = [mapData dictionaryForKey:@"place"] ?: @{};
-        NSDictionary *point = [place dictionaryForKey:@"point"] ?: @{};
-        NSNumber *lat = [point numberForKey:@"lat"];
-        NSNumber *lon = [point numberForKey:@"lon"];
-        if (!lat || !lon) return;
-        NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [lat doubleValue], [lon doubleValue]];
-        WPLogDebug(@"url: %@", url);
-        [self openURL:[NSURL URLWithString:url]];
-
-    } else if ([WP_ACTION__DUMP_STATE isEqualToString:type]) {
-
-        NSDictionary *stateDump = [[WPConfiguration sharedConfiguration] dumpState] ?: @{};
-        WPLog(@"STATE DUMP: %@", stateDump);
-        [WonderPush trackInternalEvent:@"@DEBUG_DUMP_STATE"
-                             eventData:nil
-                            customData:@{@"ignore_sdkStateDump": stateDump}];
-
-    } else if ([WP_ACTION__OVERRIDE_SET_LOGGING isEqualToString:type]) {
-
-        NSNumber *force = [action numberForKey:@"force"];
-        WPLog(@"OVERRIDE setLogging: %@", force);
-        [WPConfiguration sharedConfiguration].overrideSetLogging = force;
-        if (force != nil) {
-            WPLogEnable([force boolValue]);
-        }
-
-    } else if ([WP_ACTION__OVERRIDE_NOTIFICATION_RECEIPT isEqualToString:type]) {
-
-        NSNumber *force = [action numberForKey:@"force"];
-        WPLog(@"OVERRIDE notification receipt: %@", force);
-        [WPConfiguration sharedConfiguration].overrideNotificationReceipt = force;
-
-    } else {
-        WPLogDebug(@"Unhandled action type %@", type);
-    }
+    [wonderPushAPI executeAction:action onNotification:notification];
 }
 
 + (void) setDeviceToken:(NSString *)deviceToken
 {
-    if (deviceToken) {
-        deviceToken = [deviceToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
-        deviceToken = [deviceToken stringByReplacingOccurrencesOfString:@" " withString:@""];
-    }
-
-    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    NSString *oldDeviceToken = [sharedConfiguration deviceToken];
-
-    if (
-        // New device token
-        (deviceToken == nil && oldDeviceToken != nil) || (deviceToken != nil && oldDeviceToken == nil)
-        || (deviceToken != nil && oldDeviceToken != nil && ![deviceToken isEqualToString:oldDeviceToken])
-        // Last associated with another userId?
-        || (sharedConfiguration.userId == nil && sharedConfiguration.deviceTokenAssociatedToUserId != nil)
-        || (sharedConfiguration.userId != nil && ![sharedConfiguration.userId isEqualToString:sharedConfiguration.deviceTokenAssociatedToUserId])
-        // Last associated with another access token?
-        || (sharedConfiguration.accessToken == nil && sharedConfiguration.cachedDeviceTokenAccessToken != nil)
-        || (sharedConfiguration.accessToken != nil && ![sharedConfiguration.accessToken isEqualToString:sharedConfiguration.cachedDeviceTokenAccessToken])
-    ) {
-        [sharedConfiguration setDeviceToken:deviceToken];
-        [sharedConfiguration setDeviceTokenAssociatedToUserId:sharedConfiguration.userId];
-        [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
-        [sharedConfiguration setCachedDeviceTokenAccessToken:sharedConfiguration.accessToken];
-        [self updateInstallation:@{@"pushToken": @{@"data": deviceToken ?: [NSNull null]}}
-                 shouldOverwrite:NO];
-    }
+    [wonderPushAPI setDeviceToken:deviceToken];
 }
 
 + (void) hasAcceptedVisibleNotificationsWithCompletionHandler:(void(^)(BOOL result))handler;
@@ -1129,69 +737,6 @@ static NSDictionary* gpsCapabilityByCode = nil;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         handler([[UIApplication sharedApplication] enabledRemoteNotificationTypes] != 0);
-#pragma clang diagnostic pop
-    }
-}
-
-+ (BOOL) isRegisteredForRemoteNotifications
-{
-    if (@available(iOS 8.0, *)) {
-        if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
-            return [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
-        } else {
-            WPLog(@"Cannot resolve isRegisteredForRemoteNotifications");
-            return NO;
-        }
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        return [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != 0;
-#pragma clang diagnostic pop
-    }
-}
-
-+ (void) refreshDeviceTokenIfPossible
-{
-    if (![self isRegisteredForRemoteNotifications]) return;
-    if (@available(iOS 8.0, *)) {
-        if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerForRemoteNotifications)]) {
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
-        } else {
-            WPLog(@"Cannot resolve registerForRemoteNotifications");
-        }
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:[[UIApplication sharedApplication] enabledRemoteNotificationTypes]];
-#pragma clang diagnostic pop
-    }
-}
-
-+ (void) registerToPushNotifications
-{
-    if (@available(iOS 10.0, *)) {
-        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error) {
-            if (error != nil) {
-                WPLog(@"[UNUserNotificationCenter requestAuthorizationWithOptions:completionHandler:] returned an error: %@", error.localizedDescription);
-            }
-            if (granted) {
-                [[UIApplication sharedApplication] registerForRemoteNotifications];
-            }
-        }];
-    } else if (@available(iOS 8.0, *)) {
-        if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-#pragma clang diagnostic pop
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
-        } else {
-            WPLog(@"Cannot resolve registerUserNotificationSettings");
-        }
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 #pragma clang diagnostic pop
     }
 }
@@ -1557,137 +1102,8 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (void) updateInstallationCoreProperties
 {
-    NSNull *null = [NSNull null];
-    NSDictionary *apple = @{@"apsEnvironment": [WPUtil getEntitlement:@"aps-environment"] ?: null,
-                            @"appId": [WPUtil getEntitlement:@"application-identifier"] ?: null,
-                            @"backgroundModes": [WPUtil getBackgroundModes] ?: null
-                            };
-    NSDictionary *application = @{@"version" : [self getVersionString] ?: null,
-                                  @"sdkVersion": [self getSDKVersionNumber] ?: null,
-                                  @"apple": apple ?: null
-                                  };
-
-    NSDictionary *configuration = @{@"timeZone": [self getTimezone] ?: null,
-                                    @"carrier": [self getCarrierName] ?: null,
-                                    @"country": [self getCountry] ?: null,
-                                    @"currency": [self getCurrency] ?: null,
-                                    @"locale": [self getLocale] ?: null};
-
-    CGRect screenSize = [self getScreenSize];
-    NSDictionary *device = @{@"id": [WPUtil deviceIdentifier] ?: null,
-                             @"federatedId": [WPUtil federatedId] ? [NSString stringWithFormat:@"0:%@", [WPUtil federatedId]] : null,
-                             @"platform": @"iOS",
-                             @"osVersion": [self getOsVersion] ?: null,
-                             @"brand": @"Apple",
-                             @"model": [self getDeviceModel] ?: null,
-                             @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width] ?: null,
-                             @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height] ?: null,
-                             @"screenDensity": [NSNumber numberWithInt:(int)[self getScreenDensity]] ?: null,
-                             @"configuration": configuration,
-                             };
-
-    NSDictionary *properties = @{@"application": application,
-                                 @"device": device
-                                 };
-
-    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    NSDictionary *oldProperties = sharedConfiguration.cachedInstallationCoreProperties;
-    NSDate *oldPropertiesDate = sharedConfiguration.cachedInstallationCorePropertiesDate;
-    NSString *oldPropertiesAccessToken = sharedConfiguration.cachedInstallationCorePropertiesAccessToken;
-    if (![oldProperties isKindOfClass:[NSDictionary class]]
-        || ![oldPropertiesDate isKindOfClass:[NSDate class]]
-        || ![oldPropertiesAccessToken isKindOfClass:[NSString class]]
-        || ![oldProperties isEqualToDictionary:properties]
-        || ![oldPropertiesAccessToken isEqualToString:sharedConfiguration.accessToken]
-    ) {
-        [sharedConfiguration setCachedInstallationCoreProperties:properties];
-        [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
-        [sharedConfiguration setCachedInstallationCorePropertiesAccessToken:sharedConfiguration.accessToken];
-        [self updateInstallation:properties shouldOverwrite:NO];
-    }
+    [wonderPushAPI updateInstallationCoreProperties];
 }
-
-+ (NSString *) getSDKVersionNumber
-{
-    NSString *result;
-    result = SDK_VERSION;
-    return result;
-}
-
-+ (NSString *) getDeviceModel
-{
-    struct utsname systemInfo;
-
-    uname(&systemInfo);
-
-    NSString* code = [NSString stringWithCString:systemInfo.machine
-                                        encoding:NSUTF8StringEncoding];
-
-    NSString* deviceName = [deviceNamesByCode stringForKey:code];
-
-    if (!deviceName) {
-        // Just use the code name so we don't lose any information
-        deviceName = code;
-    }
-
-    return deviceName;
-}
-
-+ (CGRect) getScreenSize
-{
-    return [[UIScreen mainScreen] bounds];
-}
-
-+ (NSInteger) getScreenDensity
-{
-    CGFloat density = [[UIScreen mainScreen] scale];
-    return density;
-}
-
-+ (NSString *) getTimezone
-{
-    NSTimeZone *timeZone = [NSTimeZone localTimeZone];
-    return [timeZone name];
-}
-
-+ (NSString *) getCarrierName
-{
-    CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
-    CTCarrier *carrier = [netinfo subscriberCellularProvider];
-    NSString *carrierName = [carrier carrierName];
-
-    if (carrierName == nil) {
-        return @"unknown";
-    }
-
-    return carrierName;
-}
-
-+ (NSString *) getVersionString
-{
-    return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-}
-
-+ (NSString *) getLocale
-{
-    return [[NSLocale currentLocale] localeIdentifier];
-}
-
-+ (NSString *) getCountry
-{
-    return [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-}
-
-+ (NSString *) getCurrency
-{
-    return [[NSLocale currentLocale] objectForKey:NSLocaleCurrencyCode];
-}
-
-+ (NSString *) getOsVersion
-{
-    return [[UIDevice currentDevice] systemVersion];
-}
-
 
 #pragma mark - REST API Access
 
@@ -1860,15 +1276,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (CLLocation *)location
 {
-    CLLocation *location = LocationManager.location;
-    if (   !location // skip if unavailable
-        || [location.timestamp timeIntervalSinceNow] < -300 // skip if older than 5 minutes
-        || location.horizontalAccuracy < 0 // skip invalid locations
-        || location.horizontalAccuracy > 10000 // skip if less precise then 10 km
-    ) {
-        return nil;
-    }
-    return location;
+    return [wonderPushAPI location];
 }
 
 #pragma mark - Open URL

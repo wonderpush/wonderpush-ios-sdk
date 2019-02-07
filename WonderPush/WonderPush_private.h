@@ -37,56 +37,6 @@
 #define DIFFERENT_SESSION_NOTIFICATION_MIN_TIME_GAP (15*60*1000)
 
 /**
- Button of type link (opens the browser)
- */
-#define WP_ACTION_LINK @"link"
-
-/**
- Button of type map (opens the map application)
- */
-#define WP_ACTION_MAP_OPEN @"mapOpen"
-
-/**
- Button of type method (launch a notification using NSNotification)
- */
-#define WP_ACTION_METHOD_CALL @"method"
-
-/**
- Button of type rating (opens the itunes app on the current application)
- */
-#define WP_ACTION_RATING @"rating"
-
-/**
- Button of type track event (track a event on button click)
- */
-#define WP_ACTION_TRACK @"trackEvent"
-
-/**
- Button of type update installation (update installation custom data on button click)
- */
-#define WP_ACTION_UPDATE_INSTALLATION @"updateInstallation"
-
-/**
- Resynchronize installation
- */
-#define WP_ACTION_RESYNC_INSTALLATION @"resyncInstallation"
-
-/**
- Dump installation state as an event
- */
-#define WP_ACTION__DUMP_STATE @"_dumpState"
-
-/**
- Override [WonderPush setLogging:]
- */
-#define WP_ACTION__OVERRIDE_SET_LOGGING @"_overrideSetLogging"
-
-/**
- Override notification receipt
- */
-#define WP_ACTION__OVERRIDE_NOTIFICATION_RECEIPT @"_overrideNotificationReceipt"
-
-/**
  Key to set in your .plist file to allow rating button action
  */
 #define WP_ITUNES_APP_ID @"itunesAppID"
@@ -156,10 +106,6 @@
 
 + (void) setLanguageCode:(NSString *)languageCode;
 
-+ (NSString *) getSDKVersionNumber;
-
-+ (void) initForNewUser:(NSString *)userId;
-
 /**
  Method returning the rechability state of WonderPush on this phone
  @return the recheability state as a BOOL
@@ -177,13 +123,6 @@ Called when receiving the full state of the installation custom properties
 + (void)receivedFullInstallationCustomPropertiesFromServer:(NSDictionary *)custom updateDate:(NSDate *)installationUpdateDate;
 
 /**
- Updates or add properties to the current installation
- @param properties a collection of properties to add
- @param overwrite if true all the installation will be cleaned before update
- */
-+ (void) updateInstallation:(NSDictionary *)properties shouldOverwrite:(BOOL)overwrite;
-
-/**
  Tracks an internal event, starting with a @ sign.
  @param data A collection of properties to add directly to the event body.
  @param customData A collection of custom properties to add to the `custom` field of the event.
@@ -197,14 +136,13 @@ Called when receiving the full state of the installation custom properties
 + (void) hasAcceptedVisibleNotificationsWithCompletionHandler:(void(^)(BOOL result))handler;
 
 /**
- Whether iOS has granted a device token (or should have, for iOS 7).
- */
-+ (BOOL) isRegisteredForRemoteNotifications;
-
-/**
  Makes sure we have an up-to-date device token, and send it to WonderPush servers if necessary.
  */
 + (void) refreshDeviceTokenIfPossible;
+/**
+ Opens the given URL
+ */
++ (BOOL) openURL:(NSURL *)URL;
 
 ///---------------------
 /// @name REST API

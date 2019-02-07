@@ -18,7 +18,7 @@
 #import "WonderPush_private.h"
 #import "WPConfiguration.h"
 #import "WPUtil.h"
-
+#import "WPInstallationCoreProperties.h"
 
 @interface WPRequest ()
 
@@ -122,7 +122,7 @@
     params = [[self class] addParameterIfNotPresent:@"lang" value:[WonderPush languageCode] toParameters:params];
 
     // Add the sdk version
-    params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WonderPush getSDKVersionNumber] toParameters:params];
+    params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WPInstallationCoreProperties getSDKVersionNumber] toParameters:params];
 
     // Add the location
     CLLocation *location = [WonderPush location];
