@@ -437,14 +437,16 @@ static dispatch_queue_t safeDeferWithConsentQueue;
     _previousApplicationState = UIApplicationStateActive;
 
     // Show any queued notifications
-    UIApplicationState originalApplicationState = comesBackFromTemporaryInactive ? UIApplicationStateActive : UIApplicationStateInactive;
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    NSArray *queuedNotifications = [configuration getQueuedNotifications];
-    for (NSDictionary *queuedNotification in queuedNotifications) {
-        if (![queuedNotification isKindOfClass:[NSDictionary class]]) continue;
-        [self handleNotification:queuedNotification withOriginalApplicationState:originalApplicationState];
+    if ([self hasUserConsent]) {
+        UIApplicationState originalApplicationState = comesBackFromTemporaryInactive ? UIApplicationStateActive : UIApplicationStateInactive;
+        WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+        NSArray *queuedNotifications = [configuration getQueuedNotifications];
+        for (NSDictionary *queuedNotification in queuedNotifications) {
+            if (![queuedNotification isKindOfClass:[NSDictionary class]]) continue;
+            [self handleNotification:queuedNotification withOriginalApplicationState:originalApplicationState];
+        }
+        [configuration clearQueuedNotifications];
     }
-    [configuration clearQueuedNotifications];
 
     [self onInteractionLeaving:NO];
 }
@@ -459,37 +461,39 @@ static dispatch_queue_t safeDeferWithConsentQueue;
     [WPJsonSyncInstallationCustom flush];
 
     // Send queued notifications as LocalNotifications
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    if (![WPUtil currentApplicationIsInForeground]) {
-        NSArray *queuedNotifications = [configuration getQueuedNotifications];
-        for (NSDictionary *userInfo in queuedNotifications) {
-            if (![userInfo isKindOfClass:[NSDictionary class]]) continue;
-            NSDictionary *aps = [userInfo dictionaryForKey:@"aps"];
-            NSDictionary *alertDict = [aps dictionaryForKey:@"alert"];
-            NSString *title = alertDict ? [alertDict stringForKey:@"title"] : nil;
-            NSString *alert = alertDict ? [alertDict stringForKey:@"body"] : [aps stringForKey:@"alert"];
-            NSString *sound = [aps stringForKey:@"sound"];
-            if (@available(iOS 10.0, *)) {
-                UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-                content.title = title;
-                content.body = alert;
-                if (sound) content.sound = [UNNotificationSound soundNamed:sound];
-                content.userInfo = userInfo;
-                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString] content:content trigger:nil];
-                [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
-            } else {
+    if ([self hasUserConsent]) {
+        WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+        if (![WPUtil currentApplicationIsInForeground]) {
+            NSArray *queuedNotifications = [configuration getQueuedNotifications];
+            for (NSDictionary *userInfo in queuedNotifications) {
+                if (![userInfo isKindOfClass:[NSDictionary class]]) continue;
+                NSDictionary *aps = [userInfo dictionaryForKey:@"aps"];
+                NSDictionary *alertDict = [aps dictionaryForKey:@"alert"];
+                NSString *title = alertDict ? [alertDict stringForKey:@"title"] : nil;
+                NSString *alert = alertDict ? [alertDict stringForKey:@"body"] : [aps stringForKey:@"alert"];
+                NSString *sound = [aps stringForKey:@"sound"];
+                if (@available(iOS 10.0, *)) {
+                    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+                    content.title = title;
+                    content.body = alert;
+                    if (sound) content.sound = [UNNotificationSound soundNamed:sound];
+                    content.userInfo = userInfo;
+                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString] content:content trigger:nil];
+                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                UILocalNotification *notification = [[UILocalNotification alloc] init];
-                notification.alertBody = alert;
-                notification.soundName = [aps stringForKey:@"sound"];
-                notification.userInfo = userInfo;
-                [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+                    UILocalNotification *notification = [[UILocalNotification alloc] init];
+                    notification.alertBody = alert;
+                    notification.soundName = [aps stringForKey:@"sound"];
+                    notification.userInfo = userInfo;
+                    [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 #pragma clang diagnostic pop
+                }
             }
         }
+        [configuration clearQueuedNotifications];
     }
-    [configuration clearQueuedNotifications];
 
     [self onInteractionLeaving:YES];
 }
