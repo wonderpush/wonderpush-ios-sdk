@@ -28,6 +28,8 @@
 @end
 
 @implementation WonderPushConcreteAPI
+- (void) activate {}
+- (void) deactivate {}
 - (instancetype) init
 {
     if (self = [super init]) {

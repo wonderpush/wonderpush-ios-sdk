@@ -12,6 +12,8 @@
 - (void) initWonderPush;
 - (NSString *) userId;
 - (void) setUserId:(NSString *)userId;
+- (void) activate;
+- (void) deactivate;
 - (NSString *) installationId;
 - (NSString *) deviceId;
 - (NSString *) pushToken;
