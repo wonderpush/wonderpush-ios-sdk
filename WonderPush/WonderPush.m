@@ -32,6 +32,7 @@
 #import "WPWebView.h"
 #import "WPJsonSyncInstallationCustom.h"
 #import "WonderPushConcreteAPI.h"
+#import "WonderPushLogErrorAPI.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -54,11 +55,30 @@ static NSString *_currentLanguageCode = nil;
 static NSArray *validLanguageCodes = nil;
 static BOOL _requiresUserConsent = NO;
 static id<WonderPushAPI> wonderPushAPI = nil;
+static NSMutableDictionary *safeDeferWithConsentIdToBlock = nil;
+static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
+static dispatch_queue_t safeDeferWithConsentQueue;
 + (void) initialize
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        safeDeferWithConsentQueue = dispatch_queue_create("com.wonderpush.safeDeferWithConsentQueue", DISPATCH_QUEUE_SERIAL);
         wonderPushAPI = [WonderPushConcreteAPI new];
+        safeDeferWithConsentIdToBlock = [NSMutableDictionary new];
+        safeDeferWithConsentIdentifiers = [NSMutableOrderedSet new];
+        [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:self queue:nil usingBlock:^(NSNotification *notification) {
+            BOOL hasUserConsent = [notification.userInfo[WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY] boolValue];
+            if (hasUserConsent) {
+                @synchronized(safeDeferWithConsentIdentifiers) {
+                    for (NSString *identifier in [safeDeferWithConsentIdentifiers array]) {
+                        id block = safeDeferWithConsentIdToBlock[identifier];
+                        if (block) dispatch_async(safeDeferWithConsentQueue, block);
+                    }
+                    [safeDeferWithConsentIdentifiers removeAllObjects];
+                    [safeDeferWithConsentIdToBlock removeAllObjects];
+                }
+            }
+        }];
         NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;
         if (overrideSetLogging != nil) {
             WPLog(@"OVERRIDE setLogging: %@", overrideSetLogging);
@@ -82,14 +102,24 @@ static id<WonderPushAPI> wonderPushAPI = nil;
 }
 + (void) setRequiresUserConsent:(BOOL)requiresUserConsent
 {
+    BOOL hadUserConsent = [self hasUserConsent];
     _requiresUserConsent = requiresUserConsent;
     if (_isInitialized) {
         WPLog(@"Calling setRequiresUserConsent after `setClientId:secret:` is wrong. Please update your code.");
+        BOOL nowHasUserConsent = [self hasUserConsent];
+        if (hadUserConsent != nowHasUserConsent) {
+            [self hasUserConsentChanged:nowHasUserConsent];
+        }
     }
 }
 + (void) setUserConsent:(BOOL)userConsent
 {
+    BOOL hadUserConsent = [self hasUserConsent];
     [[WPConfiguration sharedConfiguration] setUserConsent:userConsent];
+    BOOL nowHasUserConsent = [self hasUserConsent];
+    if (_isInitialized && hadUserConsent != nowHasUserConsent) {
+        [self hasUserConsentChanged:nowHasUserConsent];
+    }
 }
 + (BOOL) getUserConsent
 {
@@ -98,6 +128,44 @@ static id<WonderPushAPI> wonderPushAPI = nil;
 + (BOOL) hasUserConsent
 {
     return !_requiresUserConsent || [self getUserConsent];
+}
++ (void) hasUserConsentChanged:(BOOL)hasUserConsent
+{
+    if (!_isInitialized) WPLog(@"hasUserConsentChanged called before SDK initialization");
+    WPLogDebug(@"User consent changed to %@", hasUserConsent ? @"YES": @"NO");
+    [wonderPushAPI deactivate];
+    if (hasUserConsent) {
+        wonderPushAPI = [WonderPushConcreteAPI new];
+    } else {
+        wonderPushAPI = [WonderPushNoConsentAPI new];
+    }
+    [wonderPushAPI activate];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED
+         object:self
+         userInfo:@{
+                    WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY : [NSNumber numberWithBool:hasUserConsent]
+                    }];
+    });
+}
+
++ (void) safeDeferWithConsent:(void(^)(void))block
+{
+    [self safeDeferWithConsent:block identifier:[[NSUUID UUID] UUIDString]];
+}
++ (void) safeDeferWithConsent:(void(^)(void))block identifier:(NSString *)identifier
+{
+    dispatch_async(safeDeferWithConsentQueue, ^{
+        if ([self hasUserConsent]) {
+            block();
+        } else {
+            @synchronized(safeDeferWithConsentIdentifiers) {
+                [safeDeferWithConsentIdentifiers addObject:identifier];
+                [safeDeferWithConsentIdToBlock setObject:block forKey:identifier];
+            }
+        }
+    });
 }
 + (void) setLogging:(BOOL)enable
 {
@@ -190,6 +258,7 @@ static id<WonderPushAPI> wonderPushAPI = nil;
         configuration.sid = nil;
     }
     [self setIsInitialized:YES];
+    [self hasUserConsentChanged:[self hasUserConsent]];
     [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
     
 }
@@ -200,22 +269,24 @@ static id<WonderPushAPI> wonderPushAPI = nil;
     [self setIsReady:NO];
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     [configuration changeUserId:userId];
-    [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
-    void (^init)(void) = ^{
-        [self setIsReady:YES];
-        [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
-                                                            object:self
-                                                          userInfo:nil];
-        [WonderPush updateInstallationCoreProperties];
-        [self refreshDeviceTokenIfPossible];
-    };
-    // Fetch anonymous access token right away
-    BOOL isFetching = [[WPAPIClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
-        init();
-    } failure:^(NSURLSessionTask *task, NSError *error) {} forUserId:userId];
-    if (NO == isFetching) {
-        init();
-    }
+    [self safeDeferWithConsent:^{
+        [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
+        void (^init)(void) = ^{
+            [self setIsReady:YES];
+            [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
+                                                                object:self
+                                                              userInfo:nil];
+            [WonderPush updateInstallationCoreProperties];
+            [self refreshDeviceTokenIfPossible];
+        };
+        // Fetch anonymous access token right away
+        BOOL isFetching = [[WPAPIClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
+            init();
+        } failure:^(NSURLSessionTask *task, NSError *error) {} forUserId:userId];
+        if (NO == isFetching) {
+            init();
+        }
+    } identifier:@"initForNewUser"];
 }
 
 + (BOOL) getNotificationEnabled
