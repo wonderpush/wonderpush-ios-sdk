@@ -69,6 +69,7 @@ static dispatch_queue_t safeDeferWithConsentQueue;
         [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:self queue:nil usingBlock:^(NSNotification *notification) {
             BOOL hasUserConsent = [notification.userInfo[WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY] boolValue];
             if (hasUserConsent) {
+                // Execute deferred
                 @synchronized(safeDeferWithConsentIdentifiers) {
                     for (NSString *identifier in [safeDeferWithConsentIdentifiers array]) {
                         id block = safeDeferWithConsentIdToBlock[identifier];
@@ -77,6 +78,8 @@ static dispatch_queue_t safeDeferWithConsentQueue;
                     [safeDeferWithConsentIdentifiers removeAllObjects];
                     [safeDeferWithConsentIdToBlock removeAllObjects];
                 }
+                // Ensure we have an @APP_OPEN
+                [self onInteractionLeaving:NO];
             }
         }];
         NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;
