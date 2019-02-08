@@ -151,12 +151,11 @@ static id<WonderPushAPI> wonderPushAPI = nil;
     WPLogDebug(@"setUserId:%@ (after initialization)", userId);
     _beforeInitializationUserIdSet = NO;
     _beforeInitializationUserId = nil;
-    
-    if ((userId == nil && wonderPushAPI.userId != nil)
-        || (userId != nil && ![userId isEqualToString:wonderPushAPI.userId])) {
-        [wonderPushAPI setUserId:userId];
-        [wonderPushAPI initWonderPush];
-    }
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    if ((userId == nil && configuration.userId != nil)
+        || (userId != nil && ![userId isEqualToString:configuration.userId])) {
+        [self initForNewUser:userId];
+    } // else: nothing needs to be done
 }
 
 + (void) setClientId:(NSString *)clientId secret:(NSString *)secret
@@ -191,9 +190,32 @@ static id<WonderPushAPI> wonderPushAPI = nil;
         configuration.sid = nil;
     }
     [self setIsInitialized:YES];
+    [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
+    
+}
+
++ (void) initForNewUser:(NSString *)userId
+{
+    WPLogDebug(@"initForNewUser:%@", userId);
     [self setIsReady:NO];
-    [wonderPushAPI setUserId:_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId];
-    [wonderPushAPI initWonderPush];
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    [configuration changeUserId:userId];
+    [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
+    void (^init)(void) = ^{
+        [self setIsReady:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
+                                                            object:self
+                                                          userInfo:nil];
+        [WonderPush updateInstallationCoreProperties];
+        [self refreshDeviceTokenIfPossible];
+    };
+    // Fetch anonymous access token right away
+    BOOL isFetching = [[WPAPIClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
+        init();
+    } failure:^(NSURLSessionTask *task, NSError *error) {} forUserId:userId];
+    if (NO == isFetching) {
+        init();
+    }
 }
 
 + (BOOL) getNotificationEnabled
@@ -465,7 +487,8 @@ static id<WonderPushAPI> wonderPushAPI = nil;
 
 + (NSString *) userId
 {
-    return [wonderPushAPI userId];
+    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    return configuration.userId;    
 }
 
 + (NSString *) installationId

@@ -37,38 +37,6 @@
     }
     return self;
 }
-- (NSString *) userId
-{
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    return configuration.userId;
-}
-- (void)setUserId:(NSString *) userId
-{
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    [configuration changeUserId:userId];
-}
-- (void) initWonderPush
-{
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    NSString *userId = configuration.userId;
-    WPLogDebug(@"initWonderPush user:%@", userId);
-    [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
-    void (^init)(void) = ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
-                                                            object:self
-                                                          userInfo:nil];
-        [self updateInstallationCoreProperties];
-        [self refreshDeviceTokenIfPossible];
-    };
-    // Fetch anonymous access token right away
-    BOOL isFetching = [[WPAPIClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
-        init();
-    } failure:^(NSURLSessionTask *task, NSError *error) {} forUserId:userId];
-    if (NO == isFetching) {
-        init();
-    }
-}
-
 /**
  Makes sure we have an up-to-date device token, and send it to WonderPush servers if necessary.
  */

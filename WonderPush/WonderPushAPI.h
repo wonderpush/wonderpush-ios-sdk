@@ -9,9 +9,6 @@
 #import <CoreLocation/CoreLocation.h>
 
 @protocol WonderPushAPI
-- (void) initWonderPush;
-- (NSString *) userId;
-- (void) setUserId:(NSString *)userId;
 - (void) activate;
 - (void) deactivate;
 - (NSString *) installationId;
