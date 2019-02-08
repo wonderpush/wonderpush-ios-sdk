@@ -273,9 +273,11 @@ static dispatch_queue_t safeDeferWithConsentQueue;
         [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
         void (^init)(void) = ^{
             [self setIsReady:YES];
-            [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
-                                                                object:self
-                                                              userInfo:nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
+                                                                    object:self
+                                                                  userInfo:nil];
+            });
             [WonderPush updateInstallationCoreProperties];
             [self refreshDeviceTokenIfPossible];
         };
