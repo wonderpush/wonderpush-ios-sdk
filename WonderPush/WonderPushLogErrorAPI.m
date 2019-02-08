@@ -1,0 +1,120 @@
+//
+//  WonderPushLogErrorAPI.m
+//  WonderPush
+//
+//  Created by Stéphane JAIS on 08/02/2019.
+//  Copyright © 2019 WonderPush. All rights reserved.
+//
+
+#import "WonderPushLogErrorAPI.h"
+#import "WPLog.h"
+
+@implementation WonderPushLogErrorAPI
+- (void) activate {}
+- (void) deactivate {}
+- (void) log:(NSString *)method
+{
+    WPLog(@"Cannot call WonderPush.%@", method);
+}
+
+- (NSString *)accessToken
+{
+    [self log:@"accessToken"];
+    return nil;
+}
+
+- (NSString *)deviceId
+{
+    [self log:@"deviceId"];
+    return nil;
+}
+
+- (void)executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
+{
+    [self log:@"executeAction:onNotification:"];
+}
+
+- (NSDictionary *)getInstallationCustomProperties
+{
+    [self log:@"getInstallationCustomProperties"];
+    return @{};
+}
+
+- (BOOL)getNotificationEnabled
+{
+    [self log:@"getNotificationEnabled"];
+    return NO;
+}
+
+- (NSString *)installationId
+{
+    [self log:@"installationId"];
+    return nil;
+}
+
+- (CLLocation *)location
+{
+    [self log:@"location"];
+    return nil;
+}
+
+- (NSString *)pushToken
+{
+    [self log:@"pushToken"];
+    return nil;
+}
+
+- (void)putInstallationCustomProperties:(NSDictionary *)customProperties
+{
+    [self log:@"putInstallationCustomProperties:"];
+}
+
+- (void)refreshDeviceTokenIfPossible
+{
+    [self log:@"refreshDeviceTokenIfPossible"];
+}
+
+- (void)setDeviceToken:(NSString *)deviceToken
+{
+    [self log:@"setDeviceToken:"];
+}
+
+- (void)setNotificationEnabled:(BOOL)enabled
+{
+    [self log:@"setNotificationEnabled:"];
+}
+
+- (void)trackEvent:(NSString *)type
+{
+    [self log:@"trackEvent:"];
+}
+
+- (void)trackEvent:(NSString *)type withData:(NSDictionary *)data
+{
+    [self log:@"trackEvent:withData:"];
+}
+
+- (void)trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+{
+    [self log:@"trackInternalEvent:eventData:customData:"];
+}
+
+- (void)updateInstallationCoreProperties
+{
+    [self log:@"updateInstallationCoreProperties"];
+}
+@end
+
+@implementation WonderPushNotInitializedAPI
+- (void) log:(NSString *)method
+{
+    WPLog(@"Cannot call WonderPush.%@ before initialization. Please call WonderPush.setClientId(:secret) first.", method);
+}
+@end
+
+@implementation WonderPushNoConsentAPI
+- (void) log:(NSString *)method
+{
+    WPLog(@"Cannot call WonderPush.%@ without user consent. Consider calling WonderPush.setUserConsent(true) after prompting the user.", method);
+}
+@end
