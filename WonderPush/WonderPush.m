@@ -1147,7 +1147,7 @@ static dispatch_queue_t safeDeferWithConsentQueue;
 
 + (void) onInteractionLeaving:(BOOL)leaving
 {
-    if (![self isInitialized]) {
+    if (![self isInitialized] || ![self hasUserConsent]) {
         // Do not remember last interaction altogether, so that a proper @APP_OPEN can be tracked once we get initialized
         return;
     }
