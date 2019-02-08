@@ -31,7 +31,7 @@
 #import "WPLog.h"
 #import "WPWebView.h"
 #import "WPJsonSyncInstallationCustom.h"
-#import "ConcreteWonderPushAPI.h"
+#import "WonderPushConcreteAPI.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -58,7 +58,7 @@ static id<WonderPushAPI> wonderPushAPI = nil;
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        wonderPushAPI = [ConcreteWonderPushAPI new];
+        wonderPushAPI = [WonderPushConcreteAPI new];
         NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;
         if (overrideSetLogging != nil) {
             WPLog(@"OVERRIDE setLogging: %@", overrideSetLogging);

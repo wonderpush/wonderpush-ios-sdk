@@ -1,11 +1,11 @@
 //
-//  ConcreteWonderPushAPI.m
+//  WonderPushConcreteAPI.m
 //  WonderPush
 //
 //  Created by Stéphane JAIS on 07/02/2019.
 //
 
-#import "ConcreteWonderPushAPI.h"
+#import "WonderPushConcreteAPI.h"
 #import "WPConfiguration.h"
 #import "WPJsonSyncInstallationCustom.h"
 #import "WPLog.h"
@@ -18,7 +18,7 @@
 #import <UIKit/UIKit.h>
 #import "WPInstallationCoreProperties.h"
 
-@interface ConcreteWonderPushAPI (private)
+@interface WonderPushConcreteAPI (private)
 /**
  Updates or add properties to the current installation
  @param properties a collection of properties to add
@@ -27,7 +27,7 @@
 - (void) updateInstallation:(NSDictionary *)properties shouldOverwrite:(BOOL)overwrite;
 @end
 
-@implementation ConcreteWonderPushAPI
+@implementation WonderPushConcreteAPI
 - (instancetype) init
 {
     if (self = [super init]) {
