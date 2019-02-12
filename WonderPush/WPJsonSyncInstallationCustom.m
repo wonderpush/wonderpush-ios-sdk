@@ -51,7 +51,14 @@ static NSMutableDictionary *instancePerUserId = nil;
         }
         [conf changeUserId:oldUserId];
         // Resume any stopped inflight or scheduled calls
-        [self flush];
+        // Adding the listener here will catch the an initial call triggered after this function is called, all during SDK initialization.
+        // It also flushes any scheduled call that was dropped when the user withdrew consent.
+        [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:nil queue:nil usingBlock:^(NSNotification *notification) {
+            BOOL hasUserConsent = [notification.userInfo[WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY] boolValue];
+            if (hasUserConsent) {
+                [self flush];
+            }
+        }];
     }
 }
 
@@ -144,6 +151,13 @@ static NSMutableDictionary *instancePerUserId = nil;
 
 - (void) scheduleServerPatchCallCallback {
     WPLogDebug(@"Scheduling a delayed update of custom properties");
+    if (![WonderPush hasUserConsent]) {
+        [WonderPush safeDeferWithConsent:^{
+            WPLogDebug(@"Now scheduling user consent delayed patch call for installation custom state for userId %@", self.userId);
+            [self scheduleServerPatchCallCallback]; // NOTE: imposes this function to be somewhat reentrant
+        }];
+        return;
+    }
     @synchronized (_blockId_lock) {
         int currentBlockId = ++_blockId;
         NSDate *now = [NSDate date];
@@ -163,6 +177,15 @@ static NSMutableDictionary *instancePerUserId = nil;
             }
         });
     }
+}
+
+- (bool) performScheduledPatchCall
+{
+    if (![WonderPush hasUserConsent]) {
+        WPLogDebug(@"Need consent, not performing scheduled patch call for user %@", self.userId);
+        return false;
+    }
+    return [super performScheduledPatchCall];
 }
 
 - (void) serverPatchCallbackWithDiff:(NSDictionary *)diff onSuccess:(WPJsonSyncCallback)onSuccess onFailure:(WPJsonSyncCallback)onFailure {

@@ -261,9 +261,8 @@ static dispatch_queue_t safeDeferWithConsentQueue;
         configuration.sid = nil;
     }
     [self setIsInitialized:YES];
-    [self hasUserConsentChanged:[self hasUserConsent]];
     [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
-    
+    [self hasUserConsentChanged:[self hasUserConsent]];
 }
 
 + (void) initForNewUser:(NSString *)userId
@@ -272,8 +271,8 @@ static dispatch_queue_t safeDeferWithConsentQueue;
     [self setIsReady:NO];
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     [configuration changeUserId:userId];
+    [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
     [self safeDeferWithConsent:^{
-        [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
         void (^init)(void) = ^{
             [self setIsReady:YES];
             dispatch_async(dispatch_get_main_queue(), ^{

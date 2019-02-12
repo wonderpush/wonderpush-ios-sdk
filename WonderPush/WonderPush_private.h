@@ -204,6 +204,7 @@ Called when receiving the full state of the installation custom properties
  */
 + (CLLocation *) location;
 
++ (void) safeDeferWithConsent:(void(^)(void))block;
 
 @end
 
