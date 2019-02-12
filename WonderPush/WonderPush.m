@@ -57,12 +57,10 @@ static BOOL _requiresUserConsent = NO;
 static id<WonderPushAPI> wonderPushAPI = nil;
 static NSMutableDictionary *safeDeferWithConsentIdToBlock = nil;
 static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
-static dispatch_queue_t safeDeferWithConsentQueue;
 + (void) initialize
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        safeDeferWithConsentQueue = dispatch_queue_create("com.wonderpush.safeDeferWithConsentQueue", DISPATCH_QUEUE_SERIAL);
         wonderPushAPI = [WonderPushNotInitializedAPI new];
         safeDeferWithConsentIdToBlock = [NSMutableDictionary new];
         safeDeferWithConsentIdentifiers = [NSMutableOrderedSet new];
@@ -72,8 +70,8 @@ static dispatch_queue_t safeDeferWithConsentQueue;
                 // Execute deferred
                 @synchronized(safeDeferWithConsentIdentifiers) {
                     for (NSString *identifier in [safeDeferWithConsentIdentifiers array]) {
-                        id block = safeDeferWithConsentIdToBlock[identifier];
-                        if (block) dispatch_async(safeDeferWithConsentQueue, block);
+                        void(^block)(void) = safeDeferWithConsentIdToBlock[identifier];
+                        if (block) block();
                     }
                     [safeDeferWithConsentIdentifiers removeAllObjects];
                     [safeDeferWithConsentIdToBlock removeAllObjects];
@@ -159,7 +157,7 @@ static dispatch_queue_t safeDeferWithConsentQueue;
 }
 + (void) safeDeferWithConsent:(void(^)(void))block identifier:(NSString *)identifier
 {
-    dispatch_async(safeDeferWithConsentQueue, ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         if ([self hasUserConsent]) {
             block();
         } else {
@@ -275,11 +273,9 @@ static dispatch_queue_t safeDeferWithConsentQueue;
     [self safeDeferWithConsent:^{
         void (^init)(void) = ^{
             [self setIsReady:YES];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
-                                                                    object:self
-                                                                  userInfo:nil];
-            });
+            [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
+                                                                object:self
+                                                              userInfo:nil];
             [WonderPush updateInstallationCoreProperties];
             [self refreshDeviceTokenIfPossible];
         };
