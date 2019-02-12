@@ -63,7 +63,7 @@ static dispatch_queue_t safeDeferWithConsentQueue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         safeDeferWithConsentQueue = dispatch_queue_create("com.wonderpush.safeDeferWithConsentQueue", DISPATCH_QUEUE_SERIAL);
-        wonderPushAPI = [WonderPushConcreteAPI new];
+        wonderPushAPI = [WonderPushNotInitializedAPI new];
         safeDeferWithConsentIdToBlock = [NSMutableDictionary new];
         safeDeferWithConsentIdentifiers = [NSMutableOrderedSet new];
         [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:self queue:nil usingBlock:^(NSNotification *notification) {
