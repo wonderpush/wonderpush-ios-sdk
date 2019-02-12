@@ -36,7 +36,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  Name of the userInfo key that holds a NSNumber whose boolValue is the user consent.
  */
-#define WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY @"_wonderpushHasUserConsentChanged"
+#define WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY @"hasUserConsent"
 
 /**
  Name of the notification that is sent using `NSNotificationCenter` when a user logs in.
