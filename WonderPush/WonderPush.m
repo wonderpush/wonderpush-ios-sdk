@@ -1416,4 +1416,45 @@ static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
     }
 }
 
++ (void) subscribeToNotifications
+{
+    [wonderPushAPI subscribeToNotifications];
+}
++ (void) unsubscribeFromNotifications
+{
+    [wonderPushAPI unsubscribeFromNotifications];
+}
++ (BOOL) isSubscribedToNotifications
+{
+    return [wonderPushAPI isSubscribedToNotifications];
+}
++ (void) trackEvent:(NSString *)eventType attributes:(NSDictionary *)attributes
+{
+    [wonderPushAPI trackEvent:eventType attributes:attributes];
+}
++ (void) putProperties:(NSDictionary *)properties
+{
+    [wonderPushAPI putProperties:properties];
+}
++ (NSDictionary *) getProperties
+{
+    return [wonderPushAPI getProperties];
+}
++ (void) clearEventsHistory
+{
+    return [wonderPushAPI clearEventsHistory];
+}
++ (void) clearPreferences
+{
+    [wonderPushAPI clearPreferences];
+}
++ (void) clearAllData
+{
+    [wonderPushAPI clearAllData];
+}
++ (void) downloadAllData:(void(^)(NSData *data, NSError *error))completion
+{
+    [wonderPushAPI downloadAllData:completion];
+}
+
 @end

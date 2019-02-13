@@ -9,6 +9,21 @@
 #import <CoreLocation/CoreLocation.h>
 
 @protocol WonderPushAPI
+// Public API
+- (void) subscribeToNotifications;
+- (void) unsubscribeFromNotifications;
+- (BOOL) isSubscribedToNotifications;
+- (void) trackEvent:(NSString*)eventType;
+- (void) trackEvent:(NSString *)eventType attributes:(NSDictionary *)attributes;
+- (void) putProperties:(NSDictionary *)properties;
+- (NSDictionary *) getProperties;
+- (void) clearEventsHistory;
+- (void) clearPreferences;
+- (void) clearAllData;
+- (void) downloadAllData:(void(^)(NSData *data, NSError *error))completion;
+
+
+// Old / private API
 - (void) activate;
 - (void) deactivate;
 - (NSString *) installationId;
@@ -20,7 +35,6 @@
 - (void) updateInstallationCoreProperties;
 - (NSDictionary *) getInstallationCustomProperties;
 - (void) putInstallationCustomProperties:(NSDictionary *)customProperties;
-- (void) trackEvent:(NSString*)type;
 - (void) trackEvent:(NSString*)type withData:(NSDictionary *)data;
 - (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData;
 - (void) refreshDeviceTokenIfPossible;

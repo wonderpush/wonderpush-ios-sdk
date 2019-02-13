@@ -439,4 +439,54 @@
     [self trackEvent:type eventData:nil customData:data];
 }
 
+- (void)clearAllData {
+    // TODO: code me
+}
+
+
+- (void)clearEventsHistory {
+    // TODO: code me
+}
+
+
+- (void)clearPreferences {
+    // TODO: code me
+}
+
+
+- (void)downloadAllData:(void (^)(NSData *, NSError *))completion {
+    // TODO: code me
+}
+
+
+- (NSDictionary *)getProperties {
+    return [self getInstallationCustomProperties];
+}
+
+
+- (BOOL)isSubscribedToNotifications {
+    return [self getNotificationEnabled];
+}
+
+
+- (void)putProperties:(NSDictionary *)properties {
+    return [self putInstallationCustomProperties:properties];
+}
+
+
+- (void)subscribeToNotifications {
+    return [self setNotificationEnabled:YES];
+}
+
+
+- (void)trackEvent:(NSString *)eventType attributes:(NSDictionary *)attributes {
+    return [self trackEvent:eventType eventData:nil customData:attributes];
+}
+
+
+- (void)unsubscribeFromNotifications {
+    return [self setNotificationEnabled:NO];
+}
+
+
 @end

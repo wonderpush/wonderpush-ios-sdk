@@ -8,6 +8,7 @@
 
 #import "WonderPushLogErrorAPI.h"
 #import "WPLog.h"
+#import "WPUtil.h"
 
 @implementation WonderPushLogErrorAPI
 - (void) activate {}
@@ -102,6 +103,58 @@
 {
     [self log:@"updateInstallationCoreProperties"];
 }
+
+- (void)clearAllData {
+    [self log:@"clearAllData"];
+}
+
+
+- (void)clearEventsHistory {
+    [self log:@"clearEventsHistory"];
+}
+
+
+- (void)clearPreferences {
+    [self log:@"clearPreferences"];
+}
+
+
+- (void)downloadAllData:(void (^)(NSData *, NSError *))completion {
+    [self log:@"downloadAllData:"];
+    completion(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorMissingUserConsent userInfo:nil]);
+}
+
+
+- (NSDictionary *)getProperties {
+    [self log:@"getProperties"];
+    return nil;
+}
+
+
+- (BOOL)isSubscribedToNotifications {
+    return NO;
+}
+
+
+- (void)putProperties:(NSDictionary *)properties {
+    [self log:@"putProperties:"];
+}
+
+
+- (void)subscribeToNotifications {
+    [self log:@"subscribeToNotifications"];
+}
+
+
+- (void)trackEvent:(NSString *)eventType attributes:(NSDictionary *)attributes {
+    [self log:@"trackEvent:attributes:"];
+}
+
+
+- (void)unsubscribeFromNotifications {
+    [self log:@"unsubscribeFromNotifications"];
+}
+
 @end
 
 @implementation WonderPushNotInitializedAPI

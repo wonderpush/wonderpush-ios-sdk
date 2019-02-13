@@ -460,4 +460,16 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0);
 
 
++ (void) subscribeToNotifications;
++ (void) unsubscribeFromNotifications;
++ (BOOL) isSubscribedToNotifications;
++ (void) trackEvent:(NSString *)eventType attributes:(NSDictionary *)attributes;
++ (void) putProperties:(NSDictionary *)properties;
++ (NSDictionary *) getProperties;
++ (void) clearEventsHistory;
++ (void) clearPreferences;
++ (void) clearAllData;
++ (void) downloadAllData:(void(^)(NSData *data, NSError *error))completion;
+
+
 @end
