@@ -81,6 +81,7 @@
 
 + (NSString *) wpLocalizedString:(NSString *)key withDefault:(NSString *)defaultValue;
 
++ (void) registerToPushNotifications;
 @end
 
 

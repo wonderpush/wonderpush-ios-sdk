@@ -30,6 +30,15 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 #define WP_NOTIFICATION_INITIALIZED @"_wonderpushInitialized"
 
 /**
+ Name of the notification that is sent using `NSNotificationCenter` when the user consent changes.
+ */
+#define WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED @"_wonderpushHasUserConsentChanged"
+/**
+ Name of the userInfo key that holds a NSNumber whose boolValue is the user consent.
+ */
+#define WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY @"hasUserConsent"
+
+/**
  Name of the notification that is sent using `NSNotificationCenter` when a user logs in.
  */
 #define WP_NOTIFICATION_USER_LOGED_IN @"_wonderpushUserLoggedIn"
@@ -87,6 +96,30 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /// @name Initialization
 ///---------------------
 
+/**
+ Sets whether user consent is required before the SDK is allowed to work.
+ Call this method before `setClientId:secret:`
+ @param requiresUserConsent Whether user consent is required before the SDK is allowed to work.
+ @see `setUserConsent:`
+ */
++ (void) setRequiresUserConsent:(BOOL)requiresUserConsent;
+/**
+ Provides or withdraws user consent.
+ Call this method after `setClientId:secret:`.
+ @param userConsent Whether the user provided or withdrew consent.
+ @see `setRequiresUserConsent:`
+ */
++ (void) setUserConsent:(BOOL)userConsent;
+/**
+ Returns whether user has already provided consent.
+ Call this method after `setClientId:secret:`.
+ */
++ (BOOL) getUserConsent;
+/**
+ Returns YES whenever user has already provided consent or consent is not necessary.
+ Call this method after `setClientId:secret:`.
+ */
++ (BOOL) hasUserConsent;
 /**
  Initializes the WonderPush SDK.
 

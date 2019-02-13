@@ -47,6 +47,8 @@
 
 @property (strong, nonatomic) NSOperationQueue *operationQueue;
 
+- (void) updateOperationQueueStatus;
+
 @end
 
 
@@ -61,6 +63,7 @@
         self.operationQueue.maxConcurrentOperationCount = 1;
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedNotification:) name:WP_NOTIFICATION_INITIALIZED object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userConsentChangedNotification:) name:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:nil];
         // Set initial reachability
         [self reachabilityChanged:[WonderPush isReachable]];
 
@@ -168,24 +171,18 @@
     [self.operationQueue addOperation:operation];
 }
 
+- (void) updateOperationQueueStatus;
+{
+    BOOL suspend = !([WonderPush isReachable] && [WonderPush hasUserConsent]);
+    WPLogDebug(@"%@ request vault operation queue.", suspend ? @"Stopping" : @"Starting");
+    [self.operationQueue setSuspended:suspend];
+}
 
 #pragma mark - Reachability
 
 - (void) reachabilityChanged:(AFNetworkReachabilityStatus)status
 {
-    switch (status) {
-        case AFNetworkReachabilityStatusNotReachable:
-        case AFNetworkReachabilityStatusUnknown:
-            WPLogDebug(@"Reachability changed to %ld, stopping queue.", (long)status);
-            [self.operationQueue setSuspended:YES];
-            break;
-
-        default:
-            WPLogDebug(@"Reachability changed to %ld, starting queue.", (long)status);
-            [self.operationQueue setSuspended:NO];
-            break;
-    }
-
+    [self updateOperationQueueStatus];
 }
 
 
@@ -197,6 +194,11 @@
     [self.operationQueue setSuspended:NO];
 }
 
+#pragma mark - User consent
+- (void) userConsentChangedNotification:(NSNotification *)notification
+{
+    [self updateOperationQueueStatus];
+}
 
 @end
 
