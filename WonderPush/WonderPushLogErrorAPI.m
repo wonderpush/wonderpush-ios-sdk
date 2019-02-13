@@ -42,7 +42,6 @@
 
 - (BOOL)getNotificationEnabled
 {
-    [self log:@"getNotificationEnabled"];
     return NO;
 }
 
