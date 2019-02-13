@@ -390,7 +390,7 @@ static WPConfiguration *sharedConfiguration = nil;
 
 - (NSString *) getAccessTokenForUserId:(NSString *)userId
 {
-    if ((userId == nil && self.userId == nil)
+    if (((userId == nil || [userId isEqualToString:@""]) && self.userId == nil)
         || (userId != nil && [userId isEqualToString:self.userId])) {
         return self.accessToken;
     } else {
