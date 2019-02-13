@@ -17,6 +17,7 @@
 #import "WPUtil.h"
 #import <UIKit/UIKit.h>
 #import "WPInstallationCoreProperties.h"
+#import "WPDataManager.h"
 
 @interface WonderPushConcreteAPI (private)
 /**
@@ -455,7 +456,7 @@
 
 
 - (void)downloadAllData:(void (^)(NSData *, NSError *))completion {
-    // TODO: code me
+    [[WPDataManager sharedInstance] downloadAllData:completion];
 }
 
 
