@@ -753,5 +753,35 @@ static WPConfiguration *sharedConfiguration = nil;
     [self _setNSDictionaryAsJSON:installationCustomSyncStatePerUserId forKey:USER_DEFAULTS_INSTALLATION_CUSTOM_SYNC_STATE_PER_USER_ID_KEY];
 }
 
+- (void) clearStorageKeepUserConsent:(BOOL)keepUserConsent keepDeviceId:(BOOL)keepDeviceId
+{
+    NSArray *prefixes = @[@"_wonderpush", @"__wonderpush"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [[defaults dictionaryRepresentation] enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        BOOL hasPrefix = NO;
+        for (NSString *prefix in prefixes) {
+            hasPrefix = [key hasPrefix:prefix];
+            if (hasPrefix) break;
+        }
+        if (!hasPrefix) return;
+        
+        if (keepUserConsent && [key isEqualToString:USER_DEFAULTS_USER_CONSENT_KEY]) return;
+        if (keepDeviceId && [key isEqualToString:USER_DEFAULTS_DEVICE_ID_KEY]) return;
+        [defaults removeObjectForKey:key];
+    }];
+    [defaults synchronize];
+    
+    _accessToken = nil;
+    _deviceToken = nil;
+    _sid = nil;
+    _userId = nil;
+    _installationId = nil;
+    __notificationEnabled = nil;
+    _timeOffset = 0;
+    _timeOffsetPrecision = 0;
+    _justOpenedNotification = nil;
+}
+
+
 
 @end

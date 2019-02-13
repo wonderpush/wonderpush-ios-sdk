@@ -141,4 +141,5 @@
 
 - (NSString *) getAccessTokenForUserId:(NSString *)userId;
 
+- (void) clearStorageKeepUserConsent:(BOOL)keepUserConsent keepDeviceId:(BOOL)keepDeviceId;
 @end
