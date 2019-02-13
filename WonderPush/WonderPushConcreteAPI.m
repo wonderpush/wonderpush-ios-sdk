@@ -441,17 +441,17 @@
 }
 
 - (void)clearAllData {
-    // TODO: code me
+    [[WPDataManager sharedInstance] clearAllData];
 }
 
 
 - (void)clearEventsHistory {
-    // TODO: code me
+    [[WPDataManager sharedInstance] clearEventsHistory];
 }
 
 
 - (void)clearPreferences {
-    // TODO: code me
+    [[WPDataManager sharedInstance] clearPreferences];
 }
 
 

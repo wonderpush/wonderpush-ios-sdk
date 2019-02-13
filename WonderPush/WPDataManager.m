@@ -9,6 +9,7 @@
 #import "WPDataManager.h"
 #import "WPConfiguration.h"
 #import "WPAPIClient.h"
+#import "WPJsonSyncInstallationCustom.h"
 
 static WPDataManager *instance = nil;
 static dispatch_queue_t dataManagerQueue;
@@ -147,6 +148,68 @@ static dispatch_queue_t dataManagerQueue;
         
         callCompletion(buffer, nil);
     });
-    
 }
+- (void) clearEventsHistory
+{
+    for (NSString *userId in [[WPConfiguration sharedConfiguration] listKnownUserIds]) {
+        [self clearEventsHistoryForUserId:userId];
+    }
+}
+- (void)clearEventsHistoryForUserId:(NSString *)userId
+{
+    WPRequest *request = [WPRequest new];
+    request.userId = userId;
+    request.resource = @"/events";
+    request.method = @"DELETE";
+    [[WPAPIClient sharedClient] requestAuthenticated:request];
+}
+
+- (void) clearPreferences
+{
+    for (NSString *userId in [[WPConfiguration sharedConfiguration] listKnownUserIds]) {
+        [self clearPreferencesForUserId:userId];
+    }
+}
+- (void) clearPreferencesForUserId:(NSString *)userId
+{
+    WPJsonSyncInstallationCustom *custom = [WPJsonSyncInstallationCustom forUser:userId];
+    NSMutableDictionary *diff = [NSMutableDictionary new];
+    for (NSString *key in [custom.sdkState allKeys]) {
+        [diff setObject:[NSNull null] forKey:key];
+    }
+    [custom put:diff];
+    [custom flush];
+    if (userId.length) {
+        WPRequest *request = [WPRequest new];
+        request.userId = userId;
+        request.resource = @"/user";
+        request.method = @"PUT";
+        request.params = @{ @"body": @"{\"custom\":null}" };
+        [[WPAPIClient sharedClient] requestAuthenticated:request];
+    }
+}
+- (void) clearInstallation:(NSString *)userId
+{
+    WPRequest *request = [WPRequest new];
+    request.userId = userId;
+    request.resource = @"/installation";
+    request.method = @"DELETE";
+    request.handler = ^(WPResponse *response, NSError *error) {
+        NSLog(@"response:%@ error:%@", response, error);
+    };
+    [[WPAPIClient sharedClient] requestAuthenticated:request];
+
+}
+- (void) clearLocalStorage
+{
+    [[WPConfiguration sharedConfiguration] clearStorageKeepUserConsent:YES keepDeviceId:NO];
+}
+- (void) clearAllData
+{
+    for (NSString *userId in [[WPConfiguration sharedConfiguration] listKnownUserIds]) {
+        [self clearInstallation:userId];
+    }
+    [self clearLocalStorage];
+}
+
 @end

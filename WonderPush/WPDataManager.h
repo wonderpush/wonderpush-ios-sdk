@@ -11,4 +11,11 @@
 @interface WPDataManager : NSObject
 + (instancetype) sharedInstance;
 - (void)downloadAllData:(void (^)(NSData *, NSError *))completion;
+- (void)clearEventsHistory;
+- (void)clearEventsHistoryForUserId:(NSString *)userId;
+- (void) clearPreferences;
+- (void) clearPreferencesForUserId:(NSString *)userId;
+- (void) clearAllData;
+- (void) clearLocalStorage;
+- (void) clearInstallation:(NSString *)userId;
 @end
