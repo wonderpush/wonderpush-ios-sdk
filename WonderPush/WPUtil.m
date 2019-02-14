@@ -18,10 +18,9 @@
 #import "WPConfiguration.h"
 #import "WPLog.h"
 #import "WonderPush_private.h"
-
+#import "WPMobileProvision.h"
 #import <sys/utsname.h>
 #import <UIKit/UIApplication.h>
-#import <TCMobileProvision/TCMobileProvision.h>
 #import <UserNotifications/UserNotifications.h>
 
 
@@ -233,10 +232,8 @@ static NSDictionary *entitlements = nil;
 + (NSString *) getEntitlement:(NSString *)key
 {
     if (!entitlements) {
-        NSString *mobileprovisionPath = [[[NSBundle mainBundle] bundlePath]
-                                         stringByAppendingPathComponent:@"embedded.mobileprovision"];
-        TCMobileProvision *mobileprovision = [[TCMobileProvision alloc] initWithData:[NSData dataWithContentsOfFile:mobileprovisionPath]];
-        entitlements = mobileprovision.dict[@"Entitlements"];
+        NSDictionary *dict = [WPMobileProvision getMobileProvision];
+        entitlements = dict[@"Entitlements"];
     }
     return entitlements[key];
 }
