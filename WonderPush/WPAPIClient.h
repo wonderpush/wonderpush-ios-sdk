@@ -15,8 +15,9 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <AFNetworking/AFNetworking.h>
 #import "WPRequest.h"
+
+FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
 
 /**
  WPAPIClient is an implementation of AFHTTPClient that handles authentication to the API.
@@ -86,10 +87,6 @@
 /// @name HTTP client
 ///------------------
 
-/**
- The AFNetworking HTTP client used to perform HTTP requests.
- */
-@property (strong, nonatomic) AFHTTPSessionManager *afManager;
 @property (assign, atomic) BOOL isFetchingAccessToken;
 
 @end

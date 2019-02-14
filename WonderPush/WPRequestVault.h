@@ -17,6 +17,7 @@
 #import <Foundation/Foundation.h>
 #import "WPRequest.h"
 #import "WPAPIClient.h"
+#import "WPNetworkReachabilityManager.h"
 
 #define USER_DEFAULTS_REQUEST_VAULT_QUEUE @"__wonderpush_request_vault"
 
@@ -27,7 +28,7 @@
 
 - (id) initWithClient:(WPAPIClient *)client;
 
-- (void) reachabilityChanged:(AFNetworkReachabilityStatus)status;
+- (void) reachabilityChanged:(WPNetworkReachabilityStatus)status;
 
 - (void) add:(WPRequest *)request;
 

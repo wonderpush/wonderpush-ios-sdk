@@ -17,8 +17,6 @@
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
 #import "WPLog.h"
-#import <AFNetworking/AFNetworking.h>
-
 
 #pragma mark - RequestVaultOperation
 
@@ -180,7 +178,7 @@
 
 #pragma mark - Reachability
 
-- (void) reachabilityChanged:(AFNetworkReachabilityStatus)status
+- (void) reachabilityChanged:(WPNetworkReachabilityStatus)status
 {
     [self updateOperationQueueStatus];
 }
@@ -224,7 +222,7 @@
 
         WPLogDebug(@"WPRequestVaultOperation complete with response:%@ error:%@", response, error);
         if ([error isKindOfClass:[NSError class]]) {
-            NSData *errorBody = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+            NSData *errorBody = error.userInfo[WPOperationFailingURLResponseDataErrorKey];
             if ([errorBody isKindOfClass:[NSData class]]) {
                 WPLogDebug(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
             }
@@ -235,7 +233,7 @@
             // Make sure to stop the queue
             if (![WonderPush isReachable]) {
                 WPLogDebug(@"Declaring not reachable");
-                [self.vault reachabilityChanged:AFNetworkReachabilityStatusNotReachable];
+                [self.vault reachabilityChanged:WPNetworkReachabilityStatusNotReachable];
             }
             [self.vault addToQueue:self.request];
 

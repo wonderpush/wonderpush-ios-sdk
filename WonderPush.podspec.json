@@ -38,7 +38,6 @@
       ],
       "dependencies": {
         "TCMobileProvision": "~> 1.0.0",
-        "AFNetworking": "~>3.0",
         "PKAlertController": "~> 0.6"
       },
       "public_header_files": "WonderPush/WonderPush.h",
