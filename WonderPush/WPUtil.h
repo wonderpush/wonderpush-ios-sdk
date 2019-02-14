@@ -95,6 +95,7 @@ extern NSString * const WPErrorDomain;
 extern NSInteger const WPErrorInvalidCredentials;
 extern NSInteger const WPErrorInvalidAccessToken;
 extern NSInteger const WPErrorMissingUserConsent;
+extern NSInteger const WPErrorHTTPFailure;
 //extern NSInteger const WPErrorSecureConnectionRequired;
 //extern NSInteger const WPErrorInvalidPrevNextParameter;
 //extern NSInteger const WPErrorInvalidSid;
