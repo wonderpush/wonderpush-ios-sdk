@@ -747,76 +747,6 @@ static UIStoryboard *storyboard = nil;
     dispatch_async(dispatch_get_main_queue(), presentBlock);
 }
 
-+ (void) handleMapNotification:(NSDictionary*)wonderPushData
-{
-    // NSString *title = [wonderPushData stringForKey:@"title"];
-    // NSString *message = [wonderPushData stringForKey:@"message"];
-    NSDictionary *mapData = [wonderPushData dictionaryForKey:@"map"] ?: @{};
-    NSDictionary *place = [mapData dictionaryForKey:@"place"] ?: @{};
-    NSDictionary *point = [place dictionaryForKey:@"point"] ?: @{};
-    NSNumber *lat = [point numberForKey:@"lat"];
-    NSNumber *lon = [point numberForKey:@"lon"];
-    NSNumber *zoom = [point numberForKey:@"zoom"];
-    if (!lat || !lon || !zoom) return;
-
-    NSString *staticMapUrl = [NSString stringWithFormat:@"http://maps.google.com/maps/api/staticmap?markers=color:red|%f,%f&zoom=%ld&size=290x290&sensor=true",
-                              [lat doubleValue], [lon doubleValue], (long)[zoom integerValue]];
-
-    NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]]];
-    UIImage *image = [UIImage imageWithData: [NSData dataWithContentsOfURL:mapUrl]];
-
-    UIImageView * view = [[UIImageView alloc] initWithImage:image];
-
-    NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
-    WPDialogButtonHandler *buttonHandler = [[WPDialogButtonHandler alloc] init];
-    buttonHandler.buttonConfiguration = buttons;
-    buttonHandler.notificationConfiguration = wonderPushData;
-    NSMutableArray *alertButtons = [[NSMutableArray alloc] initWithCapacity:MIN(1, [buttons count])];
-    if ([buttons isKindOfClass:[NSArray class]] && [buttons count] > 0) {
-        int i = -1;
-        for (NSDictionary *button in buttons) {
-            ++i;
-            [alertButtons addObject:[PKAlertAction actionWithTitle:[button valueForKey:@"label"] handler:^(PKAlertAction *action, BOOL closed) {
-                if (!closed) {
-                    [buttonHandler clickedButtonAtIndex:i];
-                } else {
-                    [buttonHandler clickedButtonAtIndex:-1];
-                }
-            }]];
-        }
-    } else {
-        [alertButtons addObject:[PKAlertAction actionWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL handler:^(PKAlertAction *action, BOOL closed) {
-            if (!closed) {
-                [buttonHandler clickedButtonAtIndex:0];
-            } else {
-                [buttonHandler clickedButtonAtIndex:-1];
-            }
-        }]];
-    }
-
-    PKAlertViewController *alert = [PKAlertViewController alertControllerWithConfigurationBlock:^(PKAlertControllerConfiguration *configuration) {
-        // configuration.title = title; // TODO support title in addition to UIImageView
-        // configuration.message = message; // TODO support title in addition to UIImageView
-        configuration.customView = (UIView<PKAlertViewLayoutAdapter> *) view;
-        configuration.preferredStyle = PKAlertControllerStyleAlert;
-        configuration.presentationTransitionStyle = PKAlertControllerPresentationTransitionStyleFocusIn;
-        configuration.dismissTransitionStyle = PKAlertControllerDismissTransitionStyleZoomOut;
-        configuration.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
-        configuration.scrollViewTransparentEdgeEnabled = NO;
-        [configuration addActions:alertButtons];
-    }];
-
-    __block void (^presentBlock)(void) = ^{
-        if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
-        } else {
-            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
-            presentBlock = nil;
-        }
-    };
-    dispatch_async(dispatch_get_main_queue(), presentBlock);
-}
-
 + (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
 {
     [wonderPushAPI executeAction:action onNotification:notification];
@@ -1123,10 +1053,6 @@ static UIStoryboard *storyboard = nil;
     } else if ([WP_PUSH_NOTIFICATION_SHOW_URL isEqualToString:type]) {
         WPLogDebug(@"handleNotificationOpened: showing URL in-app");
         [self handleHtmlNotification:wonderpushData];
-        return YES;
-    } else if ([WP_PUSH_NOTIFICATION_SHOW_MAP isEqualToString:type]) {
-        WPLogDebug(@"handleNotificationOpened: showing map in-app");
-        [self handleMapNotification:wonderpushData];
         return YES;
     }
 

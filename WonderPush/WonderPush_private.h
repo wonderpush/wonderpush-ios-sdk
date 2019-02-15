@@ -61,11 +61,6 @@
 #define WP_TARGET_URL_BROADCAST @"wonderpush://notificationOpen/broadcast"
 
 /**
- Notification of type map
- */
-#define WP_PUSH_NOTIFICATION_SHOW_MAP @"map"
-
-/**
  Notification of type url
  */
 #define WP_PUSH_NOTIFICATION_SHOW_URL @"url"
