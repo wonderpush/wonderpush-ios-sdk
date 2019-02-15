@@ -713,13 +713,11 @@ static UIStoryboard *storyboard = nil;
             ++i;
             [alertButtons addObject:[WPHTMLInAppAction actionWithTitle:[button valueForKey:@"label"] block:^(WPHTMLInAppAction *action) {
                 [buttonHandler clickedButtonAtIndex:i];
-                [buttonHandler clickedButtonAtIndex:-1];
             }]];
         }
     } else {
         [alertButtons addObject:[WPHTMLInAppAction actionWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL block:^(WPHTMLInAppAction *action) {
             [buttonHandler clickedButtonAtIndex:0];
-            [buttonHandler clickedButtonAtIndex:-1];
         }]];
     }
 
