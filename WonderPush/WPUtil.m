@@ -29,8 +29,22 @@ NSInteger const WPErrorInvalidCredentials = 11000;
 NSInteger const WPErrorInvalidAccessToken = 11003;
 NSInteger const WPErrorMissingUserConsent = 11011;
 NSInteger const WPErrorHTTPFailure = 11012;
+NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
 @implementation WPUtil
-
++ (void) initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSMutableCharacterSet *allowed = [NSMutableCharacterSet new];
+        // Allow anything that's valid in a query
+        [allowed formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        // Allow -._~
+        [allowed formUnionWithCharacterSet:[NSCharacterSet characterSetWithCharactersInString:@"-._~"]];
+        // Escape :/?#[]@!$&'()*+,;=
+        [allowed formIntersectionWithCharacterSet:[[NSCharacterSet characterSetWithCharactersInString:@":/?#[]@!$&'()*+,;="] invertedSet]];
+        PercentEncodedAllowedCharacterSet = allowed;
+    });
+}
 + (NSString*)base64forData:(NSData*)theData
 {
 
@@ -101,9 +115,7 @@ NSInteger const WPErrorHTTPFailure = 11012;
 
 + (NSString *)percentEncodedString:(NSString *)string
 {
-    static NSString * const kAFCharactersToBeEscaped = @":/?#[]@!$&'()*+,;=";
-    static NSString * const kAFCharactersToLeaveUnescaped = @"-._~";
-    return (__bridge_transfer  NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, (__bridge CFStringRef)kAFCharactersToLeaveUnescaped, (__bridge CFStringRef)kAFCharactersToBeEscaped, CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+    return [string stringByAddingPercentEncodingWithAllowedCharacters:PercentEncodedAllowedCharacterSet];
 }
 
 
