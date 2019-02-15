@@ -1,18 +1,12 @@
 PODS:
-  - PKAlertController (0.6.0)
   - WonderPush (2.3.0):
     - WonderPush/Core (= 2.3.0)
-  - WonderPush/Core (2.3.0):
-    - PKAlertController (~> 0.6)
+  - WonderPush/Core (2.3.0)
   - WonderPushExtension/NotificationService (2.3.0)
 
 DEPENDENCIES:
   - WonderPush (from `.`)
   - WonderPushExtension/NotificationService (from `.`)
-
-SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
-    - PKAlertController
 
 EXTERNAL SOURCES:
   WonderPush:
@@ -21,10 +15,9 @@ EXTERNAL SOURCES:
     :path: "."
 
 SPEC CHECKSUMS:
-  PKAlertController: 8867a57e032592bf077965dcd519fe1694ba3a02
-  WonderPush: 886193f0b52aa026d2eebdc4cd6c78f84f25f37c
+  WonderPush: 15f70f92be9545252046e811c65bcc84803bd2a0
   WonderPushExtension: 5217dce40acde00dc4b1b9efd1a3c0813eb8f7cf
 
-PODFILE CHECKSUM: 35827661f79149395a945264a56413c92f2c9229
+PODFILE CHECKSUM: e7156240f1eba640b84b9d17de77641549b61f61
 
 COCOAPODS: 1.5.3

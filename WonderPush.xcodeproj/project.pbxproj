@@ -24,8 +24,6 @@
 		3D3A4FF41FE183D8009B5799 /* WonderPush.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A1E3E08219E423A200A4EE09 /* WonderPush.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
 		3D77BBB11E60761600CA7915 /* WPNotificationCenterDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */; };
-		3D92E83F1D3F0A5F009D3AAA /* WPWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92E83D1D3F0A5F009D3AAA /* WPWebView.h */; };
-		3D92E8401D3F0A5F009D3AAA /* WPWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D92E83E1D3F0A5F009D3AAA /* WPWebView.m */; };
 		3DDE66D71B4AE73200B5DC44 /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
 		3DFEA88E1C46E09E00E27404 /* WPAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */; };
 		3DFF25DE1EB37B9500124483 /* WonderPushExtension in Resources */ = {isa = PBXBuildFile; fileRef = 3DFF25DD1EB37B9500124483 /* WonderPushExtension */; };
@@ -161,8 +159,6 @@
 		3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonUtil.h; sourceTree = "<group>"; };
 		3D77BBAF1E60760300CA7915 /* WPNotificationCenterDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationCenterDelegate.h; sourceTree = "<group>"; };
 		3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPNotificationCenterDelegate.m; sourceTree = "<group>"; };
-		3D92E83D1D3F0A5F009D3AAA /* WPWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPWebView.h; sourceTree = "<group>"; };
-		3D92E83E1D3F0A5F009D3AAA /* WPWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPWebView.m; sourceTree = "<group>"; };
 		3DDE66D51B4AE73200B5DC44 /* WPLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPLog.m; sourceTree = "<group>"; };
 		3DDE66D61B4AE73200B5DC44 /* WPLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPLog.h; sourceTree = "<group>"; };
 		3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAppDelegate.m; sourceTree = "<group>"; };
@@ -344,8 +340,6 @@
 				99129C31220C8B1500111272 /* WPInstallationCoreProperties.h */,
 				99129C30220C8B1500111272 /* WPInstallationCoreProperties.m */,
 				99129C29220C8AE500111272 /* WonderPushAPI */,
-				3D92E83D1D3F0A5F009D3AAA /* WPWebView.h */,
-				3D92E83E1D3F0A5F009D3AAA /* WPWebView.m */,
 				A1B8508A19D41F6700D1B6FB /* WPDialogButtonHandler.h */,
 				A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */,
 				A189375219C998D100F91DDD /* WPRequestVault.h */,
@@ -410,7 +404,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				99129C2F220C8B0900111272 /* WonderPushAPI.h in Headers */,
-				3D92E83F1D3F0A5F009D3AAA /* WPWebView.h in Headers */,
 				99129C41220D8E0F00111272 /* WonderPushLogErrorAPI.h in Headers */,
 				3D0A08771D340CFA001289BD /* NSDictionary+TypeSafe.h in Headers */,
 				99E02FC322141F6A007E82F4 /* WPDataManager.h in Headers */,
@@ -623,13 +616,11 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-WonderPushSDKDummyApp/Pods-WonderPushSDKDummyApp-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/PKAlertController/PKAlertController.framework",
 				"${BUILT_PRODUCTS_DIR}/WonderPush/WonderPush.framework",
 				"${BUILT_PRODUCTS_DIR}/WonderPushExtension/WonderPushExtension.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PKAlertController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WonderPush.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WonderPushExtension.framework",
 			);
@@ -698,7 +689,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D92E8401D3F0A5F009D3AAA /* WPWebView.m in Sources */,
 				3D663E5F1BA7B83800BBAB45 /* WPJsonUtil.m in Sources */,
 				99885AF422157F98002CA269 /* WPRequestSerializer.m in Sources */,
 				99129C42220D8E0F00111272 /* WonderPushLogErrorAPI.m in Sources */,

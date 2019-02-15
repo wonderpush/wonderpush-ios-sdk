@@ -16,7 +16,6 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "PKAlertController.h"
 
 @interface WPDialogButtonHandler : NSObject
 

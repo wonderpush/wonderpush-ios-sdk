@@ -37,7 +37,6 @@
         "CoreMotion"
       ],
       "dependencies": {
-        "PKAlertController": "~> 0.6"
       },
       "public_header_files": "WonderPush/WonderPush.h",
       "source_files": [
