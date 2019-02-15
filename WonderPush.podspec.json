@@ -44,7 +44,7 @@
         "WonderPush/*.{m,h}"
       ],
       "resource_bundles": {
-        "WonderPush": "WonderPush/*.lproj"
+        "WonderPush": "WonderPush/*.{lproj,storyboard}"
       }
     }
   ]
