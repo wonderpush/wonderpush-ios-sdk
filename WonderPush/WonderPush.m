@@ -33,6 +33,7 @@
 #import "WPJsonSyncInstallationCustom.h"
 #import "WonderPushConcreteAPI.h"
 #import "WonderPushLogErrorAPI.h"
+#import "WPHTMLInAppController.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -57,10 +58,12 @@ static BOOL _requiresUserConsent = NO;
 static id<WonderPushAPI> wonderPushAPI = nil;
 static NSMutableDictionary *safeDeferWithConsentIdToBlock = nil;
 static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
+static UIStoryboard *storyboard = nil;
 + (void) initialize
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        storyboard = [UIStoryboard storyboardWithName:@"WonderPush" bundle:[self bundle]];
         wonderPushAPI = [WonderPushNotInitializedAPI new];
         safeDeferWithConsentIdToBlock = [NSMutableDictionary new];
         safeDeferWithConsentIdentifiers = [NSMutableOrderedSet new];
@@ -100,6 +103,13 @@ static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
             [self setIsReady:YES];
         }];
     });
+}
++ (NSBundle *) bundle
+{
+    NSBundle *frameworkBundle = [NSBundle bundleForClass:[WonderPush class]];
+    NSString *bundlePath = [[frameworkBundle resourcePath] stringByAppendingPathComponent:@"WonderPush.bundle"];
+    return [NSBundle bundleWithPath:bundlePath];
+
 }
 + (void) setRequiresUserConsent:(BOOL)requiresUserConsent
 {
@@ -692,19 +702,6 @@ static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
 
 + (void) handleHtmlNotification:(NSDictionary*)wonderPushData
 {
-    WPWebView *view = [WPWebView new];
-    // NSString *title = [wonderPushData stringForKey:@"title"];
-    NSString *message = [wonderPushData stringForKey:@"message"];
-    NSString *url = [wonderPushData valueForKey:@"url"];
-    if (message != nil) {
-        [view loadHTMLString:message baseURL:nil];
-    } else if (url != nil) {
-        [view loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]]];
-    } else {
-        WPLogDebug(@"Error the link / url provided is null");
-        return;
-    }
-
     NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
     WPDialogButtonHandler *buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.buttonConfiguration = buttons;
@@ -714,40 +711,38 @@ static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
         int i = -1;
         for (NSDictionary *button in buttons) {
             ++i;
-            [alertButtons addObject:[PKAlertAction actionWithTitle:[button valueForKey:@"label"] handler:^(PKAlertAction *action, BOOL closed) {
-                if (!closed) {
-                    [buttonHandler clickedButtonAtIndex:i];
-                } else {
-                    [buttonHandler clickedButtonAtIndex:-1];
-                }
+            [alertButtons addObject:[WPHTMLInAppAction actionWithTitle:[button valueForKey:@"label"] block:^(WPHTMLInAppAction *action) {
+                [buttonHandler clickedButtonAtIndex:i];
+                [buttonHandler clickedButtonAtIndex:-1];
             }]];
         }
     } else {
-        [alertButtons addObject:[PKAlertAction actionWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL handler:^(PKAlertAction *action, BOOL closed) {
-            if (!closed) {
-                [buttonHandler clickedButtonAtIndex:0];
-            } else {
-                [buttonHandler clickedButtonAtIndex:-1];
-            }
+        [alertButtons addObject:[WPHTMLInAppAction actionWithTitle:WP_DEFAULT_BUTTON_LOCALIZED_LABEL block:^(WPHTMLInAppAction *action) {
+            [buttonHandler clickedButtonAtIndex:0];
+            [buttonHandler clickedButtonAtIndex:-1];
         }]];
     }
 
-    PKAlertViewController *alert = [PKAlertViewController alertControllerWithConfigurationBlock:^(PKAlertControllerConfiguration *configuration) {
-        // configuration.title = title; // TODO support title in addition to UIWebView
-        configuration.customView = view;
-        configuration.preferredStyle = PKAlertControllerStyleAlert;
-        configuration.presentationTransitionStyle = PKAlertControllerPresentationTransitionStyleFocusIn;
-        configuration.dismissTransitionStyle = PKAlertControllerDismissTransitionStyleZoomOut;
-        configuration.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
-        configuration.scrollViewTransparentEdgeEnabled = NO;
-        [configuration addActions:alertButtons];
-    }];
-
+    WPHTMLInAppController *controller = [storyboard instantiateViewControllerWithIdentifier:@"HTMLInAppController"];
+    controller.title = wonderPushData[@"title"];
+    controller.actions = alertButtons;
+    controller.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    
+    controller.HTMLString = [wonderPushData stringForKey:@"message"];
+    NSString *URLString = [wonderPushData valueForKey:@"url"];
+    if (URLString) {
+        controller.URL = [NSURL URLWithString:URLString];
+    }
+    if (!controller.HTMLString && !controller.URL) {
+        WPLogDebug(@"Error the link / url provided is null");
+        return;
+    }
     __block void (^presentBlock)(void) = ^{
         if ([UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), presentBlock);
         } else {
-            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
+            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
             presentBlock = nil;
         }
     };
