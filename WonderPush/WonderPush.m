@@ -16,7 +16,6 @@
 
 #import <CoreGraphics/CGGeometry.h>
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <UserNotifications/UserNotifications.h>
 #import "WPUtil.h"

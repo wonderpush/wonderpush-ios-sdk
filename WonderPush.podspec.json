@@ -27,14 +27,10 @@
       "name": "Core",
       "frameworks": [
         "SystemConfiguration",
-        "MobileCoreServices",
         "CoreGraphics",
         "UIKit",
         "CoreTelephony",
-        "CoreLocation",
-        "CoreBluetooth",
-        "AVFoundation",
-        "CoreMotion"
+        "CoreLocation"
       ],
       "dependencies": {
       },

@@ -10,7 +10,6 @@
 #import <UIKit/UIKit.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
-#import <AVFoundation/AVFoundation.h>
 #import <CoreMotion/CoreMotion.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <UserNotifications/UserNotifications.h>

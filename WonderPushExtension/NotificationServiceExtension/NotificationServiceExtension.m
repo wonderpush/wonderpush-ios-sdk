@@ -19,8 +19,6 @@
 #import "WPLog.h"
 
 #import <objc/runtime.h>
-#import <MobileCoreServices/MobileCoreServices.h>
-#import <CoreMedia/CoreMedia.h>
 
 #import "NSDictionary+TypeSafe.h"
 
