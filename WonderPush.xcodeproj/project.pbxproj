@@ -65,8 +65,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0F9B6B3F974D2BDBD452D14C /* Pods_NotificationServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NotificationServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		28EDAD757FAB26043BD0E138 /* Pods_WonderPush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WonderPush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D0A08451D33D9B2001289BD /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = en.lproj; sourceTree = "<group>"; };
 		3D0A08471D33D9C7001289BD /* fr */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fr; path = fr.lproj; sourceTree = "<group>"; };
 		3D0A08481D33F023001289BD /* ar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ar; path = ar.lproj; sourceTree = "<group>"; };
@@ -165,7 +163,6 @@
 		A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPDialogButtonHandler.m; sourceTree = "<group>"; };
 		A1E3E08519E423A200A4EE09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1E3E0A319E425DB00A4EE09 /* WonderPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPush.h; sourceTree = "<group>"; };
-		F1CC3074A7982E7FFC2D794A /* Pods_WonderPushSDKDummyApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WonderPushSDKDummyApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -304,9 +301,6 @@
 				A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */,
 				A189379D19C9E0C600F91DDD /* CoreTelephony.framework */,
 				A16E33A619C886A700E4E158 /* Foundation.framework */,
-				28EDAD757FAB26043BD0E138 /* Pods_WonderPush.framework */,
-				0F9B6B3F974D2BDBD452D14C /* Pods_NotificationServiceExtension.framework */,
-				F1CC3074A7982E7FFC2D794A /* Pods_WonderPushSDKDummyApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

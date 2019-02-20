@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9998CB43221D99900028D955"
-               BuildableName = "WonderPushResources.bundle"
+               BuildableName = "WonderPush.bundle"
                BlueprintName = "WonderPushResources"
                ReferencedContainer = "container:WonderPush.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9998CB43221D99900028D955"
-            BuildableName = "WonderPushResources.bundle"
+            BuildableName = "WonderPush.bundle"
             BlueprintName = "WonderPushResources"
             ReferencedContainer = "container:WonderPush.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9998CB43221D99900028D955"
-            BuildableName = "WonderPushResources.bundle"
+            BuildableName = "WonderPush.bundle"
             BlueprintName = "WonderPushResources"
             ReferencedContainer = "container:WonderPush.xcodeproj">
          </BuildableReference>
