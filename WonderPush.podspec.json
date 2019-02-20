@@ -34,13 +34,20 @@
       ],
       "dependencies": {
       },
-      "public_header_files": "WonderPush/WonderPush.h",
+      "public_header_files": "WonderPush/Sources/WonderPush.h",
       "source_files": [
-        "WonderPush/*.{m,h}"
+        "WonderPush/Sources/*.{m,h}"
       ],
       "resource_bundles": {
-        "WonderPush": "WonderPush/*.{lproj,storyboard}"
+        "WonderPush": "WonderPush/Resources/*.{lproj,storyboard}"
       }
+    },
+    {
+      "name": "Extension",
+      "source_files": [
+        "WonderPush/Sources/WPNotificationServiceExtension.{m,h}",
+        "WonderPush/Sources/WPLog.*"
+      ]
     }
   ]
 }

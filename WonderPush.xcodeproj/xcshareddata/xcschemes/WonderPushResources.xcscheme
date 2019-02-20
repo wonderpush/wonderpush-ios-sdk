@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0930"
-   wasCreatedForAppExtension = "YES"
-   version = "2.0">
+   LastUpgradeVersion = "1010"
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -15,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3D2E2D181E5EF6B7004BC253"
-               BuildableName = "NotificationServiceExtension.appex"
-               BlueprintName = "NotificationServiceExtension"
+               BlueprintIdentifier = "9998CB43221D99900028D955"
+               BuildableName = "WonderPushResources.bundle"
+               BlueprintName = "WonderPushResources"
                ReferencedContainer = "container:WonderPush.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -35,21 +34,20 @@
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = ""
-      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES"
-      launchAutomaticallySubstyle = "2">
+      allowLocationSimulation = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3D2E2D181E5EF6B7004BC253"
-            BuildableName = "NotificationServiceExtension.appex"
-            BlueprintName = "NotificationServiceExtension"
+            BlueprintIdentifier = "9998CB43221D99900028D955"
+            BuildableName = "WonderPushResources.bundle"
+            BlueprintName = "WonderPushResources"
             ReferencedContainer = "container:WonderPush.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -61,14 +59,13 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      debugDocumentVersioning = "YES"
-      launchAutomaticallySubstyle = "2">
+      debugDocumentVersioning = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3D2E2D181E5EF6B7004BC253"
-            BuildableName = "NotificationServiceExtension.appex"
-            BlueprintName = "NotificationServiceExtension"
+            BlueprintIdentifier = "9998CB43221D99900028D955"
+            BuildableName = "WonderPushResources.bundle"
+            BlueprintName = "WonderPushResources"
             ReferencedContainer = "container:WonderPush.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -79,5 +76,23 @@
    <ArchiveAction
       buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
+      <PostActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "# Type a script or drag a script file from your workspace to insert its path.&#10;exec &gt; /tmp/${PROJECT_NAME}_archive.log 2&gt;&amp;1&#10;rsync -a &quot;${ARCHIVE_PRODUCTS_PATH}${INSTALL_PATH}/${FULL_PRODUCT_NAME}/&quot; &quot;${PROJECT_DIR}/Build/${FULL_PRODUCT_NAME}/&quot;&#10;open &quot;${PROJECT_DIR}/Build&quot;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "9998CB43221D99900028D955"
+                     BuildableName = "WonderPush.bundle"
+                     BlueprintName = "WonderPushResources"
+                     ReferencedContainer = "container:WonderPush.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PostActions>
    </ArchiveAction>
 </Scheme>

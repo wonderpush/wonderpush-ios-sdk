@@ -60,7 +60,7 @@ static UIStoryboard *storyboard = nil;
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        storyboard = [UIStoryboard storyboardWithName:@"WonderPush" bundle:[self bundle]];
+        storyboard = [UIStoryboard storyboardWithName:@"WonderPush" bundle:[self resourceBundle]];
         wonderPushAPI = [WonderPushNotInitializedAPI new];
         safeDeferWithConsentIdToBlock = [NSMutableDictionary new];
         safeDeferWithConsentIdentifiers = [NSMutableOrderedSet new];
@@ -101,12 +101,18 @@ static UIStoryboard *storyboard = nil;
         }];
     });
 }
-+ (NSBundle *) bundle
++ (NSBundle *) resourceBundle
 {
     NSBundle *frameworkBundle = [NSBundle bundleForClass:[WonderPush class]];
-    NSString *bundlePath = [[frameworkBundle resourcePath] stringByAppendingPathComponent:@"WonderPush.bundle"];
-    return [NSBundle bundleWithPath:bundlePath];
-
+    // CocoaPods copies resources in a bundle named WonderPush.bundle
+    // If that bundle exists, that's where we'll find our resources
+    NSString *cocoaPodsBundlePath = [[frameworkBundle resourcePath] stringByAppendingPathComponent:@"WonderPush.bundle"];
+    BOOL isDirectory;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:cocoaPodsBundlePath isDirectory:&isDirectory] && isDirectory) {
+        return [NSBundle bundleWithPath:cocoaPodsBundlePath];
+    }
+    // If WonderPush.bundle is not found then our resources are packaged directly in the bundle containing the WonderPush class
+    return frameworkBundle;
 }
 + (void) setRequiresUserConsent:(BOOL)requiresUserConsent
 {
