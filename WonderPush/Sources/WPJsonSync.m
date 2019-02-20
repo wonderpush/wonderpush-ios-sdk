@@ -1,9 +1,8 @@
 #import "WPJsonSync.h"
 
-#import "NSDictionary+TypeSafe.h"
 #import "WPJsonUtil.h"
 #import "WPLog.h"
-
+#import "WPUtil.h"
 
 
 #define SAVED_STATE_FIELD__SYNC_STATE_VERSION @"_syncStateVersion"
@@ -53,14 +52,14 @@
 
         savedState = savedState ?: @{};
         NSNumber *syncSateVersion;
-        syncSateVersion         = [savedState numberForKey:SAVED_STATE_FIELD__SYNC_STATE_VERSION] ?: @0;
-        _sdkState               = [savedState dictionaryForKey:SAVED_STATE_FIELD_SDK_STATE] ?: @{};
-        _serverState            = [savedState dictionaryForKey:SAVED_STATE_FIELD_SERVER_STATE] ?: @{};
-        _putAccumulator         = [savedState dictionaryForKey:SAVED_STATE_FIELD_PUT_ACCUMULATOR] ?: @{};
-        _inflightDiff           = [savedState dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_DIFF] ?: @{};
-        _inflightPutAccumulator = [savedState dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_PUT_ACCUMULATOR] ?: @{};
-        _scheduledPatchCall     = [([savedState numberForKey:SAVED_STATE_FIELD_SCHEDULED_PATCH_CALL] ?: @NO) boolValue];
-        _inflightPatchCall      = [([savedState numberForKey:SAVED_STATE_FIELD_INFLIGHT_PATCH_CALL] ?: @NO) boolValue];
+        syncSateVersion         = [WPUtil numberForKey:SAVED_STATE_FIELD__SYNC_STATE_VERSION inDictionary:savedState] ?: @0;
+        _sdkState               = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_SDK_STATE inDictionary:savedState] ?: @{};
+        _serverState            = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_SERVER_STATE inDictionary:savedState] ?: @{};
+        _putAccumulator         = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
+        _inflightDiff           = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_DIFF inDictionary:savedState] ?: @{};
+        _inflightPutAccumulator = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
+        _scheduledPatchCall     = [([WPUtil numberForKey:SAVED_STATE_FIELD_SCHEDULED_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
+        _inflightPatchCall      = [([WPUtil numberForKey:SAVED_STATE_FIELD_INFLIGHT_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
 
         if (_inflightPatchCall) {
             [self onFailure];

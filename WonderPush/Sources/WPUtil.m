@@ -186,8 +186,8 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
 + (NSError *)errorFromJSON:(id)json
 {
     if ([json isKindOfClass:[NSDictionary class]]) {
-        NSArray *errorArray = [json arrayForKey:@"error"];
-        NSDictionary *errorDict = [json dictionaryForKey:@"error"];
+        NSArray *errorArray = [WPUtil arrayForKey:@"error" inDictionary:json];
+        NSDictionary *errorDict = [WPUtil dictionaryForKey:@"error" inDictionary:json];
         if (errorDict) {
             errorArray = @[errorDict];
         }
@@ -195,8 +195,8 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
             for (NSDictionary *detailedError in errorArray) {
                 if (![detailedError isKindOfClass:[NSDictionary class]]) continue;
                 return [[NSError alloc] initWithDomain:WPErrorDomain
-                                                  code:[[detailedError numberForKey:@"code"] integerValue]
-                                              userInfo:@{NSLocalizedDescriptionKey : [detailedError stringForKey:@"message"] ?: [NSNull null]}];
+                                                  code:[[WPUtil numberForKey:@"code" inDictionary:detailedError] integerValue]
+                                              userInfo:@{NSLocalizedDescriptionKey : [WPUtil stringForKey:@"message" inDictionary:detailedError] ?: [NSNull null]}];
             }
         }
     }
@@ -315,6 +315,46 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 #pragma clang diagnostic pop
     }
+}
+
+
++ (id) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary *)dictionary
+{
+    id value = dictionary[key];
+    if ([value isKindOfClass:expectedClass]) {
+        return value;
+    }
+    return nil;
+}
+
++ (id) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary *)dictionary
+{
+    id value = dictionary[key];
+    if (value != [NSNull null]) {
+        return value;
+    }
+    return nil;
+}
+
+
++ (NSDictionary *) dictionaryForKey:(id)key inDictionary:(NSDictionary *)dictionary
+{
+    return [self typesafeObjectForKey:key expectClass:[NSDictionary class] inDictionary:dictionary];
+}
+
++ (NSArray *) arrayForKey:(id)key inDictionary:(NSDictionary *)dictionary
+{
+    return [self typesafeObjectForKey:key expectClass:[NSArray class] inDictionary:dictionary];
+}
+
++ (NSString *) stringForKey:(id)key inDictionary:(NSDictionary *)dictionary
+{
+    return [self typesafeObjectForKey:key expectClass:[NSString class] inDictionary:dictionary];
+}
+
++ (NSNumber *) numberForKey:(id)key inDictionary:(NSDictionary *)dictionary
+{
+    return [self typesafeObjectForKey:key expectClass:[NSNumber class] inDictionary:dictionary];
 }
 
 

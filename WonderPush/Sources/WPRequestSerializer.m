@@ -131,9 +131,9 @@
     if (paramNames.count) {
         NSString *last = paramNames.lastObject;
         for (NSString *paramName in paramNames) {
-            NSString *val = [postParams stringForKey:paramName];
+            NSString *val = [WPUtil stringForKey:paramName inDictionary:postParams];
             if (!val)
-                val = [getParams stringForKey:paramName];
+                val = [WPUtil stringForKey:paramName inDictionary:getParams];
             
             [buffer appendString:[WPUtil percentEncodedString:[NSString stringWithFormat:@"%@=%@", [WPUtil percentEncodedString:paramName], [WPUtil percentEncodedString:val]]]];
             

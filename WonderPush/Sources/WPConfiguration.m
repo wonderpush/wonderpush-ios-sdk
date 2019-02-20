@@ -19,7 +19,7 @@
 #import "WPLog.h"
 #import "WPJsonUtil.h"
 #import "WPRequestVault.h"
-
+#import "WPUtil.h"
 
 static WPConfiguration *sharedConfiguration = nil;
 

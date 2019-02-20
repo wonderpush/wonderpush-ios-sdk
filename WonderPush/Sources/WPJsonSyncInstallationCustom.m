@@ -3,7 +3,7 @@
 #import "WPConfiguration.h"
 #import "WonderPush_private.h"
 #import "WPLog.h"
-
+#import "WPUtil.h"
 
 
 static NSMutableDictionary *instancePerUserId = nil;
@@ -39,7 +39,7 @@ static NSMutableDictionary *instancePerUserId = nil;
         // Populate entries
         NSDictionary *installationCustomSyncStatePerUserId = conf.installationCustomSyncStatePerUserId ?: @{};
         for (NSString *userId in installationCustomSyncStatePerUserId) {
-            NSDictionary *state = [installationCustomSyncStatePerUserId dictionaryForKey:userId];
+            NSDictionary *state = [WPUtil dictionaryForKey:userId inDictionary:installationCustomSyncStatePerUserId];
             instancePerUserId[userId ?: @""] = [[WPJsonSyncInstallationCustom alloc] initFromSavedState:state userId:userId];
         }
         NSString *oldUserId = conf.userId;
@@ -196,7 +196,7 @@ static NSMutableDictionary *instancePerUserId = nil;
               params:@{@"body": @{@"custom": diff}}
              handler:^(WPResponse *response, NSError *error) {
                  NSDictionary *responseJson = (NSDictionary *)response.object;
-                 if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[responseJson numberForKey:@"success"] boolValue]) {
+                 if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[WPUtil numberForKey:@"success" inDictionary:responseJson] boolValue]) {
                      WPLogDebug(@"Succeded to send diff for user %@: %@", self->_userId, responseJson);
                      onSuccess();
                  } else {
