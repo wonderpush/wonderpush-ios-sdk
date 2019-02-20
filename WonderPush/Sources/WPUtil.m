@@ -357,5 +357,35 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
     return [self typesafeObjectForKey:key expectClass:[NSNumber class] inDictionary:dictionary];
 }
 
-
++ (NSDictionary *)dictionaryByFilteringNulls:(NSDictionary *)dictionary
+{
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    for (id key in [dictionary allKeys]) {
+        id value = [dictionary valueForKey:key];
+        if (value == [NSNull null]) continue;
+        if ([value isKindOfClass:[NSDictionary class]]) {
+            [result setValue:[self dictionaryByFilteringNulls:value] forKey:key];
+        } else if ([value isKindOfClass:[NSArray class]]) {
+            [result setValue:[self arrayByFilteringNulls:value] forKey:key];
+        } else {
+            [result setValue:value forKey:key];
+        }
+    }
+    return [NSDictionary dictionaryWithDictionary:result];
+}
++ (NSArray *)arrayByFilteringNulls:(NSArray *)array
+{
+    NSMutableArray *result = [NSMutableArray new];
+    for (id value in array) {
+        if (value == [NSNull null]) continue;
+        if ([value isKindOfClass:[NSDictionary class]]) {
+            [result addObject:[self dictionaryByFilteringNulls:value]];
+        } else if ([value isKindOfClass:[NSArray class]]) {
+            [result addObject:[self arrayByFilteringNulls:value]];
+        } else {
+            [result addObject:value];
+        }
+    }
+    return [NSArray arrayWithArray:result];
+}
 @end

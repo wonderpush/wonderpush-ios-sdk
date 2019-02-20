@@ -86,7 +86,8 @@
 ///-----------------------
 /// @name Dictionary utils
 ///-----------------------
-
++ (NSDictionary *)dictionaryByFilteringNulls:(NSDictionary *)dictionary;
++ (NSArray *)arrayByFilteringNulls:(NSArray *)array;
 + (id) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary *)dictionary;
 + (id) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary *)dictionary;
 

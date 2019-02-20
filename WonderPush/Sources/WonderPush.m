@@ -502,7 +502,7 @@ static UIStoryboard *storyboard = nil;
                     UILocalNotification *notification = [[UILocalNotification alloc] init];
                     notification.alertBody = alert;
                     notification.soundName = [WPUtil stringForKey:@"sound" inDictionary:aps];
-                    notification.userInfo = userInfo;
+                    notification.userInfo = [WPUtil dictionaryByFilteringNulls:userInfo];
                     [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 #pragma clang diagnostic pop
                 }
