@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0930"
-   version = "1.3">
+   LastUpgradeVersion = "1010"
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A1E3E08119E423A200A4EE09"
+               BlueprintIdentifier = "9998CA97221C74190028D955"
                BuildableName = "WonderPush.framework"
                BlueprintName = "WonderPush"
                ReferencedContainer = "container:WonderPush.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A1E3E08119E423A200A4EE09"
+            BlueprintIdentifier = "9998CA97221C74190028D955"
             BuildableName = "WonderPush.framework"
             BlueprintName = "WonderPush"
             ReferencedContainer = "container:WonderPush.xcodeproj">
@@ -63,7 +63,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A1E3E08119E423A200A4EE09"
+            BlueprintIdentifier = "9998CA97221C74190028D955"
             BuildableName = "WonderPush.framework"
             BlueprintName = "WonderPush"
             ReferencedContainer = "container:WonderPush.xcodeproj">
@@ -76,5 +76,23 @@
    <ArchiveAction
       buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
+      <PostActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "# Type a script or drag a script file from your workspace to insert its path.&#10;sh ${PROJECT_DIR}/Scripts/create-fat-framework.sh&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "9998CA97221C74190028D955"
+                     BuildableName = "WonderPush.framework"
+                     BlueprintName = "WonderPush"
+                     ReferencedContainer = "container:WonderPush.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PostActions>
    </ArchiveAction>
 </Scheme>

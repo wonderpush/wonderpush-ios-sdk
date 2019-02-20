@@ -1,12 +1,12 @@
 /*
  Copyright 2017 WonderPush
-
+ 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,13 +14,11 @@
  limitations under the License.
  */
 
-#import "../NotificationServiceExtension.h"
+#import "WPNotificationServiceExtension.h"
 
 #import "WPLog.h"
 
 #import <objc/runtime.h>
-
-#import "NSDictionary+TypeSafe.h"
 
 
 /**
@@ -40,7 +38,22 @@
 @end
 
 
-@implementation WonderPushNotificationServiceExtension
+@implementation WPNotificationServiceExtension
+
+- (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
+    // Forward the call to the WonderPush NotificationServiceExtension SDK
+    if (![[self class] serviceExtension:self didReceiveNotificationRequest:request withContentHandler:contentHandler]) {
+        // The notification was not for the WonderPush SDK consumption, handle it ourself
+        contentHandler(request.content);
+    }
+}
+
+- (void)serviceExtensionTimeWillExpire {
+    // Forward the call to the WonderPush NotificationServiceExtension SDK
+    [[self class] serviceExtensionTimeWillExpire:self];
+    // If the notification was not for the WonderPush SDK consumption,
+    // we would have handled it ourself, and we would never enter this function.
+}
 
 typedef void (^ContentHandler)(UNNotificationContent *contentToDeliver);
 
@@ -54,20 +67,20 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
     @try {
         WPLog(@"didReceiveNotificationRequest:%@", request);
         WPLog(@"                     userInfo:%@", request.content.userInfo);
-
+        
         UNMutableNotificationContent *content = [request.content mutableCopy];
         [self setContentHandler:contentHandler forExtension:extension];
         [self setContent:content forExtension:extension];
-
+        
         if (![self isNotificationForWonderPush:content.userInfo]) {
             WPLog(@"Notification not for WonderPush");
             return NO;
         }
-
-        NSDictionary *wpData = [content.userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
-
-        NSArray *attachments = [wpData arrayForKey:@"attachments"];
-        if (attachments && attachments.count > 0) {
+        
+        id wpData = [content.userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY];
+        
+        NSArray *attachments = [wpData valueForKey:@"attachments"];
+        if (attachments && [attachments isKindOfClass:[NSArray class]] && attachments.count > 0) {
             NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
             NSURL *documentsDirectoryURL = [NSURL fileURLWithPath:documentsDirectory];
             NSMutableArray *contentAttachments = [[NSMutableArray alloc] initWithArray:content.attachments];
@@ -76,18 +89,20 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                 @try {
                     ++index;
                     if (![attachment isKindOfClass:[NSDictionary class]]) continue;
-                    NSString *attachmentUrl = [attachment stringForKey:@"url"];
+                    NSString *attachmentUrl = [attachment valueForKey:@"url"];
+                    if (![attachmentUrl isKindOfClass:[NSString class]]) continue;
                     NSURL *attachmentURL = [NSURL URLWithString:attachmentUrl];
                     if (!attachmentURL) continue;
-                    NSMutableDictionary *attachmentOptions = [[NSMutableDictionary alloc] initWithDictionary:([attachment dictionaryForKey:@"options"] ?: @{})];
-                    NSString *type = [attachment stringForKey:@"type"];
-                    if (type && !attachmentOptions[UNNotificationAttachmentOptionsTypeHintKey]) {
+                    
+                    NSMutableDictionary *attachmentOptions = [[NSMutableDictionary alloc] initWithDictionary:([[attachment valueForKey:@"options"] isKindOfClass:[NSDictionary class]] ? [attachment valueForKey:@"options"] : @{})];
+                    NSString *type = [attachment valueForKey:@"type"];
+                    if ([type isKindOfClass:[NSString class]] && !attachmentOptions[UNNotificationAttachmentOptionsTypeHintKey]) {
                         NSString *utType = [self getAttachmentTypehintFrom:type];
                         if (utType) {
                             attachmentOptions[UNNotificationAttachmentOptionsTypeHintKey] = utType;
                         }
                     }
-                    NSString *attachmentId = [attachment stringForKey:@"id"] ?: [NSString stringWithFormat:@"%d", index];
+                    NSString *attachmentId = [[attachment valueForKey:@"id"] isKindOfClass:[NSString class]] ? [attachment valueForKey:@"id"] : [NSString stringWithFormat:@"%d", index];
                     NSError *error = nil;
                     WPLog(@"downloading %@", attachmentURL);
                     NSURL *fileURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@.%@", attachmentId, attachmentURL.pathExtension ?: @""] relativeToURL:documentsDirectoryURL];
@@ -119,7 +134,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                 }
             }
         }
-
+        
         WPLog(@"Final content: %@", content);
         contentHandler(content);
         return YES;
@@ -134,11 +149,11 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         WPLog(@"serviceExtensionTimeWillExpire");
         UNMutableNotificationContent *content = [self getContentForExtension:extension];
         ContentHandler contentHandler = [self getContentHandlerForExtension:extension];
-
+        
         if (!content || !contentHandler || ![self isNotificationForWonderPush:content.userInfo]) {
             return NO;
         }
-
+        
         WPLog(@"Final content: %@", content);
         contentHandler(content);
         return YES;
@@ -238,7 +253,7 @@ static const NSString *UTTypeAVIMovie = @"public.avi";
 
 + (BOOL)isNotificationForWonderPush:(NSDictionary *)userInfo{
     if ([userInfo isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *wonderpushData = [userInfo dictionaryForKey:WP_PUSH_NOTIFICATION_KEY];
+        NSDictionary *wonderpushData = [[userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY] isKindOfClass:[NSDictionary class]] ? [userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY] : nil;
         return !!wonderpushData;
     }
     return NO;
