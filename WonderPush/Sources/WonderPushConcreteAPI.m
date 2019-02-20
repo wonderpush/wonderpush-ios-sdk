@@ -12,7 +12,6 @@
 #import "WonderPush.h"
 #import "WPAPIClient.h"
 #import "WPAction.h"
-#import "NSDictionary+TypeSafe.h"
 #import "WonderPush_private.h"
 #import "WPUtil.h"
 #import <UIKit/UIKit.h>
@@ -120,14 +119,14 @@
 - (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
 {
     WPLogDebug(@"Running action %@", action);
-    NSString *type = [action stringForKey:@"type"];
+    NSString *type = [WPUtil stringForKey:@"type" inDictionary:action];
     
     if ([WP_ACTION_TRACK isEqualToString:type]) {
         
-        NSDictionary *event = [action dictionaryForKey:@"event"] ?: @{};
-        NSString *type = [event stringForKey:@"type"];
+        NSDictionary *event = [WPUtil dictionaryForKey:@"event" inDictionary:action] ?: @{};
+        NSString *type = [WPUtil stringForKey:@"type" inDictionary:event];
         if (!type) return;
-        NSDictionary *custom = [event dictionaryForKey:@"custom"];
+        NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:event];
         [self trackEvent:type
                      eventData:@{@"campaignId": notification[@"c"] ?: [NSNull null],
                                  @"notificationId": notification[@"n"] ?: [NSNull null]}
@@ -135,9 +134,9 @@
         
     } else if ([WP_ACTION_UPDATE_INSTALLATION isEqualToString:type]) {
         
-        NSDictionary *custom = [([action dictionaryForKey:@"installation"] ?: action) dictionaryForKey:@"custom"];
+        NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
         if (!custom) return;
-        NSNumber *appliedServerSide = [action numberForKey:@"appliedServerSide"];
+        NSNumber *appliedServerSide = [WPUtil numberForKey:@"appliedServerSide" inDictionary:action];
         if ([appliedServerSide isEqual:@YES]) {
             WPLogDebug(@"Received server custom properties diff: %@", custom);
             [[WPJsonSyncInstallationCustom forCurrentUser] receiveDiff:custom];
@@ -151,10 +150,10 @@
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
         void (^cont)(NSDictionary *action) = ^(NSDictionary *action){
             WPLogDebug(@"Running enriched action %@", action);
-            NSDictionary *installation = [action dictionaryForKey:@"installation"] ?: @{};
-            NSDictionary *custom = [installation dictionaryForKey:@"custom"] ?: @{};
-            NSNumber *reset = [action numberForKey:@"reset"];
-            NSNumber *force = [action numberForKey:@"force"];
+            NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: @{};
+            NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:installation] ?: @{};
+            NSNumber *reset = [WPUtil numberForKey:@"reset" inDictionary:action];
+            NSNumber *force = [WPUtil numberForKey:@"force" inDictionary:action];
             
             // Take or reset custom
             if ([reset isEqual:@YES]) {
@@ -183,7 +182,7 @@
             }
         };
         
-        NSDictionary *installation = [action dictionaryForKey:@"installation"];
+        NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action];
         if (installation) {
             cont(action);
         } else {
@@ -221,23 +220,23 @@
         
     } else  if ([WP_ACTION_METHOD_CALL isEqualToString:type]) {
         
-        NSString *methodName = [action stringForKey:@"method"];
-        id methodParameter = [action nullsafeObjectForKey:@"methodArg"];
+        NSString *methodName = [WPUtil stringForKey:@"method" inDictionary:action];
+        id methodParameter = [WPUtil nullsafeObjectForKey:@"methodArg" inDictionary:action];
         NSDictionary *parameters = @{WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter ?: [NSNull null]};
         [[NSNotificationCenter defaultCenter] postNotificationName:methodName object:self userInfo:parameters];
         
     } else if ([WP_ACTION_LINK isEqualToString:type]) {
         
-        NSString *url = [action stringForKey:@"url"];
+        NSString *url = [WPUtil stringForKey:@"url" inDictionary:action];
         [WonderPush openURL:[NSURL URLWithString:url]];
         
     } else if ([WP_ACTION_MAP_OPEN isEqualToString:type]) {
         
-        NSDictionary *mapData = [notification dictionaryForKey:@"map"] ?: @{};
-        NSDictionary *place = [mapData dictionaryForKey:@"place"] ?: @{};
-        NSDictionary *point = [place dictionaryForKey:@"point"] ?: @{};
-        NSNumber *lat = [point numberForKey:@"lat"];
-        NSNumber *lon = [point numberForKey:@"lon"];
+        NSDictionary *mapData = [WPUtil dictionaryForKey:@"map" inDictionary:notification] ?: @{};
+        NSDictionary *place = [WPUtil dictionaryForKey:@"place" inDictionary:mapData] ?: @{};
+        NSDictionary *point = [WPUtil dictionaryForKey:@"point" inDictionary:place] ?: @{};
+        NSNumber *lat = [WPUtil numberForKey:@"lat" inDictionary:point];
+        NSNumber *lon = [WPUtil numberForKey:@"lon" inDictionary:point];
         if (!lat || !lon) return;
         NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [lat doubleValue], [lon doubleValue]];
         WPLogDebug(@"url: %@", url);
@@ -253,7 +252,7 @@
         
     } else if ([WP_ACTION__OVERRIDE_SET_LOGGING isEqualToString:type]) {
         
-        NSNumber *force = [action numberForKey:@"force"];
+        NSNumber *force = [WPUtil numberForKey:@"force" inDictionary:action];
         WPLog(@"OVERRIDE setLogging: %@", force);
         [WPConfiguration sharedConfiguration].overrideSetLogging = force;
         if (force != nil) {
@@ -262,7 +261,7 @@
         
     } else if ([WP_ACTION__OVERRIDE_NOTIFICATION_RECEIPT isEqualToString:type]) {
         
-        NSNumber *force = [action numberForKey:@"force"];
+        NSNumber *force = [WPUtil numberForKey:@"force" inDictionary:action];
         WPLog(@"OVERRIDE notification receipt: %@", force);
         [WPConfiguration sharedConfiguration].overrideNotificationReceipt = force;
         

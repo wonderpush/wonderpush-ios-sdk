@@ -82,6 +82,19 @@
 + (NSString *) wpLocalizedString:(NSString *)key withDefault:(NSString *)defaultValue;
 
 + (void) registerToPushNotifications;
+
+///-----------------------
+/// @name Dictionary utils
+///-----------------------
+
++ (id) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary *)dictionary;
++ (id) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary *)dictionary;
+
++ (NSDictionary *) dictionaryForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (NSArray *) arrayForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (NSString *) stringForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (NSNumber *) numberForKey:(id)key inDictionary:(NSDictionary *)dictionary;
+
 @end
 
 

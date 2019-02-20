@@ -15,6 +15,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import <sys/utsname.h>
 #import "WonderPush_private.h"
+#import "WPUtil.h"
 
 static NSDictionary *deviceNamesByCode = nil;
 static NSDictionary* gpsCapabilityByCode = nil;
@@ -188,7 +189,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     NSString* code = [NSString stringWithCString:systemInfo.machine
                                         encoding:NSUTF8StringEncoding];
     
-    NSString* deviceName = [deviceNamesByCode stringForKey:code];
+    NSString* deviceName = [WPUtil stringForKey:code inDictionary:deviceNamesByCode];
     
     if (!deviceName) {
         // Just use the code name so we don't lose any information

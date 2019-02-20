@@ -259,9 +259,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
             WPLogDebug(@"Got access token response: %@", response);
             
             NSDictionary *responseJson = (NSDictionary *)response;
-            NSString *accessToken = [responseJson stringForKey:@"token"];
-            NSDictionary *data = [responseJson dictionaryForKey:@"data"];
-            NSString *sid = data ? [data stringForKey:@"sid"] : nil;
+            NSString *accessToken = [WPUtil stringForKey:@"token" inDictionary:responseJson];
+            NSDictionary *data = [WPUtil dictionaryForKey:@"data" inDictionary:responseJson];
+            NSString *sid = data ? [WPUtil stringForKey:@"sid" inDictionary:data] : nil;
             
             // Do we have an accessToken and an SID ?
             if (sid && accessToken && sid.length && accessToken.length) {
@@ -270,12 +270,12 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
                 [configuration changeUserId:userId];
                 configuration.accessToken = accessToken;
                 configuration.sid = sid;
-                configuration.installationId = [data stringForKey:@"installationId"];
+                configuration.installationId = [WPUtil stringForKey:@"installationId" inDictionary:data];
                 
-                NSDictionary *installation = [responseJson dictionaryForKey:@"_installation"];
+                NSDictionary *installation = [WPUtil dictionaryForKey:@"_installation" inDictionary:responseJson];
                 if (installation) {
-                    NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:[[installation numberForKey:@"updateDate"] longValue] / 1000. ];
-                    NSDictionary * custom        = [installation dictionaryForKey:@"custom"] ?: @{};
+                    NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:[[WPUtil numberForKey:@"updateDate" inDictionary:installation] longValue] / 1000. ];
+                    NSDictionary * custom        = [WPUtil dictionaryForKey:@"custom" inDictionary:installation] ?: @{};
                     [WonderPush receivedFullInstallationCustomPropertiesFromServer:custom updateDate:installationUpdateDate];
                 }
                 
@@ -420,8 +420,8 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
                 WPResponse *response = [[WPResponse alloc] init];
                 response.object = responseJSON;
-                NSNumber *_serverTime = [responseJSON numberForKey:@"_serverTime"];
-                NSNumber *_serverTook = [responseJSON numberForKey:@"_serverTook"];
+                NSNumber *_serverTime = [WPUtil numberForKey:@"_serverTime" inDictionary:responseJSON];
+                NSNumber *_serverTook = [WPUtil numberForKey:@"_serverTook" inDictionary:responseJSON];
 
                 if (_serverTime != nil) {
                     NSTimeInterval serverTime = [_serverTime doubleValue] / 1000.;
