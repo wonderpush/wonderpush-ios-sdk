@@ -60,7 +60,16 @@ static UIStoryboard *storyboard = nil;
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        storyboard = [UIStoryboard storyboardWithName:@"WonderPush" bundle:[self resourceBundle]];
+        NSBundle *resourceBundle = [self resourceBundle];
+        if (!resourceBundle) {
+            WPLog(@"Couldn't find WonderPush.bundle. Please follow the installation instructions at https://docs.wonderpush.com/docs/ios-quickstart.");
+        } else {
+            @try {
+                storyboard = [UIStoryboard storyboardWithName:@"WonderPush" bundle:resourceBundle];
+            } @catch (NSException *exception) {
+                WPLog(@"Couldn't find WonderPush storyboard. Please make sure you are using a WonderPush.bundle with the same version as WonderPush.framework");
+            }
+        }
         wonderPushAPI = [WonderPushNotInitializedAPI new];
         safeDeferWithConsentIdToBlock = [NSMutableDictionary new];
         safeDeferWithConsentIdentifiers = [NSMutableOrderedSet new];
@@ -103,16 +112,15 @@ static UIStoryboard *storyboard = nil;
 }
 + (NSBundle *) resourceBundle
 {
-    NSBundle *frameworkBundle = [NSBundle bundleForClass:[WonderPush class]];
+    NSBundle *containerBundle = [NSBundle bundleForClass:[WonderPush class]];
     // CocoaPods copies resources in a bundle named WonderPush.bundle
     // If that bundle exists, that's where we'll find our resources
-    NSString *cocoaPodsBundlePath = [[frameworkBundle resourcePath] stringByAppendingPathComponent:@"WonderPush.bundle"];
+    NSString *cocoaPodsBundlePath = [[containerBundle resourcePath] stringByAppendingPathComponent:@"WonderPush.bundle"];
     BOOL isDirectory;
     if ([[NSFileManager defaultManager] fileExistsAtPath:cocoaPodsBundlePath isDirectory:&isDirectory] && isDirectory) {
         return [NSBundle bundleWithPath:cocoaPodsBundlePath];
     }
-    // If WonderPush.bundle is not found then our resources are packaged directly in the bundle containing the WonderPush class
-    return frameworkBundle;
+    return nil;
 }
 + (void) setRequiresUserConsent:(BOOL)requiresUserConsent
 {
