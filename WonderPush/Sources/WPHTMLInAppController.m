@@ -43,9 +43,9 @@ static NSTimeInterval timeout = 60;
     configuration.allowsInlineMediaPlayback = YES;
     self.webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:configuration];
     self.webView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.webViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:0 constant:1000];
+    self.webViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:0 constant:1];
     self.webViewWidthConstraint.priority = 500;
-    self.webViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:0 constant:1000];
+    self.webViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:0 constant:1];
     self.webViewHeightConstraint.priority = 500;
     [self.webView addConstraints:@[self.webViewWidthConstraint, self.webViewHeightConstraint]];
     [self.mainStackView addArrangedSubview:self.webView];
@@ -58,7 +58,7 @@ static NSTimeInterval timeout = 60;
         request.timeoutInterval = timeout;
         [self.webView loadRequest:request];
     } else if (self.HTMLString) {
-        [self.webView loadHTMLString:self.HTMLString baseURL:self.baseURL];
+        [self.webView loadHTMLString:[NSString stringWithFormat:@"<meta name=\"viewport\" content=\"initial-scale=1.0\" />%@", self.HTMLString] baseURL:self.baseURL];
     }
     for (NSInteger i = 0; i < self.actions.count; i++) {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -79,11 +79,6 @@ static NSTimeInterval timeout = 60;
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     });
-}
-
-- (void)dealloc
-{
-    [self.webView.scrollView removeObserver:self forKeyPath:@"contentSize" context:nil];
 }
 
 - (void) buttonClicked:(id)sender
@@ -110,29 +105,32 @@ static NSTimeInterval timeout = 60;
 */
 
 
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-    if (object == self.webView.scrollView && [keyPath isEqual:@"contentSize"]) {
-        CGSize contentSize = self.webView.scrollView.contentSize;
-        self.webViewWidthConstraint.constant = contentSize.width;
-        self.webViewHeightConstraint.constant = contentSize.height;
-        [self.view layoutIfNeeded];
-        [self.activityIndicator stopAnimating];
-        [UIView animateWithDuration:0.4 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.3 options:0 animations:^{
-            self.containerView.transform = CGAffineTransformIdentity;
-        } completion:nil];
-    }
-}
-
 - (void) webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
-    if (!self.loaded) {
-        self.loaded = YES;
-        [self.webView.scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
-    }
+    BOOL initialSetup = !self.loaded;
+    self.loaded = YES;
+    [webView evaluateJavaScript:@"[Math.max(document.body.scrollWidth, document.body.offsetWidth, document.documentElement.clientWidth, document.documentElement.scrollWidth, document.documentElement.offsetWidth), Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight)]"
+              completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+                  NSLog(@"result:%@ error:%@", result, error);
+                  if (!error
+                      && [result isKindOfClass:[NSArray class]]
+                      && [result[0] isKindOfClass:[NSNumber class]]
+                      && [result[1] isKindOfClass:[NSNumber class]]) {
+                      self.webViewWidthConstraint.constant = [result[0] floatValue];
+                      self.webViewHeightConstraint.constant = [result[1] floatValue];
+                      if (initialSetup) {
+                          [self.view layoutIfNeeded];
+                          [self.activityIndicator stopAnimating];
+                          [UIView animateWithDuration:0.4 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.3 options:0 animations:^{
+                              self.containerView.transform = CGAffineTransformIdentity;
+                          } completion:nil];
+                      } else {
+                          [UIView animateWithDuration:0.4 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.3 options:0 animations:^{
+                              [self.view layoutIfNeeded];
+                          } completion:nil];
+                      }
+                  }
+              }];
 }
 - (void) webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {
