@@ -30,7 +30,8 @@
         "CoreGraphics",
         "UIKit",
         "CoreTelephony",
-        "CoreLocation"
+        "CoreLocation",
+        "WebKit"
       ],
       "dependencies": {
       },
