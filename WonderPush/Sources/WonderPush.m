@@ -120,6 +120,7 @@ static UIStoryboard *storyboard = nil;
     if ([[NSFileManager defaultManager] fileExistsAtPath:cocoaPodsBundlePath isDirectory:&isDirectory] && isDirectory) {
         return [NSBundle bundleWithPath:cocoaPodsBundlePath];
     }
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[[containerBundle bundlePath] stringByAppendingPathComponent:@"WonderPush.storyboardc"] isDirectory:&isDirectory] && isDirectory) return containerBundle;
     return nil;
 }
 + (void) setRequiresUserConsent:(BOOL)requiresUserConsent
