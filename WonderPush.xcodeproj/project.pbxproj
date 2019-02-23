@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9909CE1922215DD600F73A0B /* WonderPush.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99885AF92215CE71002CA269 /* WonderPush.storyboard */; };
+		9909CE1A22215DD800F73A0B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08461D33D9B2001289BD /* WonderPushLocalizable.strings */; };
+		9909CE5B2221602200F73A0B /* WPNotificationServiceExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9909CE5C2221602500F73A0B /* WPNotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */; };
+		9909CE5D2221602B00F73A0B /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
+		9909CE5E2221602F00F73A0B /* WPLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DDE66D61B4AE73200B5DC44 /* WPLog.h */; };
+		9909CE6D222162E900F73A0B /* WonderPushExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 9909CE6C222162C600F73A0B /* WonderPushExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9998CAA0221C74890028D955 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */; };
 		9998CAA1221C74930028D955 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937WPAF19CAEC0700F91DDD /* CoreGraphics.framework */; };
 		9998CAA2221C74980028D955 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B119CB018F00F91DDD /* UIKit.framework */; };
@@ -58,10 +65,6 @@
 		9998CAD2221C75560028D955 /* WonderPushLogErrorAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 99129C3F220D8E0F00111272 /* WonderPushLogErrorAPI.h */; };
 		9998CAD3221C75630028D955 /* WonderPushConcreteAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C2B220C8B0800111272 /* WonderPushConcreteAPI.m */; };
 		9998CAD4221C75630028D955 /* WonderPushLogErrorAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */; };
-		9998CB3E221D973D0028D955 /* WPNotificationServiceExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9998CB3F221D973D0028D955 /* WPNotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */; };
-		9998CB4A221D999C0028D955 /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08461D33D9B2001289BD /* WonderPushLocalizable.strings */; };
-		9998CB4B221D999F0028D955 /* WonderPush.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99885AF92215CE71002CA269 /* WonderPush.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -111,6 +114,9 @@
 		3DDE66D61B4AE73200B5DC44 /* WPLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPLog.h; sourceTree = "<group>"; };
 		3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAppDelegate.m; sourceTree = "<group>"; };
 		3DFEA88F1C46E0D600E27404 /* WPAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPAppDelegate.h; sourceTree = "<group>"; };
+		9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WonderPushExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9909CE5A22215FFD00F73A0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "/Users/stephh/Work/Wonderpush/wonderpush-ios-sdk/WonderPushExtension/Info.plist"; sourceTree = "<absolute>"; };
+		9909CE6C222162C600F73A0B /* WonderPushExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPushExtension.h; sourceTree = "<group>"; };
 		99129C2A220C8B0800111272 /* WonderPushConcreteAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPushConcreteAPI.h; sourceTree = "<group>"; };
 		99129C2B220C8B0800111272 /* WonderPushConcreteAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WonderPushConcreteAPI.m; sourceTree = "<group>"; };
 		99129C2C220C8B0800111272 /* WonderPushAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPushAPI.h; sourceTree = "<group>"; };
@@ -130,8 +136,6 @@
 		9998CA98221C74190028D955 /* WonderPush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WonderPush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationServiceExtension.h; sourceTree = "<group>"; };
 		9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNotificationServiceExtension.m; sourceTree = "<group>"; };
-		9998CB44221D99900028D955 /* WonderPush.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WonderPush.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		9998CB46221D99910028D955 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		99E02FC122141F6A007E82F4 /* WPDataManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPDataManager.h; sourceTree = "<group>"; };
 		99E02FC222141F6A007E82F4 /* WPDataManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPDataManager.m; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
@@ -166,6 +170,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		9909CE4D22215FFC00F73A0B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9998CA95221C74190028D955 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -178,16 +189,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9998CB41221D99900028D955 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9909CE1722215D1100F73A0B /* WonderPushExtension */ = {
+			isa = PBXGroup;
+			children = (
+				9909CE5F2221611100F73A0B /* Supporting Files */,
+				9909CE1822215D1C00F73A0B /* Sources */,
+			);
+			path = WonderPushExtension;
+			sourceTree = "<group>";
+		};
+		9909CE1822215D1C00F73A0B /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */,
+				9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */,
+				9909CE6C222162C600F73A0B /* WonderPushExtension.h */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		9909CE5F2221611100F73A0B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9909CE5A22215FFD00F73A0B /* Info.plist */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		99129C29220C8AE500111272 /* WonderPushAPI */ = {
 			isa = PBXGroup;
 			children = (
@@ -245,8 +276,6 @@
 				A16E33F419C97BE700E4E158 /* WPResponse.m */,
 				A16E33F719C97CFA00E4E158 /* WPUtil.h */,
 				A16E33F819C97CFA00E4E158 /* WPUtil.m */,
-				9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */,
-				9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -260,19 +289,11 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		9998CB45221D99910028D955 /* WonderPushResources */ = {
-			isa = PBXGroup;
-			children = (
-				9998CB46221D99910028D955 /* Info.plist */,
-			);
-			path = WonderPushResources;
-			sourceTree = "<group>";
-		};
 		A16E339A19C886A700E4E158 = {
 			isa = PBXGroup;
 			children = (
+				9909CE1722215D1100F73A0B /* WonderPushExtension */,
 				A16E33A819C886A700E4E158 /* WonderPush */,
-				9998CB45221D99910028D955 /* WonderPushResources */,
 				A16E33A519C886A700E4E158 /* Frameworks */,
 				A16E33A419C886A700E4E158 /* Products */,
 			);
@@ -282,7 +303,7 @@
 			isa = PBXGroup;
 			children = (
 				9998CA98221C74190028D955 /* WonderPush.framework */,
-				9998CB44221D99900028D955 /* WonderPush.bundle */,
+				9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -326,11 +347,20 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		9909CE1D22215FFC00F73A0B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9909CE6D222162E900F73A0B /* WonderPushExtension.h in Headers */,
+				9909CE5B2221602200F73A0B /* WPNotificationServiceExtension.h in Headers */,
+				9909CE5E2221602F00F73A0B /* WPLog.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9998CA93221C74190028D955 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9998CB3E221D973D0028D955 /* WPNotificationServiceExtension.h in Headers */,
 				9998CAA5221C74EA0028D955 /* WonderPush.h in Headers */,
 				9998CAD0221C75560028D955 /* WonderPushConcreteAPI.h in Headers */,
 				9998CAD1221C75560028D955 /* WonderPushAPI.h in Headers */,
@@ -361,6 +391,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		9909CE1C22215FFC00F73A0B /* WonderPushExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9909CE5622215FFC00F73A0B /* Build configuration list for PBXNativeTarget "WonderPushExtension" */;
+			buildPhases = (
+				9909CE1D22215FFC00F73A0B /* Headers */,
+				9909CE3622215FFC00F73A0B /* Sources */,
+				9909CE4D22215FFC00F73A0B /* Frameworks */,
+				9909CE5322215FFC00F73A0B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WonderPushExtension;
+			productName = WonderPush;
+			productReference = 9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		9998CA97221C74190028D955 /* WonderPush */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9998CA9D221C74190028D955 /* Build configuration list for PBXNativeTarget "WonderPush" */;
@@ -379,23 +427,6 @@
 			productReference = 9998CA98221C74190028D955 /* WonderPush.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		9998CB43221D99900028D955 /* WonderPushResources */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 9998CB47221D99910028D955 /* Build configuration list for PBXNativeTarget "WonderPushResources" */;
-			buildPhases = (
-				9998CB40221D99900028D955 /* Sources */,
-				9998CB41221D99900028D955 /* Frameworks */,
-				9998CB42221D99900028D955 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = WonderPushResources;
-			productName = WonderPushResources;
-			productReference = 9998CB44221D99900028D955 /* WonderPush.bundle */;
-			productType = "com.apple.product-type.bundle";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -409,9 +440,6 @@
 						CreatedOnToolsVersion = 10.1;
 						DevelopmentTeam = N9ZG2P9A72;
 						ProvisioningStyle = Automatic;
-					};
-					9998CB43221D99900028D955 = {
-						CreatedOnToolsVersion = 10.1;
 					};
 				};
 			};
@@ -462,31 +490,40 @@
 			projectRoot = "";
 			targets = (
 				9998CA97221C74190028D955 /* WonderPush */,
-				9998CB43221D99900028D955 /* WonderPushResources */,
+				9909CE1C22215FFC00F73A0B /* WonderPushExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		9998CA96221C74190028D955 /* Resources */ = {
+		9909CE5322215FFC00F73A0B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9998CB42221D99900028D955 /* Resources */ = {
+		9998CA96221C74190028D955 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9998CB4A221D999C0028D955 /* WonderPushLocalizable.strings in Resources */,
-				9998CB4B221D999F0028D955 /* WonderPush.storyboard in Resources */,
+				9909CE1922215DD600F73A0B /* WonderPush.storyboard in Resources */,
+				9909CE1A22215DD800F73A0B /* WonderPushLocalizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		9909CE3622215FFC00F73A0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9909CE5C2221602500F73A0B /* WPNotificationServiceExtension.m in Sources */,
+				9909CE5D2221602B00F73A0B /* WPLog.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9998CA94221C74190028D955 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -504,7 +541,6 @@
 				9998CAC4221C75480028D955 /* WPJsonSync.m in Sources */,
 				9998CAC5221C75480028D955 /* WPJsonSyncInstallationCustom.m in Sources */,
 				9998CAC6221C75480028D955 /* WPJsonUtil.m in Sources */,
-				9998CB3F221D973D0028D955 /* WPNotificationServiceExtension.m in Sources */,
 				9998CAC7221C75480028D955 /* WPLog.m in Sources */,
 				9998CAC8221C75480028D955 /* WPMobileProvision.m in Sources */,
 				9998CAC9221C75480028D955 /* WPNetworkReachabilityManager.m in Sources */,
@@ -514,13 +550,6 @@
 				9998CACD221C75480028D955 /* WPRequestVault.m in Sources */,
 				9998CACE221C75480028D955 /* WPResponse.m in Sources */,
 				9998CACF221C75480028D955 /* WPUtil.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9998CB40221D99900028D955 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -571,6 +600,81 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		9909CE5722215FFC00F73A0B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = WonderPushExtension/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				MACH_O_TYPE = mh_dylib;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wonderpush.WonderPushExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		9909CE5822215FFC00F73A0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = WonderPushExtension/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				MACH_O_TYPE = mh_dylib;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wonderpush.WonderPushExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		9998CA9E221C74190028D955 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -597,7 +701,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MACH_O_TYPE = staticlib;
+				MACH_O_TYPE = mh_dylib;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wonderpush.WonderPush;
@@ -631,7 +735,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MACH_O_TYPE = staticlib;
+				MACH_O_TYPE = mh_dylib;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
@@ -641,62 +745,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		9998CB48221D99910028D955 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = WonderPushResources/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACH_O_TYPE = mh_bundle;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wonderpush.WonderPushResources;
-				PRODUCT_NAME = WonderPush;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = NO;
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
-		9998CB49221D99910028D955 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = WonderPushResources/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACH_O_TYPE = mh_bundle;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wonderpush.WonderPushResources;
-				PRODUCT_NAME = WonderPush;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = NO;
-				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;
 		};
@@ -808,20 +856,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		9909CE5622215FFC00F73A0B /* Build configuration list for PBXNativeTarget "WonderPushExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9909CE5722215FFC00F73A0B /* Debug */,
+				9909CE5822215FFC00F73A0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9998CA9D221C74190028D955 /* Build configuration list for PBXNativeTarget "WonderPush" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9998CA9E221C74190028D955 /* Debug */,
 				9998CA9F221C74190028D955 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		9998CB47221D99910028D955 /* Build configuration list for PBXNativeTarget "WonderPushResources" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9998CB48221D99910028D955 /* Debug */,
-				9998CB49221D99910028D955 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

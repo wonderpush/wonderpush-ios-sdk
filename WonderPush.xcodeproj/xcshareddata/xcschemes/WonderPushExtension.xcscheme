@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9998CB43221D99900028D955"
-               BuildableName = "WonderPush.bundle"
-               BlueprintName = "WonderPushResources"
+               BlueprintIdentifier = "9909CE1C22215FFC00F73A0B"
+               BuildableName = "WonderPushExtension.framework"
+               BlueprintName = "WonderPushExtension"
                ReferencedContainer = "container:WonderPush.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9998CB43221D99900028D955"
-            BuildableName = "WonderPush.bundle"
-            BlueprintName = "WonderPushResources"
+            BlueprintIdentifier = "9909CE1C22215FFC00F73A0B"
+            BuildableName = "WonderPushExtension.framework"
+            BlueprintName = "WonderPushExtension"
             ReferencedContainer = "container:WonderPush.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -63,9 +63,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9998CB43221D99900028D955"
-            BuildableName = "WonderPush.bundle"
-            BlueprintName = "WonderPushResources"
+            BlueprintIdentifier = "9909CE1C22215FFC00F73A0B"
+            BuildableName = "WonderPushExtension.framework"
+            BlueprintName = "WonderPushExtension"
             ReferencedContainer = "container:WonderPush.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -81,13 +81,13 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Run Script"
-               scriptText = "# Type a script or drag a script file from your workspace to insert its path.&#10;exec &gt; /tmp/${PROJECT_NAME}_archive.log 2&gt;&amp;1&#10;rsync -a &quot;${ARCHIVE_PRODUCTS_PATH}${INSTALL_PATH}/${FULL_PRODUCT_NAME}/&quot; &quot;${PROJECT_DIR}/Build/${FULL_PRODUCT_NAME}/&quot;&#10;open &quot;${PROJECT_DIR}/Build&quot;&#10;">
+               scriptText = "# Type a script or drag a script file from your workspace to insert its path.&#10;sh ${PROJECT_DIR}/Scripts/create-fat-framework.sh&#10;">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"
-                     BlueprintIdentifier = "9998CB43221D99900028D955"
-                     BuildableName = "WonderPush.bundle"
-                     BlueprintName = "WonderPushResources"
+                     BlueprintIdentifier = "9909CE1C22215FFC00F73A0B"
+                     BuildableName = "WonderPushExtension.framework"
+                     BlueprintName = "WonderPushExtension"
                      ReferencedContainer = "container:WonderPush.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>

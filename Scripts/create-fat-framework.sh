@@ -1,4 +1,8 @@
 #!/bin/sh
+if [[ "$CARTHAGE" = "YES" ]]; then
+exit
+fi
+
 exec > /tmp/${PROJECT_NAME}_archive.log 2>&1
 
 UNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal
