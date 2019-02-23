@@ -147,6 +147,16 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 - (void) requestWithMethod:(NSString *)method resource:(NSString *)resource parameters:(NSDictionary *)parameters success:(SuccessBlock)successBlock failure:(FailureBlock)failureBlock
 {
+    SuccessBlock callSuccessBlock = ^(NSURLSessionTask *task, id result) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            successBlock(task, result);
+        });
+    };
+    FailureBlock callFailureBlock = ^(NSURLSessionTask *task, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            failureBlock(task, error);
+        });
+    };
     static NSIndexSet *acceptableStatusCodes = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -161,13 +171,13 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
                withParameters:parameters
                error:&error];
     if (error) {
-        failureBlock(nil, error);
+        callFailureBlock(nil, error);
         return;
     }
     __block NSURLSessionDataTask *task;
     void(^completion)(NSData * _Nullable, NSURLResponse * _Nullable, NSError * _Nullable) = ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
-            failureBlock(task, error);
+            callFailureBlock(task, error);
             return;
         }
         NSHTTPURLResponse *HTTPResponse = (NSHTTPURLResponse *)response;
@@ -183,16 +193,16 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
                 mutableUserInfo[WPOperationFailingURLResponseDataErrorKey] = data;
             }
             NSError *error = [NSError errorWithDomain:WPErrorDomain code:WPErrorHTTPFailure userInfo:mutableUserInfo];
-            failureBlock(task, error);
+            callFailureBlock(task, error);
             return;
         }
         NSError *JSONError = nil;
         id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:&JSONError];
         if (JSONError) {
-            failureBlock(task, error);
+            callFailureBlock(task, error);
             return;
         }
-        successBlock(task, result);
+        callSuccessBlock(task, result);
     };
     task = [self.URLSession dataTaskWithRequest:request completionHandler:completion];
     [task resume];
