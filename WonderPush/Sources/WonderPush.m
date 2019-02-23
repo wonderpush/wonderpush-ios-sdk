@@ -294,11 +294,13 @@ static UIStoryboard *storyboard = nil;
     [self safeDeferWithConsent:^{
         void (^init)(void) = ^{
             [self setIsReady:YES];
-            [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
-                                                                object:self
-                                                              userInfo:nil];
-            [WonderPush updateInstallationCoreProperties];
-            [self refreshDeviceTokenIfPossible];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
+                                                                    object:self
+                                                                  userInfo:nil];
+                [WonderPush updateInstallationCoreProperties];
+                [self refreshDeviceTokenIfPossible];
+            });
         };
         // Fetch anonymous access token right away
         BOOL isFetching = [[WPAPIClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {

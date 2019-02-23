@@ -43,18 +43,20 @@
 - (void) refreshDeviceTokenIfPossible
 {
     if (![self isRegisteredForRemoteNotifications]) return;
-    if (@available(iOS 8.0, *)) {
-        if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerForRemoteNotifications)]) {
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (@available(iOS 8.0, *)) {
+            if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerForRemoteNotifications)]) {
+                [[UIApplication sharedApplication] registerForRemoteNotifications];
+            } else {
+                WPLog(@"Cannot resolve registerForRemoteNotifications");
+            }
         } else {
-            WPLog(@"Cannot resolve registerForRemoteNotifications");
-        }
-    } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:[[UIApplication sharedApplication] enabledRemoteNotificationTypes]];
+            [[UIApplication sharedApplication] registerForRemoteNotificationTypes:[[UIApplication sharedApplication] enabledRemoteNotificationTypes]];
 #pragma clang diagnostic pop
-    }
+        }
+    });
 }
 
 /**
@@ -223,8 +225,9 @@
         NSString *methodName = [WPUtil stringForKey:@"method" inDictionary:action];
         id methodParameter = [WPUtil nullsafeObjectForKey:@"methodArg" inDictionary:action];
         NSDictionary *parameters = @{WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter ?: [NSNull null]};
-        [[NSNotificationCenter defaultCenter] postNotificationName:methodName object:self userInfo:parameters];
-        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:methodName object:self userInfo:parameters];
+        });
     } else if ([WP_ACTION_LINK isEqualToString:type]) {
         
         NSString *url = [WPUtil stringForKey:@"url" inDictionary:action];
