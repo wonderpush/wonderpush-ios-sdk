@@ -1,5 +1,10 @@
 #!/bin/sh
+echo Cleaning Build/ && \
 rm -rf Build && \
-/usr/bin/xcodebuild -scheme WonderPush archive && /usr/bin/xcodebuild -scheme WonderPushExtension archive && \
-    cd Build && \
-    zip -r Binaries.zip WonderPush*;
+echo Generate Build/WonderPush.framework && \
+/usr/bin/xcodebuild -scheme WonderPush archive >/dev/null && \
+echo Generate Build/WonderPushExtension.framework && \
+/usr/bin/xcodebuild -scheme WonderPushExtension archive >/dev/null && \
+echo Generate Build/Binaries.zip && \
+cd Build && \
+zip -r Binaries.zip WonderPush* >/dev/null;
