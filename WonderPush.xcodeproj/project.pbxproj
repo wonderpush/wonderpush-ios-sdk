@@ -65,6 +65,8 @@
 		9998CAD2221C75560028D955 /* WonderPushLogErrorAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 99129C3F220D8E0F00111272 /* WonderPushLogErrorAPI.h */; };
 		9998CAD3221C75630028D955 /* WonderPushConcreteAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C2B220C8B0800111272 /* WonderPushConcreteAPI.m */; };
 		9998CAD4221C75630028D955 /* WonderPushLogErrorAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */; };
+		99F384942225A5E400EA2ECD /* NotificationServiceExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 99F384922225A5E400EA2ECD /* NotificationServiceExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		99F384952225A5E400EA2ECD /* NotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 99F384932225A5E400EA2ECD /* NotificationServiceExtension.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -138,6 +140,8 @@
 		9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNotificationServiceExtension.m; sourceTree = "<group>"; };
 		99E02FC122141F6A007E82F4 /* WPDataManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPDataManager.h; sourceTree = "<group>"; };
 		99E02FC222141F6A007E82F4 /* WPDataManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPDataManager.m; sourceTree = "<group>"; };
+		99F384922225A5E400EA2ECD /* NotificationServiceExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationServiceExtension.h; sourceTree = "<group>"; };
+		99F384932225A5E400EA2ECD /* NotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationServiceExtension.m; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
 		A16E33A619C886A700E4E158 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A16E33AD19C886A700E4E158 /* WonderPush.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPush.m; sourceTree = "<group>"; };
@@ -207,6 +211,8 @@
 				9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */,
 				9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */,
 				9909CE6C222162C600F73A0B /* WonderPushExtension.h */,
+				99F384922225A5E400EA2ECD /* NotificationServiceExtension.h */,
+				99F384932225A5E400EA2ECD /* NotificationServiceExtension.m */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -352,6 +358,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9909CE6D222162E900F73A0B /* WonderPushExtension.h in Headers */,
+				99F384942225A5E400EA2ECD /* NotificationServiceExtension.h in Headers */,
 				9909CE5B2221602200F73A0B /* WPNotificationServiceExtension.h in Headers */,
 				9909CE5E2221602F00F73A0B /* WPLog.h in Headers */,
 			);
@@ -521,6 +528,7 @@
 			files = (
 				9909CE5C2221602500F73A0B /* WPNotificationServiceExtension.m in Sources */,
 				9909CE5D2221602B00F73A0B /* WPLog.m in Sources */,
+				99F384952225A5E400EA2ECD /* NotificationServiceExtension.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
