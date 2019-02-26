@@ -100,14 +100,14 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Sets whether user consent is required before the SDK is allowed to work.
  Call this method before `setClientId:secret:`
  @param requiresUserConsent Whether user consent is required before the SDK is allowed to work.
- @see `setUserConsent:`
+ @see setUserConsent:
  */
 + (void) setRequiresUserConsent:(BOOL)requiresUserConsent;
 /**
  Provides or withdraws user consent.
  Call this method after `setClientId:secret:`.
  @param userConsent Whether the user provided or withdrew consent.
- @see `setRequiresUserConsent:`
+ @see setRequiresUserConsent:
  */
 + (void) setUserConsent:(BOOL)userConsent;
 /**
@@ -513,6 +513,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (void) clearAllData;
 /**
  Initiates the download of all the WonderPush data relative to the current installation, in JSON format.
+ @param completion Completion block called upon success or error
  */
 + (void) downloadAllData:(void(^)(NSData *data, NSError *error))completion;
 
