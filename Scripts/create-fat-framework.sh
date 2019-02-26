@@ -44,6 +44,4 @@ echo "Copying to project dir"
 mkdir -p "${PROJECT_DIR}/Build"
 yes | cp -Rf "${UNIVERSAL_OUTPUTFOLDER}/${FULL_PRODUCT_NAME}" "${PROJECT_DIR}/Build"
 
-open "${PROJECT_DIR}/Build"
-
 fi
