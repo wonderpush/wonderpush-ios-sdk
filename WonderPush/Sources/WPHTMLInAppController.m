@@ -16,8 +16,8 @@
 @property (weak, nonatomic) IBOutlet UIView *titleLabelContainerView;
 @property (weak, nonatomic) IBOutlet UIStackView *mainStackView;
 @property (strong, nonatomic) IBOutlet WKWebView *webView;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *webViewAspectRatioConstraint;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *webViewWidthConstraint;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *webViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 @property (strong, nonatomic) NSArray<UIButton*> *buttons;
@@ -43,11 +43,9 @@ static NSTimeInterval timeout = 60;
     configuration.allowsInlineMediaPlayback = YES;
     self.webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:configuration];
     self.webView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.webViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:0 constant:1];
+    self.webViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:0 constant:0];
     self.webViewWidthConstraint.priority = 500;
-    self.webViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:0 constant:1];
-    self.webViewHeightConstraint.priority = 500;
-    [self.webView addConstraints:@[self.webViewWidthConstraint, self.webViewHeightConstraint]];
+    [self.webView addConstraints:@[self.webViewWidthConstraint]];
     [self.mainStackView addArrangedSubview:self.webView];
     
     self.webView.navigationDelegate = self;
@@ -115,8 +113,16 @@ static NSTimeInterval timeout = 60;
                       && [result isKindOfClass:[NSArray class]]
                       && [result[0] isKindOfClass:[NSNumber class]]
                       && [result[1] isKindOfClass:[NSNumber class]]) {
-                      self.webViewWidthConstraint.constant = [result[0] floatValue];
-                      self.webViewHeightConstraint.constant = [result[1] floatValue];
+                      CGFloat width = [result[0] floatValue];
+                      CGFloat height = [result[1] floatValue];
+                      self.webViewWidthConstraint.constant = width;
+                      if (self.webViewAspectRatioConstraint) {
+                          [self.webView removeConstraint:self.webViewAspectRatioConstraint];
+                      }
+                      self.webViewAspectRatioConstraint = [NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.webView attribute:NSLayoutAttributeWidth multiplier:height / width constant:0];
+                      self.webViewAspectRatioConstraint.priority = 400;
+                      [self.webView addConstraint:self.webViewAspectRatioConstraint];
+
                       if (initialSetup) {
                           [self.view layoutIfNeeded];
                           [self.activityIndicator stopAnimating];
