@@ -111,7 +111,6 @@ static NSTimeInterval timeout = 60;
     self.loaded = YES;
     [webView evaluateJavaScript:@"[Math.max(document.body.scrollWidth, document.body.offsetWidth, document.documentElement.clientWidth, document.documentElement.scrollWidth, document.documentElement.offsetWidth), Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight)]"
               completionHandler:^(id _Nullable result, NSError * _Nullable error) {
-                  NSLog(@"result:%@ error:%@", result, error);
                   if (!error
                       && [result isKindOfClass:[NSArray class]]
                       && [result[0] isKindOfClass:[NSNumber class]]
