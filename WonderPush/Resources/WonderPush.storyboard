@@ -39,10 +39,10 @@
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="trailing" secondItem="fbo-tc-BFr" secondAttribute="trailing" constant="8" id="4Gp-BN-m3K"/>
-                                                    <constraint firstAttribute="bottom" secondItem="fbo-tc-BFr" secondAttribute="bottom" constant="8" id="5Zv-nU-bnA"/>
-                                                    <constraint firstItem="fbo-tc-BFr" firstAttribute="leading" secondItem="19l-Na-PK4" secondAttribute="leading" constant="8" id="ICJ-RI-8Zb"/>
-                                                    <constraint firstItem="fbo-tc-BFr" firstAttribute="top" secondItem="19l-Na-PK4" secondAttribute="top" constant="8" id="v4g-HX-S9x"/>
+                                                    <constraint firstAttribute="trailing" secondItem="fbo-tc-BFr" secondAttribute="trailing" priority="900" constant="8" id="4Gp-BN-m3K"/>
+                                                    <constraint firstAttribute="bottom" secondItem="fbo-tc-BFr" secondAttribute="bottom" priority="900" constant="8" id="5Zv-nU-bnA"/>
+                                                    <constraint firstItem="fbo-tc-BFr" firstAttribute="leading" secondItem="19l-Na-PK4" secondAttribute="leading" priority="900" constant="8" id="ICJ-RI-8Zb"/>
+                                                    <constraint firstItem="fbo-tc-BFr" firstAttribute="top" secondItem="19l-Na-PK4" secondAttribute="top" priority="900" constant="8" id="v4g-HX-S9x"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
