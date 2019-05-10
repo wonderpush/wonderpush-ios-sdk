@@ -92,6 +92,8 @@
 
 + (void) updateInstallationCoreProperties;
 
++ (void) sendPreferences;
+
 + (void) setIsReady:(BOOL)isReady;
 
 + (void) setIsReachable:(BOOL)isReachable;

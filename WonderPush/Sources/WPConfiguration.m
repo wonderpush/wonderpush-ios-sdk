@@ -51,9 +51,11 @@ static WPConfiguration *sharedConfiguration = nil;
 
     // Initialize setNotificationEnabled with it's asynchronous getter
     if ([[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY] == nil) {
+        WPLogDebug(@"Will initialize setNotificationEnabled");
         [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL result) {
             if ([[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY] == nil) {
-                [[WPConfiguration sharedConfiguration] setNotificationEnabled:result];
+                WPLogDebug(@"Initializing setNotificationEnabled(%@)", result ? @"YES" : @"NO");
+                [WonderPush setNotificationEnabled:result];
             }
         }];
     }
@@ -256,6 +258,8 @@ static WPConfiguration *sharedConfiguration = nil;
                                          USER_DEFAULTS_INSTALLATION_ID: [self _NSStringToJSON:self.installationId],
                                          USER_DEFAULTS_USER_ID_KEY: [self _NSStringToJSON:self.userId],
                                          USER_DEFAULTS_NOTIFICATION_ENABLED_KEY: [self _BOOLToJSON:self.notificationEnabled],
+                                         USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_KEY: [self _BOOLToJSON:self.cachedOsNotificationEnabled],
+                                         USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_DATE_KEY: [self _NSDateToJSON:self.cachedOsNotificationEnabledDate],
                                          USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES: [self _NSDictionaryToJSON:self.cachedInstallationCoreProperties],
                                          USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE: [self _NSDateToJSON:self.cachedInstallationCorePropertiesDate],
                                          USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN: [self _NSStringToJSON:self.cachedInstallationCorePropertiesAccessToken],
@@ -280,6 +284,8 @@ static WPConfiguration *sharedConfiguration = nil;
     self.sid                 = [self _JSONToNSString:newUserArchive[USER_DEFAULTS_SID_KEY]];
     self.installationId      = [self _JSONToNSString:newUserArchive[USER_DEFAULTS_INSTALLATION_ID]];
     self.notificationEnabled = [self _JSONToBOOL:    newUserArchive[USER_DEFAULTS_NOTIFICATION_ENABLED_KEY] withDefault:YES];
+    self.cachedOsNotificationEnabled                             = [self _JSONToBOOL:        newUserArchive[USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_KEY] withDefault:NO];
+    self.cachedOsNotificationEnabledDate                         = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_DATE_KEY]];
     self.cachedInstallationCoreProperties                        = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES]];
     self.cachedInstallationCorePropertiesDate                    = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE]];
     self.cachedInstallationCorePropertiesAccessToken             = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN]];
@@ -502,6 +508,28 @@ static WPConfiguration *sharedConfiguration = nil;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setValue:__notificationEnabled forKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY];
     [defaults synchronize];
+}
+
+- (BOOL) cachedOsNotificationEnabled
+{
+    NSNumber *value = [self _getNSNumberForKey:USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_KEY];
+    if (value == nil) return YES; // although it's not opt-in by default on iOS, that's how the related installation field works
+    return [value boolValue];
+}
+
+- (void) setCachedOsNotificationEnabled:(BOOL)cachedOsNotificationEnabled
+{
+    [self _setNSNumber:[NSNumber numberWithBool:cachedOsNotificationEnabled] forKey:USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_KEY];
+}
+
+- (NSDate *) cachedOsNotificationEnabledDate
+{
+    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_DATE_KEY];
+}
+
+- (void) setCachedOsNotificationEnabledDate:(NSDate *)cachedOsNotificationEnabledDate
+{
+    [self _setNSDate:cachedOsNotificationEnabledDate forKey:USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_DATE_KEY];
 }
 
 

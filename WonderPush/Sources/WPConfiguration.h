@@ -33,6 +33,8 @@
 #define USER_DEFAULTS_INSTALLATION_ID @"_wonderpush_installationId"
 #define USER_DEFAULTS_SID_KEY @"__wonderpush_sid"
 #define USER_DEFAULTS_NOTIFICATION_ENABLED_KEY @"__wonderpush_notification_enabled"
+#define USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_KEY @"__wonderpush_cachedOsNotificationEnabled"
+#define USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_DATE_KEY @"__wonderpush_cachedOsNotificationEnabledDate"
 #define USER_DEFAULTS_OVERRIDE_SET_LOGGING_KEY @"__wonderpush_overrideSetLogging"
 #define USER_DEFAULTS_OVERRIDE_NOTIFICATION_RECEIPT_KEY @"__wonderpush_overrideNotificationReceipt"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES @"_wonderpush_cachedInstallationCoreProperties"
@@ -94,6 +96,9 @@
 @property (nonatomic, strong) NSString *installationId;
 
 @property (nonatomic) BOOL notificationEnabled;
+@property (nonatomic) BOOL cachedOsNotificationEnabled;
+@property (nonatomic) NSDate *cachedOsNotificationEnabledDate;
+
 @property (nonatomic) BOOL userConsent;
 
 

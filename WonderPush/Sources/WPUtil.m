@@ -288,18 +288,15 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
     return [[WonderPush resourceBundle] localizedStringForKey:key value:defaultValue table:@"WonderPushLocalizable"];
 }
 
-+ (void) registerToPushNotifications
++ (void) askUserPermission
 {
     if (@available(iOS 10.0, *)) {
         [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error) {
             if (error != nil) {
                 WPLog(@"[UNUserNotificationCenter requestAuthorizationWithOptions:completionHandler:] returned an error: %@", error.localizedDescription);
             }
-            if (granted) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[UIApplication sharedApplication] registerForRemoteNotifications];
-                });
-            }
+            WPLogDebug(@"[UNUserNotificationCenter requestAuthorizationWithOptions:completionHandler:] granted: %@", granted ? @"YES" : @"NO");
+            [WonderPush sendPreferences];
         }];
     } else if (@available(iOS 8.0, *)) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -308,18 +305,10 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
 #pragma clang diagnostic pop
-                [[UIApplication sharedApplication] registerForRemoteNotifications];
             } else {
                 WPLog(@"Cannot resolve registerUserNotificationSettings");
             }
         });
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-        });
-#pragma clang diagnostic pop
     }
 }
 

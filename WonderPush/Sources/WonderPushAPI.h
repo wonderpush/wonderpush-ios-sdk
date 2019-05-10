@@ -32,6 +32,7 @@
 - (NSString *) accessToken;
 - (BOOL) getNotificationEnabled;
 - (void) setNotificationEnabled:(BOOL)enabled;
+- (void) sendPreferences;
 - (void) updateInstallationCoreProperties;
 - (NSDictionary *) getInstallationCustomProperties;
 - (void) putInstallationCustomProperties:(NSDictionary *)customProperties;

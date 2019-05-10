@@ -81,7 +81,7 @@
 
 + (NSString *) wpLocalizedString:(NSString *)key withDefault:(NSString *)defaultValue;
 
-+ (void) registerToPushNotifications;
++ (void) askUserPermission;
 
 ///-----------------------
 /// @name Dictionary utils

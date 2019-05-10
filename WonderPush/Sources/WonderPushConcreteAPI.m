@@ -343,25 +343,54 @@
         [self updateInstallation:properties shouldOverwrite:NO];
     }
 }
+
 - (void) setNotificationEnabled:(BOOL)enabled
 {
     WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    BOOL previousValue = sharedConfiguration.notificationEnabled;
+    BOOL previousEnabled = sharedConfiguration.notificationEnabled;
     sharedConfiguration.notificationEnabled = enabled;
-    
-    // Update the subscriptionStatus if it changed
-    if (enabled != previousValue) {
-        if (enabled) {
-            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}} shouldOverwrite:NO];
-        } else {
-            [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}} shouldOverwrite:NO];
-        }
-    }
-    
+    [self sendPreferencesWithPreviousNotificationEnabled:previousEnabled];
+
     // Whether or not there is a change, register to push notifications if enabled
     if (enabled) {
-        [WPUtil registerToPushNotifications];
+        [WPUtil askUserPermission];
     }
+}
+
+- (void) sendPreferences
+{
+    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+    BOOL previousEnabled = sharedConfiguration.notificationEnabled;
+    [self sendPreferencesWithPreviousNotificationEnabled:previousEnabled];
+}
+
+- (void) sendPreferencesWithPreviousNotificationEnabled:(BOOL)previousEnabled
+{
+    [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL osNotificationEnabled) {
+        WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+        BOOL enabled = sharedConfiguration.notificationEnabled;
+        BOOL cachedOsNotificationEnabled = sharedConfiguration.cachedOsNotificationEnabled;
+        NSString *previousValue = previousEnabled && cachedOsNotificationEnabled ? @"optIn" : @"optOut";
+        NSString *value = enabled && osNotificationEnabled ? @"optIn" : @"optOut";
+
+        // Update the subscriptionStatus if it changed
+        if (enabled == previousEnabled
+            && value == previousValue
+            && osNotificationEnabled == cachedOsNotificationEnabled
+            ) {
+            WPLogDebug(@"Set notification enabled: no change to apply");
+            return;
+        }
+
+        sharedConfiguration.cachedOsNotificationEnabled = osNotificationEnabled;
+        sharedConfiguration.cachedOsNotificationEnabledDate = [NSDate date];
+
+        [self updateInstallation:@{@"preferences": @{
+                                           @"subscriptionStatus": value,
+                                           @"subscribedToNotifications": enabled ? @YES : @NO,
+                                           @"osNotificationVisible": osNotificationEnabled ? @YES : @NO,
+                                           }} shouldOverwrite:NO];
+    }];
 }
 
 - (BOOL) getNotificationEnabled

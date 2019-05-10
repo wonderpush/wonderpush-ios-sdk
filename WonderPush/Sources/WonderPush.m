@@ -300,6 +300,7 @@ static UIStoryboard *storyboard = nil;
                                                                     object:self
                                                                   userInfo:nil];
                 [WonderPush updateInstallationCoreProperties];
+                [wonderPushAPI sendPreferences];
                 [self refreshDeviceTokenIfPossible];
             });
         };
@@ -326,7 +327,11 @@ static UIStoryboard *storyboard = nil;
         return;
     }
     [wonderPushAPI setNotificationEnabled:enabled];
+}
 
++ (void) sendPreferences
+{
+    [wonderPushAPI sendPreferences];
 }
 
 + (BOOL) isNotificationForWonderPush:(NSDictionary *)userInfo
@@ -377,9 +382,16 @@ static UIStoryboard *storyboard = nil;
     if (![self isInitialized]) return NO;
     if ([WPAppDelegate isAlreadyRunning]) return NO;
 
-    if ([self getNotificationEnabled]) {
-        [WPUtil registerToPushNotifications];
+    if (@available(iOS 8.0, *)) {
+        [WonderPush safeDeferWithConsent:^{
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        }];
     }
+    [WonderPush safeDeferWithConsent:^{
+        if ([self getNotificationEnabled]) {
+            [WPUtil askUserPermission];
+        }
+    }];
 
     if (![WPUtil hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler] // didReceiveRemoteNotification will be called in such a case
         && launchOptions != nil
@@ -517,6 +529,12 @@ static UIStoryboard *storyboard = nil;
     [self onInteractionLeaving:YES];
 }
 
++ (void) application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    [self safeDeferWithConsent:^{
+        [WonderPush sendPreferences];
+    }];
+}
 
 #pragma mark - UserNotificationCenter delegate
 

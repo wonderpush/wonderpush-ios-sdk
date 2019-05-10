@@ -411,6 +411,14 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) applicationDidEnterBackground:(UIApplication *)application;
 
+/**
+ Forwards an application delegate to the SDK.
+
+ @param application Same parameter as in the forwarded delegate method.
+ @param notificationSettings Same parameter as in the forwarded delegate method.
+ */
++ (void) application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
+
 
 ///-----------------------------------------------------------
 /// @name Automatic UserNotificationCenter delegate forwarding

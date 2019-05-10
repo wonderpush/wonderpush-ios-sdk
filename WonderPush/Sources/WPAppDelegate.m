@@ -162,5 +162,16 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
+    [WonderPush application:application didRegisterUserNotificationSettings:notificationSettings];
+    if ([self.nextDelegate respondsToSelector:_cmd]) {
+        _WPAppDelegateAlreadyRunning = YES;
+        [self.nextDelegate application:application didRegisterUserNotificationSettings:notificationSettings];
+        _WPAppDelegateAlreadyRunning = NO;
+    }
+}
+
 
 @end

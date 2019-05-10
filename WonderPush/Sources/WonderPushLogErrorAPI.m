@@ -84,6 +84,11 @@
     [self log:@"setNotificationEnabled:"];
 }
 
+- (void) sendPreferences
+{
+    [self log:@"sendPreferences"];
+}
+
 - (void)trackEvent:(NSString *)type
 {
     [self log:@"trackEvent:"];
