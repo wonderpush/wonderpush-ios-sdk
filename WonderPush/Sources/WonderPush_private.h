@@ -94,6 +94,8 @@
 
 + (void) updateInstallationCoreProperties;
 
++ (void) refreshPreferencesAndConfiguration;
+
 + (void) sendPreferences;
 
 + (void) setIsReady:(BOOL)isReady;

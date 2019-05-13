@@ -302,8 +302,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
                                                                     object:self
                                                                   userInfo:userInfo];
                 
-                [WonderPush updateInstallationCoreProperties];
-                [WonderPush refreshDeviceTokenIfPossible];
+                [WonderPush refreshPreferencesAndConfiguration];
                 
                 if (nil != handler) {
                     handler(task, response);

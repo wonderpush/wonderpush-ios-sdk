@@ -176,15 +176,7 @@
                 [[WPJsonSyncInstallationCore forCurrentUser] receiveServerState:core];
             }
 
-            // Refresh core properties
-            [self updateInstallationCoreProperties];
-
-            // Refresh push token
-            id oldDeviceToken = conf.deviceToken;
-            [self setDeviceToken:oldDeviceToken];
-
-            // Refresh preferences
-            [self sendPreferences];
+            [WonderPush refreshPreferencesAndConfiguration];
         };
         
         NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action];
@@ -334,12 +326,10 @@
 
 - (void) setNotificationEnabled:(BOOL)enabled
 {
-    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    BOOL previousEnabled = sharedConfiguration.notificationEnabled;
-    sharedConfiguration.notificationEnabled = enabled;
-    [self sendPreferencesWithPreviousNotificationEnabled:previousEnabled];
+    [WPConfiguration sharedConfiguration].notificationEnabled = enabled;
+    [WonderPush refreshPreferencesAndConfiguration];
 
-    // Whether or not there is a change, register to push notifications if enabled
+    // Register to push notifications if enabled
     if (enabled) {
         [WPUtil askUserPermission];
     }
@@ -347,28 +337,10 @@
 
 - (void) sendPreferences
 {
-    WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    BOOL previousEnabled = sharedConfiguration.notificationEnabled;
-    [self sendPreferencesWithPreviousNotificationEnabled:previousEnabled];
-}
-
-- (void) sendPreferencesWithPreviousNotificationEnabled:(BOOL)previousEnabled
-{
     [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL osNotificationEnabled) {
         WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
         BOOL enabled = sharedConfiguration.notificationEnabled;
-        BOOL cachedOsNotificationEnabled = sharedConfiguration.cachedOsNotificationEnabled;
-        NSString *previousValue = previousEnabled && cachedOsNotificationEnabled ? @"optIn" : @"optOut";
         NSString *value = enabled && osNotificationEnabled ? @"optIn" : @"optOut";
-
-        // Update the subscriptionStatus if it changed
-        if (enabled == previousEnabled
-            && value == previousValue
-            && osNotificationEnabled == cachedOsNotificationEnabled
-            ) {
-            WPLogDebug(@"Set notification enabled: no change to apply");
-            return;
-        }
 
         sharedConfiguration.cachedOsNotificationEnabled = osNotificationEnabled;
         sharedConfiguration.cachedOsNotificationEnabledDate = [NSDate date];

@@ -301,9 +301,7 @@ static UIStoryboard *storyboard = nil;
                 [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
                                                                     object:self
                                                                   userInfo:nil];
-                [WonderPush updateInstallationCoreProperties];
-                [wonderPushAPI sendPreferences];
-                [self refreshDeviceTokenIfPossible];
+                [self refreshPreferencesAndConfiguration];
             });
         };
         // Fetch anonymous access token right away
@@ -329,6 +327,19 @@ static UIStoryboard *storyboard = nil;
         return;
     }
     [wonderPushAPI setNotificationEnabled:enabled];
+}
+
++ (void) refreshPreferencesAndConfiguration
+{
+    // Refresh core properties
+    [self updateInstallationCoreProperties];
+
+    // Refresh push token
+    [self setDeviceToken:[WPConfiguration sharedConfiguration].deviceToken];
+    [self refreshDeviceTokenIfPossible];
+
+    // Refresh preferences
+    [self sendPreferences];
 }
 
 + (void) sendPreferences
@@ -474,6 +485,7 @@ static UIStoryboard *storyboard = nil;
         [configuration clearQueuedNotifications];
     }
 
+    [self refreshPreferencesAndConfiguration];
     [self onInteractionLeaving:NO];
 }
 
@@ -528,7 +540,7 @@ static UIStoryboard *storyboard = nil;
 + (void) application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
     [self safeDeferWithConsent:^{
-        [WonderPush sendPreferences];
+        [WonderPush refreshPreferencesAndConfiguration];
     }];
 }
 
@@ -851,11 +863,14 @@ static UIStoryboard *storyboard = nil;
     }
 
     if (appState == UIApplicationStateBackground) {
-        // The application won't run long enough to perform any scheduled updates of custom properties to the server
-        // that may have been asked by receiveActions, flush now.
-        // If we had no such modifications, this is still an opportunity to flush any interrupted calls.
-        [WPJsonSyncInstallationCustom flush];
-        [WPJsonSyncInstallationCore flush];
+        [self refreshPreferencesAndConfiguration];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            // The application won't run long enough to perform any scheduled updates of custom properties to the server
+            // that may have been asked by receiveActions, flush now.
+            // If we had no such modifications, this is still an opportunity to flush any interrupted calls.
+            [WPJsonSyncInstallationCustom flush];
+            [WPJsonSyncInstallationCore flush];
+        });
         WPLogDebug(@"handleNotification: return YES because state == background");
         return YES;
     }

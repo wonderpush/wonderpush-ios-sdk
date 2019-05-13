@@ -296,7 +296,7 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
                 WPLog(@"[UNUserNotificationCenter requestAuthorizationWithOptions:completionHandler:] returned an error: %@", error.localizedDescription);
             }
             WPLogDebug(@"[UNUserNotificationCenter requestAuthorizationWithOptions:completionHandler:] granted: %@", granted ? @"YES" : @"NO");
-            [WonderPush sendPreferences];
+            [WonderPush refreshPreferencesAndConfiguration];
         }];
     } else if (@available(iOS 8.0, *)) {
         dispatch_async(dispatch_get_main_queue(), ^{
