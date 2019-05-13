@@ -691,56 +691,6 @@ static WPConfiguration *sharedConfiguration = nil;
     [self _setNSDate:cachedInstallationCustomPropertiesFirstDelayedWriteDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
 }
 
-- (NSDictionary *) cachedInstallationCorePropertiesWritten
-{
-    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_WRITTEN];
-}
-
-- (void) setCachedInstallationCorePropertiesWritten:(NSDictionary *)cachedInstallationCorePropertiesWritten
-{
-    [self _setNSDictionaryAsJSON:cachedInstallationCorePropertiesWritten forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_WRITTEN];
-}
-
-- (NSDate *) cachedInstallationCorePropertiesWrittenDate
-{
-    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_WRITTEN_DATE];
-}
-
-- (void) setCachedInstallationCorePropertiesWrittenDate:(NSDate *)cachedInstallationCorePropertiesWrittenDate
-{
-    [self _setNSDate:cachedInstallationCorePropertiesWrittenDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_WRITTEN_DATE];
-}
-
-- (NSDictionary *) cachedInstallationCorePropertiesUpdated
-{
-    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_UPDATED];
-}
-
-- (void) setCachedInstallationCorePropertiesUpdated:(NSDictionary *)cachedInstallationCorePropertiesUpdated
-{
-    [self _setNSDictionaryAsJSON:cachedInstallationCorePropertiesUpdated forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_UPDATED];
-}
-
-- (NSDate *) cachedInstallationCorePropertiesUpdatedDate
-{
-    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_UPDATED_DATE];
-}
-
-- (void) setCachedInstallationCorePropertiesUpdatedDate:(NSDate *)cachedInstallationCorePropertiesUpdatedDate
-{
-    [self _setNSDate:cachedInstallationCorePropertiesUpdatedDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_UPDATED_DATE];
-}
-
-- (NSDate *) cachedInstallationCorePropertiesFirstDelayedWriteDate
-{
-    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
-}
-
-- (void) setCachedInstallationCorePropertiesFirstDelayedWriteDate:(NSDate *)cachedInstallationCorePropertiesFirstDelayedWriteDate
-{
-    [self _setNSDate:cachedInstallationCorePropertiesFirstDelayedWriteDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
-}
-
 - (NSDate *) lastReceivedNotificationDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];

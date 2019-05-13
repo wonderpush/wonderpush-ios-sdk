@@ -42,14 +42,6 @@ static NSMutableDictionary *instancePerUserId = nil;
             NSDictionary *state = [WPUtil dictionaryForKey:userId inDictionary:installationCoreSyncStatePerUserId];
             instancePerUserId[userId ?: @""] = [[WPJsonSyncInstallationCore alloc] initFromSavedState:state userId:userId];
         }
-        NSString *oldUserId = conf.userId;
-        for (NSString *userId in [[WPConfiguration sharedConfiguration] listKnownUserIds]) {
-            if (instancePerUserId[userId ?: @""] == nil) {
-                [conf changeUserId:userId];
-                instancePerUserId[userId ?: @""] = [[WPJsonSyncInstallationCore alloc] initFromSdkState:conf.cachedInstallationCorePropertiesUpdated andServerState:conf.cachedInstallationCorePropertiesWritten userId:userId];
-            }
-        }
-        [conf changeUserId:oldUserId];
         // Resume any stopped inflight or scheduled calls
         // Adding the listener here will catch the an initial call triggered after this function is called, all during SDK initialization.
         // It also flushes any scheduled call that was dropped when the user withdrew consent.
