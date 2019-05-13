@@ -796,7 +796,7 @@ static UIStoryboard *storyboard = nil;
 {
     if (@available(iOS 10.0, *)) {
         [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
-            handler(settings.alertSetting == UNNotificationSettingEnabled || settings.soundSetting == UNNotificationSettingEnabled || settings.badgeSetting == UNNotificationSettingEnabled);
+            handler(settings.authorizationStatus != UNAuthorizationStatusNotDetermined && settings.authorizationStatus != UNAuthorizationStatusDenied);
         }];
     } else if (@available(iOS 8.0, *)) {
         if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)]) {
