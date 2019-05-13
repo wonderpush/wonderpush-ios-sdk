@@ -298,16 +298,12 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
             WPLogDebug(@"[UNUserNotificationCenter requestAuthorizationWithOptions:completionHandler:] granted: %@", granted ? @"YES" : @"NO");
             [WonderPush refreshPreferencesAndConfiguration];
         }];
-    } else if (@available(iOS 8.0, *)) {
+    } else {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+            [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
 #pragma clang diagnostic pop
-            } else {
-                WPLog(@"Cannot resolve registerUserNotificationSettings");
-            }
         });
     }
 }

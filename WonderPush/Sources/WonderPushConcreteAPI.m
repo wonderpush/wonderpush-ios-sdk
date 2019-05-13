@@ -37,41 +37,9 @@
  */
 - (void) refreshDeviceTokenIfPossible
 {
-    if (![self isRegisteredForRemoteNotifications]) return;
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (@available(iOS 8.0, *)) {
-            if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerForRemoteNotifications)]) {
-                [[UIApplication sharedApplication] registerForRemoteNotifications];
-            } else {
-                WPLog(@"Cannot resolve registerForRemoteNotifications");
-            }
-        } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            [[UIApplication sharedApplication] registerForRemoteNotificationTypes:[[UIApplication sharedApplication] enabledRemoteNotificationTypes]];
-#pragma clang diagnostic pop
-        }
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
     });
-}
-
-/**
- Whether iOS has granted a device token (or should have, for iOS 7).
- */
-- (BOOL) isRegisteredForRemoteNotifications
-{
-    if (@available(iOS 8.0, *)) {
-        if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
-            return [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
-        } else {
-            WPLog(@"Cannot resolve isRegisteredForRemoteNotifications");
-            return NO;
-        }
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        return [[UIApplication sharedApplication] enabledRemoteNotificationTypes] != 0;
-#pragma clang diagnostic pop
-    }
 }
 
 - (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
