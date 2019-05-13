@@ -28,6 +28,8 @@
 #define RETRY_INTERVAL 10.0f
 #define CACHED_INSTALLATION_CUSTOM_PROPERTIES_MIN_DELAY 5
 #define CACHED_INSTALLATION_CUSTOM_PROPERTIES_MAX_DELAY 20
+#define CACHED_INSTALLATION_CORE_PROPERTIES_MIN_DELAY 5
+#define CACHED_INSTALLATION_CORE_PROPERTIES_MAX_DELAY 20
 
 #define ITUNES_APP_URL_FORMAT @"https://itunes.apple.com/us/app/calcfast/id%@?mt=8"
 #define WEB_CALLBACK_RESOURCE @"web/callback"
@@ -118,6 +120,11 @@
 Called when receiving the full state of the installation custom properties
  */
 + (void)receivedFullInstallationCustomPropertiesFromServer:(NSDictionary *)custom updateDate:(NSDate *)installationUpdateDate;
+
+/**
+ Called when receiving the full state of the installation core properties
+ */
++ (void)receivedFullInstallationCorePropertiesFromServer:(NSDictionary *)core updateDate:(NSDate *)installationUpdateDate;
 
 /**
  Tracks an internal event, starting with a @ sign.

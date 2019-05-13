@@ -55,7 +55,7 @@ static WPConfiguration *sharedConfiguration = nil;
         [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL result) {
             if ([[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY] == nil) {
                 WPLogDebug(@"Initializing setNotificationEnabled(%@)", result ? @"YES" : @"NO");
-                [WonderPush setNotificationEnabled:result];
+                [[WPConfiguration sharedConfiguration] setNotificationEnabled:result];
             }
         }];
     }
@@ -691,6 +691,56 @@ static WPConfiguration *sharedConfiguration = nil;
     [self _setNSDate:cachedInstallationCustomPropertiesFirstDelayedWriteDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
 }
 
+- (NSDictionary *) cachedInstallationCorePropertiesWritten
+{
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_WRITTEN];
+}
+
+- (void) setCachedInstallationCorePropertiesWritten:(NSDictionary *)cachedInstallationCorePropertiesWritten
+{
+    [self _setNSDictionaryAsJSON:cachedInstallationCorePropertiesWritten forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_WRITTEN];
+}
+
+- (NSDate *) cachedInstallationCorePropertiesWrittenDate
+{
+    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_WRITTEN_DATE];
+}
+
+- (void) setCachedInstallationCorePropertiesWrittenDate:(NSDate *)cachedInstallationCorePropertiesWrittenDate
+{
+    [self _setNSDate:cachedInstallationCorePropertiesWrittenDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_WRITTEN_DATE];
+}
+
+- (NSDictionary *) cachedInstallationCorePropertiesUpdated
+{
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_UPDATED];
+}
+
+- (void) setCachedInstallationCorePropertiesUpdated:(NSDictionary *)cachedInstallationCorePropertiesUpdated
+{
+    [self _setNSDictionaryAsJSON:cachedInstallationCorePropertiesUpdated forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_UPDATED];
+}
+
+- (NSDate *) cachedInstallationCorePropertiesUpdatedDate
+{
+    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_UPDATED_DATE];
+}
+
+- (void) setCachedInstallationCorePropertiesUpdatedDate:(NSDate *)cachedInstallationCorePropertiesUpdatedDate
+{
+    [self _setNSDate:cachedInstallationCorePropertiesUpdatedDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_UPDATED_DATE];
+}
+
+- (NSDate *) cachedInstallationCorePropertiesFirstDelayedWriteDate
+{
+    return [self _getNSDateForKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
+}
+
+- (void) setCachedInstallationCorePropertiesFirstDelayedWriteDate:(NSDate *)cachedInstallationCorePropertiesFirstDelayedWriteDate
+{
+    [self _setNSDate:cachedInstallationCorePropertiesFirstDelayedWriteDate forKey:USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_FIRST_DELAYED_WRITE_DATE];
+}
+
 - (NSDate *) lastReceivedNotificationDate
 {
     return [self _getNSDateForKey:USER_DEFAULTS_LAST_RECEIVED_NOTIFICATION_DATE];
@@ -779,6 +829,16 @@ static WPConfiguration *sharedConfiguration = nil;
 - (void) setInstallationCustomSyncStatePerUserId:(NSDictionary *)installationCustomSyncStatePerUserId
 {
     [self _setNSDictionaryAsJSON:installationCustomSyncStatePerUserId forKey:USER_DEFAULTS_INSTALLATION_CUSTOM_SYNC_STATE_PER_USER_ID_KEY];
+}
+
+- (NSDictionary *) installationCoreSyncStatePerUserId
+{
+    return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_INSTALLATION_CORE_SYNC_STATE_PER_USER_ID_KEY];
+}
+
+- (void) setInstallationCoreSyncStatePerUserId:(NSDictionary *)installationCoreSyncStatePerUserId
+{
+    [self _setNSDictionaryAsJSON:installationCoreSyncStatePerUserId forKey:USER_DEFAULTS_INSTALLATION_CORE_SYNC_STATE_PER_USER_ID_KEY];
 }
 
 - (void) clearStorageKeepUserConsent:(BOOL)keepUserConsent keepDeviceId:(BOOL)keepDeviceId

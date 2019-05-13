@@ -8,6 +8,7 @@
 #import "WonderPushConcreteAPI.h"
 #import "WPConfiguration.h"
 #import "WPJsonSyncInstallationCustom.h"
+#import "WPJsonSyncInstallationCore.h"
 #import "WPLog.h"
 #import "WonderPush.h"
 #import "WPAPIClient.h"
@@ -19,12 +20,6 @@
 #import "WPDataManager.h"
 
 @interface WonderPushConcreteAPI (private)
-/**
- Updates or add properties to the current installation
- @param properties a collection of properties to add
- @param overwrite if true all the installation will be cleaned before update
- */
-- (void) updateInstallation:(NSDictionary *)properties shouldOverwrite:(BOOL)overwrite;
 @end
 
 @implementation WonderPushConcreteAPI
@@ -136,24 +131,37 @@
         
     } else if ([WP_ACTION_UPDATE_INSTALLATION isEqualToString:type]) {
         
-        NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
-        if (!custom) return;
         NSNumber *appliedServerSide = [WPUtil numberForKey:@"appliedServerSide" inDictionary:action];
-        if ([appliedServerSide isEqual:@YES]) {
-            WPLogDebug(@"Received server custom properties diff: %@", custom);
-            [[WPJsonSyncInstallationCustom forCurrentUser] receiveDiff:custom];
-        } else {
-            WPLogDebug(@"Putting custom properties diff: %@", custom);
-            [[WPJsonSyncInstallationCustom forCurrentUser] put:custom];
+        NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
+        NSMutableDictionary *core = [NSMutableDictionary dictionaryWithDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
+        [core removeObjectForKey:@"custom"];
+        if (custom) {
+            if ([appliedServerSide isEqual:@YES]) {
+                WPLogDebug(@"Received server custom properties diff: %@", custom);
+                [[WPJsonSyncInstallationCustom forCurrentUser] receiveDiff:custom];
+            } else {
+                WPLogDebug(@"Putting custom properties diff: %@", custom);
+                [[WPJsonSyncInstallationCustom forCurrentUser] put:custom];
+            }
         }
-        
+        if (core) {
+            if ([appliedServerSide isEqual:@YES]) {
+                WPLogDebug(@"Received server core properties diff: %@", core);
+                [[WPJsonSyncInstallationCore forCurrentUser] receiveDiff:core];
+            } else {
+                WPLogDebug(@"Putting core properties diff: %@", core);
+                [[WPJsonSyncInstallationCore forCurrentUser] put:core];
+            }
+        }
+
     } else if ([WP_ACTION_RESYNC_INSTALLATION isEqualToString:type]) {
         
-        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
         void (^cont)(NSDictionary *action) = ^(NSDictionary *action){
             WPLogDebug(@"Running enriched action %@", action);
             NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: @{};
             NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:installation] ?: @{};
+            NSMutableDictionary *core = [NSMutableDictionary dictionaryWithDictionary:installation];
+            [core removeObjectForKey:@"custom"];
             NSNumber *reset = [WPUtil numberForKey:@"reset" inDictionary:action];
             NSNumber *force = [WPUtil numberForKey:@"force" inDictionary:action];
             
@@ -161,27 +169,22 @@
             if ([reset isEqual:@YES]) {
                 [[WPJsonSyncInstallationCustom forCurrentUser] receiveState:custom
                                                               resetSdkState:[force isEqual:@YES]];
+                [[WPJsonSyncInstallationCore forCurrentUser] receiveState:core
+                                                             resetSdkState:[force isEqual:@YES]];
             } else {
                 [[WPJsonSyncInstallationCustom forCurrentUser] receiveServerState:custom];
+                [[WPJsonSyncInstallationCore forCurrentUser] receiveServerState:core];
             }
-            
+
             // Refresh core properties
-            conf.cachedInstallationCoreProperties = @{};
             [self updateInstallationCoreProperties];
-            
+
             // Refresh push token
             id oldDeviceToken = conf.deviceToken;
-            conf.deviceToken = nil;
             [self setDeviceToken:oldDeviceToken];
-            
+
             // Refresh preferences
-            if (conf.notificationEnabled) {
-                [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optIn"}}
-                         shouldOverwrite:NO];
-            } else {
-                [self updateInstallation:@{@"preferences":@{@"subscriptionStatus":@"optOut"}}
-                         shouldOverwrite:NO];
-            }
+            [self sendPreferences];
         };
         
         NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action];
@@ -209,6 +212,7 @@
                 cont(actionFilled);
                 // We added async processing, we need to ensure that we flush it too, especially in case we're running receiveActions in the background
                 [WPJsonSyncInstallationCustom flush];
+                [WPJsonSyncInstallationCore flush];
             }];
             
         }
@@ -272,12 +276,6 @@
         WPLogDebug(@"Unhandled action type %@", type);
     }
 }
-- (void) updateInstallation:(NSDictionary *)properties shouldOverwrite:(BOOL)overwrite
-{
-    if (!overwrite && (![properties isKindOfClass:[NSDictionary class]] || !properties.count)) return;
-    NSString *installationEndPoint = @"/installation";
-    [WonderPush postEventually:installationEndPoint params:@{@"body":properties, @"overwrite":[NSNumber numberWithBool:overwrite]}];
-}
 
 - (CLLocation *)location
 {
@@ -326,22 +324,12 @@
     NSDictionary *properties = @{@"application": application,
                                  @"device": device
                                  };
-    
+
     WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    NSDictionary *oldProperties = sharedConfiguration.cachedInstallationCoreProperties;
-    NSDate *oldPropertiesDate = sharedConfiguration.cachedInstallationCorePropertiesDate;
-    NSString *oldPropertiesAccessToken = sharedConfiguration.cachedInstallationCorePropertiesAccessToken;
-    if (![oldProperties isKindOfClass:[NSDictionary class]]
-        || ![oldPropertiesDate isKindOfClass:[NSDate class]]
-        || ![oldPropertiesAccessToken isKindOfClass:[NSString class]]
-        || ![oldProperties isEqualToDictionary:properties]
-        || ![oldPropertiesAccessToken isEqualToString:sharedConfiguration.accessToken]
-        ) {
-        [sharedConfiguration setCachedInstallationCoreProperties:properties];
-        [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
-        [sharedConfiguration setCachedInstallationCorePropertiesAccessToken:sharedConfiguration.accessToken];
-        [self updateInstallation:properties shouldOverwrite:NO];
-    }
+    [sharedConfiguration setCachedInstallationCoreProperties:properties];
+    [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
+    [sharedConfiguration setCachedInstallationCorePropertiesAccessToken:sharedConfiguration.accessToken];
+    [[WPJsonSyncInstallationCore forCurrentUser] put:properties];
 }
 
 - (void) setNotificationEnabled:(BOOL)enabled
@@ -385,11 +373,11 @@
         sharedConfiguration.cachedOsNotificationEnabled = osNotificationEnabled;
         sharedConfiguration.cachedOsNotificationEnabledDate = [NSDate date];
 
-        [self updateInstallation:@{@"preferences": @{
+        [[WPJsonSyncInstallationCore forCurrentUser] put:@{@"preferences": @{
                                            @"subscriptionStatus": value,
                                            @"subscribedToNotifications": enabled ? @YES : @NO,
                                            @"osNotificationVisible": osNotificationEnabled ? @YES : @NO,
-                                           }} shouldOverwrite:NO];
+                                           }}];
     }];
 }
 
@@ -404,28 +392,13 @@
         deviceToken = [deviceToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
         deviceToken = [deviceToken stringByReplacingOccurrencesOfString:@" " withString:@""];
     }
-    
+
     WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-    NSString *oldDeviceToken = [sharedConfiguration deviceToken];
-    
-    if (
-        // New device token
-        (deviceToken == nil && oldDeviceToken != nil) || (deviceToken != nil && oldDeviceToken == nil)
-        || (deviceToken != nil && oldDeviceToken != nil && ![deviceToken isEqualToString:oldDeviceToken])
-        // Last associated with another userId?
-        || (sharedConfiguration.userId == nil && sharedConfiguration.deviceTokenAssociatedToUserId != nil)
-        || (sharedConfiguration.userId != nil && ![sharedConfiguration.userId isEqualToString:sharedConfiguration.deviceTokenAssociatedToUserId])
-        // Last associated with another access token?
-        || (sharedConfiguration.accessToken == nil && sharedConfiguration.cachedDeviceTokenAccessToken != nil)
-        || (sharedConfiguration.accessToken != nil && ![sharedConfiguration.accessToken isEqualToString:sharedConfiguration.cachedDeviceTokenAccessToken])
-        ) {
-        [sharedConfiguration setDeviceToken:deviceToken];
-        [sharedConfiguration setDeviceTokenAssociatedToUserId:sharedConfiguration.userId];
-        [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
-        [sharedConfiguration setCachedDeviceTokenAccessToken:sharedConfiguration.accessToken];
-        [self updateInstallation:@{@"pushToken": @{@"data": deviceToken ?: [NSNull null]}}
-                 shouldOverwrite:NO];
-    }
+    [sharedConfiguration setDeviceToken:deviceToken];
+    [sharedConfiguration setDeviceTokenAssociatedToUserId:sharedConfiguration.userId];
+    [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
+    [sharedConfiguration setCachedDeviceTokenAccessToken:sharedConfiguration.accessToken];
+    [[WPJsonSyncInstallationCore forCurrentUser] put:@{@"pushToken": @{@"data": deviceToken ?: [NSNull null]}}];
 }
 
 - (NSString *)accessToken {

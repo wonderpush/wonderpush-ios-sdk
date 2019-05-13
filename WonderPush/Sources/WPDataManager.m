@@ -10,6 +10,7 @@
 #import "WPConfiguration.h"
 #import "WPAPIClient.h"
 #import "WPJsonSyncInstallationCustom.h"
+#import "WPJsonSyncInstallationCore.h"
 
 static WPDataManager *instance = nil;
 static dispatch_queue_t dataManagerQueue;
@@ -190,6 +191,8 @@ static dispatch_queue_t dataManagerQueue;
 }
 - (void) clearInstallation:(NSString *)userId
 {
+    WPJsonSyncInstallationCore *core = [WPJsonSyncInstallationCore forUser:userId];
+    [core receiveState:@{} resetSdkState:YES];
     WPRequest *request = [WPRequest new];
     request.userId = userId;
     request.resource = @"/installation";
