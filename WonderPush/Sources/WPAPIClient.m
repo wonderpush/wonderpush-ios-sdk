@@ -285,11 +285,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
                 NSDictionary *installation = [WPUtil dictionaryForKey:@"_installation" inDictionary:responseJson];
                 if (installation) {
                     NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:[[WPUtil numberForKey:@"updateDate" inDictionary:installation] longValue] / 1000. ];
-                    NSDictionary * custom        = [WPUtil dictionaryForKey:@"custom" inDictionary:installation] ?: @{};
-                    [WonderPush receivedFullInstallationCustomPropertiesFromServer:custom updateDate:installationUpdateDate];
-                    NSMutableDictionary *core = [NSMutableDictionary dictionaryWithDictionary:installation];
-                    [core removeObjectForKey:@"custom"];
-                    [WonderPush receivedFullInstallationCorePropertiesFromServer:core updateDate:installationUpdateDate];
+                    [WonderPush receivedFullInstallationFromServer:installation updateDate:installationUpdateDate];
                 }
                 
                 [configuration changeUserId:prevUserId];

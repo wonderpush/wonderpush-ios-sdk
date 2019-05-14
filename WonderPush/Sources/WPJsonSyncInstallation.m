@@ -1,4 +1,4 @@
-#import "WPJsonSyncInstallationCore.h"
+#import "WPJsonSyncInstallation.h"
 
 #import "WPConfiguration.h"
 #import "WonderPush_private.h"
@@ -6,11 +6,16 @@
 #import "WPUtil.h"
 
 
+#define UPGRADE_META_VERSION_KEY @"version"
+#define UPGRADE_META_VERSION_0_INITIAL @0
+#define UPGRADE_META_VERSION_1_IMPORTED_CUSTOM @1
+#define UPGRADE_META_VERSION_CURRENT UPGRADE_META_VERSION_1_IMPORTED_CUSTOM
+
 static NSMutableDictionary *instancePerUserId = nil;
 
 
 
-@interface WPJsonSyncInstallationCore ()
+@interface WPJsonSyncInstallation ()
 
 
 @property (readonly) NSString *userId;
@@ -29,7 +34,7 @@ static NSMutableDictionary *instancePerUserId = nil;
 
 
 
-@implementation WPJsonSyncInstallationCore
+@implementation WPJsonSyncInstallation
 
 
 + (void) initialize {
@@ -37,11 +42,21 @@ static NSMutableDictionary *instancePerUserId = nil;
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     @synchronized (instancePerUserId) {
         // Populate entries
-        NSDictionary *installationCoreSyncStatePerUserId = conf.installationCoreSyncStatePerUserId ?: @{};
-        for (NSString *userId in installationCoreSyncStatePerUserId) {
-            NSDictionary *state = [WPUtil dictionaryForKey:userId inDictionary:installationCoreSyncStatePerUserId];
-            instancePerUserId[userId ?: @""] = [[WPJsonSyncInstallationCore alloc] initFromSavedState:state userId:userId];
+        NSDictionary *installationCustomSyncStatePerUserId = conf.installationCustomSyncStatePerUserId ?: @{};
+        for (NSString *userId in installationCustomSyncStatePerUserId) {
+            NSDictionary *state = [WPUtil dictionaryForKey:userId inDictionary:installationCustomSyncStatePerUserId];
+            instancePerUserId[userId ?: @""] = [[WPJsonSyncInstallation alloc] initFromSavedState:state userId:userId];
         }
+        NSString *oldUserId = conf.userId;
+        for (NSString *userId in [[WPConfiguration sharedConfiguration] listKnownUserIds]) {
+            if (instancePerUserId[userId ?: @""] == nil) {
+                [conf changeUserId:userId];
+                instancePerUserId[userId ?: @""] = [[WPJsonSyncInstallation alloc] initFromSdkState:@{@"custom":conf.cachedInstallationCustomPropertiesUpdated}
+                                                                                     andServerState:@{@"custom":conf.cachedInstallationCustomPropertiesWritten}
+                                                                                             userId:userId];
+            }
+        }
+        [conf changeUserId:oldUserId];
         // Resume any stopped inflight or scheduled calls
         // Adding the listener here will catch the an initial call triggered after this function is called, all during SDK initialization.
         // It also flushes any scheduled call that was dropped when the user withdrew consent.
@@ -54,16 +69,16 @@ static NSMutableDictionary *instancePerUserId = nil;
     }
 }
 
-+ (WPJsonSyncInstallationCore *)forCurrentUser {
++ (WPJsonSyncInstallation *)forCurrentUser {
     return [self forUser:[WPConfiguration sharedConfiguration].userId];
 }
 
-+ (WPJsonSyncInstallationCore *)forUser:(NSString *)userId {
++ (WPJsonSyncInstallation *)forUser:(NSString *)userId {
     if ([userId length] == 0) userId = nil;
     @synchronized (instancePerUserId) {
         id instance = [instancePerUserId objectForKey:(userId ?: @"")];
         if (![instance isKindOfClass:[WPJsonSync class]]) {
-            instance = [[WPJsonSyncInstallationCore alloc] initFromSavedState:@{} userId:userId];
+            instance = [[WPJsonSyncInstallation alloc] initFromSavedState:@{} userId:userId];
             instancePerUserId[userId ?: @""] = instance;
         }
         return instance;
@@ -71,12 +86,12 @@ static NSMutableDictionary *instancePerUserId = nil;
 }
 
 + (void) flush {
-    WPLogDebug(@"Flushing delayed updates of core properties for all known users");
+    WPLogDebug(@"Flushing delayed updates of installation for all known users");
     @synchronized (instancePerUserId) {
         for (NSString *userId in instancePerUserId) {
             id obj = instancePerUserId[userId];
-            if ([obj isKindOfClass:[WPJsonSyncInstallationCore class]]) {
-                WPJsonSyncInstallationCore *sync = (WPJsonSyncInstallationCore *) obj;
+            if ([obj isKindOfClass:[WPJsonSyncInstallation class]]) {
+                WPJsonSyncInstallation *sync = (WPJsonSyncInstallation *) obj;
                 [sync flush];
             }
         }
@@ -101,7 +116,26 @@ static NSMutableDictionary *instancePerUserId = nil;
                  }
            schedulePatchCallCallback:^{
                [self scheduleServerPatchCallCallback];
-           }];
+           }
+                 upgradeDictCallback:^NSDictionary *(NSDictionary *upgradeMeta, NSDictionary *inputDict) {
+                     NSMutableDictionary *rtn = [NSMutableDictionary dictionaryWithDictionary:inputDict];
+                     NSNumber *currentVersion = [WPUtil numberForKey:UPGRADE_META_VERSION_KEY inDictionary:upgradeMeta] ?: UPGRADE_META_VERSION_0_INITIAL;
+                     if ([currentVersion compare:UPGRADE_META_VERSION_1_IMPORTED_CUSTOM] == NSOrderedAscending) {
+                         rtn = [NSMutableDictionary dictionaryWithObject:rtn forKey:@"custom"];
+                     }
+                     return rtn;
+                 }
+                 upgradeMetaCallback:^NSDictionary *(NSDictionary *upgradeMeta) {
+                     NSNumber *currentVersion = [WPUtil numberForKey:UPGRADE_META_VERSION_KEY inDictionary:upgradeMeta] ?: UPGRADE_META_VERSION_0_INITIAL;
+                     if ([currentVersion compare:UPGRADE_META_VERSION_CURRENT] != NSOrderedAscending) {
+                         // Do not alter current, or future versions we don't understand
+                         return upgradeMeta;
+                     }
+                     NSMutableDictionary *rtn = [NSMutableDictionary dictionaryWithDictionary:upgradeMeta];
+                     rtn[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_CURRENT;
+                     return rtn;
+                 }
+            ];
     if (self) {
         [self init_commonWithUserId:userId];
     }
@@ -136,16 +170,16 @@ static NSMutableDictionary *instancePerUserId = nil;
 
 - (void) save:(NSDictionary *)state {
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-    NSMutableDictionary *installationCoreSyncStatePerUserId = [(conf.installationCoreSyncStatePerUserId ?: @{}) mutableCopy];
-    installationCoreSyncStatePerUserId[_userId ?: @""] = state ?: @{};
-    conf.installationCoreSyncStatePerUserId = installationCoreSyncStatePerUserId;
+    NSMutableDictionary *installationCustomSyncStatePerUserId = [(conf.installationCustomSyncStatePerUserId ?: @{}) mutableCopy];
+    installationCustomSyncStatePerUserId[_userId ?: @""] = state ?: @{};
+    conf.installationCustomSyncStatePerUserId = installationCustomSyncStatePerUserId;
 }
 
 - (void) scheduleServerPatchCallCallback {
-    WPLogDebug(@"Scheduling a delayed update of core properties");
+    WPLogDebug(@"Scheduling a delayed update of installation");
     if (![WonderPush hasUserConsent]) {
         [WonderPush safeDeferWithConsent:^{
-            WPLogDebug(@"Now scheduling user consent delayed patch call for installation core state for userId %@", self.userId);
+            WPLogDebug(@"Now scheduling user consent delayed patch call for installation state for userId %@", self.userId);
             [self scheduleServerPatchCallCallback]; // NOTE: imposes this function to be somewhat reentrant
         }];
         return;
@@ -156,14 +190,14 @@ static NSMutableDictionary *instancePerUserId = nil;
         if (!_firstDelayedWriteDate) {
             _firstDelayedWriteDate = now;
         }
-        NSTimeInterval delay = MIN(CACHED_INSTALLATION_CORE_PROPERTIES_MIN_DELAY,
-                                   [_firstDelayedWriteDate timeIntervalSinceReferenceDate] + CACHED_INSTALLATION_CORE_PROPERTIES_MAX_DELAY
+        NSTimeInterval delay = MIN(CACHED_INSTALLATION_CUSTOM_PROPERTIES_MIN_DELAY,
+                                   [_firstDelayedWriteDate timeIntervalSinceReferenceDate] + CACHED_INSTALLATION_CUSTOM_PROPERTIES_MAX_DELAY
                                    - [now timeIntervalSinceReferenceDate]);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             @synchronized (self->_blockId_lock) {
                 if (self->_blockId == currentBlockId) {
                     self->_firstDelayedWriteDate = nil;
-                    WPLogDebug(@"Performing delayed update of core properties");
+                    WPLogDebug(@"Performing delayed update of installation");
                     [self performScheduledPatchCall];
                 }
             }
@@ -181,7 +215,7 @@ static NSMutableDictionary *instancePerUserId = nil;
 }
 
 - (void) serverPatchCallbackWithDiff:(NSDictionary *)diff onSuccess:(WPJsonSyncCallback)onSuccess onFailure:(WPJsonSyncCallback)onFailure {
-    WPLogDebug(@"Sending installation core diff: %@ for user %@", diff, _userId);
+    WPLogDebug(@"Sending installation diff: %@ for user %@", diff, _userId);
     [WonderPush requestForUser:_userId
                         method:@"PATCH"
                       resource:@"/installation"

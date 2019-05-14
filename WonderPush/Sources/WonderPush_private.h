@@ -119,14 +119,9 @@
 ///---------------------
 
 /**
-Called when receiving the full state of the installation custom properties
+Called when receiving the full state of the installation
  */
-+ (void)receivedFullInstallationCustomPropertiesFromServer:(NSDictionary *)custom updateDate:(NSDate *)installationUpdateDate;
-
-/**
- Called when receiving the full state of the installation core properties
- */
-+ (void)receivedFullInstallationCorePropertiesFromServer:(NSDictionary *)core updateDate:(NSDate *)installationUpdateDate;
++ (void)receivedFullInstallationFromServer:(NSDictionary *)installation updateDate:(NSDate *)installationUpdateDate;
 
 /**
  Tracks an internal event, starting with a @ sign.

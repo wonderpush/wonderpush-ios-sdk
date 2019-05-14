@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3D4A4966228599860027BDF9 /* WPJsonSyncInstallationCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D4A4965228599860027BDF9 /* WPJsonSyncInstallationCore.h */; };
-		3D4A4968228599A10027BDF9 /* WPJsonSyncInstallationCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D4A4967228599A10027BDF9 /* WPJsonSyncInstallationCore.m */; };
 		9909CE1922215DD600F73A0B /* WonderPush.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99885AF92215CE71002CA269 /* WonderPush.storyboard */; };
 		9909CE1A22215DD800F73A0B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08461D33D9B2001289BD /* WonderPushLocalizable.strings */; };
 		9909CE5B2221602200F73A0B /* WPNotificationServiceExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -31,7 +29,7 @@
 		9998CAAD221C75370028D955 /* WPHTMLInAppController.h in Headers */ = {isa = PBXBuildFile; fileRef = 99885AFB2215CF7F002CA269 /* WPHTMLInAppController.h */; };
 		9998CAAE221C75370028D955 /* WPInstallationCoreProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 99129C31220C8B1500111272 /* WPInstallationCoreProperties.h */; };
 		9998CAAF221C75370028D955 /* WPJsonSync.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0A92651E9D18D900784273 /* WPJsonSync.h */; };
-		9998CAB0221C75370028D955 /* WPJsonSyncInstallationCustom.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0A92661E9D33AF00784273 /* WPJsonSyncInstallationCustom.h */; };
+		9998CAB0221C75370028D955 /* WPJsonSyncInstallation.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0A92661E9D33AF00784273 /* WPJsonSyncInstallation.h */; };
 		9998CAB1221C75370028D955 /* WPJsonUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */; };
 		9998CAB2221C75370028D955 /* WPLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DDE66D61B4AE73200B5DC44 /* WPLog.h */; };
 		9998CAB3221C75370028D955 /* WPMobileProvision.h in Headers */ = {isa = PBXBuildFile; fileRef = 99885AF52215BB37002CA269 /* WPMobileProvision.h */; };
@@ -51,7 +49,7 @@
 		9998CAC2221C75480028D955 /* WPHTMLInAppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99885AFC2215CF7F002CA269 /* WPHTMLInAppController.m */; };
 		9998CAC3221C75480028D955 /* WPInstallationCoreProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C30220C8B1500111272 /* WPInstallationCoreProperties.m */; };
 		9998CAC4221C75480028D955 /* WPJsonSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0A92631E9D18A800784273 /* WPJsonSync.m */; };
-		9998CAC5221C75480028D955 /* WPJsonSyncInstallationCustom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0A92671E9D33AF00784273 /* WPJsonSyncInstallationCustom.m */; };
+		9998CAC5221C75480028D955 /* WPJsonSyncInstallation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0A92671E9D33AF00784273 /* WPJsonSyncInstallation.m */; };
 		9998CAC6221C75480028D955 /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
 		9998CAC7221C75480028D955 /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
 		9998CAC8221C75480028D955 /* WPMobileProvision.m in Sources */ = {isa = PBXBuildFile; fileRef = 99885AF62215BB37002CA269 /* WPMobileProvision.m */; };
@@ -108,10 +106,8 @@
 		3D0A08671D33F543001289BD /* nb */ = {isa = PBXFileReference; lastKnownFileType = folder; name = nb; path = nb.lproj; sourceTree = "<group>"; };
 		3D0A92631E9D18A800784273 /* WPJsonSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonSync.m; sourceTree = "<group>"; };
 		3D0A92651E9D18D900784273 /* WPJsonSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonSync.h; sourceTree = "<group>"; };
-		3D0A92661E9D33AF00784273 /* WPJsonSyncInstallationCustom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPJsonSyncInstallationCustom.h; sourceTree = "<group>"; };
-		3D0A92671E9D33AF00784273 /* WPJsonSyncInstallationCustom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonSyncInstallationCustom.m; sourceTree = "<group>"; };
-		3D4A4965228599860027BDF9 /* WPJsonSyncInstallationCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonSyncInstallationCore.h; sourceTree = "<group>"; };
-		3D4A4967228599A10027BDF9 /* WPJsonSyncInstallationCore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPJsonSyncInstallationCore.m; sourceTree = "<group>"; };
+		3D0A92661E9D33AF00784273 /* WPJsonSyncInstallation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPJsonSyncInstallation.h; sourceTree = "<group>"; };
+		3D0A92671E9D33AF00784273 /* WPJsonSyncInstallation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonSyncInstallation.m; sourceTree = "<group>"; };
 		3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonUtil.m; sourceTree = "<group>"; };
 		3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonUtil.h; sourceTree = "<group>"; };
 		3D77BBAF1E60760300CA7915 /* WPNotificationCenterDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationCenterDelegate.h; sourceTree = "<group>"; };
@@ -264,10 +260,8 @@
 				99129C30220C8B1500111272 /* WPInstallationCoreProperties.m */,
 				3D0A92651E9D18D900784273 /* WPJsonSync.h */,
 				3D0A92631E9D18A800784273 /* WPJsonSync.m */,
-				3D0A92661E9D33AF00784273 /* WPJsonSyncInstallationCustom.h */,
-				3D0A92671E9D33AF00784273 /* WPJsonSyncInstallationCustom.m */,
-				3D4A4965228599860027BDF9 /* WPJsonSyncInstallationCore.h */,
-				3D4A4967228599A10027BDF9 /* WPJsonSyncInstallationCore.m */,
+				3D0A92661E9D33AF00784273 /* WPJsonSyncInstallation.h */,
+				3D0A92671E9D33AF00784273 /* WPJsonSyncInstallation.m */,
 				3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */,
 				3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */,
 				3DDE66D61B4AE73200B5DC44 /* WPLog.h */,
@@ -387,10 +381,9 @@
 				9998CAAD221C75370028D955 /* WPHTMLInAppController.h in Headers */,
 				9998CAAE221C75370028D955 /* WPInstallationCoreProperties.h in Headers */,
 				9998CAAF221C75370028D955 /* WPJsonSync.h in Headers */,
-				9998CAB0221C75370028D955 /* WPJsonSyncInstallationCustom.h in Headers */,
+				9998CAB0221C75370028D955 /* WPJsonSyncInstallation.h in Headers */,
 				9998CAB1221C75370028D955 /* WPJsonUtil.h in Headers */,
 				9998CAB2221C75370028D955 /* WPLog.h in Headers */,
-				3D4A4966228599860027BDF9 /* WPJsonSyncInstallationCore.h in Headers */,
 				9998CAB3221C75370028D955 /* WPMobileProvision.h in Headers */,
 				9998CAB4221C75370028D955 /* WPNetworkReachabilityManager.h in Headers */,
 				9998CAB5221C75370028D955 /* WPNotificationCenterDelegate.h in Headers */,
@@ -555,13 +548,12 @@
 				9998CAC2221C75480028D955 /* WPHTMLInAppController.m in Sources */,
 				9998CAC3221C75480028D955 /* WPInstallationCoreProperties.m in Sources */,
 				9998CAC4221C75480028D955 /* WPJsonSync.m in Sources */,
-				9998CAC5221C75480028D955 /* WPJsonSyncInstallationCustom.m in Sources */,
+				9998CAC5221C75480028D955 /* WPJsonSyncInstallation.m in Sources */,
 				9998CAC6221C75480028D955 /* WPJsonUtil.m in Sources */,
 				9998CAC7221C75480028D955 /* WPLog.m in Sources */,
 				9998CAC8221C75480028D955 /* WPMobileProvision.m in Sources */,
 				9998CAC9221C75480028D955 /* WPNetworkReachabilityManager.m in Sources */,
 				9998CACA221C75480028D955 /* WPNotificationCenterDelegate.m in Sources */,
-				3D4A4968228599A10027BDF9 /* WPJsonSyncInstallationCore.m in Sources */,
 				9998CACB221C75480028D955 /* WPRequest.m in Sources */,
 				9998CACC221C75480028D955 /* WPRequestSerializer.m in Sources */,
 				9998CACD221C75480028D955 /* WPRequestVault.m in Sources */,

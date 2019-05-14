@@ -9,8 +9,7 @@
 #import "WPDataManager.h"
 #import "WPConfiguration.h"
 #import "WPAPIClient.h"
-#import "WPJsonSyncInstallationCustom.h"
-#import "WPJsonSyncInstallationCore.h"
+#import "WPJsonSyncInstallation.h"
 
 static WPDataManager *instance = nil;
 static dispatch_queue_t dataManagerQueue;
@@ -173,13 +172,10 @@ static dispatch_queue_t dataManagerQueue;
 }
 - (void) clearPreferencesForUserId:(NSString *)userId
 {
-    WPJsonSyncInstallationCustom *custom = [WPJsonSyncInstallationCustom forUser:userId];
-    NSMutableDictionary *diff = [NSMutableDictionary new];
-    for (NSString *key in [custom.sdkState allKeys]) {
-        [diff setObject:[NSNull null] forKey:key];
-    }
-    [custom put:diff];
-    [custom flush];
+    WPJsonSyncInstallation *sync = [WPJsonSyncInstallation forUser:userId];
+    [sync put:@{@"custom":[NSNull null]}];
+    [sync put:@{@"custom":@{}}];
+    [sync flush];
     if (userId.length) {
         WPRequest *request = [WPRequest new];
         request.userId = userId;
@@ -191,8 +187,8 @@ static dispatch_queue_t dataManagerQueue;
 }
 - (void) clearInstallation:(NSString *)userId
 {
-    WPJsonSyncInstallationCore *core = [WPJsonSyncInstallationCore forUser:userId];
-    [core receiveState:@{} resetSdkState:YES];
+    WPJsonSyncInstallation *sync = [WPJsonSyncInstallation forUser:userId];
+    [sync receiveState:@{} resetSdkState:YES];
     WPRequest *request = [WPRequest new];
     request.userId = userId;
     request.resource = @"/installation";

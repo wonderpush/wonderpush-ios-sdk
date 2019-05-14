@@ -27,8 +27,7 @@
 #import "WPAPIClient.h"
 #import "WPJsonUtil.h"
 #import "WPLog.h"
-#import "WPJsonSyncInstallationCustom.h"
-#import "WPJsonSyncInstallationCore.h"
+#import "WPJsonSyncInstallation.h"
 #import "WonderPushConcreteAPI.h"
 #import "WonderPushLogErrorAPI.h"
 #import "WPHTMLInAppController.h"
@@ -292,8 +291,7 @@ static UIStoryboard *storyboard = nil;
     [self setIsReady:NO];
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     [configuration changeUserId:userId];
-    [WPJsonSyncInstallationCustom forCurrentUser]; // ensures static initialization is done
-    [WPJsonSyncInstallationCore forCurrentUser]; // ensures static initialization is done
+    [WPJsonSyncInstallation forCurrentUser]; // ensures static initialization is done
     [self safeDeferWithConsent:^{
         void (^init)(void) = ^{
             [self setIsReady:YES];
@@ -496,8 +494,7 @@ static UIStoryboard *storyboard = nil;
     if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
 
-    [WPJsonSyncInstallationCustom flush];
-    [WPJsonSyncInstallationCore flush];
+    [WPJsonSyncInstallation flush];
 
     // Send queued notifications as LocalNotifications
     if ([self hasUserConsent]) {
@@ -654,18 +651,10 @@ static UIStoryboard *storyboard = nil;
     [wonderPushAPI putInstallationCustomProperties:customProperties];
 }
 
-+ (void)receivedFullInstallationCustomPropertiesFromServer:(NSDictionary *)custom updateDate:(NSDate *)installationUpdateDate
++ (void)receivedFullInstallationFromServer:(NSDictionary *)installation updateDate:(NSDate *)installationUpdateDate
 {
-    WPLogDebug(@"Synchronizing installation custom fields");
-    custom = custom ?: @{};
-    [[WPJsonSyncInstallationCustom forCurrentUser] receiveState:custom resetSdkState:false];
-}
-
-+ (void)receivedFullInstallationCorePropertiesFromServer:(NSDictionary *)core updateDate:(NSDate *)installationUpdateDate
-{
-    WPLogDebug(@"Synchronizing installation core fields");
-    core = core ?: @{};
-    [[WPJsonSyncInstallationCore forCurrentUser] receiveState:core resetSdkState:false];
+    WPLogDebug(@"Synchronizing installation");
+    [[WPJsonSyncInstallation forCurrentUser] receiveState:installation resetSdkState:false];
 }
 
 + (void) trackNotificationOpened:(NSDictionary *)notificationInformation
@@ -868,8 +857,7 @@ static UIStoryboard *storyboard = nil;
             // The application won't run long enough to perform any scheduled updates of custom properties to the server
             // that may have been asked by receiveActions, flush now.
             // If we had no such modifications, this is still an opportunity to flush any interrupted calls.
-            [WPJsonSyncInstallationCustom flush];
-            [WPJsonSyncInstallationCore flush];
+            [WPJsonSyncInstallation flush];
         });
         WPLogDebug(@"handleNotification: return YES because state == background");
         return YES;

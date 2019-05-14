@@ -7,6 +7,8 @@
 
 #define SAVED_STATE_FIELD__SYNC_STATE_VERSION @"_syncStateVersion"
 #define SAVED_STATE_STATE_VERSION_1 @1
+#define SAVED_STATE_STATE_VERSION_2 @2
+#define SAVED_STATE_FIELD_UPGRADE_META @"upgradeMeta"
 #define SAVED_STATE_FIELD_SDK_STATE @"sdkState"
 #define SAVED_STATE_FIELD_SERVER_STATE @"serverState"
 #define SAVED_STATE_FIELD_PUT_ACCUMULATOR @"putAccumulator"
@@ -24,6 +26,7 @@
 @property WPJsonSyncSaveCallback saveCallback;
 @property WPJsonSyncCallback schedulePatchCallCallback;
 
+@property (copy) NSDictionary *upgradeMeta;
 @property (copy) NSDictionary *putAccumulator;
 @property (copy) NSDictionary *inflightDiff;
 @property (copy) NSDictionary *inflightPutAccumulator;
@@ -43,7 +46,7 @@
 @implementation WPJsonSync
 
 
-- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback {
+- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeDictCallback:(WPJsonSyncUpgradeDictCallback _Nullable)upgradeDictCallback upgradeMetaCallback:(WPJsonSyncUpgradeMetaCallback _Nullable)upgradeMetaCallback {
     self = [super init];
     if (self) {
         _serverPatchCallback = serverPatchCallback;
@@ -51,8 +54,9 @@
         _schedulePatchCallCallback = schedulePatchCallCallback;
 
         savedState = savedState ?: @{};
-        NSNumber *syncSateVersion;
-        syncSateVersion         = [WPUtil numberForKey:SAVED_STATE_FIELD__SYNC_STATE_VERSION inDictionary:savedState] ?: @0;
+        NSNumber *syncStateVersion;
+        syncStateVersion        = [WPUtil numberForKey:SAVED_STATE_FIELD__SYNC_STATE_VERSION inDictionary:savedState] ?: @0;
+        _upgradeMeta            = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_UPGRADE_META inDictionary:savedState] ?: @{};
         _sdkState               = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_SDK_STATE inDictionary:savedState] ?: @{};
         _serverState            = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_SERVER_STATE inDictionary:savedState] ?: @{};
         _putAccumulator         = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
@@ -60,6 +64,22 @@
         _inflightPutAccumulator = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
         _scheduledPatchCall     = [([WPUtil numberForKey:SAVED_STATE_FIELD_SCHEDULED_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
         _inflightPatchCall      = [([WPUtil numberForKey:SAVED_STATE_FIELD_INFLIGHT_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
+        
+        // Handle state version upgrades (syncStateVersion)
+        // - 0 -> 1: No-op. 0 means no previous state.
+        // - 1 -> 2: No-op. Only the "upgradeMeta" key has been added and it it read with proper default.
+        
+        // Handle client upgrades
+        if (upgradeDictCallback != nil) {
+            _sdkState               = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _sdkState)];
+            _serverState            = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _serverState)];
+            _putAccumulator         = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _putAccumulator)];
+            _inflightDiff           = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _inflightDiff)];
+            _inflightPutAccumulator = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _inflightPutAccumulator)];
+        }
+        if (upgradeMetaCallback != nil) {
+            _upgradeMeta = [NSDictionary dictionaryWithDictionary:upgradeMetaCallback(_upgradeMeta)];
+        }
 
         if (_inflightPatchCall) {
             [self onFailure];
@@ -89,7 +109,8 @@
 - (void) save {
     @synchronized (self) {
         _saveCallback(@{
-                        SAVED_STATE_FIELD__SYNC_STATE_VERSION:      SAVED_STATE_STATE_VERSION_1,
+                        SAVED_STATE_FIELD__SYNC_STATE_VERSION:      SAVED_STATE_STATE_VERSION_2,
+                        SAVED_STATE_FIELD_UPGRADE_META:             _upgradeMeta,
                         SAVED_STATE_FIELD_SDK_STATE:                _sdkState,
                         SAVED_STATE_FIELD_SERVER_STATE:             _serverState,
                         SAVED_STATE_FIELD_PUT_ACCUMULATOR:          _putAccumulator,

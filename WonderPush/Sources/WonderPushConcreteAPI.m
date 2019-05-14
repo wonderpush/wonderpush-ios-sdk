@@ -7,8 +7,7 @@
 
 #import "WonderPushConcreteAPI.h"
 #import "WPConfiguration.h"
-#import "WPJsonSyncInstallationCustom.h"
-#import "WPJsonSyncInstallationCore.h"
+#import "WPJsonSyncInstallation.h"
 #import "WPLog.h"
 #import "WonderPush.h"
 #import "WPAPIClient.h"
@@ -100,25 +99,18 @@
     } else if ([WP_ACTION_UPDATE_INSTALLATION isEqualToString:type]) {
         
         NSNumber *appliedServerSide = [WPUtil numberForKey:@"appliedServerSide" inDictionary:action];
-        NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
-        NSMutableDictionary *core = [NSMutableDictionary dictionaryWithDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
-        [core removeObjectForKey:@"custom"];
-        if (custom) {
-            if ([appliedServerSide isEqual:@YES]) {
-                WPLogDebug(@"Received server custom properties diff: %@", custom);
-                [[WPJsonSyncInstallationCustom forCurrentUser] receiveDiff:custom];
-            } else {
-                WPLogDebug(@"Putting custom properties diff: %@", custom);
-                [[WPJsonSyncInstallationCustom forCurrentUser] put:custom];
-            }
+        NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action];
+        NSDictionary *directCustom = [WPUtil dictionaryForKey:@"custom" inDictionary:action];
+        if (installation == nil && directCustom != nil) {
+            installation = @{@"custom":directCustom};
         }
-        if (core) {
+        if (installation) {
             if ([appliedServerSide isEqual:@YES]) {
-                WPLogDebug(@"Received server core properties diff: %@", core);
-                [[WPJsonSyncInstallationCore forCurrentUser] receiveDiff:core];
+                WPLogDebug(@"Received server installation diff: %@", installation);
+                [[WPJsonSyncInstallation forCurrentUser] receiveDiff:installation];
             } else {
-                WPLogDebug(@"Putting core properties diff: %@", core);
-                [[WPJsonSyncInstallationCore forCurrentUser] put:core];
+                WPLogDebug(@"Putting installation diff: %@", installation);
+                [[WPJsonSyncInstallation forCurrentUser] put:installation];
             }
         }
 
@@ -127,21 +119,15 @@
         void (^cont)(NSDictionary *action) = ^(NSDictionary *action){
             WPLogDebug(@"Running enriched action %@", action);
             NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: @{};
-            NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:installation] ?: @{};
-            NSMutableDictionary *core = [NSMutableDictionary dictionaryWithDictionary:installation];
-            [core removeObjectForKey:@"custom"];
             NSNumber *reset = [WPUtil numberForKey:@"reset" inDictionary:action];
             NSNumber *force = [WPUtil numberForKey:@"force" inDictionary:action];
             
             // Take or reset custom
             if ([reset isEqual:@YES]) {
-                [[WPJsonSyncInstallationCustom forCurrentUser] receiveState:custom
-                                                              resetSdkState:[force isEqual:@YES]];
-                [[WPJsonSyncInstallationCore forCurrentUser] receiveState:core
-                                                             resetSdkState:[force isEqual:@YES]];
+                [[WPJsonSyncInstallation forCurrentUser] receiveState:installation
+                                                        resetSdkState:[force isEqual:@YES]];
             } else {
-                [[WPJsonSyncInstallationCustom forCurrentUser] receiveServerState:custom];
-                [[WPJsonSyncInstallationCore forCurrentUser] receiveServerState:core];
+                [[WPJsonSyncInstallation forCurrentUser] receiveServerState:installation];
             }
 
             [WonderPush refreshPreferencesAndConfiguration];
@@ -171,8 +157,7 @@
                 actionFilled[@"installation"] = [NSDictionary dictionaryWithDictionary:installation];
                 cont(actionFilled);
                 // We added async processing, we need to ensure that we flush it too, especially in case we're running receiveActions in the background
-                [WPJsonSyncInstallationCustom flush];
-                [WPJsonSyncInstallationCore flush];
+                [WPJsonSyncInstallation flush];
             }];
             
         }
@@ -289,7 +274,7 @@
     [sharedConfiguration setCachedInstallationCoreProperties:properties];
     [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
     [sharedConfiguration setCachedInstallationCorePropertiesAccessToken:sharedConfiguration.accessToken];
-    [[WPJsonSyncInstallationCore forCurrentUser] put:properties];
+    [[WPJsonSyncInstallation forCurrentUser] put:properties];
 }
 
 - (void) setNotificationEnabled:(BOOL)enabled
@@ -313,11 +298,11 @@
         sharedConfiguration.cachedOsNotificationEnabled = osNotificationEnabled;
         sharedConfiguration.cachedOsNotificationEnabledDate = [NSDate date];
 
-        [[WPJsonSyncInstallationCore forCurrentUser] put:@{@"preferences": @{
-                                           @"subscriptionStatus": value,
-                                           @"subscribedToNotifications": enabled ? @YES : @NO,
-                                           @"osNotificationVisible": osNotificationEnabled ? @YES : @NO,
-                                           }}];
+        [[WPJsonSyncInstallation forCurrentUser] put:@{@"preferences": @{
+                                                               @"subscriptionStatus": value,
+                                                               @"subscribedToNotifications": enabled ? @YES : @NO,
+                                                               @"osNotificationVisible": osNotificationEnabled ? @YES : @NO,
+                                                               }}];
     }];
 }
 
@@ -338,7 +323,7 @@
     [sharedConfiguration setDeviceTokenAssociatedToUserId:sharedConfiguration.userId];
     [sharedConfiguration setCachedDeviceTokenDate:[NSDate date]];
     [sharedConfiguration setCachedDeviceTokenAccessToken:sharedConfiguration.accessToken];
-    [[WPJsonSyncInstallationCore forCurrentUser] put:@{@"pushToken": @{@"data": deviceToken ?: [NSNull null]}}];
+    [[WPJsonSyncInstallation forCurrentUser] put:@{@"pushToken": @{@"data": deviceToken ?: [NSNull null]}}];
 }
 
 - (NSString *)accessToken {
@@ -353,7 +338,7 @@
 
 
 - (NSDictionary *)getInstallationCustomProperties {
-    return [[WPJsonSyncInstallationCustom forCurrentUser].sdkState copy];
+    return [([WPUtil dictionaryForKey:@"custom" inDictionary:[WPJsonSyncInstallation forCurrentUser].sdkState] ?: @{}) copy];
 }
 
 
@@ -370,8 +355,7 @@
 
 
 - (void)putInstallationCustomProperties:(NSDictionary *)customProperties {
-    [[WPJsonSyncInstallationCustom forCurrentUser] put:customProperties];
-
+    [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":customProperties}];
 }
 
 

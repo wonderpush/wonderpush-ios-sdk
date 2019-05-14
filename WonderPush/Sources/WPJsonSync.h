@@ -8,6 +8,8 @@
 typedef void (^WPJsonSyncCallback)(void);
 typedef void (^WPJsonSyncSaveCallback)(NSDictionary *state);
 typedef void (^WPJsonSyncServerPatchCallback)(NSDictionary *diff, WPJsonSyncCallback onSuccess, WPJsonSyncCallback onFailure);
+typedef NSDictionary *(^WPJsonSyncUpgradeDictCallback)(NSDictionary *upgradeMeta, NSDictionary *inputDict);
+typedef NSDictionary *(^WPJsonSyncUpgradeMetaCallback)(NSDictionary *upgradeMeta);
 
 
 
@@ -20,7 +22,7 @@ typedef void (^WPJsonSyncServerPatchCallback)(NSDictionary *diff, WPJsonSyncCall
 @property (readonly) bool inflightPatchCall;
 
 
-- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback;
+- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeDictCallback:(WPJsonSyncUpgradeDictCallback)upgradeDictCallback upgradeMetaCallback:(WPJsonSyncUpgradeMetaCallback)upgradeMetaCallback;
 - (instancetype) initFromSdkState:(NSDictionary *)sdkState andServerState:(NSDictionary *)serverState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback;
 
 
