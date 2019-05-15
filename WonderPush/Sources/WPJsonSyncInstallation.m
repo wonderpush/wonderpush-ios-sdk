@@ -51,8 +51,8 @@ static NSMutableDictionary *instancePerUserId = nil;
         for (NSString *userId in [[WPConfiguration sharedConfiguration] listKnownUserIds]) {
             if (instancePerUserId[userId ?: @""] == nil) {
                 [conf changeUserId:userId];
-                instancePerUserId[userId ?: @""] = [[WPJsonSyncInstallation alloc] initFromSdkState:@{@"custom":conf.cachedInstallationCustomPropertiesUpdated}
-                                                                                     andServerState:@{@"custom":conf.cachedInstallationCustomPropertiesWritten}
+                instancePerUserId[userId ?: @""] = [[WPJsonSyncInstallation alloc] initFromSdkState:@{@"custom":conf.cachedInstallationCustomPropertiesUpdated ?: @{}}
+                                                                                     andServerState:@{@"custom":conf.cachedInstallationCustomPropertiesWritten ?: @{}}
                                                                                              userId:userId];
             }
         }

@@ -355,7 +355,7 @@
 
 
 - (void)putInstallationCustomProperties:(NSDictionary *)customProperties {
-    [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":customProperties}];
+    [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":customProperties ?: @{}}];
 }
 
 
