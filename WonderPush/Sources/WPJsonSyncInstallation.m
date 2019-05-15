@@ -117,24 +117,33 @@ static NSMutableDictionary *instancePerUserId = nil;
            schedulePatchCallCallback:^{
                [self scheduleServerPatchCallCallback];
            }
-                 upgradeDictCallback:^NSDictionary *(NSDictionary *upgradeMeta, NSDictionary *inputDict) {
-                     NSMutableDictionary *rtn = [NSMutableDictionary dictionaryWithDictionary:inputDict];
-                     NSNumber *currentVersion = [WPUtil numberForKey:UPGRADE_META_VERSION_KEY inDictionary:upgradeMeta] ?: UPGRADE_META_VERSION_0_INITIAL;
-                     if ([currentVersion compare:UPGRADE_META_VERSION_1_IMPORTED_CUSTOM] == NSOrderedAscending) {
-                         rtn = [NSMutableDictionary dictionaryWithObject:rtn forKey:@"custom"];
+                     upgradeCallback:^(NSMutableDictionary *upgradeMeta, NSMutableDictionary *sdkState, NSMutableDictionary *serverState, NSMutableDictionary *putAccumulator, NSMutableDictionary *inflightDiff, NSMutableDictionary *inflightPutAccumulator) {
+                         NSNumber *currentVersion = [WPUtil numberForKey:UPGRADE_META_VERSION_KEY inDictionary:upgradeMeta] ?: UPGRADE_META_VERSION_0_INITIAL;
+                         if ([currentVersion compare:UPGRADE_META_VERSION_CURRENT] != NSOrderedAscending) {
+                             // Do not alter current, or future versions we don't understand
+                             return;
+                         }
+                         if ([currentVersion compare:UPGRADE_META_VERSION_1_IMPORTED_CUSTOM] == NSOrderedAscending) {
+                             void (^moveInsideCustom)(NSMutableDictionary *) = ^(NSMutableDictionary *dict) {
+                                 NSMutableDictionary *tmp = [NSMutableDictionary dictionaryWithDictionary:dict];
+                                 [dict removeAllObjects];
+                                 dict[@"custom"] = tmp;
+                             };
+
+                             moveInsideCustom(sdkState);
+                             moveInsideCustom(serverState);
+                             if ([putAccumulator count] > 0) {
+                                 moveInsideCustom(putAccumulator);
+                             }
+                             if ([inflightDiff count] > 0) {
+                                 moveInsideCustom(inflightDiff);
+                             }
+                             if ([inflightPutAccumulator count] > 0) {
+                                 moveInsideCustom(inflightPutAccumulator);
+                             }
+                         }
+                         upgradeMeta[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_CURRENT;
                      }
-                     return rtn;
-                 }
-                 upgradeMetaCallback:^NSDictionary *(NSDictionary *upgradeMeta) {
-                     NSNumber *currentVersion = [WPUtil numberForKey:UPGRADE_META_VERSION_KEY inDictionary:upgradeMeta] ?: UPGRADE_META_VERSION_0_INITIAL;
-                     if ([currentVersion compare:UPGRADE_META_VERSION_CURRENT] != NSOrderedAscending) {
-                         // Do not alter current, or future versions we don't understand
-                         return upgradeMeta;
-                     }
-                     NSMutableDictionary *rtn = [NSMutableDictionary dictionaryWithDictionary:upgradeMeta];
-                     rtn[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_CURRENT;
-                     return rtn;
-                 }
             ];
     if (self) {
         [self init_commonWithUserId:userId];

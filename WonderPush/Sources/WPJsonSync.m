@@ -46,7 +46,7 @@
 @implementation WPJsonSync
 
 
-- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeDictCallback:(WPJsonSyncUpgradeDictCallback _Nullable)upgradeDictCallback upgradeMetaCallback:(WPJsonSyncUpgradeMetaCallback _Nullable)upgradeMetaCallback {
+- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback _Nullable)upgradeCallback {
     self = [super init];
     if (self) {
         _serverPatchCallback = serverPatchCallback;
@@ -67,18 +67,23 @@
         
         // Handle state version upgrades (syncStateVersion)
         // - 0 -> 1: No-op. 0 means no previous state.
-        // - 1 -> 2: No-op. Only the "upgradeMeta" key has been added and it it read with proper default.
+        // - 1 -> 2: No-op. Only the "upgradeMeta" key has been added and it is read with proper default.
         
         // Handle client upgrades
-        if (upgradeDictCallback != nil) {
-            _sdkState               = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _sdkState)];
-            _serverState            = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _serverState)];
-            _putAccumulator         = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _putAccumulator)];
-            _inflightDiff           = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _inflightDiff)];
-            _inflightPutAccumulator = [NSDictionary dictionaryWithDictionary:upgradeDictCallback(_upgradeMeta, _inflightPutAccumulator)];
-        }
-        if (upgradeMetaCallback != nil) {
-            _upgradeMeta = [NSDictionary dictionaryWithDictionary:upgradeMetaCallback(_upgradeMeta)];
+        if (upgradeCallback != nil) {
+            NSMutableDictionary *upgradeMeta            = [NSMutableDictionary dictionaryWithDictionary:_upgradeMeta];
+            NSMutableDictionary *sdkState               = [NSMutableDictionary dictionaryWithDictionary:_sdkState];
+            NSMutableDictionary *serverState            = [NSMutableDictionary dictionaryWithDictionary:_serverState];
+            NSMutableDictionary *putAccumulator         = [NSMutableDictionary dictionaryWithDictionary:_putAccumulator];
+            NSMutableDictionary *inflightDiff           = [NSMutableDictionary dictionaryWithDictionary:_inflightDiff];
+            NSMutableDictionary *inflightPutAccumulator = [NSMutableDictionary dictionaryWithDictionary:_inflightPutAccumulator];
+            upgradeCallback(upgradeMeta, sdkState, serverState, putAccumulator, inflightDiff, inflightPutAccumulator);
+            _upgradeMeta            = [NSDictionary dictionaryWithDictionary:upgradeMeta];
+            _sdkState               = [NSDictionary dictionaryWithDictionary:sdkState];
+            _serverState            = [NSDictionary dictionaryWithDictionary:serverState];
+            _putAccumulator         = [NSDictionary dictionaryWithDictionary:putAccumulator];
+            _inflightDiff           = [NSDictionary dictionaryWithDictionary:inflightDiff];
+            _inflightPutAccumulator = [NSDictionary dictionaryWithDictionary:inflightPutAccumulator];
         }
 
         if (_inflightPatchCall) {
