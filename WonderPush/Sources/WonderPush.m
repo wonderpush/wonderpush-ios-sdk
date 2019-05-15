@@ -799,20 +799,10 @@ static UIStoryboard *storyboard = nil;
         [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
             handler(settings.authorizationStatus != UNAuthorizationStatusNotDetermined && settings.authorizationStatus != UNAuthorizationStatusDenied);
         }];
-    } else if (@available(iOS 8.0, *)) {
-        if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            handler([[UIApplication sharedApplication] currentUserNotificationSettings].types != 0);
-#pragma clang diagnostic pop
-        } else {
-            WPLog(@"Cannot resolve currentUserNotificationSettings");
-            handler(NO);
-        }
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        handler([[UIApplication sharedApplication] enabledRemoteNotificationTypes] != 0);
+        handler([[UIApplication sharedApplication] currentUserNotificationSettings].types != 0);
 #pragma clang diagnostic pop
     }
 }
