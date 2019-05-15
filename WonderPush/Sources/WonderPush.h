@@ -240,8 +240,11 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Returns whether the notifications are enabled.
 
  Defaults to NO as notifications are opt-in on iOS.
+
+ @deprecated Use `isSubscribedToNotifications()` instead
+ @see [WonderPush isSubscribedToNotifications]
  */
-+ (BOOL) getNotificationEnabled;
++ (BOOL) getNotificationEnabled __deprecated_msg("Use isSubscribedToNotifications() instead");
 
 /**
  Activates or deactivates the push notification on the device (if the user accepts) and registers the device token with WondePush.
@@ -258,8 +261,11 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  For a start, you can systematically call it when the application starts, so that the user will be prompted directly at the first launch.
 
  @param enabled The new activation state of push notifications.
+ @deprecated Use `subscribeToNotifications()` or `unsubscribeFromNotifications()` instead.
+ @see [WonderPush subscribeToNotifications]
+ @see [WonderPush unsubscribeFromNotifications]
  */
-+ (void) setNotificationEnabled:(BOOL)enabled;
++ (void) setNotificationEnabled:(BOOL)enabled __deprecated_msg("Use subscribeToNotifications() or unsubscribeFromNotifications() instead");
 
 /**
  Returns whether the given notification is to be consumed by the WonderPush SDK.
@@ -301,8 +307,10 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 /**
  Returns the latest known custom properties attached to the current installation object stored by WonderPush.
+ @deprecated Use `getProperties()` instead.
+ @see [WonderPush getProperties]
  */
-+ (NSDictionary *) getInstallationCustomProperties;
++ (NSDictionary *) getInstallationCustomProperties __deprecated_msg("Use getProperties() instead");
 
 /**
  Updates the custom properties attached to the current installation object stored by WonderPush.
@@ -313,8 +321,11 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
  The keys should be prefixed according to the type of their values.
  You can find the details in the [Concepts > Custom fields](https://www.wonderpush.com/docs/guide/custom-fields) section of the documentation.
+
+ @deprecated Use `putProperties()` instead.
+ @see [WonderPush putProperties:]
  */
-+ (void) putInstallationCustomProperties:(NSDictionary *)customProperties;
++ (void) putInstallationCustomProperties:(NSDictionary *)customProperties __deprecated_msg("Use putProperties() instead");
 
 /**
  Send an event to be tracked to WonderPush.
@@ -343,8 +354,10 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
  The keys should be prefixed according to the type of their values.
  You can find the details in the [Concepts > Custom fields](https://www.wonderpush.com/docs/guide/custom-fields) section of the documentation.
+ @deprecated Use `trackEvent(_:attributes:)` instead.
+ @see [WonderPush trackEvent:attributes:]
  */
-+ (void) trackEvent:(NSString*)type withData:(NSDictionary *)data;
++ (void) trackEvent:(NSString*)type withData:(NSDictionary *)data __deprecated_msg("Use trackEvent(_:attributes:) instead");
 
 
 ///----------------------------------
