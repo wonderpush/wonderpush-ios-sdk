@@ -290,18 +290,18 @@
 
 - (void) sendPreferences
 {
-    [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL osNotificationEnabled) {
+    [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL osNotificationsEnabled) {
         WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
         BOOL enabled = sharedConfiguration.notificationEnabled;
-        NSString *value = enabled && osNotificationEnabled ? @"optIn" : @"optOut";
+        NSString *value = enabled && osNotificationsEnabled ? @"optIn" : @"optOut";
 
-        sharedConfiguration.cachedOsNotificationEnabled = osNotificationEnabled;
+        sharedConfiguration.cachedOsNotificationEnabled = osNotificationsEnabled;
         sharedConfiguration.cachedOsNotificationEnabledDate = [NSDate date];
 
         [[WPJsonSyncInstallation forCurrentUser] put:@{@"preferences": @{
                                                                @"subscriptionStatus": value,
                                                                @"subscribedToNotifications": enabled ? @YES : @NO,
-                                                               @"osNotificationVisible": osNotificationEnabled ? @YES : @NO,
+                                                               @"osNotificationsVisible": osNotificationsEnabled ? @YES : @NO,
                                                                }}];
     }];
 }
