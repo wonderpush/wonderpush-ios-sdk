@@ -27,7 +27,13 @@ void WPLogEnable(BOOL enabled)
 
 void WPLogv(NSString *format, va_list args)
 {
-    NSLogv([@"[WonderPush] " stringByAppendingString:format], args);
+    NSString *content = [[NSString alloc] initWithFormat:format arguments:args];
+    if ([content length] > 900) {
+        NSLog(@"[WonderPush] ↵");
+        printf("%s\n", [content UTF8String]);
+    } else {
+        NSLog(@"[WonderPush] %@", content);
+    }
 }
 
 void WPLogDebug(NSString *format, ...)
