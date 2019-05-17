@@ -162,7 +162,11 @@ static NSMutableDictionary *instancePerUserId = nil;
                }
          schedulePatchCallCallback:^{
              [self scheduleServerPatchCallCallback];
-         }];
+         }
+                   upgradeCallback:^(NSMutableDictionary *upgradeMeta, NSMutableDictionary *sdkState, NSMutableDictionary *serverState, NSMutableDictionary *putAccumulator, NSMutableDictionary *inflightDiff, NSMutableDictionary *inflightPutAccumulator) {
+                       upgradeMeta[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_CURRENT;
+                   }
+            ];
     if (self) {
         [self init_commonWithUserId:userId];
     }
