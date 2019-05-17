@@ -132,7 +132,7 @@
 
 - (NSDictionary *)getProperties {
     [self log:@"getProperties"];
-    return nil;
+    return @{};
 }
 
 
