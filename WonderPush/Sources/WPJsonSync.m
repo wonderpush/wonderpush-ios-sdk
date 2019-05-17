@@ -100,6 +100,7 @@
         _saveCallback = saveCallback;
         _schedulePatchCallCallback = schedulePatchCallCallback;
 
+        _upgradeMeta = @{};
         _sdkState = [WPJsonUtil stripNulls:sdkState ?: @{}];
         _serverState = [WPJsonUtil stripNulls:serverState ?: @{}];
         _putAccumulator = [WPJsonUtil diff:_serverState with:_sdkState];
