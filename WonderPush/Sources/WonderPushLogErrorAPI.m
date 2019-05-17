@@ -160,6 +160,28 @@
     [self log:@"unsubscribeFromNotifications"];
 }
 
+- (void) addTag:(NSString *)tag {
+    [self log:@"addTag"];
+}
+
+- (void) removeTag:(NSString *)tag {
+    [self log:@"removeTag"];
+}
+
+- (void) removeAllTags {
+    [self log:@"removeAllTag"];
+}
+
+- (NSOrderedSet<NSString *> *) getTags {
+    [self log:@"getTags"];
+    return [NSOrderedSet new];
+}
+
+- (bool) hasTag:(NSString *)tag {
+    [self log:@"hasTag"];
+    return NO;
+}
+
 @end
 
 @implementation WonderPushNotInitializedAPI

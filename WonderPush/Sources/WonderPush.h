@@ -359,6 +359,39 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) trackEvent:(NSString*)type withData:(NSDictionary *)data __deprecated_msg("Use trackEvent(_:attributes:) instead");
 
+/**
+ * Add one or more tags to the current installation object stored by WonderPush.
+ *
+ * @param tag The tags to add to the installation.
+ */
++ (void) addTag:(NSString *)tag;
+
+/**
+ * Remove one or more tags from the current installation object stored by WonderPush.
+ *
+ * @param tag The tags to remove from the installation.
+ */
++ (void) removeTag:(NSString *)tag;
+
+/**
+ * Remove all tags from the current installation object stored by WonderPush.
+ */
++ (void) removeAllTags;
+
+/**
+ * Remove all tags from the current installation object stored by WonderPush.
+ *
+ * @return A copy of the set of tags attached to the installation. Never returns {@code nil}.
+ */
++ (NSOrderedSet<NSString *> *) getTags;
+
+/**
+ * Test whether the current installation has the given tag attached to it.
+ *
+ * @param tag The tag to test.
+ * @return {@code true} if the given tag is attached to the installation, {@code false} otherwise.
+ */
++ (bool) hasTag:(NSString *)tag;
 
 ///----------------------------------
 /// @name Privacy and data management

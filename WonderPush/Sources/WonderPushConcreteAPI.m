@@ -417,5 +417,48 @@
     return [self setNotificationEnabled:NO];
 }
 
+- (void) addTag:(NSString *)tag {
+    if (tag == nil || [tag length] == 0) return;
+    NSMutableOrderedSet<NSString *> *tags = [NSMutableOrderedSet orderedSetWithOrderedSet:[self getTags]];
+    [tags addObject:tag];
+    [self putProperties:@{@"tags":[tags array]}];
+}
+
+- (void) removeTag:(NSString *)tag {
+    if (tag == nil) return;
+    NSMutableOrderedSet<NSString *> *tags = [NSMutableOrderedSet orderedSetWithOrderedSet:[self getTags]];
+    [tags removeObject:tag];
+    [self putProperties:@{@"tags":[tags array]}];
+}
+
+- (void) removeAllTags {
+    [self putProperties:@{@"tags": [NSNull null]}];
+}
+
+- (NSOrderedSet<NSString *> *) getTags {
+    NSDictionary *custom = [self getProperties];
+    NSArray *tags = [WPUtil arrayForKey:@"tags" inDictionary:custom];
+    if (tags == nil) {
+        // Recover from a potential scalar string value
+        if ([custom[@"tags"] isKindOfClass:[NSString class]]) {
+            tags = @[custom[@"tags"]];
+        } else {
+            tags = @[];
+        }
+    }
+
+    NSMutableOrderedSet<NSString *> *rtn = [NSMutableOrderedSet new]; // use a sorted implementation to avoid useless diffs later on
+    for (id tag in tags) {
+        if (![tag isKindOfClass:[NSString class]] || [tag length] == 0) continue;
+        [rtn addObject:tag];
+    }
+    return [NSOrderedSet orderedSetWithOrderedSet:rtn];
+}
+
+- (bool) hasTag:(NSString *)tag {
+    if (tag == nil) return NO;
+    return [[self getTags] containsObject:tag];
+}
+
 
 @end

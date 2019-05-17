@@ -1405,4 +1405,29 @@ static UIStoryboard *storyboard = nil;
     [wonderPushAPI downloadAllData:completion];
 }
 
++ (void) addTag:(NSString *)tag
+{
+    [wonderPushAPI addTag:tag];
+}
+
++ (void) removeTag:(NSString *)tag
+{
+    [wonderPushAPI removeTag:tag];
+}
+
++ (void) removeAllTags
+{
+    [wonderPushAPI removeAllTags];
+}
+
++ (NSOrderedSet<NSString *> *) getTags
+{
+    return [wonderPushAPI getTags];
+}
+
++ (bool) hasTag:(NSString *)tag
+{
+    return [wonderPushAPI hasTag:tag];
+}
+
 @end

@@ -17,6 +17,11 @@
 - (void) trackEvent:(NSString *)eventType attributes:(NSDictionary *)attributes;
 - (void) putProperties:(NSDictionary *)properties;
 - (NSDictionary *) getProperties;
+- (void) addTag:(NSString *)tag;
+- (void) removeTag:(NSString *)tag;
+- (void) removeAllTags;
+- (NSOrderedSet<NSString *> *) getTags;
+- (bool) hasTag:(NSString *)tag;
 - (void) clearEventsHistory;
 - (void) clearPreferences;
 - (void) clearAllData;
