@@ -18,7 +18,9 @@
 - (void) putProperties:(NSDictionary *)properties;
 - (NSDictionary *) getProperties;
 - (void) addTag:(NSString *)tag;
+- (void) addTags:(NSArray<NSString *> *)tags;
 - (void) removeTag:(NSString *)tag;
+- (void) removeTags:(NSArray<NSString *> *)tags;
 - (void) removeAllTags;
 - (NSOrderedSet<NSString *> *) getTags;
 - (bool) hasTag:(NSString *)tag;

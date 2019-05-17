@@ -1410,9 +1410,19 @@ static UIStoryboard *storyboard = nil;
     [wonderPushAPI addTag:tag];
 }
 
++ (void) addTags:(NSArray<NSString *> *)tags
+{
+    [wonderPushAPI addTags:tags];
+}
+
 + (void) removeTag:(NSString *)tag
 {
     [wonderPushAPI removeTag:tag];
+}
+
++ (void) removeTags:(NSArray<NSString *> *)tags
+{
+    [wonderPushAPI removeTags:tags];
 }
 
 + (void) removeAllTags

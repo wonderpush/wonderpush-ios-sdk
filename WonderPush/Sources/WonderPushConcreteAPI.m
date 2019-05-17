@@ -418,16 +418,30 @@
 }
 
 - (void) addTag:(NSString *)tag {
-    if (tag == nil || [tag length] == 0) return;
+    [self addTags:@[tag]];
+}
+
+- (void) addTags:(NSArray<NSString *> *)newTags {
+    if (newTags == nil || [newTags count] == 0) return;
     NSMutableOrderedSet<NSString *> *tags = [NSMutableOrderedSet orderedSetWithOrderedSet:[self getTags]];
-    [tags addObject:tag];
+    for (NSString *tag in newTags) {
+        if (![tag isKindOfClass:[NSString class]] || [tag length] == 0) continue;
+        [tags addObject:tag];
+    }
     [self putProperties:@{@"tags":[tags array]}];
 }
 
 - (void) removeTag:(NSString *)tag {
-    if (tag == nil) return;
+    [self removeTags:@[tag]];
+}
+
+- (void) removeTags:(NSArray<NSString *> *)oldTags {
+    if (oldTags == nil || [oldTags count] == 0) return;
     NSMutableOrderedSet<NSString *> *tags = [NSMutableOrderedSet orderedSetWithOrderedSet:[self getTags]];
-    [tags removeObject:tag];
+    for (NSString *tag in oldTags) {
+        if (![tag isKindOfClass:[NSString class]]) continue;
+        [tags removeObject:tag];
+    }
     [self putProperties:@{@"tags":[tags array]}];
 }
 

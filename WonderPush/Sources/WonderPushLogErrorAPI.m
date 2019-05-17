@@ -164,8 +164,16 @@
     [self log:@"addTag"];
 }
 
+- (void) addTags:(NSArray<NSString *> *)tags {
+    [self log:@"addTags"];
+}
+
 - (void) removeTag:(NSString *)tag {
     [self log:@"removeTag"];
+}
+
+- (void) removeTags:(NSArray<NSString *> *)tags {
+    [self log:@"removeTags"];
 }
 
 - (void) removeAllTags {

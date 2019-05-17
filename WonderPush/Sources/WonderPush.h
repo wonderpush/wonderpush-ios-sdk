@@ -360,18 +360,32 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (void) trackEvent:(NSString*)type withData:(NSDictionary *)data __deprecated_msg("Use trackEvent(_:attributes:) instead");
 
 /**
- * Add one or more tags to the current installation object stored by WonderPush.
+ * Add a tag to the current installation object stored by WonderPush.
  *
- * @param tag The tags to add to the installation.
+ * @param tag The tag to add to the installation.
  */
 + (void) addTag:(NSString *)tag;
 
 /**
- * Remove one or more tags from the current installation object stored by WonderPush.
+ * Add one or more tags to the current installation object stored by WonderPush.
  *
- * @param tag The tags to remove from the installation.
+ * @param tags The tags to add to the installation.
+ */
++ (void) addTags:(NSArray<NSString *> *)tags;
+
+/**
+ * Remove a tag from the current installation object stored by WonderPush.
+ *
+ * @param tag The tag to remove from the installation.
  */
 + (void) removeTag:(NSString *)tag;
+
+/**
+ * Remove one or more tags from the current installation object stored by WonderPush.
+ *
+ * @param tags The tags to remove from the installation.
+ */
++ (void) removeTags:(NSArray<NSString *> *)tags;
 
 /**
  * Remove all tags from the current installation object stored by WonderPush.
