@@ -422,7 +422,11 @@ static UIStoryboard *storyboard = nil;
     if ([WPAppDelegate isAlreadyRunning]) return;
     [WonderPush handleNotification:userInfo];
     if (completionHandler) {
-        completionHandler(UIBackgroundFetchResultNewData);
+        WPLogDebug(@"Will call didReceiveRemoveNotification's fetchCompletionHandler");
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            WPLogDebug(@"Calling didReceiveRemoveNotification's fetchCompletionHandler");
+            completionHandler(UIBackgroundFetchResultNewData);
+        });
     }
 }
 
