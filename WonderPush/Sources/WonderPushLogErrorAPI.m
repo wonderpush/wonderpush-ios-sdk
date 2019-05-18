@@ -136,6 +136,38 @@
 }
 
 
+- (void) setProperty:(NSString *)field value:(id)value {
+    [self log:@"setProperty"];
+}
+
+
+- (void) unsetProperty:(NSString *)field {
+    [self log:@"unsetProperty"];
+}
+
+
+- (void) addProperty:(NSString *)field value:(id)value {
+    [self log:@"addProperty"];
+}
+
+
+- (void) removeProperty:(NSString *)field value:(id)value {
+    [self log:@"removeProperty"];
+}
+
+
+- (id) getPropertyValue:(NSString *)field {
+    [self log:@"getPropertyValue"];
+    return [NSNull null];
+}
+
+
+- (NSArray *) getPropertyValues:(NSString *)field {
+    [self log:@"getPropertyValues"];
+    return [NSArray new];
+}
+
+
 - (BOOL)isSubscribedToNotifications {
     return NO;
 }

@@ -407,6 +407,69 @@
 }
 
 
+- (void) setProperty:(NSString *)field value:(id)value {
+    if (field == nil) return;
+    [self putProperties:@{field: value ?: [NSNull null]}];
+}
+
+
+- (void) unsetProperty:(NSString *)field {
+    if (field == nil) return;
+    [self putProperties:@{field: [NSNull null]}];
+}
+
+
+- (void) addProperty:(NSString *)field value:(id)value {
+    if (field == nil || value == nil || value == [NSNull null]) return;
+    // The contract is to actually append new values only, not shuffle or deduplicate everything,
+    // hence the array and the set.
+    NSMutableArray *values = [NSMutableArray arrayWithArray:[self getPropertyValues:field]];
+    NSMutableSet *set = [NSMutableSet setWithArray:values];
+    NSArray *inputs = [value isKindOfClass:[NSArray class]] ? value : @[value];
+    for (id input in inputs) {
+        if (input == nil || input == [NSNull null]) continue;
+        if ([set containsObject:input]) continue;
+        [values addObject:input];
+        [set addObject:input];
+    }
+    [self setProperty:field value:values];
+}
+
+
+- (void) removeProperty:(NSString *)field value:(id)value {
+    if (field == nil || value == nil) return; // Note: We accept removing NSNull.
+    // The contract is to actually remove every listed values (all duplicated appearences), not shuffle or deduplicate everything else
+    NSMutableArray *values = [NSMutableArray arrayWithArray:[self getPropertyValues:field]];
+    NSArray *inputs = [value isKindOfClass:[NSArray class]] ? value : @[value];
+    [values removeObjectsInArray:inputs];
+    [self setProperty:field value:values];
+}
+
+
+- (id) getPropertyValue:(NSString *)field {
+    if (field == nil) return [NSNull null];
+    NSDictionary *properties = [self getProperties];
+    id rtn = properties[field];
+    if ([rtn isKindOfClass:[NSArray class]]) {
+        rtn = [rtn count] > 0 ? [rtn objectAtIndex:0] : nil;
+    }
+    if (rtn == nil) rtn = [NSNull null];
+    return rtn;
+}
+
+
+- (NSArray *) getPropertyValues:(NSString *)field {
+    if (field == nil) return @[];
+    NSDictionary *properties = [self getProperties];
+    id rtn = properties[field];
+    if (rtn == nil || rtn == [NSNull null]) rtn = @[];
+    if (![rtn isKindOfClass:[NSArray class]]) {
+        rtn = @[rtn];
+    }
+    return rtn;
+}
+
+
 - (BOOL)isSubscribedToNotifications {
     return [self getNotificationEnabled];
 }

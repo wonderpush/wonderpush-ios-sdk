@@ -17,6 +17,12 @@
 - (void) trackEvent:(NSString *)eventType attributes:(NSDictionary *)attributes;
 - (void) putProperties:(NSDictionary *)properties;
 - (NSDictionary *) getProperties;
+- (void) setProperty:(NSString *)field value:(id)value;
+- (void) unsetProperty:(NSString *)field;
+- (void) addProperty:(NSString *)field value:(id)value;
+- (void) removeProperty:(NSString *)field value:(id)value;
+- (id) getPropertyValue:(NSString *)field;
+- (NSArray *) getPropertyValues:(NSString *)field;
 - (void) addTag:(NSString *)tag;
 - (void) addTags:(NSArray<NSString *> *)tags;
 - (void) removeTag:(NSString *)tag;

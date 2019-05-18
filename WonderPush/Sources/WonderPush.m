@@ -1392,6 +1392,37 @@ static UIStoryboard *storyboard = nil;
 {
     return [wonderPushAPI getProperties];
 }
+
++ (void) setProperty:(NSString *)field value:(id)value
+{
+    [wonderPushAPI setProperty:field value:value];
+}
+
++ (void) unsetProperty:(NSString *)field;
+{
+    [wonderPushAPI unsetProperty:field];
+}
+
++ (void) addProperty:(NSString *)field value:(id)value;
+{
+    [wonderPushAPI addProperty:field value:value];
+}
+
++ (void) removeProperty:(NSString *)field value:(id)value;
+{
+    [wonderPushAPI removeProperty:field value:value];
+}
+
++ (id) getPropertyValue:(NSString *)field;
+{
+    return [wonderPushAPI getPropertyValue:field];
+}
+
++ (NSArray *) getPropertyValues:(NSString *)field;
+{
+    return [wonderPushAPI getPropertyValues:field];
+}
+
 + (void) clearEventsHistory
 {
     return [wonderPushAPI clearEventsHistory];

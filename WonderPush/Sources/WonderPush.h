@@ -306,6 +306,68 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (NSDictionary *) getProperties;
 
 /**
+ Sets the value to a given property attached to the current installation object stored by WonderPush.
+ The previous value is replaced entirely.
+ The value can be an NSString, NSNumber, NSDictionary, NSArray, or NSNull (which has the same effect as `<unsetProperty:>`).
+
+ @param field The name of the property to set
+ @param value The value to be set, can be an NSArray
+ */
++ (void) setProperty:(NSString *)field value:(id)value;
+
+/**
+ Removes the value of a given property attached to the current installation object stored by WonderPush.
+ The previous value is replaced with NSNull.
+
+ @param field The name of the property to set
+ */
++ (void) unsetProperty:(NSString *)field;
+
+/**
+ Adds the value to a given property attached to the current installation object stored by WonderPush.
+ The stored value is made an array if not already one.
+ If the given value is an NSArray, all its values are added.
+ If a value is already present in the stored value, it won't be added.
+
+ @param field The name of the property to add values to
+ @param value The value(s) to be added, can be an NSArray
+ */
++ (void) addProperty:(NSString *)field value:(id)value;
+
+/**
+ Removes the value from a given property attached to the current installation object stored by WonderPush.
+ The stored value is made an array if not already one.
+ If the given value is an NSArray, all its values are removed.
+ If a value is present multiple times in the stored value, they will all be removed.
+
+ @param field The name of the property to remove values from
+ @param value The value(s) to be removed, can be an NSArray
+ */
++ (void) removeProperty:(NSString *)field value:(id)value;
+
+/**
+ Returns the value of a given property attached to the current installation object stored by WonderPush.
+ If the property stores an array, only the first value is returned.
+ This way you don't have to deal with potential arrays if that property is not supposed to hold one.
+ Returns NSNull instead of nil if the property is absent or has an empty array value.
+
+ @param field The name of the property to remove values from
+ @return NSNull or a single value stored in the property, never an NSArray or nil
+ */
++ (id) getPropertyValue:(NSString *)field;
+
+/**
+ Returns the value of a given property attached to the current installation object stored by WonderPush.
+ If the property stores an array, only the first value is returned.
+ This way you don't have to deal with potential arrays if that property is not supposed to hold one.
+ Returns NSNull instead of nil if the property is absent or has an empty array value.
+
+ @param field The name of the property to remove values from
+ @return A possibly empty NSArray of the values stored in the property, but never NSNull or nil
+ */
++ (NSArray *) getPropertyValues:(NSString *)field;
+
+/**
  Returns the latest known custom properties attached to the current installation object stored by WonderPush.
  @deprecated Use `getProperties()` instead.
  @see [WonderPush getProperties]
