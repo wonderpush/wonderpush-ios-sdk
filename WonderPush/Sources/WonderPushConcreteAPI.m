@@ -114,6 +114,20 @@
             }
         }
 
+    } else if ([WP_ACTION_ADD_TAG isEqualToString:type]) {
+
+        NSArray *tags = [WPUtil arrayForKey:@"tags" inDictionary:action];
+        [WonderPush addTags:tags];
+
+    } else if ([WP_ACTION_REMOVE_TAG isEqualToString:type]) {
+
+        NSArray *tags = [WPUtil arrayForKey:@"tags" inDictionary:action];
+        [WonderPush removeTags:tags];
+
+    } else if ([WP_ACTION_REMOVE_ALL_TAGS isEqualToString:type]) {
+
+        [WonderPush removeAllTags];
+
     } else if ([WP_ACTION_RESYNC_INSTALLATION isEqualToString:type]) {
         
         void (^cont)(NSDictionary *action) = ^(NSDictionary *action){

@@ -36,6 +36,21 @@
 #define WP_ACTION_RESYNC_INSTALLATION @"resyncInstallation"
 
 /**
+ Button of type add tag
+ */
+#define WP_ACTION_ADD_TAG @"addTag"
+
+/**
+ Button of type remove tag
+ */
+#define WP_ACTION_REMOVE_TAG @"removeTag"
+
+/**
+ Button of type remove all tags
+ */
+#define WP_ACTION_REMOVE_ALL_TAGS @"removeAllTags"
+
+/**
  Dump installation state as an event
  */
 #define WP_ACTION__DUMP_STATE @"_dumpState"
