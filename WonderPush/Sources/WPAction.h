@@ -31,6 +31,16 @@
 #define WP_ACTION_UPDATE_INSTALLATION @"updateInstallation"
 
 /**
+ Button of type add property
+ */
+#define WP_ACTION_ADD_PROPERTY @"addProperty"
+
+/**
+ Button of type remove property
+ */
+#define WP_ACTION_REMOVE_PROPERTY @"removeProperty"
+
+/**
  Resynchronize installation
  */
 #define WP_ACTION_RESYNC_INSTALLATION @"resyncInstallation"

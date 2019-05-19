@@ -114,6 +114,24 @@
             }
         }
 
+    } else if ([WP_ACTION_ADD_PROPERTY isEqualToString:type]) {
+
+        NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
+        if (custom) {
+            for (id field in custom) {
+                [WonderPush addProperty:field value:custom[field]];
+            }
+        }
+
+    } else if ([WP_ACTION_REMOVE_PROPERTY isEqualToString:type]) {
+
+        NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
+        if (custom) {
+            for (id field in custom) {
+                [WonderPush removeProperty:field value:custom[field]];
+            }
+        }
+
     } else if ([WP_ACTION_ADD_TAG isEqualToString:type]) {
 
         NSArray *tags = [WPUtil arrayForKey:@"tags" inDictionary:action];
