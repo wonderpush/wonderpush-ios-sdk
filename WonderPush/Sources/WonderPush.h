@@ -357,10 +357,11 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (id) getPropertyValue:(NSString *)field;
 
 /**
- Returns the value of a given property attached to the current installation object stored by WonderPush.
- If the property stores an array, only the first value is returned.
- This way you don't have to deal with potential arrays if that property is not supposed to hold one.
- Returns NSNull instead of nil if the property is absent or has an empty array value.
+ Returns an array of the values of a given property attached to the current installation object stored by WonderPush.
+ If the property does not store an array, an array is returned nevertheless.
+ This way you don't have to deal with potential scalar values if that property is supposed to hold an array.
+ Returns an empty array instead of nil or NSNull if the property is absent or is NSNull.
+ Returns an array wrapping any scalar value held by the property.
 
  @param field The name of the property to remove values from
  @return A possibly empty NSArray of the values stored in the property, but never NSNull or nil
