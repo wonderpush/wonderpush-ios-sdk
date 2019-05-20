@@ -370,7 +370,14 @@
 
 
 - (NSDictionary *)getInstallationCustomProperties {
-    return [([WPUtil dictionaryForKey:@"custom" inDictionary:[WPJsonSyncInstallation forCurrentUser].sdkState] ?: @{}) copy];
+    NSDictionary *customProperties = [([WPUtil dictionaryForKey:@"custom" inDictionary:[WPJsonSyncInstallation forCurrentUser].sdkState] ?: @{}) copy];
+    NSMutableDictionary *rtn = [NSMutableDictionary new];
+    for (id key in customProperties) {
+        if ([key isKindOfClass:[NSString class]] && [(NSString *)key containsString:@"_"]) {
+            rtn[key] = customProperties[key];
+        }
+    }
+    return [NSDictionary dictionaryWithDictionary:rtn];
 }
 
 
@@ -387,7 +394,15 @@
 
 
 - (void)putInstallationCustomProperties:(NSDictionary *)customProperties {
-    [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":customProperties ?: @{}}];
+    NSMutableDictionary *diff = [NSMutableDictionary new];
+    for (id key in customProperties ?: @{}) {
+        if ([key isKindOfClass:[NSString class]] && [(NSString *)key containsString:@"_"]) {
+            diff[key] = customProperties[key];
+        } else {
+            WPLog(@"Dropping an installation property with no prefix: %@", key);
+        }
+    }
+    [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":diff}];
 }
 
 
@@ -523,7 +538,7 @@
         if (![tag isKindOfClass:[NSString class]] || [tag length] == 0) continue;
         [tags addObject:tag];
     }
-    [self putProperties:@{@"tags":[tags array]}];
+    [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":@{@"tags":[tags array]}}];
 }
 
 - (void) removeTag:(NSString *)tag {
@@ -537,15 +552,15 @@
         if (![tag isKindOfClass:[NSString class]]) continue;
         [tags removeObject:tag];
     }
-    [self putProperties:@{@"tags":[tags array]}];
+    [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":@{@"tags":[tags array]}}];
 }
 
 - (void) removeAllTags {
-    [self putProperties:@{@"tags": [NSNull null]}];
+    [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":@{@"tags":[NSNull null]}}];
 }
 
 - (NSOrderedSet<NSString *> *) getTags {
-    NSDictionary *custom = [self getProperties];
+    NSDictionary *custom = [([WPUtil dictionaryForKey:@"custom" inDictionary:[WPJsonSyncInstallation forCurrentUser].sdkState] ?: @{}) copy];
     NSArray *tags = [WPUtil arrayForKey:@"tags" inDictionary:custom];
     if (tags == nil) {
         // Recover from a potential scalar string value
