@@ -573,10 +573,6 @@ static UIStoryboard *storyboard = nil;
 
     if (![self isNotificationForWonderPush:userInfo]) {
         WPLogDebug(@"Notification is not for WonderPush");
-        if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-            WPLogDebug(@"Defaulting to not showing the notification");
-            presentationOptions = UNNotificationPresentationOptionNone;
-        }
         completionHandler(presentationOptions);
         return;
     }
