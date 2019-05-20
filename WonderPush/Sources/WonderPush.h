@@ -307,8 +307,9 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 /**
  Sets the value to a given property attached to the current installation object stored by WonderPush.
+
  The previous value is replaced entirely.
- The value can be an NSString, NSNumber, NSDictionary, NSArray, or NSNull (which has the same effect as `<unsetProperty:>`).
+ The value can be an `NSString`, `NSNumber`, `NSDictionary`, `NSArray`, or `NSNull` (which has the same effect as `<unsetProperty:>`).
 
  @param field The name of the property to set
  @param value The value to be set, can be an NSArray
@@ -317,7 +318,8 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 /**
  Removes the value of a given property attached to the current installation object stored by WonderPush.
- The previous value is replaced with NSNull.
+
+ The previous value is replaced with `NSNull`.
 
  @param field The name of the property to set
  */
@@ -325,8 +327,9 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 /**
  Adds the value to a given property attached to the current installation object stored by WonderPush.
+
  The stored value is made an array if not already one.
- If the given value is an NSArray, all its values are added.
+ If the given value is an `NSArray`, all its values are added.
  If a value is already present in the stored value, it won't be added.
 
  @param field The name of the property to add values to
@@ -336,8 +339,9 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 /**
  Removes the value from a given property attached to the current installation object stored by WonderPush.
+
  The stored value is made an array if not already one.
- If the given value is an NSArray, all its values are removed.
+ If the given value is an `NSArray`, all its values are removed.
  If a value is present multiple times in the stored value, they will all be removed.
 
  @param field The name of the property to remove values from
@@ -347,24 +351,26 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 /**
  Returns the value of a given property attached to the current installation object stored by WonderPush.
+
  If the property stores an array, only the first value is returned.
  This way you don't have to deal with potential arrays if that property is not supposed to hold one.
- Returns NSNull instead of nil if the property is absent or has an empty array value.
+ Returns `NSNull` instead of `nil` if the property is absent or has an empty array value.
 
  @param field The name of the property to remove values from
- @return NSNull or a single value stored in the property, never an NSArray or nil
+ @return `NSNull` or a single value stored in the property, never an `NSArray` or `nil`
  */
 + (id) getPropertyValue:(NSString *)field;
 
 /**
  Returns an array of the values of a given property attached to the current installation object stored by WonderPush.
+
  If the property does not store an array, an array is returned nevertheless.
  This way you don't have to deal with potential scalar values if that property is supposed to hold an array.
- Returns an empty array instead of nil or NSNull if the property is absent or is NSNull.
+ Returns an empty array instead of `nil` or `NSNull` if the property is absent or is `NSNull`.
  Returns an array wrapping any scalar value held by the property.
 
  @param field The name of the property to remove values from
- @return A possibly empty NSArray of the values stored in the property, but never NSNull or nil
+ @return A possibly empty `NSArray` of the values stored in the property, but never `NSNull` or `nil`
  */
 + (NSArray *) getPropertyValues:(NSString *)field;
 
@@ -458,7 +464,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  * Remove all tags from the current installation object stored by WonderPush.
  *
- * @return A copy of the set of tags attached to the installation. Never returns {@code nil}.
+ * @return A copy of the set of tags attached to the installation. Never returns `nil`.
  */
 + (NSOrderedSet<NSString *> *) getTags;
 
@@ -466,7 +472,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  * Test whether the current installation has the given tag attached to it.
  *
  * @param tag The tag to test.
- * @return {@code true} if the given tag is attached to the installation, {@code false} otherwise.
+ * @return `YES` if the given tag is attached to the installation, `NO` otherwise.
  */
 + (bool) hasTag:(NSString *)tag;
 
