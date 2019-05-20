@@ -383,7 +383,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param customProperties The partial object containing only the custom properties to update.
 
  The keys should be prefixed according to the type of their values.
- You can find the details in the [Concepts > Custom fields](https://www.wonderpush.com/docs/guide/custom-fields) section of the documentation.
+ You can find the details in the [Segmentation > Properties](https://docs.wonderpush.com/docs/properties) section of the documentation.
 
  @deprecated Use `putProperties()` instead.
  @see [WonderPush putProperties:]
@@ -416,7 +416,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Prefer using a few custom properties over a plethora of event type variants.
 
  The keys should be prefixed according to the type of their values.
- You can find the details in the [Concepts > Custom fields](https://www.wonderpush.com/docs/guide/custom-fields) section of the documentation.
+ You can find the details in the [Segmentation > Properties](https://docs.wonderpush.com/docs/properties) section of the documentation.
  @deprecated Use `trackEvent(_:attributes:)` instead.
  @see [WonderPush trackEvent:attributes:]
  */

@@ -5,7 +5,7 @@
 This an iOS SDK.
 
 Quick links:
-* [**Getting started guide**](https://www.wonderpush.com/docs/ios/getting-started)
+* [**Getting started guide**](https://docs.wonderpush.com/docs/ios-quickstart)
 * [**Latest SDK documentation**](https://wonderpush.github.io/wonderpush-ios-sdk/)
-* [**Latest API reference**](https://wonderpush.github.io/wonderpush-ios-sdk/api.html)
+* [**Latest API reference**](https://docs.wonderpush.com/docs/ios-sdk)
 * [**Demo application**](https://github.com/wonderpush/wonderpush-ios-demo)

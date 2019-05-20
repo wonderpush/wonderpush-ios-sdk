@@ -4,7 +4,7 @@
 
 Push notifications allow your users to opt-in to timely updates from your application and allow you to effectively re-engage them with customized, engaging content, even when your application is not currently foreground.
 
-Read the [getting started guide](https://www.wonderpush.com/docs/ios/getting-started), it shows you how to get push messaging up and running on your application in minutes.
+Read the [getting started guide](https://docs.wonderpush.com/docs/ios-quickstart), it shows you how to get push messaging up and running on your application in minutes.
 
 # Demo application
 
