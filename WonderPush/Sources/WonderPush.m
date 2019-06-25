@@ -49,6 +49,7 @@ __weak static id<WonderPushDelegate> _delegate = nil;
 
 @implementation WonderPush
 
+static NSString *_integrator = nil;
 static NSString *_currentLanguageCode = nil;
 static NSArray *validLanguageCodes = nil;
 static BOOL _requiresUserConsent = NO;
@@ -633,6 +634,15 @@ static UIStoryboard *storyboard = nil;
     return [wonderPushAPI accessToken];
 }
 
++ (void) setIntegrator:(NSString *)integrator
+{
+    _integrator = integrator;
+}
+
++ (NSString *)getIntegrator
+{
+    return _integrator;
+}
 
 #pragma mark - Installation data and events
 

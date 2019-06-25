@@ -216,6 +216,14 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (NSString *) accessToken;
 
+/**
+ Sets the framework, library or wrapper used for integration.
+
+ This method should not be used by the developer directly,
+ only by components that facilitates the native SDK integration.
+ @param integrator Expected format is `"some-component-1.2.3"`
+ */
++ (void) setIntegrator:(NSString *)integrator;
 
 ///---------------------------------
 /// @name Push Notification handling

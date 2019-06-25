@@ -276,6 +276,7 @@
                             };
     NSDictionary *application = @{@"version" : [WPInstallationCoreProperties getVersionString] ?: null,
                                   @"sdkVersion": [WPInstallationCoreProperties getSDKVersionNumber] ?: null,
+                                  @"integrator": [WonderPush getIntegrator] ?: null,
                                   @"apple": apple ?: null
                                   };
     

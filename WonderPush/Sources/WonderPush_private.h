@@ -106,6 +106,8 @@
 
 + (void) setLanguageCode:(NSString *)languageCode;
 
++ (NSString *) getIntegrator;
+
 + (NSBundle *) resourceBundle;
 /**
  Method returning the rechability state of WonderPush on this phone
