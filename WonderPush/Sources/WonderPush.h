@@ -621,6 +621,8 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) applicationDidEnterBackground:(UIApplication *)application;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 /**
  Forwards an application delegate to the SDK.
 
@@ -628,6 +630,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param notificationSettings Same parameter as in the forwarded delegate method.
  */
 + (void) application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
+#pragma clang diagnostic pop
 
 
 ///-----------------------------------------------------------
