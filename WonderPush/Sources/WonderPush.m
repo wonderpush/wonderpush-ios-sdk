@@ -1366,7 +1366,7 @@ static UIStoryboard *storyboard = nil;
             completionHandlerCalled = YES;
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (![[UIApplication sharedApplication] canOpenURL:url]) return;
+            if (url == nil || ![[UIApplication sharedApplication] canOpenURL:url]) return;
             if (@available(iOS 10.0, *)) {
                 [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
             } else {
