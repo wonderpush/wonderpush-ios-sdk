@@ -145,7 +145,7 @@ Called when receiving the full state of the installation
 /**
  Opens the given URL
  */
-+ (BOOL) openURL:(NSURL *)URL;
++ (void) openURL:(NSURL *)url;
 
 ///---------------------
 /// @name REST API

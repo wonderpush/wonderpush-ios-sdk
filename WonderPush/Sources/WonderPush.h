@@ -72,9 +72,21 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Lets you overwrite URLs that WonderPush will open using `UIApplication:openURL:`.
  @param URL The URL that WonderPush is about to open.
  @return A URL to open, or nil to avoid opening anything. Just return the value of the URL parameter to use the default WonderPush behavior.
+ @deprecated If `wonderPushWillOpenURL:withCompletionHandler:` is implemented, it will be called instead of this one.
  */
 @optional
-- ( NSURL * ) wonderPushWillOpenURL:( NSURL * )URL;
+- ( NSURL * ) wonderPushWillOpenURL:( NSURL * )URL __deprecated_msg("Implement wonderPushWillOpenURL:withCompletionHandler: instead");
+
+/**
+ Lets you overwrite URLs that WonderPush will open using `UIApplication:openURL:`.
+ This version let's you do some asynchronous processing before returning.
+ @param URL The URL that WonderPush is about to open.
+ @param completionHandler The callback to call with the new URL to open.
+ @return A URL to open, or nil to avoid opening anything. Just return the value of the URL parameter to use the default WonderPush behavior.
+ */
+@optional
+- (void) wonderPushWillOpenURL:( NSURL * )url withCompletionHandler:(void (^)(NSURL *url))completionHandler;
+
 @end
 
 /**

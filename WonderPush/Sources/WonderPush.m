@@ -1355,22 +1355,54 @@ static UIStoryboard *storyboard = nil;
 }
 
 #pragma mark - Open URL
-+ (BOOL) openURL:(NSURL *)URL
++ (void) openURL:(NSURL *)url
 {
-    NSURL *URLToOpen = URL;
-    if (_delegate && [_delegate respondsToSelector:@selector(wonderPushWillOpenURL:)]) {
-        URLToOpen = [_delegate wonderPushWillOpenURL:URLToOpen];
-    }
-    if (!URLToOpen) return NO;
-    if (![[UIApplication sharedApplication] canOpenURL:URLToOpen]) return NO;
-    if (@available(iOS 10.0, *)) {
-        [[UIApplication sharedApplication] openURL:URLToOpen options:@{} completionHandler:nil];
-        return YES;
-    } else {
+    __block bool completionHandlerCalled = NO;
+    void (^completionHandler)(NSURL *url) = ^(NSURL *url){
+        WPLogDebug(@"openURL completion handler called with: %@", url);
+        if (completionHandlerCalled) {
+            return;
+        } else {
+            completionHandlerCalled = YES;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (![[UIApplication sharedApplication] canOpenURL:url]) return;
+            if (@available(iOS 10.0, *)) {
+                [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+            } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        return [[UIApplication sharedApplication] openURL:URLToOpen];
+                [[UIApplication sharedApplication] openURL:url];
 #pragma clang diagnostic pop
+            }
+        });
+    };
+
+    if (!_delegate) {
+        WPLogDebug(@"No delegate, calling completion handler in main thread");
+        completionHandler(url);
+    } else {
+        if ([_delegate respondsToSelector:@selector(wonderPushWillOpenURL:withCompletionHandler:)]) {
+            WPLogDebug(@"Has async delegate, will call it in main thread");
+            dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    if (!completionHandlerCalled) {
+                        WPLog(@"Delegate did not call wonderPushWillOpenURL:withCompletionHandler:'s completion handler fast enough. Continuing normal processing.");
+                        completionHandler(url);
+                    }
+                });
+                [_delegate wonderPushWillOpenURL:url withCompletionHandler:completionHandler];
+            });
+        } else if ([_delegate respondsToSelector:@selector(wonderPushWillOpenURL:)]) {
+            WPLogDebug(@"Has sync delegate, will call it in main thread");
+            dispatch_async(dispatch_get_main_queue(), ^{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                NSURL *newUrl = [_delegate wonderPushWillOpenURL:url];
+#pragma clang diagnostic pop
+                completionHandler(newUrl);
+            });
+        }
     }
 }
 
