@@ -80,7 +80,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  Lets you overwrite URLs that WonderPush will open using `UIApplication:openURL:`.
  This version let's you do some asynchronous processing before returning.
- @param URL The URL that WonderPush is about to open.
+ @param url The URL that WonderPush is about to open.
  @param completionHandler The callback to call with the new URL to open.
  @return A URL to open, or nil to avoid opening anything. Just return the value of the URL parameter to use the default WonderPush behavior.
  */
