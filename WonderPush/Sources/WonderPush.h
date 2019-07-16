@@ -54,6 +54,16 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 #define WP_NOTIFICATION_USER_LOGED_IN_ACCESS_TOKEN_KEY @"_wonderpushAccessToken"
 
 /**
+ Name of the notification that is sent using `NSNotificationCenter` when the a button of type `method` is called.
+ */
+#define WP_NOTIFICATION_REGISTERED_CALLBACK @"_wonderpushRegisteredCallback"
+
+/**
+ Key of the method used when a button of type `method` is called.
+ */
+#define WP_REGISTERED_CALLBACK_METHOD_KEY @"_wonderpushCallbackMethod"
+
+/**
  Key of the parameter used when a button of type `method` is called.
  */
 #define WP_REGISTERED_CALLBACK_PARAMETER_KEY @"_wonderpushCallbackParameter"

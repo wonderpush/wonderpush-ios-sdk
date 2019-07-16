@@ -205,10 +205,15 @@
         
         NSString *methodName = [WPUtil stringForKey:@"method" inDictionary:action];
         id methodParameter = [WPUtil nullsafeObjectForKey:@"methodArg" inDictionary:action];
-        NSDictionary *parameters = @{WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter ?: [NSNull null]};
+        NSDictionary *parameters = @{
+                                     WP_REGISTERED_CALLBACK_METHOD_KEY: methodName ?: [NSNull null],
+                                     WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter ?: [NSNull null],
+                                     };
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:methodName object:self userInfo:parameters];
+            [[NSNotificationCenter defaultCenter] postNotificationName:methodName object:self userInfo:parameters]; // @FIXME Deprecated, remove in v4.0.0
+            [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_REGISTERED_CALLBACK object:self userInfo:parameters];
         });
+
     } else if ([WP_ACTION_LINK isEqualToString:type]) {
         
         NSString *url = [WPUtil stringForKey:@"url" inDictionary:action];
