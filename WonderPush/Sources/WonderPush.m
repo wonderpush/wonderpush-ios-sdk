@@ -823,6 +823,8 @@ static UIStoryboard *storyboard = nil;
         return NO;
     WPLogDebug(@"handleNotification:%@", notificationDictionary);
 
+    [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_RECEIVED object:nil userInfo:notificationDictionary];
+
     UIApplicationState appState = [UIApplication sharedApplication].applicationState;
     WPLogDebug(@"handleNotification: appState=%ld", (long)appState);
 
@@ -1038,6 +1040,8 @@ static UIStoryboard *storyboard = nil;
 
     NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
     WPLogDebug(@"Opened notification: %@", notificationDictionary);
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_OPENED object:nil userInfo:notificationDictionary];
 
     id campagnId      = [WPUtil stringForKey:@"c" inDictionary:wonderpushData];
     id notificationId = [WPUtil stringForKey:@"n" inDictionary:wonderpushData];

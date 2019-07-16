@@ -69,9 +69,19 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 #define WP_REGISTERED_CALLBACK_PARAMETER_KEY @"_wonderpushCallbackParameter"
 
 /**
+ Name of the notification that is sent using `NSNotificationCenter` when a push notification is received.
+ */
+#define WP_NOTIFICATION_RECEIVED @"_wonderpushNotificationReceived"
+
+/**
  Name of the notification that is sent using `NSNotificationCenter` when a push notification with a "delegate to application code" deep link.
  */
 #define WP_NOTIFICATION_OPENED_BROADCAST @"_wonderpushNotificationOpenedBroadcast"
+
+/**
+ Name of the notification that is sent using `NSNotificationCenter` when a push notification is being opened.
+ */
+#define WP_NOTIFICATION_OPENED @"_wonderpushNotificationOpened"
 
 /**
  The `WonderPushDelegate` protocol lets you customize various aspects of the WonderPush behavior at runtime.
