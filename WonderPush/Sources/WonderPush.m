@@ -455,7 +455,7 @@ static UIStoryboard *storyboard = nil;
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
-    NSString *newToken = [deviceToken description];
+    NSString *newToken = [WPUtil hexForData:deviceToken];
     [WonderPush setDeviceToken:newToken];
 }
 

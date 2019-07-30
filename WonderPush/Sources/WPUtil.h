@@ -96,6 +96,11 @@
 + (NSString *) stringForKey:(id)key inDictionary:(NSDictionary *)dictionary;
 + (NSNumber *) numberForKey:(id)key inDictionary:(NSDictionary *)dictionary;
 
+///-----------------------
+/// @name NSData utils
+///-----------------------
++ (NSString *) hexForData:(NSData *)data;
+
 @end
 
 

@@ -379,4 +379,26 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
     }
     return [NSArray arrayWithArray:result];
 }
+
++ (NSString *) hexForData:(NSData *)data
+{
+    char const * const alphabet = "0123456789abcdef";
+    unsigned char const *readCursor = data.bytes;
+    char *hexCString = malloc(sizeof(char) * (2 * data.length + 1));
+    if (hexCString == NULL) {
+        [NSException raise:@"NSInternalInconsistencyException" format:@"Failed to allocate more memory" arguments:nil];
+        return nil;
+    }
+    char *writeCursor = hexCString;
+    for (unsigned i = 0; i < data.length; ++i) {
+        *(writeCursor++) = alphabet[((*readCursor & 0xF0) >> 4)];
+        *(writeCursor++) = alphabet[(*readCursor & 0x0F)];
+        readCursor++;
+    }
+    *writeCursor = '\0';
+    NSString *hexString = [NSString stringWithUTF8String:hexCString];
+    free(hexCString);
+    return hexString;
+}
+
 @end

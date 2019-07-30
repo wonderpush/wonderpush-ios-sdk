@@ -351,11 +351,6 @@
 }
 - (void) setDeviceToken:(NSString *)deviceToken
 {
-    if (deviceToken) {
-        deviceToken = [deviceToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
-        deviceToken = [deviceToken stringByReplacingOccurrencesOfString:@" " withString:@""];
-    }
-
     WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
     [sharedConfiguration setDeviceToken:deviceToken];
     [sharedConfiguration setDeviceTokenAssociatedToUserId:sharedConfiguration.userId];
