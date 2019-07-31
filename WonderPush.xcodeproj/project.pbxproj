@@ -456,10 +456,9 @@
 			};
 			buildConfigurationList = A16E339E19C886A700E4E158 /* Build configuration list for PBXProject "WonderPush" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				fr,
 				ar,
