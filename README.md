@@ -1,6 +1,6 @@
 # WonderPush iOS SDK
 
-[WonderPush](https://www.wonderpush.com) is an advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. [Get started in minutes](https://dashboard.wonderpush.com/account/signup).
+Mobile push notification delivery with the [WonderPush](https://www.wonderpush.com) service. [Get started for free](https://dashboard.wonderpush.com/account/signup).
 
 ## Installation
 
