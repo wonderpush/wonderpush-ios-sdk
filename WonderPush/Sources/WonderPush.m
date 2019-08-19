@@ -246,6 +246,9 @@ static UIStoryboard *storyboard = nil;
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     if ((userId == nil && configuration.userId != nil)
         || (userId != nil && ![userId isEqualToString:configuration.userId])) {
+        // Note the server will remove the push token from the current installation once we set it to the new installation
+        [[WPJsonSyncInstallation forCurrentUser] receiveDiff:@{@"pushToken":@{@"data": [NSNull null]}}];
+
         [self initForNewUser:userId];
     } // else: nothing needs to be done
 }
