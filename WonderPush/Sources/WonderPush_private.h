@@ -21,7 +21,7 @@
 #import "WPResponse.h"
 
 
-#define SDK_VERSION @"iOS-3.1.3"
+#define SDK_VERSION @"iOS-3.1.4"
 #define PRODUCTION_API_DOMAIN @"api.wonderpush.com"
 #define PRODUCTION_API_URL @"https://" PRODUCTION_API_DOMAIN @"/v1/"
 
