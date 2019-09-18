@@ -151,7 +151,7 @@
         if (reset) {
             _putAccumulator = @{};
         } else {
-            _sdkState = [WPJsonUtil merge:[WPJsonUtil merge:_sdkState with:_putAccumulator] with:_inflightDiff];
+            _sdkState = [WPJsonUtil merge:[WPJsonUtil merge:_sdkState with:_inflightDiff] with:_putAccumulator];
         }
         [self schedulePatchCallAndSave];
     }
