@@ -4,7 +4,7 @@ Mobile push notification delivery with the [WonderPush](https://www.wonderpush.c
 
 ## Installation
 
-Follow the [**quickstart guide**](https://docs.wonderpush.com/docs/ios-quickstart).
+Follow the [**quickstart guide**](https://docs.wonderpush.com/docs/ios-push-notifications-quickstart).
 
 ## Reference
 
