@@ -1,6 +1,6 @@
 # WonderPush iOS SDK
 
-Mobile push notification delivery with the [WonderPush](https://www.wonderpush.com) service. [Get started for free](https://dashboard.wonderpush.com/account/signup).
+Apple push notification delivery with the [WonderPush](https://www.wonderpush.com) service. [Get started for free](https://dashboard.wonderpush.com/account/signup).
 
 ## Installation
 
