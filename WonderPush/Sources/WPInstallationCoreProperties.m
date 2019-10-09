@@ -10,8 +10,6 @@
 #import <UIKit/UIKit.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
-#import <CoreMotion/CoreMotion.h>
-#import <LocalAuthentication/LocalAuthentication.h>
 #import <UserNotifications/UserNotifications.h>
 #import <sys/utsname.h>
 #import "WonderPush_private.h"

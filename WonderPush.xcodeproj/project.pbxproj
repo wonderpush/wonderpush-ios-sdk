@@ -145,7 +145,6 @@
 		99F384922225A5E400EA2ECD /* NotificationServiceExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationServiceExtension.h; sourceTree = "<group>"; };
 		99F384932225A5E400EA2ECD /* NotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationServiceExtension.m; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
-		A16E33A619C886A700E4E158 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A16E33AD19C886A700E4E158 /* WonderPush.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPush.m; sourceTree = "<group>"; };
 		A16E33EE19C88EDB00E4E158 /* WPConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPConfiguration.h; sourceTree = "<group>"; };
 		A16E33EF19C88EDB00E4E158 /* WPConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPConfiguration.m; sourceTree = "<group>"; };
@@ -162,12 +161,7 @@
 		A189379D19C9E0C600F91DDD /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		A18937A119C9E0D900F91DDD /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		A18937A319C9E0E800F91DDD /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		A18937A519C9E0F500F91DDD /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		A18937B119CB018F00F91DDD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		A18937B819CB0E1F00F91DDD /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
-		A18937BC19CB340A00F91DDD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		A18937C019CB34B400F91DDD /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		A18937WPAF19CAEC0700F91DDD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		A1B8508A19D41F6700D1B6FB /* WPDialogButtonHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPDialogButtonHandler.h; sourceTree = "<group>"; };
 		A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPDialogButtonHandler.m; sourceTree = "<group>"; };
@@ -320,17 +314,11 @@
 		A16E33A519C886A700E4E158 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A18937C019CB34B400F91DDD /* CoreMotion.framework */,
-				A18937BC19CB340A00F91DDD /* AVFoundation.framework */,
-				A18937B819CB0E1F00F91DDD /* CoreBluetooth.framework */,
-				A18937B119CB018F00F91DDD /* UIKit.framework */,
-				A18937WPAF19CAEC0700F91DDD /* CoreGraphics.framework */,
-				A18937A519C9E0F500F91DDD /* CoreFoundation.framework */,
-				A18937A319C9E0E800F91DDD /* MobileCoreServices.framework */,
-				A18937A119C9E0D900F91DDD /* CoreLocation.framework */,
 				A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */,
 				A189379D19C9E0C600F91DDD /* CoreTelephony.framework */,
-				A16E33A619C886A700E4E158 /* Foundation.framework */,
+				A18937B119CB018F00F91DDD /* UIKit.framework */,
+				A18937A119C9E0D900F91DDD /* CoreLocation.framework */,
+				A18937WPAF19CAEC0700F91DDD /* CoreGraphics.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
