@@ -9,12 +9,45 @@
 /* Begin PBXBuildFile section */
 		3DF74CCA2291CE480073DEC7 /* WPAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF74CC92291CE480073DEC7 /* WPAction.h */; };
 		9909CE1922215DD600F73A0B /* WonderPush.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99885AF92215CE71002CA269 /* WonderPush.storyboard */; };
-		9909CE1A22215DD800F73A0B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08461D33D9B2001289BD /* WonderPushLocalizable.strings */; };
 		9909CE5B2221602200F73A0B /* WPNotificationServiceExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9909CE5C2221602500F73A0B /* WPNotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */; };
 		9909CE5D2221602B00F73A0B /* WPLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE66D51B4AE73200B5DC44 /* WPLog.m */; };
 		9909CE5E2221602F00F73A0B /* WPLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DDE66D61B4AE73200B5DC44 /* WPLog.h */; };
 		9909CE6D222162E900F73A0B /* WonderPushExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 9909CE6C222162C600F73A0B /* WonderPushExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		99232AD023708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08451D33D9B2001289BD /* WonderPushLocalizable.strings */; };
+		99232AD123708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08471D33D9C7001289BD /* WonderPushLocalizable.strings */; };
+		99232AD223708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08481D33F023001289BD /* WonderPushLocalizable.strings */; };
+		99232AD323708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08491D33F02F001289BD /* WonderPushLocalizable.strings */; };
+		99232AD423708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A084A1D33F038001289BD /* WonderPushLocalizable.strings */; };
+		99232AD523708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A084B1D33F040001289BD /* WonderPushLocalizable.strings */; };
+		99232AD623708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A084C1D33F04F001289BD /* WonderPushLocalizable.strings */; };
+		99232AD723708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A084D1D33F05A001289BD /* WonderPushLocalizable.strings */; };
+		99232AD823708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A084E1D33F062001289BD /* WonderPushLocalizable.strings */; };
+		99232AD923708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A084F1D33F06B001289BD /* WonderPushLocalizable.strings */; };
+		99232ADA23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08501D33F129001289BD /* WonderPushLocalizable.strings */; };
+		99232ADB23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08511D33F17C001289BD /* WonderPushLocalizable.strings */; };
+		99232ADC23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08521D33F184001289BD /* WonderPushLocalizable.strings */; };
+		99232ADD23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08531D33F18A001289BD /* WonderPushLocalizable.strings */; };
+		99232ADE23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08541D33F1B5001289BD /* WonderPushLocalizable.strings */; };
+		99232ADF23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08551D33F1B9001289BD /* WonderPushLocalizable.strings */; };
+		99232AE023708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08561D33F1BD001289BD /* WonderPushLocalizable.strings */; };
+		99232AE123708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08571D33F1C1001289BD /* WonderPushLocalizable.strings */; };
+		99232AE223708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08581D33F1CA001289BD /* WonderPushLocalizable.strings */; };
+		99232AE323708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08591D33F1CF001289BD /* WonderPushLocalizable.strings */; };
+		99232AE423708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A085A1D33F279001289BD /* WonderPushLocalizable.strings */; };
+		99232AE523708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A085B1D33F28E001289BD /* WonderPushLocalizable.strings */; };
+		99232AE623708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A085C1D33F295001289BD /* WonderPushLocalizable.strings */; };
+		99232AE723708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A085D1D33F29D001289BD /* WonderPushLocalizable.strings */; };
+		99232AE823708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A085E1D33F2A3001289BD /* WonderPushLocalizable.strings */; };
+		99232AE923708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A085F1D33F2AB001289BD /* WonderPushLocalizable.strings */; };
+		99232AEA23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08601D33F2B2001289BD /* WonderPushLocalizable.strings */; };
+		99232AEB23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08611D33F2B9001289BD /* WonderPushLocalizable.strings */; };
+		99232AEC23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08621D33F2C0001289BD /* WonderPushLocalizable.strings */; };
+		99232AED23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08631D33F2C6001289BD /* WonderPushLocalizable.strings */; };
+		99232AEE23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08641D33F2CD001289BD /* WonderPushLocalizable.strings */; };
+		99232AEF23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08651D33F39C001289BD /* WonderPushLocalizable.strings */; };
+		99232AF023708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08661D33F3A0001289BD /* WonderPushLocalizable.strings */; };
+		99232AF123708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08671D33F543001289BD /* WonderPushLocalizable.strings */; };
 		9998CAA0221C74890028D955 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */; };
 		9998CAA1221C74930028D955 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937WPAF19CAEC0700F91DDD /* CoreGraphics.framework */; };
 		9998CAA2221C74980028D955 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B119CB018F00F91DDD /* UIKit.framework */; };
@@ -71,40 +104,40 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3D0A08451D33D9B2001289BD /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = en.lproj; sourceTree = "<group>"; };
-		3D0A08471D33D9C7001289BD /* fr */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fr; path = fr.lproj; sourceTree = "<group>"; };
-		3D0A08481D33F023001289BD /* ar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ar; path = ar.lproj; sourceTree = "<group>"; };
-		3D0A08491D33F02F001289BD /* ca */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ca; path = ca.lproj; sourceTree = "<group>"; };
-		3D0A084A1D33F038001289BD /* cs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = cs; path = cs.lproj; sourceTree = "<group>"; };
-		3D0A084B1D33F040001289BD /* da */ = {isa = PBXFileReference; lastKnownFileType = folder; name = da; path = da.lproj; sourceTree = "<group>"; };
-		3D0A084C1D33F04F001289BD /* de */ = {isa = PBXFileReference; lastKnownFileType = folder; name = de; path = de.lproj; sourceTree = "<group>"; };
-		3D0A084D1D33F05A001289BD /* el */ = {isa = PBXFileReference; lastKnownFileType = folder; name = el; path = el.lproj; sourceTree = "<group>"; };
-		3D0A084E1D33F062001289BD /* es */ = {isa = PBXFileReference; lastKnownFileType = folder; name = es; path = es.lproj; sourceTree = "<group>"; };
-		3D0A084F1D33F06B001289BD /* fi */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fi; path = fi.lproj; sourceTree = "<group>"; };
-		3D0A08501D33F129001289BD /* he */ = {isa = PBXFileReference; lastKnownFileType = folder; name = he; path = he.lproj; sourceTree = "<group>"; };
-		3D0A08511D33F17C001289BD /* hi */ = {isa = PBXFileReference; lastKnownFileType = folder; name = hi; path = hi.lproj; sourceTree = "<group>"; };
-		3D0A08521D33F184001289BD /* hr */ = {isa = PBXFileReference; lastKnownFileType = folder; name = hr; path = hr.lproj; sourceTree = "<group>"; };
-		3D0A08531D33F18A001289BD /* hu */ = {isa = PBXFileReference; lastKnownFileType = folder; name = hu; path = hu.lproj; sourceTree = "<group>"; };
-		3D0A08541D33F1B5001289BD /* id */ = {isa = PBXFileReference; lastKnownFileType = folder; name = id; path = id.lproj; sourceTree = "<group>"; };
-		3D0A08551D33F1B9001289BD /* it */ = {isa = PBXFileReference; lastKnownFileType = folder; name = it; path = it.lproj; sourceTree = "<group>"; };
-		3D0A08561D33F1BD001289BD /* ja */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ja; path = ja.lproj; sourceTree = "<group>"; };
-		3D0A08571D33F1C1001289BD /* ko */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ko; path = ko.lproj; sourceTree = "<group>"; };
-		3D0A08581D33F1CA001289BD /* ms */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ms; path = ms.lproj; sourceTree = "<group>"; };
-		3D0A08591D33F1CF001289BD /* nl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = nl; path = nl.lproj; sourceTree = "<group>"; };
-		3D0A085A1D33F279001289BD /* pl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = pl; path = pl.lproj; sourceTree = "<group>"; };
-		3D0A085B1D33F28E001289BD /* pt */ = {isa = PBXFileReference; lastKnownFileType = folder; name = pt; path = pt.lproj; sourceTree = "<group>"; };
-		3D0A085C1D33F295001289BD /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "pt-PT"; path = "pt-PT.lproj"; sourceTree = "<group>"; };
-		3D0A085D1D33F29D001289BD /* ro */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ro; path = ro.lproj; sourceTree = "<group>"; };
-		3D0A085E1D33F2A3001289BD /* ru */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ru; path = ru.lproj; sourceTree = "<group>"; };
-		3D0A085F1D33F2AB001289BD /* sk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sk; path = sk.lproj; sourceTree = "<group>"; };
-		3D0A08601D33F2B2001289BD /* sv */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sv; path = sv.lproj; sourceTree = "<group>"; };
-		3D0A08611D33F2B9001289BD /* th */ = {isa = PBXFileReference; lastKnownFileType = folder; name = th; path = th.lproj; sourceTree = "<group>"; };
-		3D0A08621D33F2C0001289BD /* tr */ = {isa = PBXFileReference; lastKnownFileType = folder; name = tr; path = tr.lproj; sourceTree = "<group>"; };
-		3D0A08631D33F2C6001289BD /* uk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = uk; path = uk.lproj; sourceTree = "<group>"; };
-		3D0A08641D33F2CD001289BD /* vi */ = {isa = PBXFileReference; lastKnownFileType = folder; name = vi; path = vi.lproj; sourceTree = "<group>"; };
-		3D0A08651D33F39C001289BD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "zh-Hans"; path = "zh-Hans.lproj"; sourceTree = "<group>"; };
-		3D0A08661D33F3A0001289BD /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "zh-Hant"; path = "zh-Hant.lproj"; sourceTree = "<group>"; };
-		3D0A08671D33F543001289BD /* nb */ = {isa = PBXFileReference; lastKnownFileType = folder; name = nb; path = nb.lproj; sourceTree = "<group>"; };
+		3D0A08451D33D9B2001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = en.lproj; sourceTree = "<group>"; };
+		3D0A08471D33D9C7001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = fr.lproj; sourceTree = "<group>"; };
+		3D0A08481D33F023001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = ar.lproj; sourceTree = "<group>"; };
+		3D0A08491D33F02F001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = ca.lproj; sourceTree = "<group>"; };
+		3D0A084A1D33F038001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = cs.lproj; sourceTree = "<group>"; };
+		3D0A084B1D33F040001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = da.lproj; sourceTree = "<group>"; };
+		3D0A084C1D33F04F001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = de.lproj; sourceTree = "<group>"; };
+		3D0A084D1D33F05A001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = el.lproj; sourceTree = "<group>"; };
+		3D0A084E1D33F062001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = es.lproj; sourceTree = "<group>"; };
+		3D0A084F1D33F06B001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = fi.lproj; sourceTree = "<group>"; };
+		3D0A08501D33F129001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = he.lproj; sourceTree = "<group>"; };
+		3D0A08511D33F17C001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = hi.lproj; sourceTree = "<group>"; };
+		3D0A08521D33F184001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = hr.lproj; sourceTree = "<group>"; };
+		3D0A08531D33F18A001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = hu.lproj; sourceTree = "<group>"; };
+		3D0A08541D33F1B5001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = id.lproj; sourceTree = "<group>"; };
+		3D0A08551D33F1B9001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = it.lproj; sourceTree = "<group>"; };
+		3D0A08561D33F1BD001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = ja.lproj; sourceTree = "<group>"; };
+		3D0A08571D33F1C1001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = ko.lproj; sourceTree = "<group>"; };
+		3D0A08581D33F1CA001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = ms.lproj; sourceTree = "<group>"; };
+		3D0A08591D33F1CF001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = nl.lproj; sourceTree = "<group>"; };
+		3D0A085A1D33F279001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = pl.lproj; sourceTree = "<group>"; };
+		3D0A085B1D33F28E001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = pt.lproj; sourceTree = "<group>"; };
+		3D0A085C1D33F295001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = "pt-PT.lproj"; sourceTree = "<group>"; };
+		3D0A085D1D33F29D001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = ro.lproj; sourceTree = "<group>"; };
+		3D0A085E1D33F2A3001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = ru.lproj; sourceTree = "<group>"; };
+		3D0A085F1D33F2AB001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = sk.lproj; sourceTree = "<group>"; };
+		3D0A08601D33F2B2001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = sv.lproj; sourceTree = "<group>"; };
+		3D0A08611D33F2B9001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = th.lproj; sourceTree = "<group>"; };
+		3D0A08621D33F2C0001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = tr.lproj; sourceTree = "<group>"; };
+		3D0A08631D33F2C6001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = uk.lproj; sourceTree = "<group>"; };
+		3D0A08641D33F2CD001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = vi.lproj; sourceTree = "<group>"; };
+		3D0A08651D33F39C001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = "zh-Hans.lproj"; sourceTree = "<group>"; };
+		3D0A08661D33F3A0001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = "zh-Hant.lproj"; sourceTree = "<group>"; };
+		3D0A08671D33F543001289BD /* WonderPushLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WonderPushLocalizable.strings; path = nb.lproj; sourceTree = "<group>"; };
 		3D0A92631E9D18A800784273 /* WPJsonSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPJsonSync.m; sourceTree = "<group>"; };
 		3D0A92651E9D18D900784273 /* WPJsonSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonSync.h; sourceTree = "<group>"; };
 		3D0A92661E9D33AF00784273 /* WPJsonSyncInstallation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPJsonSyncInstallation.h; sourceTree = "<group>"; };
@@ -287,7 +320,40 @@
 			isa = PBXGroup;
 			children = (
 				99885AF92215CE71002CA269 /* WonderPush.storyboard */,
-				3D0A08461D33D9B2001289BD /* WonderPushLocalizable.strings */,
+				3D0A08451D33D9B2001289BD /* WonderPushLocalizable.strings */,
+				3D0A08471D33D9C7001289BD /* WonderPushLocalizable.strings */,
+				3D0A08481D33F023001289BD /* WonderPushLocalizable.strings */,
+				3D0A08491D33F02F001289BD /* WonderPushLocalizable.strings */,
+				3D0A084A1D33F038001289BD /* WonderPushLocalizable.strings */,
+				3D0A084B1D33F040001289BD /* WonderPushLocalizable.strings */,
+				3D0A084C1D33F04F001289BD /* WonderPushLocalizable.strings */,
+				3D0A084D1D33F05A001289BD /* WonderPushLocalizable.strings */,
+				3D0A084E1D33F062001289BD /* WonderPushLocalizable.strings */,
+				3D0A084F1D33F06B001289BD /* WonderPushLocalizable.strings */,
+				3D0A08501D33F129001289BD /* WonderPushLocalizable.strings */,
+				3D0A08511D33F17C001289BD /* WonderPushLocalizable.strings */,
+				3D0A08521D33F184001289BD /* WonderPushLocalizable.strings */,
+				3D0A08531D33F18A001289BD /* WonderPushLocalizable.strings */,
+				3D0A08541D33F1B5001289BD /* WonderPushLocalizable.strings */,
+				3D0A08551D33F1B9001289BD /* WonderPushLocalizable.strings */,
+				3D0A08561D33F1BD001289BD /* WonderPushLocalizable.strings */,
+				3D0A08571D33F1C1001289BD /* WonderPushLocalizable.strings */,
+				3D0A08581D33F1CA001289BD /* WonderPushLocalizable.strings */,
+				3D0A08591D33F1CF001289BD /* WonderPushLocalizable.strings */,
+				3D0A085A1D33F279001289BD /* WonderPushLocalizable.strings */,
+				3D0A085B1D33F28E001289BD /* WonderPushLocalizable.strings */,
+				3D0A085C1D33F295001289BD /* WonderPushLocalizable.strings */,
+				3D0A085D1D33F29D001289BD /* WonderPushLocalizable.strings */,
+				3D0A085E1D33F2A3001289BD /* WonderPushLocalizable.strings */,
+				3D0A085F1D33F2AB001289BD /* WonderPushLocalizable.strings */,
+				3D0A08601D33F2B2001289BD /* WonderPushLocalizable.strings */,
+				3D0A08611D33F2B9001289BD /* WonderPushLocalizable.strings */,
+				3D0A08621D33F2C0001289BD /* WonderPushLocalizable.strings */,
+				3D0A08631D33F2C6001289BD /* WonderPushLocalizable.strings */,
+				3D0A08641D33F2CD001289BD /* WonderPushLocalizable.strings */,
+				3D0A08651D33F39C001289BD /* WonderPushLocalizable.strings */,
+				3D0A08661D33F3A0001289BD /* WonderPushLocalizable.strings */,
+				3D0A08671D33F543001289BD /* WonderPushLocalizable.strings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -507,7 +573,40 @@
 			buildActionMask = 2147483647;
 			files = (
 				9909CE1922215DD600F73A0B /* WonderPush.storyboard in Resources */,
-				9909CE1A22215DD800F73A0B /* WonderPushLocalizable.strings in Resources */,
+				99232AD023708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AD123708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AD223708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AD323708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AD423708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AD523708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AD623708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AD723708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AD823708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AD923708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232ADA23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232ADB23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232ADC23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232ADD23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232ADE23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232ADF23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE023708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE123708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE223708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE323708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE423708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE523708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE623708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE723708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE823708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AE923708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AEA23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AEB23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AEC23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AED23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AEE23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AEF23708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AF023708D100064381B /* WonderPushLocalizable.strings in Resources */,
+				99232AF123708D100064381B /* WonderPushLocalizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -554,50 +653,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		3D0A08461D33D9B2001289BD /* WonderPushLocalizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				3D0A08451D33D9B2001289BD /* en */,
-				3D0A08471D33D9C7001289BD /* fr */,
-				3D0A08481D33F023001289BD /* ar */,
-				3D0A08491D33F02F001289BD /* ca */,
-				3D0A084A1D33F038001289BD /* cs */,
-				3D0A084B1D33F040001289BD /* da */,
-				3D0A084C1D33F04F001289BD /* de */,
-				3D0A084D1D33F05A001289BD /* el */,
-				3D0A084E1D33F062001289BD /* es */,
-				3D0A084F1D33F06B001289BD /* fi */,
-				3D0A08501D33F129001289BD /* he */,
-				3D0A08511D33F17C001289BD /* hi */,
-				3D0A08521D33F184001289BD /* hr */,
-				3D0A08531D33F18A001289BD /* hu */,
-				3D0A08541D33F1B5001289BD /* id */,
-				3D0A08551D33F1B9001289BD /* it */,
-				3D0A08561D33F1BD001289BD /* ja */,
-				3D0A08571D33F1C1001289BD /* ko */,
-				3D0A08581D33F1CA001289BD /* ms */,
-				3D0A08591D33F1CF001289BD /* nl */,
-				3D0A085A1D33F279001289BD /* pl */,
-				3D0A085B1D33F28E001289BD /* pt */,
-				3D0A085C1D33F295001289BD /* pt-PT */,
-				3D0A085D1D33F29D001289BD /* ro */,
-				3D0A085E1D33F2A3001289BD /* ru */,
-				3D0A085F1D33F2AB001289BD /* sk */,
-				3D0A08601D33F2B2001289BD /* sv */,
-				3D0A08611D33F2B9001289BD /* th */,
-				3D0A08621D33F2C0001289BD /* tr */,
-				3D0A08631D33F2C6001289BD /* uk */,
-				3D0A08641D33F2CD001289BD /* vi */,
-				3D0A08651D33F39C001289BD /* zh-Hans */,
-				3D0A08661D33F3A0001289BD /* zh-Hant */,
-				3D0A08671D33F543001289BD /* nb */,
-			);
-			name = WonderPushLocalizable.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		9909CE5722215FFC00F73A0B /* Debug */ = {
@@ -778,6 +833,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -800,6 +856,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 			};
 			name = Debug;
 		};
@@ -833,6 +890,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = NO;
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -849,6 +907,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
