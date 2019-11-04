@@ -208,12 +208,13 @@ static NSMutableDictionary *instancePerUserId = nil;
                                    - [now timeIntervalSinceReferenceDate]);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             @synchronized (self->_blockId_lock) {
-                if (self->_blockId == currentBlockId) {
-                    self->_firstDelayedWriteDate = nil;
-                    WPLogDebug(@"Performing delayed update of installation");
-                    [self performScheduledPatchCall];
+                if (self->_blockId != currentBlockId) {
+                    return;
                 }
+                self->_firstDelayedWriteDate = nil;
             }
+            WPLogDebug(@"Performing delayed update of installation");
+            [self performScheduledPatchCall];
         });
     }
 }
