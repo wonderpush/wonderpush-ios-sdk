@@ -61,6 +61,11 @@
 #define WP_ACTION_REMOVE_ALL_TAGS @"removeAllTags"
 
 /**
+ Button of type close notifications
+ */
+#define WP_ACTION_CLOSE_NOTIFICATIONS @"closeNotifications"
+
+/**
  Dump installation state as an event
  */
 #define WP_ACTION__DUMP_STATE @"_dumpState"

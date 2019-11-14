@@ -148,6 +148,57 @@
             
             [WonderPush removeAllTags];
             
+        } else if ([WP_ACTION_CLOSE_NOTIFICATIONS isEqualToString:type]) {
+
+            // NOTE: Unlike on Android, this is asynchronous, and almost always resolves after the current notification is displayed
+            //       so until we have a completion handler in this method (and many levels up the call hierarchy,
+            //       it's not possible to remove all notifications and then display a new one.
+            if (@available(iOS 10.0, *)) {
+                UNMutableNotificationContent
+                [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+                    NSMutableArray<NSString *> *ids = [NSMutableArray new];
+                    for (UNNotification *notification in notifications) {
+                        // Filter tag (notification.request.identifier is never nil, so code is simpler by skipping [NSNull null] handling)
+                        NSString *tag = [WPUtil stringForKey:@"tag" inDictionary:action];
+                        if (tag != nil && ![tag isEqualToString:notification.request.identifier]) {
+                            continue;
+                        }
+                        // Filter threadId
+                        id threadId = action[@"threadId"];
+                        if (threadId != nil) {
+                            if ((threadId == [NSNull null] || [@"" isEqualToString:threadId]) && !(notification.request.content.threadIdentifier == nil || [@"" isEqualToString:notification.request.content.threadIdentifier])) {
+                                continue;
+                            } else if ([threadId isKindOfClass:[NSString class]] && ![threadId isEqualToString:notification.request.content.threadIdentifier]) {
+                                continue;
+                            }
+                        }
+                        // Filter category
+                        id category = action[@"category"];
+                        if (category != nil) {
+                            if ((category == [NSNull null] || [@"" isEqualToString:category]) && !(notification.request.content.categoryIdentifier == nil || [@"" isEqualToString:notification.request.content.categoryIdentifier])) {
+                                continue;
+                            } else if ([category isKindOfClass:[NSString class]] && ![category isEqualToString:notification.request.content.categoryIdentifier]) {
+                                continue;
+                            }
+                        }
+                        // Filter targetContentId
+                        if (@available(iOS 13.0, *)) {
+                            id targetContentId = action[@"targetContentId"];
+                            if (targetContentId != nil) {
+                                if ((targetContentId == [NSNull null] || [@"" isEqualToString:targetContentId]) && !(notification.request.content.targetContentIdentifier == nil || [@"" isEqualToString:notification.request.content.targetContentIdentifier])) {
+                                    continue;
+                                } else if ([targetContentId isKindOfClass:[NSString class]] && ![targetContentId isEqualToString:notification.request.content.targetContentIdentifier]) {
+                                    continue;
+                                }
+                            }
+                        }
+
+                        [ids addObject:notification.request.identifier];
+                    }
+                    [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:ids];
+                }];
+            }
+
         } else if ([WP_ACTION_RESYNC_INSTALLATION isEqualToString:type]) {
             
             void (^cont)(NSDictionary *action) = ^(NSDictionary *action){
