@@ -466,7 +466,16 @@ static UIStoryboard *storyboard = nil;
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
+
     WPLogDebug(@"Failed to register to push notifications: %@", error);
+    if (error.code == 3000) {
+        if ([[WPUtil stringForKey:NSLocalizedDescriptionKey inDictionary:error.userInfo] rangeOfString:@"aps-environment"].location != NSNotFound) {
+            WPLog(@"ERROR: You need to enable the Push Notifications capability under Project / Targets / Signing & Capabilities in XCode.");
+        }
+    } else if (error.code == 3010) {
+        WPLog(@"The iOS Simulator does not support push notifications. You need to use a real iOS device.");
+    }
+
     [WonderPush setDeviceToken:nil];
 }
 
