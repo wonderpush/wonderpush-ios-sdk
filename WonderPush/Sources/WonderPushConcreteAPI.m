@@ -154,7 +154,6 @@
             //       so until we have a completion handler in this method (and many levels up the call hierarchy,
             //       it's not possible to remove all notifications and then display a new one.
             if (@available(iOS 10.0, *)) {
-                UNMutableNotificationContent
                 [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
                     NSMutableArray<NSString *> *ids = [NSMutableArray new];
                     for (UNNotification *notification in notifications) {
