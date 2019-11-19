@@ -138,6 +138,9 @@ static UIStoryboard *storyboard = nil;
 + (void) setUserConsent:(BOOL)userConsent
 {
     BOOL hadUserConsent = [self hasUserConsent];
+    if (hadUserConsent && !userConsent) {
+        [WPJsonSyncInstallation flush];
+    }
     [[WPConfiguration sharedConfiguration] setUserConsent:userConsent];
     BOOL nowHasUserConsent = [self hasUserConsent];
     if (_isInitialized && hadUserConsent != nowHasUserConsent) {
