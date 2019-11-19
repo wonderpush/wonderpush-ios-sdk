@@ -48,17 +48,6 @@ static WPConfiguration *sharedConfiguration = nil;
 + (void) initialize
 {
     sharedConfiguration = [[self alloc] init];
-
-    // Initialize setNotificationEnabled with it's asynchronous getter
-    if ([[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY] == nil) {
-        WPLogDebug(@"Will initialize setNotificationEnabled");
-        [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL result) {
-            if ([[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY] == nil) {
-                WPLogDebug(@"Initializing setNotificationEnabled(%@)", result ? @"YES" : @"NO");
-                [[WPConfiguration sharedConfiguration] setNotificationEnabled:result];
-            }
-        }];
-    }
 }
 
 + (WPConfiguration *) sharedConfiguration
@@ -493,8 +482,7 @@ static WPConfiguration *sharedConfiguration = nil;
     if (!__notificationEnabled) {
         __notificationEnabled = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY];
         if (__notificationEnabled == nil) {
-            // [+initialize] has an asynchronous initialization for this
-            return NO;
+            return YES;
         }
     }
 
