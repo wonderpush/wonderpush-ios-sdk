@@ -55,7 +55,10 @@ static BOOL _requiresUserConsent = NO;
 static id<WonderPushAPI> wonderPushAPI = nil;
 static NSMutableDictionary *safeDeferWithConsentIdToBlock = nil;
 static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
+static BOOL _locationOverridden = NO;
+static CLLocation *_locationOverride = nil;
 static UIStoryboard *storyboard = nil;
+
 + (void) initialize
 {
     static dispatch_once_t onceToken;
@@ -1369,7 +1372,27 @@ static UIStoryboard *storyboard = nil;
 
 + (CLLocation *)location
 {
+    if (_locationOverridden) {
+        return _locationOverride;
+    }
     return [wonderPushAPI location];
+}
+
++ (void) enableGeolocation
+{
+    _locationOverridden = NO;
+    _locationOverride = nil;
+}
+
++ (void) disableGeolocation
+{
+    [self setGeolocation:nil];
+}
+
++ (void) setGeolocation:(CLLocation *)location
+{
+    _locationOverridden = YES;
+    _locationOverride = location;
 }
 
 #pragma mark - Open URL

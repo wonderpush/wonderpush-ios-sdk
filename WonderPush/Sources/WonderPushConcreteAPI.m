@@ -72,7 +72,7 @@
             [params setValue:customData forKey:@"custom"];
         }
         
-        CLLocation *location = [self location];
+        CLLocation *location = [WonderPush location];
         if (location != nil) {
             params[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
                                     @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};

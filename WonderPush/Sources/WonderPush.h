@@ -256,6 +256,27 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) setIntegrator:(NSString *)integrator;
 
+/**
+ Enables the collection of the user's geolocation.
+ */
++ (void) enableGeolocation;
+
+/**
+ Disables the collection of the user's geolocation.
+ */
++ (void) disableGeolocation;
+
+/**
+ Overrides the user's geolocation.
+
+ Using this method you can have the user's location be set to wherever you want.
+ This may be useful to use a pre-recorded location.
+
+ @param location The location to use as the user's current geolocation.
+                Using `nil` has the same effect as calling `disableGeolocation()`.
+ */
++ (void) setGeolocation:(CLLocation *)location;
+
 ///---------------------------------
 /// @name Push Notification handling
 ///---------------------------------
