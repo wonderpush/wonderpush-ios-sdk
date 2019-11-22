@@ -1395,6 +1395,70 @@ static UIStoryboard *storyboard = nil;
     _locationOverride = location;
 }
 
++ (NSString *) country
+{
+    NSString * rtn = [WPConfiguration sharedConfiguration].country;
+    if (rtn == nil) {
+        rtn = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+    }
+    return rtn;
+}
+
++ (void) setCountry:(NSString *)country
+{
+    // TODO Validate input value
+    [WPConfiguration sharedConfiguration].country = country;
+    [self refreshPreferencesAndConfiguration];
+}
+
++ (NSString *) currency
+{
+    NSString * rtn = [WPConfiguration sharedConfiguration].currency;
+    if (rtn == nil) {
+        rtn = [[NSLocale currentLocale] objectForKey:NSLocaleCurrencyCode];
+    }
+    return rtn;
+}
+
++ (void) setCurrency:(NSString *)currency
+{
+    // TODO Validate input value
+    [WPConfiguration sharedConfiguration].currency = currency;
+    [self refreshPreferencesAndConfiguration];
+}
+
++ (NSString *) locale
+{
+    NSString * rtn = [WPConfiguration sharedConfiguration].locale;
+    if (rtn == nil) {
+        rtn = [[NSLocale currentLocale] localeIdentifier];
+    }
+    return rtn;
+}
+
++ (void) setLocale:(NSString *)locale
+{
+    // TODO Validate input value
+    [WPConfiguration sharedConfiguration].locale = locale;
+    [self refreshPreferencesAndConfiguration];
+}
+
++ (NSString *) timeZone
+{
+    NSString * rtn = [WPConfiguration sharedConfiguration].timeZone;
+    if (rtn == nil) {
+        rtn = [[NSTimeZone localTimeZone] name];
+    }
+    return rtn;
+}
+
++ (void) setTimeZone:(NSString *)timeZone
+{
+    // TODO Validate input value
+    [WPConfiguration sharedConfiguration].timeZone = timeZone;
+    [self refreshPreferencesAndConfiguration];
+}
+
 #pragma mark - Open URL
 + (void) openURL:(NSURL *)url
 {

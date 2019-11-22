@@ -273,9 +273,91 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  This may be useful to use a pre-recorded location.
 
  @param location The location to use as the user's current geolocation.
-                Using `nil` has the same effect as calling `disableGeolocation()`.
+                 Using `nil` has the same effect as calling `disableGeolocation()`.
  */
 + (void) setGeolocation:(CLLocation *)location;
+
+/**
+ Gets the user's country, either as previously stored, or as guessed from the system.
+
+ @return The user's country.
+ @see [WonderPush setCountry:]
+ */
++ (NSString *) country;
+
+/**
+ Overrides the user's country.
+
+ You should use an ISO 3166-1 alpha-2 country code.
+
+ Defaults to getting the country code from the system default locale.
+
+ @param country The country to use as the user's country.
+                Use `nil` to disable the override.
+ */
++ (void) setCountry:(NSString *)country;
+
+/**
+ Gets the user's currency, either as previously stored, or as guessed from the system.
+
+ @return The user's currency.
+ @see [WonderPush setCurrency:]
+ */
++ (NSString *) currency;
+
+/**
+ Overrides the user's currency.
+
+ You should use an ISO 4217 currency code.
+
+ Defaults to getting the currency code from the system default locale.
+
+ @param currency The currency to use as the user's currency.
+                 Use `nil` to disable the override.
+ */
++ (void) setCurrency:(NSString *)currency;
+
+/**
+ Gets the user's locale, either as previously stored, or as guessed from the system.
+
+ @return The user's locale.
+ @see [WonderPush setLocale:]
+ */
++ (NSString *) locale;
+
+/**
+ Overrides the user's locale.
+
+ You should use an `xx-XX` form of RFC 1766, composed of a lowercase ISO 639-1 language code,
+ an underscore or a dash, and an uppercase ISO 3166-1 alpha-2 country code.
+
+ Defaults to getting the locale code from the system default locale.
+
+ @param locale The locale to use as the user's locale.
+               Use `nil` to disable the override.
+ */
++ (void) setLocale:(NSString *)locale;
+
+/**
+ Gets the user's time zone, either as previously stored, or as guessed from the system.
+
+ @return The user's time zone.
+ @see [WonderPush setTimeZone:]
+ */
++ (NSString *) timeZone;
+
+/**
+ Overrides the user's timeZone.
+
+ You should use an IANA time zone database codes, `Continent/Country` style preferably,
+ abbreviations like `CET`, `PST`, `UTC`, which have the drawback of changing on daylight saving transitions.
+
+ Defaults to getting the time zone code from the system default locale.
+
+ @param timeZone The time zone to use as the user's time zone.
+                 Use `nil` to disable the override.
+ */
++ (void) setTimeZone:(NSString *)timeZone;
 
 ///---------------------------------
 /// @name Push Notification handling

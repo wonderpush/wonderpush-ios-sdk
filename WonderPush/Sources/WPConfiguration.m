@@ -261,6 +261,10 @@ static WPConfiguration *sharedConfiguration = nil;
                                          USER_DEFAULTS_LAST_APP_OPEN_DATE: [self _NSDateToJSON:self.lastAppOpenDate],
                                          USER_DEFAULTS_LAST_APP_OPEN_INFO: [self _NSDictionaryToJSON:self.lastAppOpenInfo],
                                          USER_DEFAULTS_LAST_APP_CLOSE_DATE: [self _NSDateToJSON:self.lastAppCloseDate],
+                                         USER_DEFAULTS_COUNTRY: [self _NSStringToJSON:self.country],
+                                         USER_DEFAULTS_CURRENCY: [self _NSStringToJSON:self.currency],
+                                         USER_DEFAULTS_LOCALE: [self _NSStringToJSON:self.locale],
+                                         USER_DEFAULTS_TIME_ZONE: [self _NSStringToJSON:self.timeZone],
                                          };
     NSMutableDictionary *usersArchive = [([self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY] ?: @{}) mutableCopy];
     usersArchive[self.userId ?: @""] = currentUserArchive;
@@ -287,6 +291,10 @@ static WPConfiguration *sharedConfiguration = nil;
     self.lastAppOpenDate     = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_APP_OPEN_DATE]];
     self.lastAppOpenInfo     = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_LAST_APP_OPEN_INFO]];
     self.lastAppCloseDate    = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_APP_CLOSE_DATE]];
+    self.country             = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_COUNTRY]];
+    self.currency            = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_CURRENCY]];
+    self.locale              = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_LOCALE]];
+    self.timeZone            = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_TIME_ZONE]];
 }
 
 // Uses @"" for nil userId
@@ -757,6 +765,46 @@ static WPConfiguration *sharedConfiguration = nil;
 - (void) setLastAppCloseDate:(NSDate *)lastAppCloseDate
 {
     [self _setNSDate:lastAppCloseDate forKey:USER_DEFAULTS_LAST_APP_CLOSE_DATE];
+}
+
+- (NSString *) country
+{
+    return [self _getNSStringForKey:USER_DEFAULTS_COUNTRY];
+}
+
+- (void) setCountry:(NSString *)country
+{
+    [self _setNSString:country forKey:USER_DEFAULTS_COUNTRY];
+}
+
+- (NSString *) currency
+{
+    return [self _getNSStringForKey:USER_DEFAULTS_CURRENCY];
+}
+
+- (void) setCurrency:(NSString *)currency
+{
+    [self _setNSString:currency forKey:USER_DEFAULTS_CURRENCY];
+}
+
+- (NSString *) locale
+{
+    return [self _getNSStringForKey:USER_DEFAULTS_LOCALE];
+}
+
+- (void) setLocale:(NSString *)locale
+{
+    [self _setNSString:locale forKey:USER_DEFAULTS_LOCALE];
+}
+
+- (NSString *) timeZone
+{
+    return [self _getNSStringForKey:USER_DEFAULTS_TIME_ZONE];
+}
+
+- (void) setTimeZone:(NSString *)timeZone
+{
+    [self _setNSString:timeZone forKey:USER_DEFAULTS_TIME_ZONE];
 }
 
 - (NSDictionary *) installationCustomSyncStatePerUserId

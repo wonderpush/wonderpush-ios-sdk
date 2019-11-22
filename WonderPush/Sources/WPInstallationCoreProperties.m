@@ -210,8 +210,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (NSString *) getTimezone
 {
-    NSTimeZone *timeZone = [NSTimeZone localTimeZone];
-    return [timeZone name];
+    return [WonderPush timeZone];
 }
 
 + (NSString *) getCarrierName
@@ -234,17 +233,17 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (NSString *) getLocale
 {
-    return [[NSLocale currentLocale] localeIdentifier];
+    return [WonderPush locale];
 }
 
 + (NSString *) getCountry
 {
-    return [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+    return [WonderPush country];
 }
 
 + (NSString *) getCurrency
 {
-    return [[NSLocale currentLocale] objectForKey:NSLocaleCurrencyCode];
+    return [WonderPush currency];
 }
 
 + (NSString *) getOsVersion
