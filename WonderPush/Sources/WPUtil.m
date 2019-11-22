@@ -154,20 +154,6 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
     return deviceId;
 }
 
-+ (NSString *)federatedId
-{
-    // Do not use Advertising identifier to avoid app rejection
-    //ASIdentifierManager *mgr = [ASIdentifierManager sharedManager];
-    //if (![mgr isAdvertisingTrackingEnabled]) return nil;
-    //NSUUID *uuid = [mgr advertisingIdentifier];
-
-    // Use vendor id instead
-    NSUUID *uuid = [[UIDevice currentDevice] identifierForVendor];
-
-    if (uuid == nil) return nil; // code says _Nonnull, but the doc says it can be nil before first device unlock after a reboot.
-    return [uuid UUIDString];
-}
-
 
 #pragma mark - URL Checking
 

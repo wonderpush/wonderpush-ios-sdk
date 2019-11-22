@@ -347,7 +347,6 @@
         
         CGRect screenSize = [WPInstallationCoreProperties getScreenSize];
         NSDictionary *device = @{@"id": [WPUtil deviceIdentifier] ?: null,
-                                 @"federatedId": [WPUtil federatedId] ? [NSString stringWithFormat:@"0:%@", [WPUtil federatedId]] : null,
                                  @"platform": @"iOS",
                                  @"osVersion": [WPInstallationCoreProperties getOsVersion] ?: null,
                                  @"brand": @"Apple",

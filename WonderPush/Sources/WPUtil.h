@@ -46,8 +46,6 @@
 
 + (NSString *)deviceIdentifier;
 
-+ (NSString *)federatedId;
-
 + (NSString *)deviceModel;
 
 
