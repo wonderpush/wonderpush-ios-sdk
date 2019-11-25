@@ -1406,7 +1406,22 @@ static UIStoryboard *storyboard = nil;
 
 + (void) setCountry:(NSString *)country
 {
-    // TODO Validate input value
+    if (country != nil) {
+        // Validate against simple expected values,
+        // but accept any input as is
+        NSString *countryUC = [country uppercaseString];
+        if ([country length] != 2) {
+            WPLog(@"The given country %@ is not of the form XX of ISO 3166-1 alpha-2", country);
+        } else if (!(
+                     [countryUC characterAtIndex:0] >= 'A' && [countryUC characterAtIndex:0] <= 'Z'
+                     && [countryUC characterAtIndex:1] >= 'A' && [countryUC characterAtIndex:1] <= 'Z'
+                   )) {
+            WPLog(@"The given country %@ is not of the form XX of ISO 3166-1 alpha-2", country);
+        } else {
+            // Normalize simple expected value into XX
+            country = countryUC;
+        }
+    }
     [WPConfiguration sharedConfiguration].country = country;
     [self refreshPreferencesAndConfiguration];
 }
@@ -1422,7 +1437,23 @@ static UIStoryboard *storyboard = nil;
 
 + (void) setCurrency:(NSString *)currency
 {
-    // TODO Validate input value
+    if (currency != nil) {
+        // Validate against simple expected values,
+        // but accept any input as is
+        NSString *currencyUC = [currency uppercaseString];
+        if ([currency length] != 3) {
+            WPLog(@"The given currency %@ is not of the form XXX of ISO 4217", currency);
+        } else if (!(
+                     [currencyUC characterAtIndex:0] >= 'A' && [currencyUC characterAtIndex:0] <= 'Z'
+                     && [currencyUC characterAtIndex:1] >= 'A' && [currencyUC characterAtIndex:1] <= 'Z'
+                     && [currencyUC characterAtIndex:2] >= 'A' && [currencyUC characterAtIndex:2] <= 'Z'
+                   )) {
+            WPLog(@"The given currency %@ is not of the form XXX of ISO 4217", currency);
+        } else {
+            // Normalize simple expected value into XXX
+            currency = currencyUC;
+        }
+    }
     [WPConfiguration sharedConfiguration].currency = currency;
     [self refreshPreferencesAndConfiguration];
 }
@@ -1438,7 +1469,35 @@ static UIStoryboard *storyboard = nil;
 
 + (void) setLocale:(NSString *)locale
 {
-    // TODO Validate input value
+    if (locale != nil) {
+        // Validate against simple expected values,
+        // but accept any input as is
+        NSString *localeUC = [locale uppercaseString];
+        if ([locale length] != 2 && [locale length] != 5) {
+            WPLog(@"The given locale %@ is not of the form xx-XX of RFC 1766", locale);
+        } else if (!(
+                     [localeUC characterAtIndex:0] >= 'A' && [localeUC characterAtIndex:0] <= 'Z'
+                     && [localeUC characterAtIndex:1] >= 'A' && [localeUC characterAtIndex:1] <= 'Z'
+                     && (
+                         [locale length] == 2
+                         || (
+                             [locale length] == 5
+                             && ([localeUC characterAtIndex:2] == '-' || [localeUC characterAtIndex:2] == '_')
+                             && [localeUC characterAtIndex:3] >= 'A' && [localeUC characterAtIndex:3] <= 'Z'
+                             && [localeUC characterAtIndex:4] >= 'A' && [localeUC characterAtIndex:4] <= 'Z'
+                         )
+                     )
+                   )) {
+            WPLog(@"The given locale %@ is not of the form xx-XX of RFC 1766", locale);
+        } else {
+            // Normalize simple expected value into xx_XX
+            if ([locale length] == 5) {
+                locale = [NSString stringWithFormat:@"%@_%@", [[locale substringToIndex:2] lowercaseString], [[locale substringWithRange:NSMakeRange(3, 2)] uppercaseString]];
+            } else {
+                locale = [[locale substringToIndex:2] lowercaseString];
+            }
+        }
+    }
     [WPConfiguration sharedConfiguration].locale = locale;
     [self refreshPreferencesAndConfiguration];
 }
@@ -1454,7 +1513,50 @@ static UIStoryboard *storyboard = nil;
 
 + (void) setTimeZone:(NSString *)timeZone
 {
-    // TODO Validate input value
+    if (timeZone != nil) {
+        // Validate against simple expected values,
+        // but accept any input as is
+        NSString *timeZoneUC = [timeZone uppercaseString];
+        if ([timeZone containsString:@"/"]) {
+            if (!(
+                  [timeZone hasPrefix:@"Africa/"]
+                  || [timeZone hasPrefix:@"America/"]
+                  || [timeZone hasPrefix:@"Antarctica/"]
+                  || [timeZone hasPrefix:@"Asia/"]
+                  || [timeZone hasPrefix:@"Atlantic/"]
+                  || [timeZone hasPrefix:@"Australia/"]
+                  || [timeZone hasPrefix:@"Etc/"]
+                  || [timeZone hasPrefix:@"Europe/"]
+                  || [timeZone hasPrefix:@"Indian/"]
+                  || [timeZone hasPrefix:@"Pacific/"]
+                  ) || [timeZone hasSuffix:@"/"]) {
+                WPLog(@"The given time zone \"%@\" is not of the form Continent/Country or ABBR of IANA time zone database codes", timeZone);
+            }
+        } else {
+            BOOL allLetters = YES;
+            for (int i = 0; i < [timeZoneUC length]; ++i) {
+                if ([timeZoneUC characterAtIndex:i] < 'A' || [timeZoneUC characterAtIndex:i] > 'Z') {
+                    allLetters = NO;
+                    break;
+                }
+            }
+            if (!allLetters) {
+                WPLog(@"The given time zone \"%@\" is not of the form Continent/Country or ABBR of IANA time zone database codes", timeZone);
+            } else if (!([timeZone length] == 1
+                         || [timeZoneUC hasSuffix:@"T"]
+                         || [timeZoneUC isEqualToString:@"UTC"]
+                         || [timeZoneUC isEqualToString:@"AOE"]
+                         || [timeZoneUC isEqualToString:@"MSD"]
+                         || [timeZoneUC isEqualToString:@"MSK"]
+                         || [timeZoneUC isEqualToString:@"WIB"]
+                         || [timeZoneUC isEqualToString:@"WITA"])) {
+                WPLog(@"The given time zone \"%@\" is not of the form Continent/Country or ABBR of IANA time zone database codes", timeZone);
+            } else {
+                // Normalize abbreviations in uppercase
+                timeZone = timeZoneUC;
+            }
+        }
+    }
     [WPConfiguration sharedConfiguration].timeZone = timeZone;
     [self refreshPreferencesAndConfiguration];
 }
