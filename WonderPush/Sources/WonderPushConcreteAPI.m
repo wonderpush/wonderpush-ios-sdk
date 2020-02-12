@@ -17,12 +17,21 @@
 #import <UIKit/UIKit.h>
 #import "WPInstallationCoreProperties.h"
 #import "WPDataManager.h"
-
+#import "WPInAppMessaging+Bootstrap.h"
+#import "WPReportingData.h"
+#import "WPAction_private.h"
 @interface WonderPushConcreteAPI (private)
 @end
 
 @implementation WonderPushConcreteAPI
-- (void) activate {}
+- (void) activate {
+    WPIAMSDKSettings *settings = [[WPIAMSDKSettings alloc] init];
+    settings.loggerMaxCountBeforeReduce = 100;
+    settings.loggerSizeAfterReduce = 50;
+    settings.loggerInVerboseMode = WPLogEnabled();
+    settings.appFGRenderMinIntervalInMinutes = 12 * 60; // render at most one message from app-foreground trigger every 12 hours;
+    [WPInAppMessaging bootstrapIAMWithSettings:settings];
+}
 - (void) deactivate {}
 - (instancetype) init
 {
@@ -77,237 +86,217 @@
             params[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
                                     @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
         }
-        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:WPEventFiredNotification object:nil userInfo:@{
+                WPEventFiredNotificationEventTypeKey : type,
+                WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:params],
+            }];
+        });
         [WonderPush postEventually:eventEndPoint params:@{@"body":params}];
     }
 }
-- (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
-{
-    WPLogDebug(@"Running action %@", action);
-    @synchronized (self) {
-        NSString *type = [WPUtil stringForKey:@"type" inDictionary:action];
-        
-        if ([WP_ACTION_TRACK isEqualToString:type]) {
-            
-            NSDictionary *event = [WPUtil dictionaryForKey:@"event" inDictionary:action] ?: @{};
-            NSString *type = [WPUtil stringForKey:@"type" inDictionary:event];
-            if (!type) return;
-            NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:event];
-            [self trackEvent:type
-                   eventData:@{@"campaignId": notification[@"c"] ?: [NSNull null],
-                               @"notificationId": notification[@"n"] ?: [NSNull null]}
-                  customData:custom];
-            
-        } else if ([WP_ACTION_UPDATE_INSTALLATION isEqualToString:type]) {
-            
-            NSNumber *appliedServerSide = [WPUtil numberForKey:@"appliedServerSide" inDictionary:action];
-            NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action];
-            NSDictionary *directCustom = [WPUtil dictionaryForKey:@"custom" inDictionary:action];
-            if (installation == nil && directCustom != nil) {
-                installation = @{@"custom":directCustom};
-            }
-            if (installation) {
-                if ([appliedServerSide isEqual:@YES]) {
-                    WPLogDebug(@"Received server installation diff: %@", installation);
-                    [[WPJsonSyncInstallation forCurrentUser] receiveDiff:installation];
-                } else {
-                    WPLogDebug(@"Putting installation diff: %@", installation);
-                    [[WPJsonSyncInstallation forCurrentUser] put:installation];
-                }
-            }
-            
-        } else if ([WP_ACTION_ADD_PROPERTY isEqualToString:type]) {
-            
-            NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
-            if (custom) {
-                for (id field in custom) {
-                    [WonderPush addProperty:field value:custom[field]];
-                }
-            }
-            
-        } else if ([WP_ACTION_REMOVE_PROPERTY isEqualToString:type]) {
-            
-            NSDictionary *custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: action)];
-            if (custom) {
-                for (id field in custom) {
-                    [WonderPush removeProperty:field value:custom[field]];
-                }
-            }
-            
-        } else if ([WP_ACTION_ADD_TAG isEqualToString:type]) {
-            
-            NSArray *tags = [WPUtil arrayForKey:@"tags" inDictionary:action];
-            [WonderPush addTags:tags];
-            
-        } else if ([WP_ACTION_REMOVE_TAG isEqualToString:type]) {
-            
-            NSArray *tags = [WPUtil arrayForKey:@"tags" inDictionary:action];
-            [WonderPush removeTags:tags];
-            
-        } else if ([WP_ACTION_REMOVE_ALL_TAGS isEqualToString:type]) {
-            
-            [WonderPush removeAllTags];
-            
-        } else if ([WP_ACTION_CLOSE_NOTIFICATIONS isEqualToString:type]) {
 
-            // NOTE: Unlike on Android, this is asynchronous, and almost always resolves after the current notification is displayed
-            //       so until we have a completion handler in this method (and many levels up the call hierarchy,
-            //       it's not possible to remove all notifications and then display a new one.
-            if (@available(iOS 10.0, *)) {
-                [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-                    NSMutableArray<NSString *> *ids = [NSMutableArray new];
-                    for (UNNotification *notification in notifications) {
-                        // Filter tag (notification.request.identifier is never nil, so code is simpler by skipping [NSNull null] handling)
-                        NSString *tag = [WPUtil stringForKey:@"tag" inDictionary:action];
-                        if (tag != nil && ![tag isEqualToString:notification.request.identifier]) {
-                            continue;
-                        }
-                        // Filter threadId
-                        id threadId = action[@"threadId"];
-                        if (threadId != nil) {
-                            if ((threadId == [NSNull null] || [@"" isEqualToString:threadId]) && !(notification.request.content.threadIdentifier == nil || [@"" isEqualToString:notification.request.content.threadIdentifier])) {
-                                continue;
-                            } else if ([threadId isKindOfClass:[NSString class]] && ![threadId isEqualToString:notification.request.content.threadIdentifier]) {
+- (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData {
+    if (action.targetUrl) {
+        [WonderPush openURL:action.targetUrl];
+    }
+    for (WPActionFollowUp *followUp in action.followUps) {
+        [self executeActionFollowUp:followUp withReportingData:reportingData];
+    }
+}
+
+- (void) executeActionFollowUp:(WPActionFollowUp *)followUp withReportingData:(WPReportingData *)reportingData
+{
+    WPLogDebug(@"Running followUp %@", followUp);
+    @synchronized (self) {
+        switch (followUp.type) {
+            case WPActionFollowUpTypeTrackEvent: {
+                if (!followUp.event) return;
+                [self trackEvent:followUp.event
+                 eventData:@{@"campaignId": reportingData.campaignId ?: [NSNull null],
+                             @"notificationId": reportingData.notificationId ?: [NSNull null]}
+                 customData:followUp.custom];
+                
+            }
+                break;
+            case WPActionFollowUpTypeUpdateInstallation: {
+                if (followUp.appliedServerSide) {
+                    WPLogDebug(@"Received server installation diff: %@", followUp.installation);
+                    [[WPJsonSyncInstallation forCurrentUser] receiveDiff:followUp.installation];
+
+                } else {
+                    WPLogDebug(@"Putting installation diff: %@", followUp.installation);
+                    [[WPJsonSyncInstallation forCurrentUser] put:followUp.installation];
+                }
+                
+            }
+                break;
+            case WPActionFollowUpTypeAddProperty: {
+                if (followUp.custom) {
+                    for (id field in followUp.custom) {
+                        [WonderPush addProperty:field value:followUp.custom[field]];
+                    }
+                }
+            }
+                break;
+            case WPActionFollowUpTypeRemoveProperty: {
+                if (followUp.custom) {
+                    for (id field in followUp.custom) {
+                        [WonderPush removeProperty:field value:followUp.custom[field]];
+                    }
+                }
+
+            }
+                break;
+            case WPActionFollowUpTypeAddTag:
+                [WonderPush addTags:followUp.tags];
+                break;
+            case WPActionFollowUpTypeRemoveTag:
+                [WonderPush removeTags:followUp.tags];
+                break;
+            case WPActionFollowUpTypeRemoveAllTags:
+                [WonderPush removeAllTags];
+                break;
+            case WPActionFollowUpTypeCloseNotifications: {
+                // NOTE: Unlike on Android, this is asynchronous, and almost always resolves after the current notification is displayed
+                //       so until we have a completion handler in this method (and many levels up the call hierarchy,
+                //       it's not possible to remove all notifications and then display a new one.
+                if (@available(iOS 10.0, *)) {
+                    [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+                        NSMutableArray<NSString *> *ids = [NSMutableArray new];
+                        for (UNNotification *notification in notifications) {
+                            // Filter tag (notification.request.identifier is never nil, so code is simpler by skipping [NSNull null] handling)
+                            NSString *_Nullable tag = followUp.tags.firstObject;
+                            if (tag != nil && ![tag isEqualToString:notification.request.identifier]) {
                                 continue;
                             }
-                        }
-                        // Filter category
-                        id category = action[@"category"];
-                        if (category != nil) {
-                            if ((category == [NSNull null] || [@"" isEqualToString:category]) && !(notification.request.content.categoryIdentifier == nil || [@"" isEqualToString:notification.request.content.categoryIdentifier])) {
-                                continue;
-                            } else if ([category isKindOfClass:[NSString class]] && ![category isEqualToString:notification.request.content.categoryIdentifier]) {
-                                continue;
-                            }
-                        }
-                        // Filter targetContentId
-                        if (@available(iOS 13.0, *)) {
-                            id targetContentId = action[@"targetContentId"];
-                            if (targetContentId != nil) {
-                                if ((targetContentId == [NSNull null] || [@"" isEqualToString:targetContentId]) && !(notification.request.content.targetContentIdentifier == nil || [@"" isEqualToString:notification.request.content.targetContentIdentifier])) {
+                            // Filter threadId
+                            NSString *_Nullable threadId = followUp.threadId;
+                            if (threadId != nil) {
+                                if ([@"" isEqualToString:threadId] && !(notification.request.content.threadIdentifier == nil || [@"" isEqualToString:notification.request.content.threadIdentifier])) {
                                     continue;
-                                } else if ([targetContentId isKindOfClass:[NSString class]] && ![targetContentId isEqualToString:notification.request.content.targetContentIdentifier]) {
+                                } else if ([threadId isKindOfClass:[NSString class]] && ![threadId isEqualToString:notification.request.content.threadIdentifier]) {
                                     continue;
                                 }
                             }
+                            // Filter category
+                            NSString *_Nullable category = followUp.category;
+                            if (category != nil) {
+                                if ([@"" isEqualToString:category] && !(notification.request.content.categoryIdentifier == nil || [@"" isEqualToString:notification.request.content.categoryIdentifier])) {
+                                    continue;
+                                } else if ([category isKindOfClass:[NSString class]] && ![category isEqualToString:notification.request.content.categoryIdentifier]) {
+                                    continue;
+                                }
+                            }
+                            // Filter targetContentId
+                            if (@available(iOS 13.0, *)) {
+                                NSString *_Nullable targetContentId = followUp.targetContentId;
+                                if (targetContentId != nil) {
+                                    if ([@"" isEqualToString:targetContentId] && !(notification.request.content.targetContentIdentifier == nil || [@"" isEqualToString:notification.request.content.targetContentIdentifier])) {
+                                        continue;
+                                    } else if ([targetContentId isKindOfClass:[NSString class]] && ![targetContentId isEqualToString:notification.request.content.targetContentIdentifier]) {
+                                        continue;
+                                    }
+                                }
+                            }
+
+                            [ids addObject:notification.request.identifier];
                         }
-
-                        [ids addObject:notification.request.identifier];
-                    }
-                    [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:ids];
-                }];
-            }
-
-        } else if ([WP_ACTION_RESYNC_INSTALLATION isEqualToString:type]) {
-            
-            void (^cont)(NSDictionary *action) = ^(NSDictionary *action){
-                WPLogDebug(@"Running enriched action %@", action);
-                NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action] ?: @{};
-                NSNumber *reset = [WPUtil numberForKey:@"reset" inDictionary:action];
-                NSNumber *force = [WPUtil numberForKey:@"force" inDictionary:action];
-                
-                // Take or reset custom
-                if ([reset isEqual:@YES]) {
-                    [[WPJsonSyncInstallation forCurrentUser] receiveState:installation
-                                                            resetSdkState:[force isEqual:@YES]];
-                } else {
-                    [[WPJsonSyncInstallation forCurrentUser] receiveServerState:installation];
+                        [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:ids];
+                    }];
                 }
-                
-                [WonderPush refreshPreferencesAndConfiguration];
-            };
-            
-            NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:action];
-            if (installation) {
-                cont(action);
-            } else {
-                
-                WPLogDebug(@"Fetching installation for action %@", type);
-                [WonderPush get:@"/installation" params:nil handler:^(WPResponse *response, NSError *error) {
-                    if (error) {
-                        WPLog(@"Failed to fetch installation for running action %@: %@", action, error);
-                        return;
+            }
+                break;
+            case WPActionFollowUpTypeResyncInstallation: {
+                void (^cont)(WPActionFollowUp *) = ^(WPActionFollowUp *followUp){
+                    WPLogDebug(@"Running followUp %@", followUp);
+                    // Take or reset custom
+                    if (followUp.reset) {
+                        [[WPJsonSyncInstallation forCurrentUser] receiveState:followUp.installation
+                                                                resetSdkState:followUp.force];
+                    } else {
+                        [[WPJsonSyncInstallation forCurrentUser] receiveServerState:followUp.installation];
                     }
-                    if (![response.object isKindOfClass:[NSDictionary class]]) {
-                        WPLog(@"Failed to fetch installation for running action %@, got: %@", action, response.object);
-                        return;
-                    }
-                    NSMutableDictionary *installation = [(NSDictionary *)response.object mutableCopy];
-                    // Filter other fields starting with _ like _serverTime and _serverTook
-                    [installation removeObjectsForKeys:[installation.allKeys filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-                        return [evaluatedObject isKindOfClass:[NSString class]] && [(NSString*)evaluatedObject hasPrefix:@"_"];
-                    }]]];
-                    NSMutableDictionary *actionFilled = [[NSMutableDictionary alloc] initWithDictionary:action];
-                    actionFilled[@"installation"] = [NSDictionary dictionaryWithDictionary:installation];
-                    cont(actionFilled);
-                    // We added async processing, we need to ensure that we flush it too, especially in case we're running receiveActions in the background
-                    [WPJsonSyncInstallation flush];
-                }];
+                    
+                    [WonderPush refreshPreferencesAndConfiguration];
+                };
+                
+                if (followUp.installation) {
+                    cont(followUp);
+                } else {
+                    WPLogDebug(@"Fetching installation for followUp %@", followUp);
+                    [WonderPush get:@"/installation" params:nil handler:^(WPResponse *response, NSError *error) {
+                        if (error) {
+                            WPLog(@"Failed to fetch installation for running followUp %@: %@", followUp, error);
+                            return;
+                        }
+                        if (![response.object isKindOfClass:[NSDictionary class]]) {
+                            WPLog(@"Failed to fetch installation for running followUp %@, got: %@", followUp, response.object);
+                            return;
+                        }
+                        NSMutableDictionary *installation = [(NSDictionary *)response.object mutableCopy];
+                        // Filter other fields starting with _ like _serverTime and _serverTook
+                        [installation removeObjectsForKeys:[installation.allKeys filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+                            return [evaluatedObject isKindOfClass:[NSString class]] && [(NSString*)evaluatedObject hasPrefix:@"_"];
+                        }]]];
+                        followUp.installation = [NSDictionary dictionaryWithDictionary:installation];
+                        cont(followUp);
+                        // We added async processing, we need to ensure that we flush it too, especially in case we're running receiveActions in the background
+                        [WPJsonSyncInstallation flush];
+                    }];
+                }
+            }
+                break;
+            case WPActionFollowUpTypeRating: {
+                NSString *itunesAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:WP_ITUNES_APP_ID];
+                if (itunesAppId != nil) {
+                    [WonderPush openURL:[NSURL URLWithString:[NSString stringWithFormat:ITUNES_APP_URL_FORMAT, itunesAppId]]];
+                }
+            }
+                break;
+            case WPActionFollowUpTypeMethod: {
+                NSDictionary *parameters = @{
+                                             WP_REGISTERED_CALLBACK_METHOD_KEY: followUp.methodName ?: [NSNull null],
+                                             WP_REGISTERED_CALLBACK_PARAMETER_KEY: followUp.methodArg ?: [NSNull null],
+                                             };
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSNotificationCenter defaultCenter] postNotificationName:followUp.methodName object:self userInfo:parameters]; // @FIXME Deprecated, remove in v4.0.0
+                    [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_REGISTERED_CALLBACK object:self userInfo:parameters];
+                });
+            }
+                break;
+            case WPActionFollowUpTypeMapOpen: {
+                NSNumber *lat = followUp.latitude;
+                NSNumber *lon = followUp.longitude;
+                if (!lat || !lon) return;
+                NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [lat doubleValue], [lon doubleValue]];
+                WPLogDebug(@"url: %@", url);
+                [WonderPush openURL:[NSURL URLWithString:url]];
+            }
+                break;
+            case WPActionFollowUpTypeDumpState: {
+                NSDictionary *stateDump = [[WPConfiguration sharedConfiguration] dumpState] ?: @{};
+                WPLog(@"STATE DUMP: %@", stateDump);
+                [self trackInternalEvent:@"@DEBUG_DUMP_STATE"
+                               eventData:nil
+                              customData:@{@"ignore_sdkStateDump": stateDump}];
                 
             }
-            
-        } else if ([WP_ACTION_RATING isEqualToString:type]) {
-            
-            NSString *itunesAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:WP_ITUNES_APP_ID];
-            if (itunesAppId != nil) {
-                [WonderPush openURL:[NSURL URLWithString:[NSString stringWithFormat:ITUNES_APP_URL_FORMAT, itunesAppId]]];
+                break;
+            case WPActionFollowUpTypeOverrideSetLogging: {
+                WPLog(@"OVERRIDE setLogging: %@", followUp.force ? @"YES" : @"NO");
+                [WPConfiguration sharedConfiguration].overrideSetLogging = [NSNumber numberWithBool:followUp.force];
+                if (followUp.force) WPLogEnable(true);
             }
-            
-        } else  if ([WP_ACTION_METHOD_CALL isEqualToString:type]) {
-            
-            NSString *methodName = [WPUtil stringForKey:@"method" inDictionary:action];
-            id methodParameter = [WPUtil nullsafeObjectForKey:@"methodArg" inDictionary:action];
-            NSDictionary *parameters = @{
-                                         WP_REGISTERED_CALLBACK_METHOD_KEY: methodName ?: [NSNull null],
-                                         WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodParameter ?: [NSNull null],
-                                         };
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:methodName object:self userInfo:parameters]; // @FIXME Deprecated, remove in v4.0.0
-                [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_REGISTERED_CALLBACK object:self userInfo:parameters];
-            });
-            
-        } else if ([WP_ACTION_LINK isEqualToString:type]) {
-            
-            NSString *url = [WPUtil stringForKey:@"url" inDictionary:action];
-            [WonderPush openURL:[NSURL URLWithString:url]];
-            
-        } else if ([WP_ACTION_MAP_OPEN isEqualToString:type]) {
-            
-            NSDictionary *mapData = [WPUtil dictionaryForKey:@"map" inDictionary:notification] ?: @{};
-            NSDictionary *place = [WPUtil dictionaryForKey:@"place" inDictionary:mapData] ?: @{};
-            NSDictionary *point = [WPUtil dictionaryForKey:@"point" inDictionary:place] ?: @{};
-            NSNumber *lat = [WPUtil numberForKey:@"lat" inDictionary:point];
-            NSNumber *lon = [WPUtil numberForKey:@"lon" inDictionary:point];
-            if (!lat || !lon) return;
-            NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [lat doubleValue], [lon doubleValue]];
-            WPLogDebug(@"url: %@", url);
-            [WonderPush openURL:[NSURL URLWithString:url]];
-            
-        } else if ([WP_ACTION__DUMP_STATE isEqualToString:type]) {
-            
-            NSDictionary *stateDump = [[WPConfiguration sharedConfiguration] dumpState] ?: @{};
-            WPLog(@"STATE DUMP: %@", stateDump);
-            [self trackInternalEvent:@"@DEBUG_DUMP_STATE"
-                           eventData:nil
-                          customData:@{@"ignore_sdkStateDump": stateDump}];
-            
-        } else if ([WP_ACTION__OVERRIDE_SET_LOGGING isEqualToString:type]) {
-            
-            NSNumber *force = [WPUtil numberForKey:@"force" inDictionary:action];
-            WPLog(@"OVERRIDE setLogging: %@", force);
-            [WPConfiguration sharedConfiguration].overrideSetLogging = force;
-            if (force != nil) {
-                WPLogEnable([force boolValue]);
+                break;
+            case WPActionFollowUpTypeOverrideNotificationReceipt: {
+                WPLog(@"OVERRIDE notification receipt: %@", followUp.force ? @"YES" : @"NO");
+                [WPConfiguration sharedConfiguration].overrideNotificationReceipt = [NSNumber numberWithBool:followUp.force];
             }
-            
-        } else if ([WP_ACTION__OVERRIDE_NOTIFICATION_RECEIPT isEqualToString:type]) {
-            
-            NSNumber *force = [WPUtil numberForKey:@"force" inDictionary:action];
-            WPLog(@"OVERRIDE notification receipt: %@", force);
-            [WPConfiguration sharedConfiguration].overrideNotificationReceipt = force;
-            
-        } else {
-            WPLogDebug(@"Unhandled action type %@", type);
+                break;
+            default:
+                WPLogDebug(@"Unhandled followUp %@", followUp);
+                break;
         }
     }
 }

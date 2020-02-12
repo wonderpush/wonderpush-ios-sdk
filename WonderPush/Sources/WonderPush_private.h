@@ -19,7 +19,8 @@
 
 #import "WonderPush.h"
 #import "WPResponse.h"
-
+#import "WPReportingData.h"
+#import "WPInAppMessagingRenderingPrivate.h"
 
 #define SDK_VERSION @"iOS-3.2.0"
 #define PRODUCTION_API_DOMAIN @"api.wonderpush.com"
@@ -87,10 +88,24 @@
  */
 #define WP_DEFAULT_BUTTON_LOCALIZED_LABEL [WPUtil wpLocalizedString:@"CLOSE" withDefault:@"Close"]
 
+/**
+ * Name of the NSNotificationCenter notification fired when an event is fired.
+ */
+extern NSString * const WPEventFiredNotification;
+
+/**
+* Name of the NSNotificationCenter notification payload key that contains the name of the event fired.
+*/
+extern NSString * const WPEventFiredNotificationEventTypeKey;
+
+/**
+* Name of the NSNotificationCenter notification payload key that contains the event data.
+*/
+extern NSString * const WPEventFiredNotificationEventDataKey;
 
 @interface WonderPush (private)
 
-+ (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification;
++ (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData;
 
 + (void) updateInstallationCoreProperties;
 

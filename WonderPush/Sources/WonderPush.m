@@ -30,6 +30,9 @@
 #import "WonderPushConcreteAPI.h"
 #import "WonderPushLogErrorAPI.h"
 #import "WPHTMLInAppController.h"
+#import "WPIAMTemporaryStorage.h"
+#import "WPURLFollower.h"
+#import "WPAction_private.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -58,6 +61,10 @@ static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
 static BOOL _locationOverridden = NO;
 static CLLocation *_locationOverride = nil;
 static UIStoryboard *storyboard = nil;
+
+NSString * const WPEventFiredNotification = @"WPEventFiredNotification";
+NSString * const WPEventFiredNotificationEventTypeKey = @"WPEventFiredNotificationEventTypeKey";
+NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificationEventDataKey";
 
 + (void) initialize
 {
@@ -810,9 +817,9 @@ static UIStoryboard *storyboard = nil;
     dispatch_async(dispatch_get_main_queue(), presentBlock);
 }
 
-+ (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
++ (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData
 {
-    [wonderPushAPI executeAction:action onNotification:notification];
+    [wonderPushAPI executeAction:action withReportingData:reportingData];
 }
 
 + (void) setDeviceToken:(NSString *)deviceToken
@@ -858,12 +865,10 @@ static UIStoryboard *storyboard = nil;
         if (appState != UIApplicationStateInactive || _previousApplicationState == UIApplicationStateActive) {
             NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
             id atReceptionActions = [WPUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
-            if (atReceptionActions) {
-                for (id action in ((NSArray*)atReceptionActions)) {
-                    if ([action isKindOfClass:[NSDictionary class]]) {
-                        [self executeAction:action onNotification:wonderpushData];
-                    }
-                }
+            if ([atReceptionActions isKindOfClass:NSArray.class]) {
+                WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
+                WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
+                [self executeAction:action withReportingData:reportingData];
             }
 
             [WonderPush trackNotificationReceived:notificationDictionary];
@@ -899,6 +904,13 @@ static UIStoryboard *storyboard = nil;
         return NO;
     WPLogDebug(@"handleNotification:%@ withOriginalApplicationState:%ld", notificationDictionary, (long)applicationState);
 
+    // Handle in-app messages
+    if (notificationDictionary[@"_wp"]
+        && [notificationDictionary[@"_wp"][@"type"] isEqualToString:@"data"]
+        && [notificationDictionary[@"_wp"][@"inApp"] isKindOfClass:[NSDictionary class]]) {
+        [[WPIAMTemporaryStorage temporaryStorage] handleNotification:notificationDictionary];
+    }
+
     NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
     NSDictionary *apsForeground = [WPUtil dictionaryForKey:@"apsForeground" inDictionary:wonderpushData];
     if (!apsForeground || apsForeground.count == 0) apsForeground = nil;
@@ -914,12 +926,10 @@ static UIStoryboard *storyboard = nil;
         // (they will not be honored for silent notifications, nor for regular notifications that are not clicked)
         NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
         id atReceptionActions = [WPUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
-        if (atReceptionActions) {
-            for (id action in ((NSArray*)atReceptionActions)) {
-                if ([action isKindOfClass:[NSDictionary class]]) {
-                    [self executeAction:action onNotification:wonderpushData];
-                }
-            }
+        if ([atReceptionActions isKindOfClass:NSArray.class]) {
+            WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
+            WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
+            [self executeAction:action withReportingData:reportingData];
         }
     }
 
@@ -1068,12 +1078,10 @@ static UIStoryboard *storyboard = nil;
     [self trackNotificationOpened:notificationInformation];
 
     id atOpenActions = [WPUtil arrayForKey:@"actions" inDictionary:wonderpushData];
-    if (atOpenActions) {
-        for (id action in ((NSArray*)atOpenActions)) {
-            if ([action isKindOfClass:[NSDictionary class]]) {
-                [self executeAction:action onNotification:wonderpushData];
-            }
-        }
+    if ([atOpenActions isKindOfClass:NSArray.class]) {
+        WPAction *action = [WPAction actionWithDictionaries:atOpenActions];
+        WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
+        [self executeAction:action withReportingData:reportingData];
     }
 
     NSString *targetUrl = [WPUtil stringForKey:WP_TARGET_URL_KEY inDictionary:wonderpushData];
@@ -1573,15 +1581,10 @@ static UIStoryboard *storyboard = nil;
             completionHandlerCalled = YES;
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (url == nil || ![[UIApplication sharedApplication] canOpenURL:url]) return;
-            if (@available(iOS 10.0, *)) {
-                [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-            } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                [[UIApplication sharedApplication] openURL:url];
-#pragma clang diagnostic pop
-            }
+            if (url == nil) return;
+            [[WPURLFollower URLFollower] followURL:url withCompletionBlock:^(BOOL success) {
+                WPLogDebug(@"Successfully opened %@", url);
+            }];
         });
     };
 

@@ -17,5 +17,6 @@
 #import <Foundation/Foundation.h>
 
 void WPLogEnable(BOOL enabled);
+BOOL WPLogEnabled(void);
 void WPLogDebug(NSString *format, ...) NS_FORMAT_FUNCTION(1, 2);
 void WPLog(NSString *format, ...) NS_FORMAT_FUNCTION(1, 2);

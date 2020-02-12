@@ -25,6 +25,11 @@ void WPLogEnable(BOOL enabled)
     _loggingEnabled = enabled;
 }
 
+BOOL WPLogEnabled()
+{
+    return _loggingEnabled;
+}
+
 void WPLogv(NSString *format, va_list args)
 {
     NSString *content = [[NSString alloc] initWithFormat:format arguments:args];

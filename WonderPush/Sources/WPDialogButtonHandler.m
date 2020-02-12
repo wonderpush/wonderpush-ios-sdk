@@ -17,6 +17,7 @@
 #import "WPDialogButtonHandler.h"
 #import "WonderPush_private.h"
 #import "WPUtil.h"
+#import "WPAction_private.h"
 
 @implementation WPDialogButtonHandler
 
@@ -31,10 +32,9 @@
 - (void)executeButtonActions:(NSArray *)actions
 {
     if (![actions isKindOfClass:[NSArray class]]) return;
-    for (NSDictionary *action in actions) {
-        if (![action isKindOfClass:[NSDictionary class]]) continue;
-        [WonderPush executeAction:action onNotification:notificationConfiguration];
-    }
+    WPAction *action = [WPAction actionWithDictionaries:actions];
+    WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:notificationConfiguration];
+    [WonderPush executeAction:action withReportingData:reportingData];
 }
 
 - (void)clickedButtonAtIndex:(NSInteger)buttonIndex

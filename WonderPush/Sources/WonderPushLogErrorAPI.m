@@ -30,9 +30,9 @@
     return nil;
 }
 
-- (void)executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification
+- (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData
 {
-    [self log:@"executeAction:onNotification:"];
+    [self log:@"executeAction:withReportingData:"];
 }
 
 - (NSDictionary *)getInstallationCustomProperties

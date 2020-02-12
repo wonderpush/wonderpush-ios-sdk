@@ -1,0 +1,5 @@
+WonderPush iOS SDK
+Copyright 2020 WonderPush
+
+This product includes software developed at
+WonderPush (https://www.wonderpush.com/).

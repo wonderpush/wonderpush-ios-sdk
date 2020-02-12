@@ -7,7 +7,8 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
-
+#import "WPReportingData.h"
+#import "WPInAppMessagingRenderingPrivate.h"
 @protocol WonderPushAPI
 // Public API
 - (void) subscribeToNotifications;
@@ -52,7 +53,7 @@
 - (void) trackEvent:(NSString*)type withData:(NSDictionary *)data;
 - (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData;
 - (void) refreshDeviceTokenIfPossible;
-- (void) executeAction:(NSDictionary *)action onNotification:(NSDictionary *)notification;
+- (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData;
 - (CLLocation *) location;
 - (void) setDeviceToken:(NSString *)deviceToken;
 @end
