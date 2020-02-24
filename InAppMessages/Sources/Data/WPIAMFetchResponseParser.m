@@ -143,7 +143,6 @@
                   campaignNode);
             return nil;
         }
-        id payload = campaignNode[@"payload"];
         id notificationsNode = campaignNode[@"notifications"];
         if (![notificationsNode isKindOfClass:[NSArray class]] || [notificationsNode count] <= 0) {
             WPLog(
@@ -161,7 +160,8 @@
                   campaignNode);
             return nil;
         }
-        
+
+        id payload = messageNode[@"payload"];
         id reportingNode = messageNode[@"reporting"];
         if (![reportingNode isKindOfClass:[NSDictionary class]]) {
             WPLog(
@@ -325,7 +325,7 @@
         }
         
         NSArray<WPIAMDisplayTriggerDefinition *> *triggersDefinition =
-        [self parseTriggeringCondition:messageNode[@"triggers"]];
+        [self parseTriggeringCondition:campaignNode[@"triggers"]];
         
         if (isTestMessage) {
             WPLog(
