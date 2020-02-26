@@ -8,39 +8,44 @@
 
 #import "WPAction_private.h"
 #import "WPUtil.h"
+#import "WPLog.h"
+
+@interface WPAction (SuperPrivate)
+- (instancetype) initWithDictionaries:(NSArray<NSDictionary *> *)dictionaries targetUrl:(NSURL *_Nullable)targetUrl;
+@end
 
 @implementation WPAction {
     NSArray<WPActionFollowUp *> *_followUps;
 }
 
-+ (instancetype)actionWithDictionaries:(NSArray<NSDictionary *> *)dicts {
-    NSURL *URL = nil;
-    NSMutableArray *followUps = [NSMutableArray new];
-    for (NSDictionary *dict in dicts) {
-        if ([@"link" isEqualToString:[dict valueForKey:@"type"]]) {
-            NSString *URLString = [dict valueForKey:@"url"];
-            URL = [NSURL URLWithString:URLString];
-            continue;
++ (nullable instancetype)actionWithDictionaries:(NSArray<NSDictionary *> *)dicts targetUrl:(NSURL * _Nullable)targetUrl {
+    return [[WPAction alloc] initWithDictionaries:dicts targetUrl:targetUrl];
+}
+
++ (nullable instancetype)actionWithDictionaries:(NSArray<NSDictionary *> *)dicts {
+    return [[WPAction alloc] initWithDictionaries:dicts targetUrl:nil];
+}
+
+- (instancetype)initWithDictionaries:(NSArray<NSDictionary *> *)dicts targetUrl:(NSURL * _Nullable)targetUrl {
+    if (self = [super init]) {
+        NSMutableArray *followUps = [NSMutableArray new];
+        for (NSDictionary *dict in dicts) {
+            if ([@"link" isEqualToString:[dict valueForKey:@"type"]]) {
+                NSString *URLString = [dict valueForKey:@"url"];
+                _targetUrl = [NSURL URLWithString:URLString];
+                continue;
+            }
+            WPActionFollowUp *followUp = [WPActionFollowUp actionFollowUpWithDictionary:dict];
+            if (followUp) [followUps addObject:followUp];
         }
-        WPActionFollowUp *followUp = [WPActionFollowUp actionFollowUpWithDictionary:dict];
-        if (followUp) [followUps addObject:followUp];
+        _followUps = [NSArray arrayWithArray:followUps];
+        if (targetUrl) _targetUrl = targetUrl;
     }
-    WPAction *action = [[WPAction alloc]
-                        initWithURL:URL
-                        followUps:[NSArray arrayWithArray:followUps]];
-    return action;
+    return self;
 }
 
 - (NSArray<WPActionFollowUp *> *) followUps {
     return _followUps;
-}
-
-- (instancetype) initWithURL:(NSURL*)URL followUps:(NSArray<WPActionFollowUp *> *)followUps {
-    if (self = [super init]) {
-        _targetUrl = URL;
-        _followUps = followUps;
-    }
-    return self;
 }
 
 @end

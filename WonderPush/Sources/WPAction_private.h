@@ -50,12 +50,11 @@ typedef enum {
 @end
 
 @interface WPAction (Private)
-@property (nonatomic, nullable, readonly) NSDictionary *dict;
 @property (nonatomic, readonly) NSArray<WPActionFollowUp *> *followUps;
 
 + (nullable instancetype)actionWithDictionaries:(NSArray<NSDictionary *> *)dicts;
++ (nullable instancetype)actionWithDictionaries:(NSArray<NSDictionary *> *)dicts targetUrl:(NSURL *_Nullable)targetUrl;
 - (instancetype) init NS_UNAVAILABLE;
-- (instancetype) initWithURL:(NSURL*)URL followUps:(NSArray<WPActionFollowUp *> *)followUps;
 @end
 
 NS_ASSUME_NONNULL_END
