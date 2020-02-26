@@ -27,6 +27,7 @@
       "name": "Extension",
       "source_files": [
         "WonderPushExtension/Sources/*.{m,h}",
+        "WonderPush/Sources/WPNotificationCategoryManager.{m,h}",
         "WonderPush/Sources/WPLog.{m,h}"
       ]
     }

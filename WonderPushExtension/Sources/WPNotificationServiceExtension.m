@@ -17,6 +17,7 @@
 #import "WPNotificationServiceExtension.h"
 
 #import "WPLog.h"
+#import "WPNotificationCategoryManager.h"
 
 #import <objc/runtime.h>
 
@@ -79,6 +80,21 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         
         id wpData = [content.userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY];
         
+        NSArray *_Nullable buttons = [wpData valueForKey:@"buttons"];
+        if ([buttons isKindOfClass:NSArray.class]) {
+            NSUInteger buttonCounter = 0;
+            NSMutableArray<UNNotificationAction *> *actions = [NSMutableArray new];
+            for (NSDictionary *button in buttons) {
+                NSString *label = [button valueForKey:@"label"];
+                if (![label isKindOfClass:NSString.class] || ![(NSString *)label length]) continue;
+                NSString *actionIdentifier = [[WPNotificationCategoryManager sharedInstance] actionIdentifierForButtonAtIndex:buttonCounter];
+                UNNotificationAction *action = [UNNotificationAction actionWithIdentifier:actionIdentifier title:label options:UNNotificationActionOptionForeground];
+                [actions addObject:action];
+                buttonCounter++;
+            }
+            UNNotificationCategory *category = [[WPNotificationCategoryManager sharedInstance] registerNotificationCategoryIdentifierWithNotificationId:[wpData valueForKey:@"n"] actions:actions];
+            content.categoryIdentifier = category.identifier;
+        }
         NSArray *attachments = [wpData valueForKey:@"attachments"];
         if (attachments && [attachments isKindOfClass:[NSArray class]] && attachments.count > 0) {
             NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];

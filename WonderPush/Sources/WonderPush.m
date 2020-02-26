@@ -33,6 +33,7 @@
 #import "WPIAMTemporaryStorage.h"
 #import "WPURLFollower.h"
 #import "WPAction_private.h"
+#import "WPNotificationCategoryManager.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -625,7 +626,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 + (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler
 {
     WPLogDebug(@"userNotificationCenter:%@ didReceiveNotificationResponse:%@ withCompletionHandler:", center, response);
-    [self handleNotificationOpened:response.notification.request.content.userInfo];
+    [self handleNotificationOpened:response.notification.request.content.userInfo withResponse:response];
     completionHandler();
 }
 
@@ -1031,7 +1032,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             UIAlertController *systemLikeAlert = [UIAlertController alertControllerWithTitle:title message:alert preferredStyle:UIAlertControllerStyleAlert];
             [systemLikeAlert addAction:[UIAlertAction actionWithTitle:[WPUtil wpLocalizedString:@"CLOSE" withDefault:@"Close"] style:UIAlertActionStyleCancel handler:nil]];
             [systemLikeAlert addAction:[UIAlertAction actionWithTitle:action style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                [WonderPush handleNotificationOpened:notificationDictionary];
+                [WonderPush handleNotificationOpened:notificationDictionary withResponse:nil];
             }]];
 
             __block void (^presentBlock)(void) = ^{
@@ -1049,15 +1050,14 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     } else {
 
         WPLogDebug(@"handleNotification:withOriginalApplicationState: auto open");
-        return [self handleNotificationOpened:notificationDictionary];
+        return [self handleNotificationOpened:notificationDictionary withResponse:nil];
 
     }
 
     return NO;
 }
 
-+ (BOOL) handleNotificationOpened:(NSDictionary*)notificationDictionary
-{
++ (BOOL) handleNotificationOpened:(NSDictionary*)notificationDictionary withResponse:(id)response {
     if (![WonderPush isNotificationForWonderPush:notificationDictionary])
         return NO;
     WPLogDebug(@"handleNotificationOpened:%@", notificationDictionary);
@@ -1076,6 +1076,25 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
     [self trackNotificationOpened:notificationInformation];
+
+    WPNotificationCategoryManager *categoryManager = [WPNotificationCategoryManager sharedInstance];
+    if (@available(iOS 10.0, *)) {
+        UNNotificationResponse *notificationResponse = (UNNotificationResponse *)response;
+        if (notificationResponse && notificationResponse.actionIdentifier && [categoryManager isWonderPushActionIdentifier:notificationResponse.actionIdentifier]) {
+            NSInteger indexOfButton = [categoryManager indexOfButtonWithActionIdentifier:notificationResponse.actionIdentifier];
+            NSArray *buttons = [WPUtil arrayForKey:@"buttons" inDictionary:wonderpushData];
+            if (buttons && indexOfButton >= 0 && indexOfButton < buttons.count) {
+                NSDictionary *button = [buttons objectAtIndex:indexOfButton];
+                NSArray *actions = [WPUtil arrayForKey:@"actions" inDictionary:button];
+                NSString *targetUrlString = [WPUtil stringForKey:@"targetUrl" inDictionary:button];
+                NSURL *targetUrl = [NSURL URLWithString:targetUrlString];
+                WPAction *action = [WPAction actionWithDictionaries:actions ? actions : @[] targetUrl:targetUrl];
+                WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
+                [self executeAction:action withReportingData:reportingData];
+                return YES;
+            }
+        }
+    }
 
     id atOpenActions = [WPUtil arrayForKey:@"actions" inDictionary:wonderpushData];
     if ([atOpenActions isKindOfClass:NSArray.class]) {
