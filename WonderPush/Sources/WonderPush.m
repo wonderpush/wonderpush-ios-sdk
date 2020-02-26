@@ -1075,35 +1075,34 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
-    [self trackNotificationOpened:notificationInformation];
 
-    WPNotificationCategoryManager *categoryManager = [WPNotificationCategoryManager sharedInstance];
+    NSString *targetUrl = [WPUtil stringForKey:WP_TARGET_URL_KEY inDictionary:wonderpushData];
+    id actionsToExecute = [WPUtil arrayForKey:@"actions" inDictionary:wonderpushData];
+
     if (@available(iOS 10.0, *)) {
+        WPNotificationCategoryManager *categoryManager = [WPNotificationCategoryManager sharedInstance];
         UNNotificationResponse *notificationResponse = (UNNotificationResponse *)response;
         if (notificationResponse && notificationResponse.actionIdentifier && [categoryManager isWonderPushActionIdentifier:notificationResponse.actionIdentifier]) {
             NSInteger indexOfButton = [categoryManager indexOfButtonWithActionIdentifier:notificationResponse.actionIdentifier];
             NSArray *buttons = [WPUtil arrayForKey:@"buttons" inDictionary:wonderpushData];
             if (buttons && indexOfButton >= 0 && indexOfButton < buttons.count) {
                 NSDictionary *button = [buttons objectAtIndex:indexOfButton];
-                NSArray *actions = [WPUtil arrayForKey:@"actions" inDictionary:button];
-                NSString *targetUrlString = [WPUtil stringForKey:@"targetUrl" inDictionary:button];
-                NSURL *targetUrl = [NSURL URLWithString:targetUrlString];
-                WPAction *action = [WPAction actionWithDictionaries:actions ? actions : @[] targetUrl:targetUrl];
-                WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
-                [self executeAction:action withReportingData:reportingData];
-                return YES;
+                actionsToExecute = [WPUtil arrayForKey:@"actions" inDictionary:button];
+                targetUrl = [WPUtil stringForKey:@"targetUrl" inDictionary:button];
+                NSString *buttonLabel = [WPUtil stringForKey:@"label" inDictionary:button];
+                if (buttonLabel) notificationInformation[@"buttonLabel"] = buttonLabel;
             }
         }
     }
 
-    id atOpenActions = [WPUtil arrayForKey:@"actions" inDictionary:wonderpushData];
-    if ([atOpenActions isKindOfClass:NSArray.class]) {
-        WPAction *action = [WPAction actionWithDictionaries:atOpenActions];
+    [self trackNotificationOpened:notificationInformation];
+
+    if ([actionsToExecute isKindOfClass:NSArray.class]) {
+        WPAction *action = [WPAction actionWithDictionaries:actionsToExecute];
         WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
         [self executeAction:action withReportingData:reportingData];
     }
 
-    NSString *targetUrl = [WPUtil stringForKey:WP_TARGET_URL_KEY inDictionary:wonderpushData];
     if (!targetUrl)
         targetUrl = WP_TARGET_URL_DEFAULT;
     WPLogDebug(@"handleNotificationOpened: targetUrl:%@", targetUrl);
