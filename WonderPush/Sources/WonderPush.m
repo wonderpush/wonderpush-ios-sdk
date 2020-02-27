@@ -33,7 +33,7 @@
 #import "WPIAMTemporaryStorage.h"
 #import "WPURLFollower.h"
 #import "WPAction_private.h"
-#import "WPNotificationCategoryManager.h"
+#import "WPNotificationCategoryHelper.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -1080,10 +1080,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     id actionsToExecute = [WPUtil arrayForKey:@"actions" inDictionary:wonderpushData];
 
     if (@available(iOS 10.0, *)) {
-        WPNotificationCategoryManager *categoryManager = [WPNotificationCategoryManager sharedInstance];
+        WPNotificationCategoryHelper *categoryHelper = [WPNotificationCategoryHelper sharedInstance];
         UNNotificationResponse *notificationResponse = (UNNotificationResponse *)response;
-        if (notificationResponse && notificationResponse.actionIdentifier && [categoryManager isWonderPushActionIdentifier:notificationResponse.actionIdentifier]) {
-            NSInteger indexOfButton = [categoryManager indexOfButtonWithActionIdentifier:notificationResponse.actionIdentifier];
+        if (notificationResponse && notificationResponse.actionIdentifier && [categoryHelper isWonderPushActionIdentifier:notificationResponse.actionIdentifier]) {
+            NSInteger indexOfButton = [categoryHelper indexOfButtonWithActionIdentifier:notificationResponse.actionIdentifier];
             NSArray *buttons = [WPUtil arrayForKey:@"buttons" inDictionary:wonderpushData];
             if (buttons && indexOfButton >= 0 && indexOfButton < buttons.count) {
                 NSDictionary *button = [buttons objectAtIndex:indexOfButton];

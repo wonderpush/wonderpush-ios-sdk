@@ -12,6 +12,7 @@
 
 NSString * const kNotificationCategoryPrefix = @"WonderPushNotification";
 NSString * const kNotificationCategorySeparator = @"_";
+// FIXME: please keep in sync with kActionIdentifierPrefix defined in WPNotificationCategoryManager
 NSString * const kActionIdentifierPrefix = @"WonderPush_";
 
 @implementation WPNotificationCategoryManager
@@ -22,17 +23,6 @@ NSString * const kActionIdentifierPrefix = @"WonderPush_";
         sharedInstance = [WPNotificationCategoryManager new];
     });
     return sharedInstance;
-}
-
-- (BOOL)isWonderPushActionIdentifier:(NSString *)actionIdentifier {
-    return [actionIdentifier hasPrefix:kActionIdentifierPrefix];
-}
-
-- (NSInteger)indexOfButtonWithActionIdentifier:(NSString *)actionIdentifier {
-    if ([self isWonderPushActionIdentifier:actionIdentifier]) {
-        return [actionIdentifier substringFromIndex:kActionIdentifierPrefix.length].intValue;
-    }
-    return -1;
 }
 
 - (NSString *)actionIdentifierForButtonAtIndex:(NSUInteger)index {
