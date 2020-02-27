@@ -102,6 +102,7 @@
 		9998CAD2221C75560028D955 /* WonderPushLogErrorAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 99129C3F220D8E0F00111272 /* WonderPushLogErrorAPI.h */; };
 		9998CAD3221C75630028D955 /* WonderPushConcreteAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C2B220C8B0800111272 /* WonderPushConcreteAPI.m */; };
 		9998CAD4221C75630028D955 /* WonderPushLogErrorAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */; };
+		99A1932C2407AF3400516B79 /* WPNotificationCategoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 995E5E02240445E100367114 /* WPNotificationCategoryManager.m */; };
 		99C862C123F6F5AC00E37CE1 /* WPReportingData.h in Headers */ = {isa = PBXBuildFile; fileRef = 99C862BF23F6F5AC00E37CE1 /* WPReportingData.h */; };
 		99C862C223F6F5AC00E37CE1 /* WPReportingData.m in Sources */ = {isa = PBXBuildFile; fileRef = 99C862C023F6F5AC00E37CE1 /* WPReportingData.m */; };
 		99DE7EB623F59B4500886E43 /* WPIAMTemporaryStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 99DE7EB423F59B4500886E43 /* WPIAMTemporaryStorage.h */; };
@@ -1129,6 +1130,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9909CE5C2221602500F73A0B /* WPNotificationServiceExtension.m in Sources */,
+				99A1932C2407AF3400516B79 /* WPNotificationCategoryManager.m in Sources */,
 				9909CE5D2221602B00F73A0B /* WPLog.m in Sources */,
 				99F384952225A5E400EA2ECD /* NotificationServiceExtension.m in Sources */,
 			);
