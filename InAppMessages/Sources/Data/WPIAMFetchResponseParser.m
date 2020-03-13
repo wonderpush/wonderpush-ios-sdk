@@ -114,9 +114,9 @@
             }
         } else if ([nextTriggerCondition[@"event"] isKindOfClass:[NSDictionary class]]) {
             NSDictionary *triggeringEvent = (NSDictionary *)nextTriggerCondition[@"event"];
-            if (triggeringEvent[@"name"]) {
+            if (triggeringEvent[@"type"]) {
                 [triggers addObject:[[WPIAMDisplayTriggerDefinition alloc]
-                                     initWithEvent:triggeringEvent[@"name"] delay:delay]];
+                                     initWithEvent:triggeringEvent[@"type"] delay:delay]];
             }
         }
     }
