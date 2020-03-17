@@ -22,7 +22,7 @@
 #import "WPReportingData.h"
 #import "WPInAppMessagingRenderingPrivate.h"
 
-#define SDK_VERSION @"iOS-3.3.1"
+#define SDK_VERSION @"iOS-3.3.2"
 #define PRODUCTION_API_DOMAIN @"api.wonderpush.com"
 #define PRODUCTION_API_URL @"https://" PRODUCTION_API_DOMAIN @"/v1/"
 
