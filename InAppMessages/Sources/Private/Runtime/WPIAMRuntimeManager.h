@@ -42,6 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Resume runtime flows/functions.
 - (void)resume;
 
+// Force fetch
+- (void)forceFetchInApps;
+
 // Get the global singleton instance
 + (WPIAMRuntimeManager *)getSDKRuntimeInstance;
 

@@ -266,4 +266,14 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
                 "with these settings: %@",
                 (double)([timeFetcher currentTimestampInSeconds] - start), settings);
 }
+
+- (void) forceFetchInApps {
+    [self.restfulFetcher
+    fetchMessagesWithCompletion:^(NSArray<WPIAMMessageDefinition *> *_Nullable messages,
+                                  NSNumber *_Nullable nextFetchWaitTime,
+                                  NSInteger discardedMessageCount,
+                                  NSError *_Nullable error) {
+        [self.messageCache setMessageData:messages];
+    }];
+}
 @end

@@ -34,6 +34,7 @@
 #import "WPURLFollower.h"
 #import "WPAction_private.h"
 #import "WPNotificationCategoryHelper.h"
+#import "WPIAMRuntimeManager.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -909,7 +910,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if (notificationDictionary[@"_wp"]
         && [notificationDictionary[@"_wp"][@"type"] isEqualToString:@"data"]
         && [notificationDictionary[@"_wp"][@"inApp"] isKindOfClass:[NSDictionary class]]) {
+        // Store the newly received dictionary in our temporary storage
         [[WPIAMTemporaryStorage temporaryStorage] handleNotification:notificationDictionary];
+        // Force a fetch that will read the updated temporary storage
+        [[WPIAMRuntimeManager getSDKRuntimeInstance] forceFetchInApps];
     }
 
     NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
