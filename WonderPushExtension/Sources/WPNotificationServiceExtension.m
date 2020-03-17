@@ -78,9 +78,9 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
             return NO;
         }
         
-        id wpData = [content.userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY];
-        
-        NSArray *_Nullable buttons = [wpData valueForKey:@"buttons"];
+        id _Nullable wpData = [content.userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY];
+        id _Nullable alertData = [wpData valueForKey:@"alert"];
+        NSArray *_Nullable buttons = [alertData valueForKey:@"buttons"];
         if ([buttons isKindOfClass:NSArray.class]) {
             NSUInteger buttonCounter = 0;
             NSMutableArray<UNNotificationAction *> *actions = [NSMutableArray new];

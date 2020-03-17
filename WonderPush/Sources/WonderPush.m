@@ -1081,10 +1081,11 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
     if (@available(iOS 10.0, *)) {
         WPNotificationCategoryHelper *categoryHelper = [WPNotificationCategoryHelper sharedInstance];
-        UNNotificationResponse *notificationResponse = (UNNotificationResponse *)response;
+        UNNotificationResponse *notificationResponse = [response isKindOfClass:UNNotificationResponse.class] ? (UNNotificationResponse *)response : nil;
         if (notificationResponse && notificationResponse.actionIdentifier && [categoryHelper isWonderPushActionIdentifier:notificationResponse.actionIdentifier]) {
             NSInteger indexOfButton = [categoryHelper indexOfButtonWithActionIdentifier:notificationResponse.actionIdentifier];
-            NSArray *buttons = [WPUtil arrayForKey:@"buttons" inDictionary:wonderpushData];
+            NSDictionary *alertDict = [WPUtil dictionaryForKey:@"alert" inDictionary:wonderpushData];
+            NSArray *buttons = [alertDict isKindOfClass:NSDictionary.class] ? [WPUtil arrayForKey:@"buttons" inDictionary:alertDict] : nil;
             if (buttons && indexOfButton >= 0 && indexOfButton < buttons.count) {
                 NSDictionary *button = [buttons objectAtIndex:indexOfButton];
                 actionsToExecute = [WPUtil arrayForKey:@"actions" inDictionary:button];
