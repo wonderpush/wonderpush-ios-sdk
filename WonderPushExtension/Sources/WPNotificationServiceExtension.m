@@ -15,6 +15,7 @@
  */
 
 #import "WPNotificationServiceExtension.h"
+#import "WPURLConstants.h"
 
 #import "WPLog.h"
 #import "WPNotificationCategoryManager.h"
@@ -88,7 +89,9 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                 NSString *label = [button valueForKey:@"label"];
                 if (![label isKindOfClass:NSString.class] || ![(NSString *)label length]) continue;
                 NSString *actionIdentifier = [[WPNotificationCategoryManager sharedInstance] actionIdentifierForButtonAtIndex:buttonCounter];
-                UNNotificationAction *action = [UNNotificationAction actionWithIdentifier:actionIdentifier title:label options:UNNotificationActionOptionForeground];
+                NSString * _Nullable targetUrl = [button valueForKey:@"targetUrl"];
+                UNNotificationActionOptions options = [targetUrl isKindOfClass:NSString.class] && [targetUrl isEqualToString:WP_TARGET_URL_NOOP] ? UNNotificationActionOptionNone : UNNotificationActionOptionForeground;
+                UNNotificationAction *action = [UNNotificationAction actionWithIdentifier:actionIdentifier title:label options:options];
                 [actions addObject:action];
                 buttonCounter++;
             }
