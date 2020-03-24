@@ -260,6 +260,7 @@
 		99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPushLogErrorAPI.m; sourceTree = "<group>"; };
 		995E5E01240445E100367114 /* WPNotificationCategoryManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationCategoryManager.h; sourceTree = "<group>"; };
 		995E5E02240445E100367114 /* WPNotificationCategoryManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNotificationCategoryManager.m; sourceTree = "<group>"; };
+		99630BDB242A04F000747604 /* WPURLConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPURLConstants.h; sourceTree = "<group>"; };
 		99885AED22156F92002CA269 /* WPNetworkReachabilityManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNetworkReachabilityManager.h; sourceTree = "<group>"; };
 		99885AEE22156F92002CA269 /* WPNetworkReachabilityManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNetworkReachabilityManager.m; sourceTree = "<group>"; };
 		99885AF122157F98002CA269 /* WPRequestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPRequestSerializer.h; sourceTree = "<group>"; };
@@ -463,6 +464,7 @@
 		9998CA8C221C55D70028D955 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				99630BDB242A04F000747604 /* WPURLConstants.h */,
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
 				A1E3E0A319E425DB00A4EE09 /* WonderPush.h */,
 				A16E33AD19C886A700E4E158 /* WonderPush.m */,

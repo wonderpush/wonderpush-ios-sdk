@@ -21,6 +21,7 @@
 #import "WPResponse.h"
 #import "WPReportingData.h"
 #import "WPInAppMessagingRenderingPrivate.h"
+#import "WPURLConstants.h"
 
 #define SDK_VERSION @"iOS-3.3.2"
 #define PRODUCTION_API_DOMAIN @"api.wonderpush.com"
@@ -58,9 +59,6 @@
  Key of the deep link url to open with the notification
  */
 #define WP_TARGET_URL_KEY @"targetUrl"
-#define WP_TARGET_URL_SDK_PREFIX @"wonderpush://"
-#define WP_TARGET_URL_DEFAULT @"wonderpush://notificationOpen/default"
-#define WP_TARGET_URL_BROADCAST @"wonderpush://notificationOpen/broadcast"
 
 /**
  Notification of type url
