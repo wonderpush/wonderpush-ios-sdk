@@ -11,30 +11,30 @@
 @implementation WPReportingData
 - (instancetype) initWithDictionary:(NSDictionary *)dict {
     if (self = [super init]) {
-        // strip NSNull
-        NSMutableDictionary *mutableDictValue = [NSMutableDictionary new];
-        for (NSString *key in dict.allKeys) {
-            id value = dict[key];
-            if (value != [NSNull null]) mutableDictValue[key] = value;
-        }
-        _dictValue = [NSDictionary dictionaryWithDictionary:mutableDictValue];
+        id campaignId = [dict valueForKey:@"campaignId"];
+        if (!campaignId || campaignId == [NSNull null]) campaignId = [dict valueForKey:@"c"];
+        if (campaignId == [NSNull null]) campaignId = nil;
+        _campaignId = [campaignId isKindOfClass:NSString.class] ? campaignId : nil;
+
+        id notificationId = [dict valueForKey:@"notificationId"];
+        if (!notificationId || notificationId == [NSNull null]) notificationId = [dict valueForKey:@"n"];
+        if (notificationId == [NSNull null]) notificationId = nil;
+        _notificationId = [notificationId isKindOfClass:NSString.class] ? notificationId : nil;
+
+        id viewId = [dict valueForKey:@"viewId"];
+        if (viewId == [NSNull null]) viewId = nil;
+        _viewId = [viewId isKindOfClass:NSString.class] ? viewId : nil;
     }
     return self;
 }
 - (NSString *) description {
     return self.dictValue.description;
 }
-- (NSString *) campaignId {
-    NSString *result = [self.dictValue valueForKey:@"campaignId"];
-    if (!result) result = [self.dictValue valueForKey:@"c"];
-    return result;
-}
-- (NSString *) notificationId {
-    NSString *result = [self.dictValue valueForKey:@"notificationId"];
-    if (!result) result = [self.dictValue valueForKey:@"n"];
-    return result;
-}
-- (NSString *) viewId {
-    return [self.dictValue valueForKey:@"viewId"];
+- (NSDictionary *) dictValue {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if (_viewId) result[@"viewId"] = _viewId;
+    if (_notificationId) result[@"notificationId"] = _notificationId;
+    if (_campaignId) result[@"campaignId"] = _campaignId;
+    return [NSDictionary dictionaryWithDictionary:result];
 }
 @end

@@ -14,9 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nullable) NSString *campaignId;
 @property (readonly, nullable) NSString *notificationId;
 @property (readonly, nullable) NSString *viewId;
-@property (readonly) NSDictionary *dictValue;
 
 - (instancetype) initWithDictionary:(NSDictionary *)dict;
+- (NSDictionary *) dictValue;
+
 @end
 
 NS_ASSUME_NONNULL_END
