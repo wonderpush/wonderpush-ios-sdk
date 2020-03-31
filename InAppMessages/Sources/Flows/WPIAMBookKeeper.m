@@ -170,7 +170,7 @@ static NSTimeInterval kMaxFetchWaitTimeInSeconds = 3 * 24 * 60 * 60;
         self.lastDisplayTime = timestamp;
         NSMutableDictionary *eventData = [NSMutableDictionary new];
         [eventData addEntriesFromDictionary:reportingData.dictValue];
-        eventData[@"timestamp"] = [NSNumber numberWithLong:(long)(timestamp * 1000)];
+        eventData[@"actionDate"] = [NSNumber numberWithLong:(long)(timestamp * 1000)];
         [WonderPush trackInternalEvent:@"@INAPP_VIEWED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
     }
 }
