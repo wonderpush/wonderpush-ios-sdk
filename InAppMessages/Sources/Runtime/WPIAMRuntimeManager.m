@@ -16,7 +16,6 @@
 
 #import "WPCore+InAppMessaging.h"
 #import "WPIAMBookKeeper.h"
-#import "WPIAMClientInfoFetcher.h"
 #import "WPIAMDisplayCheckOnAnalyticEventsFlow.h"
 #import "WPIAMDisplayCheckOnAppForegroundFlow.h"
 #import "WPIAMDisplayCheckOnFetchDoneNotificationFlow.h"
@@ -51,7 +50,6 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAnalyticEventsFlow *displayOnWonderPushEventsFlow;
 
 @property(nonatomic, nonnull) WPIAMFetchOnAppForegroundFlow *fetchOnAppForegroundFlow;
-@property(nonatomic, nonnull) WPIAMClientInfoFetcher *clientInfoFetcher;
 @property(nonatomic, nonnull) WPIAMFetchResponseParser *responseParser;
 @end
 
@@ -161,7 +159,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     self.messageCache = [[WPIAMMessageClientCache alloc] initWithBookkeeper:self.bookKeeper
                                                          usingResponseParser:self.responseParser];
     self.fetchResultStorage = [[WPIAMServerMsgFetchStorage alloc] init];
-    self.clientInfoFetcher = [[WPIAMClientInfoFetcher alloc] init];
     
     self.restfulFetcher =
     [[WPIAMMsgFetcherUsingRestful alloc] initWithFetchStorage:self.fetchResultStorage

@@ -155,7 +155,6 @@
 		99EF836723F4452C00B9B287 /* WPIAMServerMsgFetchStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F523F4452C00B9B287 /* WPIAMServerMsgFetchStorage.h */; };
 		99EF836823F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F623F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.h */; };
 		99EF836923F4452C00B9B287 /* WPIAMBookKeeper.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F723F4452C00B9B287 /* WPIAMBookKeeper.h */; };
-		99EF836C23F4452C00B9B287 /* WPIAMClientInfoFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82FB23F4452C00B9B287 /* WPIAMClientInfoFetcher.h */; };
 		99EF836D23F4452C00B9B287 /* WPCore+InAppMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF82FC23F4452C00B9B287 /* WPCore+InAppMessaging.m */; };
 		99EF836E23F4452C00B9B287 /* WPIAMBaseRenderingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF82FE23F4452C00B9B287 /* WPIAMBaseRenderingViewController.m */; };
 		99EF836F23F4452C00B9B287 /* WPIAMCardViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF830023F4452C00B9B287 /* WPIAMCardViewController.h */; };
@@ -191,7 +190,6 @@
 		99EF839123F4452C00B9B287 /* WPIAMFetchFlow.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF832723F4452C00B9B287 /* WPIAMFetchFlow.m */; };
 		99EF839223F4452C00B9B287 /* WPIAMMessageClientCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF832823F4452C00B9B287 /* WPIAMMessageClientCache.m */; };
 		99EF839323F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF832923F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m */; };
-		99EF839423F4452C00B9B287 /* WPIAMClientInfoFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF832A23F4452C00B9B287 /* WPIAMClientInfoFetcher.m */; };
 		99F384942225A5E400EA2ECD /* NotificationServiceExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 99F384922225A5E400EA2ECD /* NotificationServiceExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		99F384952225A5E400EA2ECD /* NotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 99F384932225A5E400EA2ECD /* NotificationServiceExtension.m */; };
 /* End PBXBuildFile section */
@@ -327,7 +325,6 @@
 		99EF82F523F4452C00B9B287 /* WPIAMServerMsgFetchStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMServerMsgFetchStorage.h; sourceTree = "<group>"; };
 		99EF82F623F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMFetchOnAppForegroundFlow.h; sourceTree = "<group>"; };
 		99EF82F723F4452C00B9B287 /* WPIAMBookKeeper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMBookKeeper.h; sourceTree = "<group>"; };
-		99EF82FB23F4452C00B9B287 /* WPIAMClientInfoFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMClientInfoFetcher.h; sourceTree = "<group>"; };
 		99EF82FC23F4452C00B9B287 /* WPCore+InAppMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "WPCore+InAppMessaging.m"; sourceTree = "<group>"; };
 		99EF82FE23F4452C00B9B287 /* WPIAMBaseRenderingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMBaseRenderingViewController.m; sourceTree = "<group>"; };
 		99EF830023F4452C00B9B287 /* WPIAMCardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMCardViewController.h; sourceTree = "<group>"; };
@@ -363,7 +360,6 @@
 		99EF832723F4452C00B9B287 /* WPIAMFetchFlow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMFetchFlow.m; sourceTree = "<group>"; };
 		99EF832823F4452C00B9B287 /* WPIAMMessageClientCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMMessageClientCache.m; sourceTree = "<group>"; };
 		99EF832923F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMDisplayCheckOnAnalyticEventsFlow.m; sourceTree = "<group>"; };
-		99EF832A23F4452C00B9B287 /* WPIAMClientInfoFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMClientInfoFetcher.m; sourceTree = "<group>"; };
 		99F384922225A5E400EA2ECD /* NotificationServiceExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationServiceExtension.h; sourceTree = "<group>"; };
 		99F384932225A5E400EA2ECD /* NotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationServiceExtension.m; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
@@ -725,7 +721,6 @@
 		99EF82F823F4452C00B9B287 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
-				99EF82FB23F4452C00B9B287 /* WPIAMClientInfoFetcher.h */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -813,7 +808,6 @@
 				99EF832723F4452C00B9B287 /* WPIAMFetchFlow.m */,
 				99EF832823F4452C00B9B287 /* WPIAMMessageClientCache.m */,
 				99EF832923F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m */,
-				99EF832A23F4452C00B9B287 /* WPIAMClientInfoFetcher.m */,
 			);
 			path = Flows;
 			sourceTree = "<group>";
@@ -897,7 +891,6 @@
 				99EF835723F4452C00B9B287 /* WPURLFollower.h in Headers */,
 				9998CAD0221C75560028D955 /* WonderPushConcreteAPI.h in Headers */,
 				99EF836423F4452C00B9B287 /* WPIAMDisplayExecutor.h in Headers */,
-				99EF836C23F4452C00B9B287 /* WPIAMClientInfoFetcher.h in Headers */,
 				99EF833E23F4452C00B9B287 /* WPIAMElapsedTimeTracker.h in Headers */,
 				99EF836723F4452C00B9B287 /* WPIAMServerMsgFetchStorage.h in Headers */,
 				99EF835523F4452C00B9B287 /* WPIAMRuntimeManager.h in Headers */,
@@ -1152,7 +1145,6 @@
 				99EF838423F4452C00B9B287 /* WPIAMMessageDefinition.m in Sources */,
 				99EF834923F4452C00B9B287 /* WPInAppMessaging+Bootstrap.m in Sources */,
 				99EF834823F4452C00B9B287 /* WPIAMSDKSettings.m in Sources */,
-				99EF839423F4452C00B9B287 /* WPIAMClientInfoFetcher.m in Sources */,
 				9998CAD3221C75630028D955 /* WonderPushConcreteAPI.m in Sources */,
 				99EF838A23F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.m in Sources */,
 				99EF833F23F4452C00B9B287 /* NSString+WPInterlaceStrings.m in Sources */,
