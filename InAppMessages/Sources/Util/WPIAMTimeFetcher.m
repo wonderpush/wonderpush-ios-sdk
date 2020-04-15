@@ -15,9 +15,10 @@
  */
 
 #import "WPIAMTimeFetcher.h"
+#import "WPUtil.h"
 
 @implementation WPIAMTimerWithNSDate
 - (NSTimeInterval)currentTimestampInSeconds {
-    return [[NSDate date] timeIntervalSince1970];
+    return [WPUtil getServerDate];
 }
 @end
