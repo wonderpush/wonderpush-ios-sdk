@@ -16,7 +16,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "WPIAMActivityLogger.h"
 #import "WPIAMBookKeeper.h"
 #import "WPIAMMessageClientCache.h"
 #import "WPIAMTimeFetcher.h"
@@ -42,8 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
                                setting:(WPIAMDisplaySetting *)setting
                           messageCache:(WPIAMMessageClientCache *)cache
                            timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher
-                            bookKeeper:(id<WPIAMBookKeeper>)displayBookKeeper
-                        activityLogger:(WPIAMActivityLogger *)activityLogger;
+                            bookKeeper:(id<WPIAMBookKeeper>)displayBookKeeper;
 
 // Check and display next in-app message eligible for app launch trigger
 - (void)checkAndDisplayNextAppLaunchMessage;

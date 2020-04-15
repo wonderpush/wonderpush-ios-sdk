@@ -15,7 +15,6 @@
  */
 
 #import "WPCore+InAppMessaging.h"
-#import "WPIAMActivityLogger.h"
 #import "WPIAMBookKeeper.h"
 #import "WPIAMClientInfoFetcher.h"
 #import "WPIAMDisplayCheckOnAnalyticEventsFlow.h"
@@ -154,12 +153,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     WPIAMTimerWithNSDate *timeFetcher = [[WPIAMTimerWithNSDate alloc] init];
     NSTimeInterval start = [timeFetcher currentTimestampInSeconds];
     
-    self.activityLogger =
-    [[WPIAMActivityLogger alloc] initWithMaxCountBeforeReduce:settings.loggerMaxCountBeforeReduce
-                                           withSizeAfterReduce:settings.loggerSizeAfterReduce
-                                                   verboseMode:settings.loggerInVerboseMode
-                                                 loadFromCache:YES];
-    
     self.responseParser = [[WPIAMFetchResponseParser alloc] initWithTimeFetcher:timeFetcher];
     
     self.bookKeeper = [[WPIAMBookKeeperViaUserDefaults alloc]
@@ -188,16 +181,14 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
                                                   setting:appForegroundDisplaysetting
                                              messageCache:self.messageCache
                                               timeFetcher:timeFetcher
-                                               bookKeeper:self.bookKeeper
-                                           activityLogger:self.activityLogger];
+                                               bookKeeper:self.bookKeeper];
     
     self.fetchOnAppForegroundFlow =
     [[WPIAMFetchOnAppForegroundFlow alloc] initWithMessageCache:self.messageCache
                                                   messageFetcher:self.restfulFetcher
                                                      timeFetcher:timeFetcher
                                                       bookKeeper:self.bookKeeper
-                                                  activityLogger:self.activityLogger
-                                            WPIAMSDKModeManager:sdkModeManager
+                                             WPIAMSDKModeManager:sdkModeManager
                                                  displayExecutor:self.displayExecutor];
     
     // Setting the message display component and suppression. It's needed in case

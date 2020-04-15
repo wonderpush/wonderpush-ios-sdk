@@ -16,7 +16,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "WPIAMActivityLogger.h"
 #import "WPIAMBookKeeper.h"
 #import "WPIAMDisplayExecutor.h"
 #import "WPIAMMessageClientCache.h"
@@ -41,7 +40,6 @@ typedef void (^WPIAMFetchMessageCompletionHandler)(
                       messageFetcher:(id<WPIAMMessageFetcher>)messageFetcher
                          timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher
                           bookKeeper:(id<WPIAMBookKeeper>)displayBookKeeper
-                      activityLogger:(WPIAMActivityLogger *)activityLogger
                 WPIAMSDKModeManager:(WPIAMSDKModeManager *)sdkModeManager
                      displayExecutor:(WPIAMDisplayExecutor *)displayExecutor;
 

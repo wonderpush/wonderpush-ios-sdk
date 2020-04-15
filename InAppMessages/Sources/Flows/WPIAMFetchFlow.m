@@ -27,7 +27,6 @@ NSString *const kWPIAMFetchIsDoneNotification = @"WPIAMFetchIsDoneNotification";
 @property(nonatomic, nonnull, readonly) WPIAMMessageClientCache *messageCache;
 @property(nonatomic) id<WPIAMMessageFetcher> messageFetcher;
 @property(nonatomic, nonnull, readonly) id<WPIAMBookKeeper> fetchBookKeeper;
-@property(nonatomic, nonnull, readonly) WPIAMActivityLogger *activityLogger;
 @property(nonatomic, nonnull, readonly) WPIAMSDKModeManager *sdkModeManager;
 @property(nonatomic, nonnull, readonly) WPIAMDisplayExecutor *displayExecutor;
 
@@ -38,7 +37,6 @@ NSString *const kWPIAMFetchIsDoneNotification = @"WPIAMFetchIsDoneNotification";
                       messageFetcher:(id<WPIAMMessageFetcher>)messageFetcher
                          timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher
                           bookKeeper:(id<WPIAMBookKeeper>)fetchBookKeeper
-                      activityLogger:(WPIAMActivityLogger *)activityLogger
                 WPIAMSDKModeManager:(WPIAMSDKModeManager *)sdkModeManager
                      displayExecutor:(WPIAMDisplayExecutor *)displayExecutor {
     if (self = [super init]) {
@@ -47,7 +45,6 @@ NSString *const kWPIAMFetchIsDoneNotification = @"WPIAMFetchIsDoneNotification";
         _messageCache = cache;
         _messageFetcher = messageFetcher;
         _fetchBookKeeper = fetchBookKeeper;
-        _activityLogger = activityLogger;
         _sdkModeManager = sdkModeManager;
         _displayExecutor = displayExecutor;
     }
@@ -110,13 +107,6 @@ NSString *const kWPIAMFetchIsDoneNotification = @"WPIAMFetchIsDoneNotification";
     if (fetchIsAllowedNow) {
         // we are allowed to fetch in-app message from time interval wise
         
-        WPIAMActivityRecord *record =
-        [[WPIAMActivityRecord alloc] initWithActivityType:WPIAMActivityTypeCheckForFetch
-                                              isSuccessful:YES
-                                                withDetail:@"OK to do a fetch"
-                                                 timestamp:nil];
-        [self.activityLogger addLogRecord:record];
-        
         WPLogDebug( @"Go ahead to fetch messages");
         
         NSTimeInterval fetchStartTime = [[NSDate date] timeIntervalSince1970];
@@ -127,15 +117,7 @@ NSString *const kWPIAMFetchIsDoneNotification = @"WPIAMFetchIsDoneNotification";
                                        NSInteger discardedMessageCount,
                                        NSError *_Nullable error) {
             if (error) {
-                WPLog(
-                              @"Error happened during message fetching %@", error);
-                
-                WPIAMActivityRecord *record = [[WPIAMActivityRecord alloc]
-                                                initWithActivityType:WPIAMActivityTypeFetchMessage
-                                                isSuccessful:NO
-                                                withDetail:error.description
-                                                timestamp:nil];
-                [self.activityLogger addLogRecord:record];
+                WPLog(@"Error happened during message fetching %@", error);
             } else {
                 double fetchOperationLatencyInMills =
                 ([[NSDate date] timeIntervalSince1970] - fetchStartTime) * 1000;
@@ -158,13 +140,6 @@ NSString *const kWPIAMFetchIsDoneNotification = @"WPIAMFetchIsDoneNotification";
                                          (unsigned long)messages.count,
                                          fetchOperationLatencyInMills];
                 }
-                
-                WPIAMActivityRecord *record = [[WPIAMActivityRecord alloc]
-                                                initWithActivityType:WPIAMActivityTypeFetchMessage
-                                                isSuccessful:YES
-                                                withDetail:activityLogDetail
-                                                timestamp:nil];
-                [self.activityLogger addLogRecord:record];
                 
                 // Now handle the fetched messages.
                 [self handleSuccessullyFetchedMessages:messages
@@ -199,13 +174,6 @@ NSString *const kWPIAMFetchIsDoneNotification = @"WPIAMFetchIsDoneNotification";
         // for no fetch case, we still send out the notification so that and display flow can continue
         // from here.
         [self sendFetchIsDoneNotification];
-        WPIAMActivityRecord *record =
-        [[WPIAMActivityRecord alloc] initWithActivityType:WPIAMActivityTypeCheckForFetch
-                                              isSuccessful:NO
-                                                withDetail:@"Abort due to check time interval "
-         "not reached yet"
-                                                 timestamp:nil];
-        [self.activityLogger addLogRecord:record];
     }
 }
 

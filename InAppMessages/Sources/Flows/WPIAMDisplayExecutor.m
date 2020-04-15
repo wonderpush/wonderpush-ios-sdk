@@ -16,7 +16,6 @@
 
 #import <UIKit/UIKit.h>
 #import "WPCore+InAppMessaging.h"
-#import "WPIAMActivityLogger.h"
 #import "WPIAMDisplayExecutor.h"
 #import "WPIAMMessageContentData.h"
 #import "WPIAMMessageDefinition.h"
@@ -227,8 +226,7 @@
                                setting:(WPIAMDisplaySetting *)setting
                           messageCache:(WPIAMMessageClientCache *)cache
                            timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher
-                            bookKeeper:(id<WPIAMBookKeeper>)displayBookKeeper
-                        activityLogger:(WPIAMActivityLogger *)activityLogger {
+                            bookKeeper:(id<WPIAMBookKeeper>)displayBookKeeper {
     if (self = [super init]) {
         _inAppMessaging = inAppMessaging;
         _timeFetcher = timeFetcher;

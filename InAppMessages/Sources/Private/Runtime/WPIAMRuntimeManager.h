@@ -16,7 +16,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "WPIAMActivityLogger.h"
 #import "WPIAMBookKeeper.h"
 #import "WPIAMDisplayExecutor.h"
 #import "WPIAMMessageClientCache.h"
@@ -27,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 // A class for managing the objects/dependencies for supporting different IAM flows at runtime
 @interface WPIAMRuntimeManager : NSObject
 @property(nonatomic, nonnull) WPIAMSDKSettings *currentSetting;
-@property(nonatomic, nonnull) WPIAMActivityLogger *activityLogger;
 @property(nonatomic, nonnull) WPIAMBookKeeperViaUserDefaults *bookKeeper;
 @property(nonatomic, nonnull) WPIAMMessageClientCache *messageCache;
 @property(nonatomic, nonnull) WPIAMServerMsgFetchStorage *fetchResultStorage;
