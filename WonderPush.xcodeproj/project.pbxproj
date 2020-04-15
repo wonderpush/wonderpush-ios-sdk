@@ -152,7 +152,6 @@
 		99EF836323F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F123F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.h */; };
 		99EF836423F4452C00B9B287 /* WPIAMDisplayExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F223F4452C00B9B287 /* WPIAMDisplayExecutor.h */; };
 		99EF836523F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F323F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.h */; };
-		99EF836623F4452C00B9B287 /* WPIAMActivityLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F423F4452C00B9B287 /* WPIAMActivityLogger.h */; };
 		99EF836723F4452C00B9B287 /* WPIAMServerMsgFetchStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F523F4452C00B9B287 /* WPIAMServerMsgFetchStorage.h */; };
 		99EF836823F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F623F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.h */; };
 		99EF836923F4452C00B9B287 /* WPIAMBookKeeper.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F723F4452C00B9B287 /* WPIAMBookKeeper.h */; };
@@ -182,7 +181,6 @@
 		99EF838623F4452C00B9B287 /* WPIAMRenderingEffectSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831B23F4452C00B9B287 /* WPIAMRenderingEffectSetting.m */; };
 		99EF838723F4452C00B9B287 /* WPIAMDisplayExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831D23F4452C00B9B287 /* WPIAMDisplayExecutor.m */; };
 		99EF838823F4452C00B9B287 /* WPIAMServerMsgFetchStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831E23F4452C00B9B287 /* WPIAMServerMsgFetchStorage.m */; };
-		99EF838923F4452C00B9B287 /* WPIAMActivityLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831F23F4452C00B9B287 /* WPIAMActivityLogger.m */; };
 		99EF838A23F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF832023F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.m */; };
 		99EF838B23F4452C00B9B287 /* WPIAMDisplayCheckOnFetchDoneNotificationFlow.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF832123F4452C00B9B287 /* WPIAMDisplayCheckOnFetchDoneNotificationFlow.m */; };
 		99EF838C23F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF832223F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.m */; };
@@ -326,7 +324,6 @@
 		99EF82F123F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMDisplayCheckOnAnalyticEventsFlow.h; sourceTree = "<group>"; };
 		99EF82F223F4452C00B9B287 /* WPIAMDisplayExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMDisplayExecutor.h; sourceTree = "<group>"; };
 		99EF82F323F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMDisplayCheckTriggerFlow.h; sourceTree = "<group>"; };
-		99EF82F423F4452C00B9B287 /* WPIAMActivityLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMActivityLogger.h; sourceTree = "<group>"; };
 		99EF82F523F4452C00B9B287 /* WPIAMServerMsgFetchStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMServerMsgFetchStorage.h; sourceTree = "<group>"; };
 		99EF82F623F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMFetchOnAppForegroundFlow.h; sourceTree = "<group>"; };
 		99EF82F723F4452C00B9B287 /* WPIAMBookKeeper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMBookKeeper.h; sourceTree = "<group>"; };
@@ -356,7 +353,6 @@
 		99EF831B23F4452C00B9B287 /* WPIAMRenderingEffectSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMRenderingEffectSetting.m; sourceTree = "<group>"; };
 		99EF831D23F4452C00B9B287 /* WPIAMDisplayExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMDisplayExecutor.m; sourceTree = "<group>"; };
 		99EF831E23F4452C00B9B287 /* WPIAMServerMsgFetchStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMServerMsgFetchStorage.m; sourceTree = "<group>"; };
-		99EF831F23F4452C00B9B287 /* WPIAMActivityLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMActivityLogger.m; sourceTree = "<group>"; };
 		99EF832023F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMDisplayCheckTriggerFlow.m; sourceTree = "<group>"; };
 		99EF832123F4452C00B9B287 /* WPIAMDisplayCheckOnFetchDoneNotificationFlow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMDisplayCheckOnFetchDoneNotificationFlow.m; sourceTree = "<group>"; };
 		99EF832223F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMFetchOnAppForegroundFlow.m; sourceTree = "<group>"; };
@@ -719,7 +715,6 @@
 				99EF82F123F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.h */,
 				99EF82F223F4452C00B9B287 /* WPIAMDisplayExecutor.h */,
 				99EF82F323F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.h */,
-				99EF82F423F4452C00B9B287 /* WPIAMActivityLogger.h */,
 				99EF82F523F4452C00B9B287 /* WPIAMServerMsgFetchStorage.h */,
 				99EF82F623F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.h */,
 				99EF82F723F4452C00B9B287 /* WPIAMBookKeeper.h */,
@@ -808,7 +803,6 @@
 			children = (
 				99EF831D23F4452C00B9B287 /* WPIAMDisplayExecutor.m */,
 				99EF831E23F4452C00B9B287 /* WPIAMServerMsgFetchStorage.m */,
-				99EF831F23F4452C00B9B287 /* WPIAMActivityLogger.m */,
 				99EF832023F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.m */,
 				99EF832123F4452C00B9B287 /* WPIAMDisplayCheckOnFetchDoneNotificationFlow.m */,
 				99EF832223F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.m */,
@@ -961,7 +955,6 @@
 				9998CAB8221C75370028D955 /* WPRequestVault.h in Headers */,
 				9998CAB9221C75370028D955 /* WPResponse.h in Headers */,
 				99EF839023F4452C00B9B287 /* WPIAMDisplayCheckOnFetchDoneNotificationFlow.h in Headers */,
-				99EF836623F4452C00B9B287 /* WPIAMActivityLogger.h in Headers */,
 				9998CABA221C75370028D955 /* WPUtil.h in Headers */,
 				99EF834023F4452C00B9B287 /* UIColor+WPIAMHexString.h in Headers */,
 				99EF834623F4452C00B9B287 /* WPIAMSDKRuntimeErrorCodes.h in Headers */,
@@ -1189,7 +1182,6 @@
 				99EF839323F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m in Sources */,
 				99EF834B23F4452C00B9B287 /* WPInAppMessaging.m in Sources */,
 				990F269B23FD4B0E0015F8DE /* WPAction.m in Sources */,
-				99EF838923F4452C00B9B287 /* WPIAMActivityLogger.m in Sources */,
 				9998CAC3221C75480028D955 /* WPInstallationCoreProperties.m in Sources */,
 				99DE7EB723F59B4500886E43 /* WPIAMTemporaryStorage.m in Sources */,
 				9998CAC4221C75480028D955 /* WPJsonSync.m in Sources */,
