@@ -20,6 +20,8 @@
 #import "WPInAppMessaging+Bootstrap.h"
 #import "WPReportingData.h"
 #import "WPAction_private.h"
+#import "WPMeasurementsApiClient.h"
+
 @interface WonderPushConcreteAPI (private)
 @end
 
@@ -60,12 +62,28 @@
     
     [self trackEvent:type eventData:data customData:customData];
 }
-- (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+
+- (void) trackInternalEventWithMeasurementsApi:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+{
+    if ([type characterAtIndex:0] != '@') {
+        @throw [NSException exceptionWithName:@"illegal argument"
+                                       reason:@"This method must only be called for internal events, starting with an '@'"
+                                     userInfo:nil];
+    }
+    
+    [self trackEvent:type eventData:data customData:customData useMeasurementsApi:YES];
+}
+
+- (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData {
+    return [self trackEvent:type eventData:data customData:customData useMeasurementsApi:NO];
+}
+
+- (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData useMeasurementsApi:(BOOL)useMeasurementsApi
 {
     
     if (![type isKindOfClass:[NSString class]]) return;
     @synchronized (self) {
-        NSString *eventEndPoint = @"/events";
+        NSString *eventEndPoint = useMeasurementsApi ? @"/events/" : @"/events";
         long long date = [WPUtil getServerDate];
         NSMutableDictionary *params = [[NSMutableDictionary alloc]
                                        initWithDictionary:@{@"type": type,
@@ -92,7 +110,11 @@
                 WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:params],
             }];
         });
-        [WonderPush postEventually:eventEndPoint params:@{@"body":params}];
+        if (useMeasurementsApi) {
+            [[WPMeasurementsApiClient sharedClient] POST:eventEndPoint bodyParam:params completionHandler:nil];
+        } else {
+            [WonderPush postEventually:eventEndPoint params:@{@"body":params}];
+        }
     }
 }
 

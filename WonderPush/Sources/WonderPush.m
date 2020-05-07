@@ -386,6 +386,11 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [wonderPushAPI trackInternalEvent:type eventData:data customData:customData];
 }
 
++ (void) trackInternalEventWithMeasurementsApi:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+{
+    [wonderPushAPI trackInternalEventWithMeasurementsApi:type eventData:data customData:customData];
+}
+
 + (void) refreshDeviceTokenIfPossible
 {
     [wonderPushAPI refreshDeviceTokenIfPossible];
@@ -704,7 +709,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     NSDictionary *wpData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
     id receipt        = conf.overrideNotificationReceipt ?: [WPUtil nullsafeObjectForKey:@"receipt" inDictionary:wpData];
-    if (receipt && [[receipt class] isEqual:[@YES class]] && [receipt isEqual:@NO]) return; // lengthy but warning-free test for `receipt == @NO`, both properly distinguishes 0 from @NO, whereas `[receipt isEqual:@NO]` alone does not
     id campagnId      = [WPUtil stringForKey:@"c" inDictionary:wpData];
     id notificationId = [WPUtil stringForKey:@"n" inDictionary:wpData];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
@@ -712,7 +716,13 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
     conf.lastReceivedNotificationDate = [NSDate date];
     conf.lastReceivedNotification = notificationInformation;
-    [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
+    // lengthy but warning-free test for `receipt == @NO`, both properly distinguishes 0 from @NO, whereas `[receipt isEqual:@NO]` alone does not
+    if (receipt && [[receipt class] isEqual:[@YES class]] && [receipt isEqual:@NO]) {
+        [self trackInternalEventWithMeasurementsApi:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
+    } else {
+        [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
+    }
+        
 }
 
 + (void) trackEvent:(NSString*)type
