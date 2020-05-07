@@ -17,6 +17,7 @@
 #import "WPCore+InAppMessaging.h"
 #import "WPIAMBookKeeper.h"
 #import "WonderPush_private.h"
+#import "WPConfiguration.h"
 
 NSString *const WPIAM_UserDefaultsKeyForImpressions = @"wonderpush-iam-message-impressions";
 NSString *const WPIAM_UserDefaultsKeyForLastImpressionTimestamp = @"wonderpush-iam-last-impression-timestamp";
@@ -171,7 +172,13 @@ static NSTimeInterval kMaxFetchWaitTimeInSeconds = 3 * 24 * 60 * 60;
         NSMutableDictionary *eventData = [NSMutableDictionary new];
         [eventData addEntriesFromDictionary:reportingData.dictValue];
         eventData[@"actionDate"] = [NSNumber numberWithLong:(long)(timestamp * 1000)];
-        [WonderPush trackInternalEvent:@"@INAPP_VIEWED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        
+        WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+        if (configuration.overrideNotificationReceipt.boolValue && configuration.accessToken) {
+            [WonderPush trackInternalEvent:@"@INAPP_VIEWED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        } else {
+            [WonderPush trackInternalEventWithMeasurementsApi:@"@INAPP_VIEWED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        }
     }
 }
 
