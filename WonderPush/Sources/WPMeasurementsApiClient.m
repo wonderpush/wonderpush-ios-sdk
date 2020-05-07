@@ -9,6 +9,7 @@
 #import "WPMeasurementsApiClient.h"
 #import "WonderPush_private.h"
 #import "WPConfiguration.h"
+#import "WPRequestSerializer.h"
 
 @interface WPMeasurementsApiClient ()
 @property (nonatomic, strong, nonnull) NSURLSession *URLSession;
@@ -76,10 +77,15 @@
     NSString *resource = [path hasPrefix:@"/"] ? [path substringFromIndex:1] : path;
     NSURL *URL = [NSURL URLWithString:resource relativeToURL:self.baseURL];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:60];
+    [request addValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = method;
     request.HTTPBody = [requestBodyString dataUsingEncoding:NSUTF8StringEncoding];
+    // Add the authorization header after JSON serialization
+    NSString *authorizationHeader = [WPRequestSerializer wonderPushAuthorizationHeaderValueForRequest:request];
+    if (authorizationHeader) {
+        [request addValue:authorizationHeader forHTTPHeaderField:@"X-WonderPush-Authorization"];
+    }
     NSURLSessionDataTask *task = [self.URLSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         if (completionHandler) completionHandler(data, response, error);
     }];
     [task resume];
