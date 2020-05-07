@@ -716,8 +716,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
     conf.lastReceivedNotificationDate = [NSDate date];
     conf.lastReceivedNotification = notificationInformation;
-    // lengthy but warning-free test for `receipt == @NO`, both properly distinguishes 0 from @NO, whereas `[receipt isEqual:@NO]` alone does not
-    if (receipt && [[receipt class] isEqual:[@YES class]] && [receipt isEqual:@NO]) {
+    if (![receipt boolValue]) {
         [self trackInternalEventWithMeasurementsApi:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
     } else {
         [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
