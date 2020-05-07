@@ -83,7 +83,7 @@
     
     if (![type isKindOfClass:[NSString class]]) return;
     @synchronized (self) {
-        NSString *eventEndPoint = useMeasurementsApi ? @"/events/" : @"/events";
+        NSString *eventEndPoint = @"/events";
         long long date = [WPUtil getServerDate];
         NSMutableDictionary *params = [[NSMutableDictionary alloc]
                                        initWithDictionary:@{@"type": type,
