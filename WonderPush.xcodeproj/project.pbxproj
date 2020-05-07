@@ -102,6 +102,8 @@
 		9998CAD4221C75630028D955 /* WonderPushLogErrorAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */; };
 		99C862C123F6F5AC00E37CE1 /* WPReportingData.h in Headers */ = {isa = PBXBuildFile; fileRef = 99C862BF23F6F5AC00E37CE1 /* WPReportingData.h */; };
 		99C862C223F6F5AC00E37CE1 /* WPReportingData.m in Sources */ = {isa = PBXBuildFile; fileRef = 99C862C023F6F5AC00E37CE1 /* WPReportingData.m */; };
+		99D16F202463E68C00C14989 /* WPMeasurementsApiClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 99D16F1E2463E68C00C14989 /* WPMeasurementsApiClient.h */; };
+		99D16F212463E68C00C14989 /* WPMeasurementsApiClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 99D16F1F2463E68C00C14989 /* WPMeasurementsApiClient.m */; };
 		99DE7EB623F59B4500886E43 /* WPIAMTemporaryStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 99DE7EB423F59B4500886E43 /* WPIAMTemporaryStorage.h */; };
 		99DE7EB723F59B4500886E43 /* WPIAMTemporaryStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 99DE7EB523F59B4500886E43 /* WPIAMTemporaryStorage.m */; };
 		99E95EBE2407FA1100B8B062 /* WPNotificationCategoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 995E5E02240445E100367114 /* WPNotificationCategoryManager.m */; };
@@ -271,6 +273,8 @@
 		9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNotificationServiceExtension.m; sourceTree = "<group>"; };
 		99C862BF23F6F5AC00E37CE1 /* WPReportingData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPReportingData.h; sourceTree = "<group>"; };
 		99C862C023F6F5AC00E37CE1 /* WPReportingData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPReportingData.m; sourceTree = "<group>"; };
+		99D16F1E2463E68C00C14989 /* WPMeasurementsApiClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPMeasurementsApiClient.h; sourceTree = "<group>"; };
+		99D16F1F2463E68C00C14989 /* WPMeasurementsApiClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPMeasurementsApiClient.m; sourceTree = "<group>"; };
 		99DE7EB423F59B4500886E43 /* WPIAMTemporaryStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMTemporaryStorage.h; sourceTree = "<group>"; };
 		99DE7EB523F59B4500886E43 /* WPIAMTemporaryStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMTemporaryStorage.m; sourceTree = "<group>"; };
 		99E02FC122141F6A007E82F4 /* WPDataManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPDataManager.h; sourceTree = "<group>"; };
@@ -510,6 +514,8 @@
 				990F269C23FD4C020015F8DE /* WPAction_private.h */,
 				99E95EBF2407FA5000B8B062 /* WPNotificationCategoryHelper.h */,
 				99E95EC02407FA5000B8B062 /* WPNotificationCategoryHelper.m */,
+				99D16F1E2463E68C00C14989 /* WPMeasurementsApiClient.h */,
+				99D16F1F2463E68C00C14989 /* WPMeasurementsApiClient.m */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -936,6 +942,7 @@
 				99EF837723F4452C00B9B287 /* WPIAMBaseRenderingViewController.h in Headers */,
 				99DE7EB623F59B4500886E43 /* WPIAMTemporaryStorage.h in Headers */,
 				99EF835323F4452C00B9B287 /* WPIAMFetchFlow.h in Headers */,
+				99D16F202463E68C00C14989 /* WPMeasurementsApiClient.h in Headers */,
 				99EF837123F4452C00B9B287 /* WPIAMRenderingWindowHelper.h in Headers */,
 				99EF836523F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.h in Headers */,
 				9998CAB5221C75370028D955 /* WPNotificationCenterDelegate.h in Headers */,
@@ -1145,6 +1152,7 @@
 				99EF838423F4452C00B9B287 /* WPIAMMessageDefinition.m in Sources */,
 				99EF834923F4452C00B9B287 /* WPInAppMessaging+Bootstrap.m in Sources */,
 				99EF834823F4452C00B9B287 /* WPIAMSDKSettings.m in Sources */,
+				99D16F212463E68C00C14989 /* WPMeasurementsApiClient.m in Sources */,
 				9998CAD3221C75630028D955 /* WonderPushConcreteAPI.m in Sources */,
 				99EF838A23F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.m in Sources */,
 				99EF833F23F4452C00B9B287 /* NSString+WPInterlaceStrings.m in Sources */,
