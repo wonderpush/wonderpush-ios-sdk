@@ -10,8 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define WP_REMOTE_CONFIG_DEFAULT_MINIMUM_FETCH_INTERVAL 86400
-#define WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_FETCH_INTERVAL 86400 * 10
+#define WP_REMOTE_CONFIG_DEFAULT_MINIMUM_CONFIG_AGE 86400
+#define WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE 86400 * 10
 
 extern NSString * const WPRemoteConfigUpdatedNotification;
 
@@ -21,6 +21,8 @@ extern NSString * const WPRemoteConfigUpdatedNotification;
 @property (nonatomic, nonnull, readonly) NSDate *fetchDate;
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version;
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate;
+- (BOOL) hasHigherVersionThan:(WPRemoteConfig *)other;
++ (NSComparisonResult) compareVersion:(NSString *)version1 withVersion: (NSString *)version2;
 @end
 
 @protocol WPRemoteConfigFetcher
@@ -31,8 +33,8 @@ extern NSString * const WPRemoteConfigUpdatedNotification;
 @protocol WPRemoteConfigStorage
 - (void) storeRemoteConfig:(WPRemoteConfig *)remoteConfig
                 completion:(void(^)(NSError * _Nullable)) completion;
-- (void) loadRemoteConfigWithCompletion:(void(^)(WPRemoteConfig * _Nullable, NSError * _Nullable)) completion;
-
+- (void) loadRemoteConfigAndHighestDeclaredVersionWithCompletion:(void(^)(WPRemoteConfig * _Nullable, NSString * _Nullable, NSError * _Nullable)) completion;
+- (void) declareVersion:(NSString *)version completion:(void(^)(NSError * _Nullable)) completion;
 @end
 
 @interface WPRemoteConfigFetcherWithURLSession : NSObject<WPRemoteConfigFetcher>
@@ -47,7 +49,8 @@ extern NSString * const WPRemoteConfigUpdatedNotification;
 @property (nonatomic, nonnull, strong) id<WPRemoteConfigFetcher> remoteConfigFetcher;
 @property (nonatomic, nonnull, strong) id<WPRemoteConfigStorage> remoteConfigStorage;
 @property (nonatomic, assign) NSTimeInterval minimumFetchInterval;
-@property (nonatomic, assign) NSTimeInterval maximumFetchInterval;
+@property (nonatomic, assign) NSTimeInterval minimumConfigAge;
+@property (nonatomic, assign) NSTimeInterval maximumConfigAge;
 - (instancetype) initWithRemoteConfigFetcher:(id<WPRemoteConfigFetcher>)remoteConfigFetcher
                                      storage:(id<WPRemoteConfigStorage>)remoteConfigStorage;
 - (void) declareVersion:(NSString *)version;
