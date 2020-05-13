@@ -62,6 +62,7 @@
 		9942FD6E246AAADD0002BEA0 /* WonderPushNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9942FD66246AAADD0002BEA0 /* WonderPushNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9942FD73246AAB500002BEA0 /* WonderPushExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */; };
 		9942FD74246AAB500002BEA0 /* WonderPushExtension.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9942FD81246BF67C0002BEA0 /* WonderPush.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9998CA98221C74190028D955 /* WonderPush.framework */; };
 		9942FD84246C23DD0002BEA0 /* WPSemver.h in Headers */ = {isa = PBXBuildFile; fileRef = 9942FD82246C23DD0002BEA0 /* WPSemver.h */; };
 		9942FD85246C23DD0002BEA0 /* WPSemver.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD83246C23DD0002BEA0 /* WPSemver.m */; };
 		9998CAA0221C74890028D955 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */; };
@@ -239,6 +240,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 9909CE1C22215FFC00F73A0B;
 			remoteInfo = WonderPushExtension;
+		};
+		9942FD7F246BF6790002BEA0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A16E339B19C886A700E4E158 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9998CA97221C74190028D955;
+			remoteInfo = WonderPush;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -513,6 +521,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9942FD81246BF67C0002BEA0 /* WonderPush.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1184,6 +1193,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9942FD80246BF6790002BEA0 /* PBXTargetDependency */,
 				9942FD52246AA8F40002BEA0 /* PBXTargetDependency */,
 			);
 			name = WonderPushExampleTests;
@@ -1527,6 +1537,11 @@
 			target = 9909CE1C22215FFC00F73A0B /* WonderPushExtension */;
 			targetProxy = 9942FD75246AAB500002BEA0 /* PBXContainerItemProxy */;
 		};
+		9942FD80246BF6790002BEA0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9998CA97221C74190028D955 /* WonderPush */;
+			targetProxy = 9942FD7F246BF6790002BEA0 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -1573,7 +1588,7 @@
 				);
 				INFOPLIST_FILE = WonderPushExtension/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				MACH_O_TYPE = mh_dylib;
@@ -1608,7 +1623,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = WonderPushExtension/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				MACH_O_TYPE = mh_dylib;
