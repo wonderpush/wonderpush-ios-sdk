@@ -62,6 +62,9 @@
 		9942FD6E246AAADD0002BEA0 /* WonderPushNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9942FD66246AAADD0002BEA0 /* WonderPushNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9942FD73246AAB500002BEA0 /* WonderPushExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */; };
 		9942FD74246AAB500002BEA0 /* WonderPushExtension.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9942FD7B246BDAB20002BEA0 /* WPRemoteConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 9942FD79246BDAB20002BEA0 /* WPRemoteConfig.h */; };
+		9942FD7C246BDAB20002BEA0 /* WPRemoteConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD7A246BDAB20002BEA0 /* WPRemoteConfig.m */; };
+		9942FD7E246BF1420002BEA0 /* WPRemoteConfigTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD7D246BF1420002BEA0 /* WPRemoteConfigTests.m */; };
 		9942FD81246BF67C0002BEA0 /* WonderPush.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9998CA98221C74190028D955 /* WonderPush.framework */; };
 		9942FD84246C23DD0002BEA0 /* WPSemver.h in Headers */ = {isa = PBXBuildFile; fileRef = 9942FD82246C23DD0002BEA0 /* WPSemver.h */; };
 		9942FD85246C23DD0002BEA0 /* WPSemver.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD83246C23DD0002BEA0 /* WPSemver.m */; };
@@ -364,6 +367,9 @@
 		9942FD69246AAADD0002BEA0 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		9942FD6B246AAADD0002BEA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9942FD78246AAB9B0002BEA0 /* WonderPushExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WonderPushExample.entitlements; sourceTree = "<group>"; };
+		9942FD79246BDAB20002BEA0 /* WPRemoteConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPRemoteConfig.h; sourceTree = "<group>"; };
+		9942FD7A246BDAB20002BEA0 /* WPRemoteConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPRemoteConfig.m; sourceTree = "<group>"; };
+		9942FD7D246BF1420002BEA0 /* WPRemoteConfigTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPRemoteConfigTests.m; sourceTree = "<group>"; };
 		9942FD82246C23DD0002BEA0 /* WPSemver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSemver.h; sourceTree = "<group>"; };
 		9942FD83246C23DD0002BEA0 /* WPSemver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSemver.m; sourceTree = "<group>"; };
 		995E5E01240445E100367114 /* WPNotificationCategoryManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationCategoryManager.h; sourceTree = "<group>"; };
@@ -613,6 +619,7 @@
 			children = (
 				9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */,
 				9942FD56246AA8F40002BEA0 /* Info.plist */,
+				9942FD7D246BF1420002BEA0 /* WPRemoteConfigTests.m */,
 			);
 			path = WonderPushExampleTests;
 			sourceTree = "<group>";
@@ -686,6 +693,8 @@
 				99E95EC02407FA5000B8B062 /* WPNotificationCategoryHelper.m */,
 				99D16F1E2463E68C00C14989 /* WPMeasurementsApiClient.h */,
 				99D16F1F2463E68C00C14989 /* WPMeasurementsApiClient.m */,
+				9942FD79246BDAB20002BEA0 /* WPRemoteConfig.h */,
+				9942FD7A246BDAB20002BEA0 /* WPRemoteConfig.m */,
 				9942FD82246C23DD0002BEA0 /* WPSemver.h */,
 				9942FD83246C23DD0002BEA0 /* WPSemver.m */,
 			);
@@ -1092,6 +1101,7 @@
 				99EF836223F4452C00B9B287 /* WPIAMMessageClientCache.h in Headers */,
 				99EF835F23F4452C00B9B287 /* WPIAMDisplayCheckOnAppForegroundFlow.h in Headers */,
 				9998CAAB221C75370028D955 /* WPDataManager.h in Headers */,
+				9942FD7B246BDAB20002BEA0 /* WPRemoteConfig.h in Headers */,
 				99EF835023F4452C00B9B287 /* NSString+WPInterlaceStrings.h in Headers */,
 				99EF836323F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.h in Headers */,
 				99EF836823F4452C00B9B287 /* WPIAMFetchOnAppForegroundFlow.h in Headers */,
@@ -1430,6 +1440,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9942FD7E246BF1420002BEA0 /* WPRemoteConfigTests.m in Sources */,
 				9942FD55246AA8F40002BEA0 /* WonderPushExampleTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1490,6 +1501,7 @@
 				99EF839323F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m in Sources */,
 				99EF834B23F4452C00B9B287 /* WPInAppMessaging.m in Sources */,
 				990F269B23FD4B0E0015F8DE /* WPAction.m in Sources */,
+				9942FD7C246BDAB20002BEA0 /* WPRemoteConfig.m in Sources */,
 				9998CAC3221C75480028D955 /* WPInstallationCoreProperties.m in Sources */,
 				99DE7EB723F59B4500886E43 /* WPIAMTemporaryStorage.m in Sources */,
 				9998CAC4221C75480028D955 /* WPJsonSync.m in Sources */,
