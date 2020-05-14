@@ -204,6 +204,30 @@
 }
 
 /**
+ Ensure we fetch config when isExpired is true
+ */
+
+- (void) testIsExpired {
+    // Remove rate limiting
+    self.manager.minimumFetchInterval = 0;
+    
+    // Make a config that expires in 100ms
+    self.storage.storedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0" fetchDate:[NSDate date] maxAge:0.1];
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.101 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        XCTAssertTrue(self.storage.storedConfig.isExpired);
+        XCTAssertNil(self.fetcher.lastRequestedDate);
+        [self.manager read:^(WPRemoteConfig *conf, NSError *error) {
+            XCTAssertNotNil(self.fetcher.lastRequestedDate);
+            [expectation fulfill];
+        }];
+    });
+    
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:0.5];
+}
+/**
  Ensure we fetch config when the max fetch interval is reached.
  */
 - (void) testMaximumFetchInterval {

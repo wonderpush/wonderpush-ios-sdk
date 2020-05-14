@@ -22,10 +22,15 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 }
 
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate {
+    return [self initWithData:data version:version fetchDate:[NSDate date] maxAge:WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE];
+}
+
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge {
     if (self = [super init]) {
         _data = data;
         _version = version;
         _fetchDate = fetchDate;
+        _maxAge = maxAge;
     }
     return self;
 }
@@ -62,6 +67,10 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     [coder encodeObject:self.version forKey:@"version"];
     [coder encodeObject:self.fetchDate forKey:@"fetchDate"];
     [coder encodeObject:self.data forKey:@"data"];
+}
+
+- (BOOL) isExpired {
+    return [self.fetchDate timeIntervalSinceNow] < -self.maxAge;
 }
 
 + (BOOL) supportsSecureCoding {
@@ -302,7 +311,9 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         }
         
         // Force fetch if expired
-        if (!shouldFetch && configAge > self.maximumConfigAge) {
+        BOOL isExpired = configAge > self.maximumConfigAge
+            || config.isExpired;
+        if (!shouldFetch && isExpired) {
             shouldFetch = YES;
             if (!higherVersionExists) shouldFetchVersion = config.version;
         }
