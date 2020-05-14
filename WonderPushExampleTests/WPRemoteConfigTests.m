@@ -120,13 +120,20 @@
 }
 
 /**
- Ensure we never fetch config until the minimum fetch interval is reached.
+ Ensure we never fetch config more than once every `minimumFetchInterval`,
+ and we don't consider new versions until `minimumConfigAge` is reached.
  */
-- (void)testMinimumInterval {
+- (void)testRateLimiting {
     self.manager.minimumConfigAge = 0.25;
     self.manager.minimumFetchInterval = 1;
+    
+    // A brand new config, just fetched
     self.storage.storedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.0" fetchDate:[NSDate date]];
+    
+    // A fetcher ready to serve an even fresher config
     self.fetcher.fetchedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.1"];
+    
+    // Yet, we'll get 1.0.0 because we don't fetch before minimumConfigAge.
     [self.manager read:^(WPRemoteConfig *conf, NSError *error) {
         XCTAssertEqualObjects(conf.version, @"1.0.0");
     }];
@@ -136,7 +143,7 @@
     [self.manager declareVersion:@"1.0.1"];
     XCTAssertEqualObjects(self.storage.storedHighestVersion, @"1.0.1");
     
-    // Check that no download happened
+    // We won't consider this version until configMaxAge is reached.
     XCTAssertNil(self.fetcher.lastRequestedDate);
     
     // Try to get the config
@@ -146,25 +153,27 @@
         XCTAssertNil(self.fetcher.lastRequestedDate);
     }];
     
-    // Wait for the minimumConfigAge and try again, a fetch should happen
+    // Wait for the minimumConfigAge and try again, a fetch should happen,
+    // just because we declared a higher version.
     NSTimeInterval waitTime1 = 2 * self.manager.minimumConfigAge;
     NSTimeInterval waitTime2 = (self.manager.minimumFetchInterval) * 2;
 
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"minimumFetchInterval second passed"];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(waitTime1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 
-        // Nothing should have happened yet
+        // Meanwhile, nothing should have happened
         XCTAssertNil(self.fetcher.lastRequestedDate);
         
         // Read
         [self.manager read:^(WPRemoteConfig *conf, NSError *error) {
-            // Verify a fetch happened
+
+            // A fetch just happened
             XCTAssertEqualObjects(conf.version, @"1.0.1");
             XCTAssertNil(error);
             XCTAssertNotNil(self.fetcher.lastRequestedDate);
-
             
-            // Declare a new version right now, no fetch should happen because minimumFetchInterval still not reached
+            // Declare an even newer version right now, no fetch should happen because minimumFetchInterval still not reached
+            // Disclaimer: because the fetchDate of the 1.0.1 version is the same as 1.0.0, it's reached its configMaxAge
             self.fetcher.lastRequestedDate = nil;
             [self.manager declareVersion:@"1.0.2"];
             XCTAssertNil(self.fetcher.lastRequestedDate);
@@ -173,7 +182,9 @@
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(waitTime2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [self.manager read:^(WPRemoteConfig *conf, NSError *error) {
                     
+                    // A fetch happened
                     XCTAssertNotNil(self.fetcher.lastRequestedDate);
+
                     // Finish the test
                     [expectation fulfill];
                 }];
