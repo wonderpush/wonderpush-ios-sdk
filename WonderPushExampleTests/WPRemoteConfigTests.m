@@ -418,4 +418,29 @@
     XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
     [waiter waitForExpectations:@[expectation] timeout:2];
 }
+
+- (void) testSerialize {
+    NSBundle *bundle = [NSBundle bundleForClass:self.class];
+    NSURL *configURL = [bundle URLForResource:@"remote-config-example" withExtension:@"json"];
+    NSData *configData = [NSData dataWithContentsOfURL:configURL];
+    NSError *JSONError = nil;
+    id configJSON = [NSJSONSerialization JSONObjectWithData:configData options:0 error:&JSONError];
+    NSString *version = [configJSON valueForKey:@"_configVersion"];
+    XCTAssertNil(JSONError);
+    XCTAssertEqualObjects(version, @"1.0.0");
+
+    WPRemoteConfig *remoteConfig = [[WPRemoteConfig alloc] initWithData:configJSON version:version];
+    NSError *archiverError = nil;
+    NSData *encoded = [NSKeyedArchiver archivedDataWithRootObject:remoteConfig requiringSecureCoding:YES error:&archiverError];
+    XCTAssertNotNil(encoded);
+    XCTAssertNil(archiverError);
+    
+    WPRemoteConfig *decoded = [NSKeyedUnarchiver unarchivedObjectOfClass:WPRemoteConfig.class fromData:encoded error:&archiverError];
+    XCTAssertNil(archiverError);
+    XCTAssertNotNil(decoded);
+
+    XCTAssertEqualObjects(remoteConfig.version, decoded.version);
+    XCTAssertEqualObjects(remoteConfig.fetchDate, decoded.fetchDate);
+    XCTAssertEqualObjects(remoteConfig.data[@"_configVersion"], decoded.data[@"_configVersion"]);
+}
 @end

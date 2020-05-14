@@ -68,6 +68,7 @@
 		9942FD81246BF67C0002BEA0 /* WonderPush.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9998CA98221C74190028D955 /* WonderPush.framework */; };
 		9942FD84246C23DD0002BEA0 /* WPSemver.h in Headers */ = {isa = PBXBuildFile; fileRef = 9942FD82246C23DD0002BEA0 /* WPSemver.h */; };
 		9942FD85246C23DD0002BEA0 /* WPSemver.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD83246C23DD0002BEA0 /* WPSemver.m */; };
+		997D8835246D4D330095CCA7 /* remote-config-example.json in Resources */ = {isa = PBXBuildFile; fileRef = 997D8834246D4D330095CCA7 /* remote-config-example.json */; };
 		9998CAA0221C74890028D955 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */; };
 		9998CAA1221C74930028D955 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937WPAF19CAEC0700F91DDD /* CoreGraphics.framework */; };
 		9998CAA2221C74980028D955 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B119CB018F00F91DDD /* UIKit.framework */; };
@@ -375,6 +376,7 @@
 		995E5E01240445E100367114 /* WPNotificationCategoryManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationCategoryManager.h; sourceTree = "<group>"; };
 		995E5E02240445E100367114 /* WPNotificationCategoryManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNotificationCategoryManager.m; sourceTree = "<group>"; };
 		99630BDB242A04F000747604 /* WPURLConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPURLConstants.h; sourceTree = "<group>"; };
+		997D8834246D4D330095CCA7 /* remote-config-example.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "remote-config-example.json"; sourceTree = "<group>"; };
 		99885AED22156F92002CA269 /* WPNetworkReachabilityManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNetworkReachabilityManager.h; sourceTree = "<group>"; };
 		99885AEE22156F92002CA269 /* WPNetworkReachabilityManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNetworkReachabilityManager.m; sourceTree = "<group>"; };
 		99885AF122157F98002CA269 /* WPRequestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPRequestSerializer.h; sourceTree = "<group>"; };
@@ -620,6 +622,7 @@
 				9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */,
 				9942FD56246AA8F40002BEA0 /* Info.plist */,
 				9942FD7D246BF1420002BEA0 /* WPRemoteConfigTests.m */,
+				997D8834246D4D330095CCA7 /* remote-config-example.json */,
 			);
 			path = WonderPushExampleTests;
 			sourceTree = "<group>";
@@ -1357,6 +1360,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				997D8835246D4D330095CCA7 /* remote-config-example.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

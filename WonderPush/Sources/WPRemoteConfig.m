@@ -43,6 +43,29 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     
     return [semver1 compare:semver2];
 }
+
+- (NSString *) description {
+    NSString *dataString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:self.data options:0 error:nil] encoding:NSUTF8StringEncoding];
+    return [NSString stringWithFormat:@"<WPRemoteConfig version=%@ fetchDate=%@ data=%@>", self.version, self.fetchDate, dataString];
+}
+
+- (instancetype) initWithCoder:(NSCoder *)coder {
+    NSString *version = [coder decodeObjectOfClass:NSString.class forKey:@"version"];
+    NSDate *fetchDate = [coder decodeObjectOfClass:NSDate.class forKey:@"fetchDate"];
+    NSSet *classes = [NSSet setWithObjects:NSString.class, NSNull.class, NSDate.class, NSArray.class, NSDictionary.class, NSNumber.class, nil];
+    NSDictionary *data = [coder decodeObjectOfClasses:classes forKey:@"data"];
+    return [self initWithData:data version:version fetchDate:fetchDate];
+}
+
+- (void) encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:self.version forKey:@"version"];
+    [coder encodeObject:self.fetchDate forKey:@"fetchDate"];
+    [coder encodeObject:self.data forKey:@"data"];
+}
+
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 @end
 
 #pragma mark - Fetcher

@@ -1,0 +1,193 @@
+{
+  "_configVersion": "1.0.0",
+  "inAppConfig": {
+    "campaigns": [
+      {
+        "scheduling": {
+          "endDate": 32503676400000,
+          "pressure": null,
+          "startDate": 1587031233000
+        },
+        "triggers": [
+          {
+            "event": {
+              "type": "eventbanner"
+            }
+          }
+        ],
+        "notifications": [
+          {
+            "reporting": {
+              "campaignId": "01e5cejrcitqcho2",
+              "notificationId": "01e5cejrjdqk2ho2"
+            },
+            "content": {
+              "banner": {
+                "backgroundHexColor": "#d03333",
+                "imageUrl": "https://cdn.by.wonderpush.com/upload/01e4tfrt5h476eoh/f25b686b051bd1a692f022bf6ad5f1e84491c7fd",
+                "title": {
+                  "hexColor": "#4281e0",
+                  "text": "Test to banner"
+                },
+                "body": {
+                  "hexColor": "#000000",
+                  "text": "Bonjour"
+                },
+                "actions": [
+                  {
+                    "type": "link",
+                    "url": "https://www.wonderpush.com"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "scheduling": {
+          "endDate": 32503676400000,
+          "pressure": null,
+          "startDate": 1587031185000
+        },
+        "triggers": [
+          {
+            "systemEvent": "ON_FOREGROUND"
+          }
+        ],
+        "notifications": [
+          {
+            "reporting": {
+              "campaignId": "01e4tm4oqff2meo3",
+              "notificationId": "01e4tm4pbpv4heo3"
+            },
+            "content": {
+              "card": {
+                "primaryActionButton": {
+                  "text": {
+                    "hexColor": "#f1f2f4",
+                    "text": "Goto cnn white"
+                  }
+                },
+                "landscapeImageUrl": "https://cdn.by.wonderpush.com/upload/01e4tfrt5h476eoh/f25b686b051bd1a692f022bf6ad5f1e84491c7fd",
+                "secondaryActionButton": {
+                  "text": {
+                    "hexColor": "#33b231",
+                    "text": "Goto nyt green"
+                  }
+                },
+                "secondaryActions": [
+                  {
+                    "type": "link",
+                    "url": "https://www.nytimes.com/"
+                  }
+                ],
+                "backgroundHexColor": "#2344d5",
+                "portraitImageUrl": "https://cdn.by.wonderpush.com/upload/01e4tfrt5h476eoh/f599bf0e3734be38fb0f568838d530acd1c3f94a",
+                "primaryActions": [
+                  {
+                    "type": "link",
+                    "url": "https://www.cnn.com"
+                  }
+                ],
+                "title": {
+                  "hexColor": "#db1717",
+                  "text": "Salut Olympe Rouge"
+                },
+                "body": {
+                  "hexColor": "#db1717",
+                  "text": "Comment vas-tu ma petite fille chérie?"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "scheduling": {
+          "endDate": 32503676400000,
+          "pressure": null,
+          "startDate": 1587031079000
+        },
+        "triggers": [
+          {
+            "systemEvent": "APP_LAUNCH"
+          },
+          {
+            "systemEvent": "ON_FOREGROUND"
+          }
+        ],
+        "notifications": [
+          {
+            "reporting": {
+              "campaignId": "01e4tg1mus2hc8g2",
+              "notificationId": "01e4tg1mvln5s8g2"
+            },
+            "content": {
+              "banner": {
+                "backgroundHexColor": "#FFFFFF",
+                "title": {
+                  "hexColor": "#000000",
+                  "text": "Basic banner"
+                },
+                "imageUrl": "https:\/\/cdn.by.wonderpush.com\/upload\/01d48biaffai1lb2\/18e3d3c870711fa6cc2b6a07d746cdacb3caa1fc",
+                "actions": []
+              }
+            }
+          }
+        ]
+      },
+      {
+        "scheduling": {
+          "endDate": 32503676400000,
+          "pressure": null,
+          "startDate": 1586254135000
+        },
+        "triggers": [
+          {
+            "systemEvent": "APP_LAUNCH"
+          },
+          {
+            "systemEvent": "ON_FOREGROUND"
+          }
+        ],
+        "notifications": [
+          {
+            "reporting": {
+              "campaignId": "01e5a1qaf24o88gh",
+              "notificationId": "01e5a1qaojkjt8gh"
+            },
+            "content": {
+              "card": {
+                "primaryActionButton": {
+                  "text": {
+                    "hexColor": "#1A73E8",
+                    "text": "Main button button"
+                  }
+                },
+                "secondaryActionButton": {
+                  "text": {
+                    "hexColor": "#000000",
+                    "text": "Secondary button button"
+                  }
+                },
+                "secondaryActions": [],
+                "backgroundHexColor": "#FFFFFF",
+                "portraitImageUrl": "https://cdn.by.wonderpush.com/upload/01e4tfrt5h476eoh/be9b745e251fc3a9e9cb015cd5f8a0e99818ee4f",
+                "primaryActions": [],
+                "title": {
+                  "hexColor": "#000000",
+                  "text": "Card with a very long title. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                },
+                "body": {
+                  "hexColor": "#000000",
+                  "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

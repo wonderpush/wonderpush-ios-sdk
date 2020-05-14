@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString * const WPRemoteConfigUpdatedNotification;
 
-@interface WPRemoteConfig : NSObject
+@interface WPRemoteConfig : NSObject<NSCoding, NSSecureCoding>
 @property (nonatomic, nonnull, readonly) NSDictionary *data;
 @property (nonatomic, nonnull, readonly) NSString *version;
 @property (nonatomic, nonnull, readonly) NSDate *fetchDate;
