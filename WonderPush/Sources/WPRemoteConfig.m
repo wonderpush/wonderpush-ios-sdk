@@ -127,19 +127,84 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 
 @implementation WPRemoteConfigStorateWithUserDefaults
 
+- (instancetype) initWithClientId:(NSString *)clientId {
+    if (self = [super init]) {
+        _clientId = clientId;
+    }
+    return self;
+}
+
 - (void) storeRemoteConfig:(WPRemoteConfig *)remoteConfig
                 completion:(void (^)(NSError * _Nullable))completion {
-    
+    NSError *error = nil;
+    NSData *data = nil;
+    if (@available(iOS 11.0, *)) {
+        data = [NSKeyedArchiver archivedDataWithRootObject:remoteConfig requiringSecureCoding:YES error:&error];
+    } else {
+        data = [NSKeyedArchiver archivedDataWithRootObject:remoteConfig];
+    }
+    if (error) {
+        completion(error);
+        return;
+    }
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:data forKey:[self.class remoteConfigKeyWithClientId:self.clientId]];
+    [defaults synchronize];
+    completion(nil);
 }
 
 - (void) loadRemoteConfigAndHighestDeclaredVersionWithCompletion:(void (^)(WPRemoteConfig * _Nullable, NSString * _Nullable, NSError * _Nullable))completion {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
+    // Get remote config
+    NSData *data = [defaults objectForKey:[self.class remoteConfigKeyWithClientId:self.clientId]];
+    NSError *error = nil;
+    WPRemoteConfig *config = nil;
+    if (data) {
+        NSError *error = nil;
+        if (@available(iOS 11.0, *)) {
+            config = [NSKeyedUnarchiver unarchivedObjectOfClass:WPRemoteConfig.class fromData:data error:&error];
+        } else {
+            config = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        }
+    }
+    
+    // Get highest version
+    NSArray *versions = [defaults objectForKey:[self.class versionsKeyWithClientId:self.clientId]];
+    NSString *highestVersion = nil;
+    if (versions) {
+        for (NSString *version in versions) {
+            if (!highestVersion) {
+                highestVersion = version;
+                continue;
+            }
+            if ([WPRemoteConfig compareVersion:highestVersion withVersion:version] == NSOrderedAscending) {
+                highestVersion = version;
+            }
+        }
+    }
+    completion(config, highestVersion, error);
 }
 
 - (void)declareVersion:(nonnull NSString *)version completion:(nonnull void (^)(NSError * _Nullable))completion {
-    
+    NSString *key = [self.class versionsKeyWithClientId:self.clientId];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *versions = [defaults objectForKey:key];
+    NSMutableArray *mutableVersions = versions ? versions.mutableCopy : [NSMutableArray new];
+    [mutableVersions addObject:version];
+    // Dedup with NSSet
+    [defaults setObject:[NSSet setWithArray:mutableVersions].allObjects forKey:key];
+    [defaults synchronize];
+    completion(nil);
 }
 
++ (NSString *) remoteConfigKeyWithClientId:(NSString *)clientId {
+    return [NSString stringWithFormat:@"WP_REMOTE_CONFIG_%@", clientId];
+}
+
++ (NSString *) versionsKeyWithClientId:(NSString *)clientId {
+    return [NSString stringWithFormat:@"WP_REMOTE_CONFIG_VERSIONS_%@", clientId];
+}
 
 @end
 

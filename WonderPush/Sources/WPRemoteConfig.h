@@ -43,6 +43,10 @@ extern NSString * const WPRemoteConfigUpdatedNotification;
 @end
 
 @interface WPRemoteConfigStorateWithUserDefaults : NSObject<WPRemoteConfigStorage>
+@property (nonatomic, nonnull, readonly) NSString *clientId;
+- (instancetype) initWithClientId:(NSString *)clientId;
++ (NSString *) remoteConfigKeyWithClientId:(NSString *)clientId;
++ (NSString *) versionsKeyWithClientId:(NSString *)clientId;
 @end
 
 @interface WPRemoteConfigManager : NSObject

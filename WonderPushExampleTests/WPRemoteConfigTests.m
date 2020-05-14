@@ -443,4 +443,38 @@
     XCTAssertEqualObjects(remoteConfig.fetchDate, decoded.fetchDate);
     XCTAssertEqualObjects(remoteConfig.data[@"_configVersion"], decoded.data[@"_configVersion"]);
 }
+
+- (void) testUserDefaultsStorage {
+    NSString *clientId = @"unittestsclientid";
+    WPRemoteConfigStorateWithUserDefaults *storage = [[WPRemoteConfigStorateWithUserDefaults alloc] initWithClientId:clientId];
+    
+    // Clean defaults
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults removeObjectForKey:[WPRemoteConfigStorateWithUserDefaults remoteConfigKeyWithClientId:clientId]];
+    [defaults removeObjectForKey:[WPRemoteConfigStorateWithUserDefaults versionsKeyWithClientId:clientId]];
+    [defaults synchronize];
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+    
+    NSDate *now = [NSDate date];
+    WPRemoteConfig *config = [[WPRemoteConfig alloc] initWithData:@{@"toto": @"titi"} version:@"1.0.0" fetchDate:now];
+    [storage storeRemoteConfig:config completion:^(NSError *error) {
+        XCTAssertNil(error);
+        [storage declareVersion:@"1.2.3" completion:^(NSError *error) {
+            XCTAssertNil(error);
+            [storage declareVersion:@"1.0.0" completion:^(NSError *error) {
+                XCTAssertNil(error);
+                [storage loadRemoteConfigAndHighestDeclaredVersionWithCompletion:^(WPRemoteConfig *loadedConfig, NSString *highestVersion, NSError *error) {
+                    XCTAssertNil(error);
+                    XCTAssertEqualObjects(@"1.2.3", highestVersion);
+                    XCTAssertEqualObjects(@"titi", loadedConfig.data[@"toto"]);
+                    [expectation fulfill];
+                }];
+            }];
+        }];
+    }];
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:2];
+
+}
 @end
