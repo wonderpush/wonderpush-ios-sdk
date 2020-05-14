@@ -222,12 +222,14 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 #pragma mark - Manager
 
 @interface WPRemoteConfigManager ()
+@property (nonatomic) BOOL isFetching;
+@property (nonatomic, strong) NSMutableArray<WPRemoteConfigReadCompletionHandler> *queuedHandlers;
 @property (nonatomic, nullable, strong) NSDate *lastFetchDate;
 @property (nonatomic, nullable, strong) WPRemoteConfig *storedConfig;
 @property (nonatomic, nullable, strong) NSString *storedHighestVersion;
 - (void) readConfigAndHighestDeclaredVersionFromStorageWithCompletion:(void(^)(WPRemoteConfig * _Nullable, NSString * _Nullable, NSError * _Nullable))completion;
 - (void) storeConfig:(WPRemoteConfig *)config completion:(void(^)(NSError * _Nullable))completion;
-- (void) fetchAndStoreConfigWithVersion:(NSString * _Nullable)version currentConfig:(WPRemoteConfig * _Nullable)currentConfig completion: (void(^ _Nullable)(WPRemoteConfig * _Nullable, NSError * _Nullable)) completion;
+- (void) fetchAndStoreConfigWithVersion:(NSString * _Nullable)version currentConfig:(WPRemoteConfig * _Nullable)currentConfig completion: (WPRemoteConfigReadCompletionHandler) completion;
 @end
 
 @implementation WPRemoteConfigManager
@@ -240,6 +242,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         _minimumConfigAge = WP_REMOTE_CONFIG_DEFAULT_MINIMUM_CONFIG_AGE;
         _maximumConfigAge = WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE;
         _minimumFetchInterval = WP_REMOTE_CONFIG_DEFAULT_MINIMUM_CONFIG_AGE;
+        _queuedHandlers = [NSMutableArray new];
     }
     return self;
 }
@@ -278,7 +281,14 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 
 }
 
-- (void) read:(void (^)(WPRemoteConfig * _Nullable, NSError * _Nullable))completion {
+- (void) read:(WPRemoteConfigReadCompletionHandler)completion {
+    if (self.isFetching) {
+        @synchronized (self.queuedHandlers) {
+            [self.queuedHandlers addObject:completion];
+        }
+        return;
+    }
+
     [self readConfigAndHighestDeclaredVersionFromStorageWithCompletion:^(WPRemoteConfig *config, NSString *highestVersion, NSError *storageError) {
         if (storageError) {
             completion(nil, storageError);
@@ -356,18 +366,33 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     }];
 }
 
-- (void) fetchAndStoreConfigWithVersion:(NSString * _Nullable)version currentConfig:(WPRemoteConfig * _Nullable)currentConfig completion:(void (^)(WPRemoteConfig * _Nullable, NSError * _Nullable))completion {
+- (void) fetchAndStoreConfigWithVersion:(NSString * _Nullable)version currentConfig:(WPRemoteConfig * _Nullable)currentConfig completion:(WPRemoteConfigReadCompletionHandler)completion {
+    if (self.isFetching) {
+        @synchronized (self.queuedHandlers) {
+            [self.queuedHandlers addObject:completion];
+        }
+        return;
+    }
     self.lastFetchDate = [NSDate date];
+    self.isFetching = YES;
     [self.remoteConfigFetcher fetchConfigWithVersion:version completion:^(WPRemoteConfig *newConfig, NSError *fetchError) {
+        WPRemoteConfigReadCompletionHandler handler = ^(WPRemoteConfig *config, NSError *error) {
+            for (WPRemoteConfigReadCompletionHandler queuedHandler in self.queuedHandlers) queuedHandler(config, error);
+            @synchronized (self.queuedHandlers) {
+                [self.queuedHandlers removeAllObjects];
+            }
+            self.isFetching = NO;
+            if (completion) completion(config, error);
+        };
         if (newConfig && !fetchError) {
             if (currentConfig && [currentConfig hasHigherVersionThan:newConfig]) {
-                if (completion) completion(currentConfig, nil);
+                handler(currentConfig, nil);
                 return;
             }
             [self.remoteConfigStorage storeRemoteConfig:newConfig completion:^(NSError *storageError) {
                 if (storageError) {
                     WPLog(@"Could not store RemoteConfig in storage: %@", storageError.description);
-                    if (completion) completion(nil, storageError);
+                    handler(nil, storageError);
                 } else {
                     self.storedConfig = newConfig;
                     [self.remoteConfigStorage declareVersion:newConfig.version completion:^(NSError *declareVersionError) {
@@ -375,7 +400,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
                             WPLog(@"Error declaring version to storate: %@", declareVersionError.description);
                         }
                         [[NSNotificationCenter defaultCenter] postNotificationName:WPRemoteConfigUpdatedNotification object:newConfig];
-                        if (completion) completion(newConfig, nil);
+                        handler(newConfig, nil);
                     }];
                 }
             }];
@@ -384,7 +409,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         if (fetchError) {
             WPLog(@"Could not fetch RemoteConfig from server: %@", fetchError.description);
         }
-        if (completion) completion(nil, fetchError);
+        handler(nil, fetchError);
     }];
 }
 

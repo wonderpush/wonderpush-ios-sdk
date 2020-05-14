@@ -24,6 +24,13 @@
 - (void) reset;
 @end
 
+@interface MockAsyncRemoteConfigFetcher : NSObject<WPRemoteConfigFetcher>
+@property (nonatomic, nullable, strong) void (^completion)(WPRemoteConfig * _Nullable, NSError * _Nullable);
+@property (nonatomic, nullable, strong) NSString *lastRequestedVersion;
+@property (nonatomic, nullable, strong) NSDate *lastRequestedDate;
+- (void) resolveWithConfig:(WPRemoteConfig * _Nullable)config error:(NSError * _Nullable)error;
+@end
+
 @implementation MockRemoteConfigFetcher
 
 - (void) fetchConfigWithVersion:(NSString *)version completion:(void (^)(WPRemoteConfig * _Nullable, NSError * _Nullable))completion {
@@ -58,6 +65,18 @@
 - (void) reset {
     self.storedConfig = nil;
     self.error = nil;
+}
+
+@end
+
+@implementation MockAsyncRemoteConfigFetcher
+
+- (void) fetchConfigWithVersion:(NSString *)version completion:(void (^)(WPRemoteConfig * _Nullable, NSError * _Nullable))completion {
+    self.completion = completion;
+}
+
+- (void) resolveWithConfig:(WPRemoteConfig *)config error:(NSError *)error {
+    if (self.completion) self.completion(config, error);
 }
 
 @end
@@ -514,6 +533,49 @@
             }];
         }];
     }];
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:2];
+
+}
+
+/**
+ Ensures that when we request the config and it is currently fetching, we wait for the result.
+ */
+- (void) testConcurrentFetches {
+    
+    // The async fetcher lets us call the completion handler ourselves.
+    MockAsyncRemoteConfigFetcher *fetcher = [MockAsyncRemoteConfigFetcher new];
+    self.manager.remoteConfigFetcher = fetcher;
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+    expectation.expectedFulfillmentCount = 2;
+
+    WPRemoteConfig *resultConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1"];
+    
+    // Read
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        XCTAssertNotNil(config);
+        XCTAssertEqual(config, resultConfig);
+        [expectation fulfill];
+    }];
+    
+    // A new fetch should not have been triggered
+    XCTAssertNotNil(fetcher.completion);
+    id completion = fetcher.completion;
+
+    // Read again before result comes
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        XCTAssertNotNil(config);
+        XCTAssertEqual(config, resultConfig);
+        [expectation fulfill];
+    }];
+    
+    // A new fetch hasn't been requested
+    XCTAssertEqual(completion, fetcher.completion);
+    
+    // Let's resolve, which should resolve the above read.
+    [fetcher resolveWithConfig:resultConfig error:nil];
+
     XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
     [waiter waitForExpectations:@[expectation] timeout:2];
 

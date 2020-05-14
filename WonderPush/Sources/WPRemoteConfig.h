@@ -28,6 +28,8 @@ extern NSString * const WPRemoteConfigUpdatedNotification;
 + (NSComparisonResult) compareVersion:(NSString *)version1 withVersion: (NSString *)version2;
 @end
 
+typedef void(^WPRemoteConfigReadCompletionHandler)(WPRemoteConfig * _Nullable, NSError * _Nullable);
+
 @protocol WPRemoteConfigFetcher
 - (void) fetchConfigWithVersion: (NSString * _Nullable)version
                      completion: (void(^)(WPRemoteConfig * _Nullable,  NSError * _Nullable))completion;
@@ -61,7 +63,7 @@ extern NSString * const WPRemoteConfigUpdatedNotification;
 - (instancetype) initWithRemoteConfigFetcher:(id<WPRemoteConfigFetcher>)remoteConfigFetcher
                                      storage:(id<WPRemoteConfigStorage>)remoteConfigStorage;
 - (void) declareVersion:(NSString *)version;
-- (void) read: (void(^)(WPRemoteConfig * _Nullable,  NSError * _Nullable)) completion;
+- (void) read: (WPRemoteConfigReadCompletionHandler) completion;
 @end
 
 NS_ASSUME_NONNULL_END
