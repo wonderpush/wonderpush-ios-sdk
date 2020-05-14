@@ -29,6 +29,8 @@ NSInteger const WPErrorInvalidCredentials = 11000;
 NSInteger const WPErrorInvalidAccessToken = 11003;
 NSInteger const WPErrorMissingUserConsent = 11011;
 NSInteger const WPErrorHTTPFailure = 11012;
+NSInteger const WPErrorInvalidFormat = 11013;
+NSInteger const WPErrorNotFound = 11014;
 NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
 @implementation WPUtil
 + (void) initialize

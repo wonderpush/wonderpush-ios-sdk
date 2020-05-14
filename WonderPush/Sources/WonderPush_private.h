@@ -28,6 +28,7 @@
 #define PRODUCTION_API_URL @"https://" PRODUCTION_API_DOMAIN @"/v1/"
 #define MEASUREMENTS_API_DOMAIN @"measurements-api.wonderpush.com"
 #define MEASUREMENTS_API_URL @"https://" MEASUREMENTS_API_DOMAIN @"/v1/"
+#define REMOTE_CONFIG_BASE_URL @"https://cdn.by.wonderpush.com/config/clientids/"
 
 #define RETRY_INTERVAL 10.0f
 #define CACHED_INSTALLATION_CUSTOM_PROPERTIES_MIN_DELAY 5

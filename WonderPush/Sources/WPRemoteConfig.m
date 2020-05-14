@@ -9,11 +9,12 @@
 #import "WPRemoteConfig.h"
 #import "WPSemver.h"
 #import "WPLog.h"
+#import "WonderPush_private.h"
+#import "WPUtil.h"
 
 NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNotification";
 
 #pragma mark - Data
-
 @implementation WPRemoteConfig
 
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version {
@@ -70,17 +71,54 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 
 #pragma mark - Fetcher
 
+@interface WPRemoteConfigFetcherWithURLSession ()
+@property (nonnull, nonatomic, strong) NSURLSession *session;
+@end
+
 @implementation WPRemoteConfigFetcherWithURLSession
 
 - (instancetype) initWithClientId:(NSString *)clientId {
     if (self = [super init]) {
         _clientId = clientId;
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        _session = [NSURLSession sessionWithConfiguration:configuration];
     }
     return self;
 }
 
 - (void) fetchConfigWithVersion:(NSString *)version completion:(void (^)(WPRemoteConfig * _Nullable, NSError * _Nullable))completion {
-    
+    NSURL *URL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", REMOTE_CONFIG_BASE_URL, self.clientId]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL cachePolicy:NSURLRequestReloadRevalidatingCacheData timeoutInterval:10];
+    NSURLSessionTask *task = [self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        if ([response isKindOfClass:NSHTTPURLResponse.class]) {
+            NSHTTPURLResponse *HTTPResponse = (NSHTTPURLResponse *)response;
+            if (HTTPResponse.statusCode != 200) {
+                completion(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorNotFound userInfo:@{
+                    @"response": HTTPResponse,
+                }]);
+                return;
+            }
+        }
+        NSError *JSONError = nil;
+        id JSONObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&JSONError];
+        if (JSONError) {
+            completion(nil, error);
+            return;
+        }
+        NSDictionary *configurationDict = [JSONObject isKindOfClass:NSDictionary.class] ? JSONObject : [NSDictionary new];
+        NSString *version = [configurationDict objectForKey:@"_configVersion"];
+        if ([version isKindOfClass:NSString.class]) {
+            WPRemoteConfig *remoteConfig = [[WPRemoteConfig alloc] initWithData:configurationDict version:version];
+            completion(remoteConfig, nil);
+            return;
+        }
+        completion(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorInvalidFormat userInfo:nil]);
+    }];
+    [task resume];
 }
 
 @end
