@@ -39,33 +39,9 @@
 }
 
 - (NSArray<WPIAMMessageDefinition *> *)parseAPIResponseDictionary:(NSDictionary *)responseDict
-                                                discardedMsgCount:(NSInteger *)discardCount
-                                           fetchWaitTimeInSeconds:(NSNumber **)fetchWaitTime {
-    if (fetchWaitTime != nil) {
-        *fetchWaitTime = nil;  // It would be set to non nil value if it's detected in responseDict
-        if ([responseDict[@"expirationEpochTimestampMillis"] isKindOfClass:NSString.class]) {
-            NSTimeInterval nextFetchTimeInResponse =
-            [responseDict[@"expirationEpochTimestampMillis"] doubleValue] / 1000;
-            NSTimeInterval fetchWaitTimeInSeconds =
-            nextFetchTimeInResponse - [self.timeFetcher currentTimestampInSeconds];
-            
-            WPLogDebug(
-                       @"Detected next fetch epoch time in API response as %f seconds and wait for %f "
-                       "seconds before next fetch.",
-                       nextFetchTimeInResponse, fetchWaitTimeInSeconds);
-            
-            if (fetchWaitTimeInSeconds > 0.01) {
-                *fetchWaitTime = @(fetchWaitTimeInSeconds);
-                WPLogDebug(
-                           @"Fetch wait time calculated from server response is negative. Discard it.");
-            }
-        } else {
-            WPLogDebug(
-                       @"No fetch epoch time detected in API response.");
-        }
-    }
-    
+                                                discardedMsgCount:(NSInteger *)discardCount {
     NSArray<NSDictionary *> *messageArray = responseDict[@"campaigns"];
+    if (!messageArray) return @[];
     NSInteger discarded = 0;
     
     NSMutableArray<WPIAMMessageDefinition *> *definitions = [[NSMutableArray alloc] init];

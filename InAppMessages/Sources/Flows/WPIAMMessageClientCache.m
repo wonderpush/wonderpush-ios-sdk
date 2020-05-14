@@ -217,11 +217,9 @@
     [fetchStorage readResponseDictionary:^(NSDictionary *_Nonnull response, BOOL success) {
         if (success) {
             NSInteger discardCount;
-            NSNumber *fetchWaitTime;
             NSArray<WPIAMMessageDefinition *> *messagesFromStorage =
             [self.responseParser parseAPIResponseDictionary:response
-                                          discardedMsgCount:&discardCount
-                                     fetchWaitTimeInSeconds:&fetchWaitTime];
+                                          discardedMsgCount:&discardCount];
             [self setMessageData:messagesFromStorage];
             completion(YES);
         } else {

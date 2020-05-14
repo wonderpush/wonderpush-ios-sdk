@@ -31,9 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 // detected uring parsing.
 // @param fetchWaitTime would be non nil if fetch wait time data is found in the api response.
 - (NSArray<WPIAMMessageDefinition *> *)parseAPIResponseDictionary:(NSDictionary *)responseDict
-                                                 discardedMsgCount:(NSInteger *)discardCount
-                                            fetchWaitTimeInSeconds:
-                                                (NSNumber *_Nullable *_Nonnull)fetchWaitTime;
+                                                discardedMsgCount:(NSInteger *)discardCount;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithTimeFetcher:(id<WPIAMTimeFetcher>)timeFetcher;
