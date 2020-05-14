@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "WPRemoteConfig.h"
+#import "WPSemver.h"
 
 @interface MockRemoteConfigFetcher : NSObject<WPRemoteConfigFetcher>
 @property (nonatomic, nullable, strong) WPRemoteConfig *fetchedConfig;
@@ -203,6 +204,11 @@
     [waiter waitForExpectations:@[expectation] timeout:0.5];
 }
 
+- (void) testVersionNumbers {
+    XCTAssertTrue([WPSemver semverWithString:@"0"].isValid);
+    XCTAssertTrue([WPSemver semverWithString:@"1"].isValid);
+    XCTAssertTrue([WPSemver semverWithString:@"1234"].isValid);
+}
 /**
  Ensure we fetch config when isExpired is true
  */
