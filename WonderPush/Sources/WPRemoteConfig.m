@@ -22,7 +22,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 }
 
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate {
-    return [self initWithData:data version:version fetchDate:[NSDate date] maxAge:WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE];
+    return [self initWithData:data version:version fetchDate:fetchDate maxAge:WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE];
 }
 
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge {
