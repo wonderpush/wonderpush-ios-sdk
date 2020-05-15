@@ -306,7 +306,7 @@
     self.manager.minimumConfigAge = 0.5;
     self.manager.minimumFetchInterval = 0.5;
     self.manager.maximumConfigAge = 10; // We don't want to reach this
-    self.storage.storedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.0" fetchDate:[[NSDate date] dateByAddingTimeInterval:-5]]; // Old enough
+    self.storage.storedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.0" fetchDate:[[NSDate date] dateByAddingTimeInterval:-5]]; // Older than minimumConfigAge
     
     // No fetch yet
     XCTAssertNil(self.fetcher.lastRequestedDate);

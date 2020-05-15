@@ -270,13 +270,13 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
                 if (configAge < self.minimumConfigAge) return;
 
                 // Only fetch a higher version
-                if ([WPRemoteConfig compareVersion:config.version withVersion:version] != NSOrderedAscending) return;
+                if ([WPRemoteConfig compareVersion:config.version withVersion:highestVersion] != NSOrderedAscending) return;
             }
             
             NSTimeInterval lastFetchInterval = -[self.lastFetchDate timeIntervalSinceNow];
             // Do not update too frequently
             if (self.lastFetchDate && lastFetchInterval < self.minimumFetchInterval) return;
-            [self fetchAndStoreConfigWithVersion:version currentConfig:config completion:nil];
+            [self fetchAndStoreConfigWithVersion:highestVersion currentConfig:config completion:nil];
 
         }];
     }];
