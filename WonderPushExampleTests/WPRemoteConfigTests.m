@@ -269,7 +269,7 @@
 - (void) testMaximumFetchInterval {
     self.manager.minimumConfigAge = 0.1;
     self.manager.maximumConfigAge = 1;
-    self.storage.storedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.0" fetchDate:[[NSDate now] dateByAddingTimeInterval:-1.01]];
+    self.storage.storedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.0" fetchDate:[[NSDate now] dateByAddingTimeInterval:-1.1]];
     self.fetcher.fetchedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.1" fetchDate:[NSDate now]];
     [self.manager read:^(WPRemoteConfig *config, NSError *error) {
         XCTAssertEqualObjects(config.version, @"1.0.1");
