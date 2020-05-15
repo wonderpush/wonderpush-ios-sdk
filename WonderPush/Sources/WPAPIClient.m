@@ -24,6 +24,7 @@
 #import "WPJsonUtil.h"
 #import "WPNetworkReachabilityManager.h"
 #import "WPRequestSerializer.h"
+
 typedef void (^SuccessBlock) (NSURLSessionTask *, id);
 typedef void (^FailureBlock) (NSURLSessionTask *, NSError *);
 
@@ -201,6 +202,12 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         if (JSONError) {
             callFailureBlock(task, error);
             return;
+        }
+        if ([result isKindOfClass:NSDictionary.class]) {
+            id configVersion = [result objectForKey:@"_configVersion"];
+            if ([configVersion isKindOfClass:NSString.class]) {
+                [WonderPush.remoteConfigManager declareVersion:configVersion];
+            }
         }
         callSuccessBlock(task, result);
     };
