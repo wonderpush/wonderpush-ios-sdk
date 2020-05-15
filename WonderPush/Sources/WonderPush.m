@@ -30,7 +30,6 @@
 #import "WonderPushConcreteAPI.h"
 #import "WonderPushLogErrorAPI.h"
 #import "WPHTMLInAppController.h"
-#import "WPIAMTemporaryStorage.h"
 #import "WPURLFollower.h"
 #import "WPAction_private.h"
 #import "WPNotificationCategoryHelper.h"
@@ -915,16 +914,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         return NO;
     WPLogDebug(@"handleNotification:%@ withOriginalApplicationState:%ld", notificationDictionary, (long)applicationState);
 
-    // Handle in-app messages
-    if (notificationDictionary[@"_wp"]
-        && [notificationDictionary[@"_wp"][@"type"] isEqualToString:@"data"]
-        && [notificationDictionary[@"_wp"][@"inApp"] isKindOfClass:[NSDictionary class]]) {
-        // Store the newly received dictionary in our temporary storage
-        [[WPIAMTemporaryStorage temporaryStorage] handleNotification:notificationDictionary];
-        // Force a fetch that will read the updated temporary storage
-        [[WPIAMRuntimeManager getSDKRuntimeInstance] forceFetchInApps];
-    }
-
     NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
     NSDictionary *apsForeground = [WPUtil dictionaryForKey:@"apsForeground" inDictionary:wonderpushData];
     if (!apsForeground || apsForeground.count == 0) apsForeground = nil;
@@ -1755,4 +1744,25 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     return [wonderPushAPI hasTag:tag];
 }
 
+#pragma mark - RemoteConfig
+
++ (WPRemoteConfigManager *) remoteConfigManager {
+    static NSMutableDictionary *managers;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        managers = [NSMutableDictionary new];
+    });
+    
+    NSString *clientId = WPConfiguration.sharedConfiguration.clientId;
+    if (!clientId) return nil;
+    
+    WPRemoteConfigManager *remoteConfigManager = managers[clientId];
+    if (!remoteConfigManager) {
+        WPRemoteConfigFetcherWithURLSession *fetcher = [[WPRemoteConfigFetcherWithURLSession alloc] initWithClientId:clientId];
+        WPRemoteConfigStorateWithUserDefaults *storage = [[WPRemoteConfigStorateWithUserDefaults alloc] initWithClientId:clientId];
+        remoteConfigManager = [[WPRemoteConfigManager alloc] initWithRemoteConfigFetcher:fetcher storage:storage];
+        [managers setObject:remoteConfigManager forKey:clientId];
+    }
+    return remoteConfigManager;
+}
 @end

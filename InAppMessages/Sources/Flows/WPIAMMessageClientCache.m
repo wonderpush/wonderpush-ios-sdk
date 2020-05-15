@@ -19,7 +19,7 @@
 #import "WPIAMDisplayTriggerDefinition.h"
 #import "WPIAMFetchResponseParser.h"
 #import "WPIAMMessageClientCache.h"
-#import "WPIAMServerMsgFetchStorage.h"
+#import "WonderPush_private.h"
 
 @interface WPIAMMessageClientCache ()
 
@@ -212,19 +212,25 @@
     }
 }
 
-- (void)loadMessageDataFromServerFetchStorage:(WPIAMServerMsgFetchStorage *)fetchStorage
-                               withCompletion:(void (^)(BOOL success))completion {
-    [fetchStorage readResponseDictionary:^(NSDictionary *_Nonnull response, BOOL success) {
-        if (success) {
-            NSInteger discardCount;
-            NSArray<WPIAMMessageDefinition *> *messagesFromStorage =
-            [self.responseParser parseAPIResponseDictionary:response
-                                          discardedMsgCount:&discardCount];
-            [self setMessageData:messagesFromStorage];
-            completion(YES);
-        } else {
-            completion(NO);
+- (void)loadMessagesFromRemoteConfigWithCompletion:(void (^)(BOOL success))completion {
+    if (!WonderPush.remoteConfigManager) {
+        if (completion) completion(NO);
+        return;
+    }
+    [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+        if (error) {
+            if (completion) completion(NO);
+            return;
         }
+        id inAppConfig = config.data[@"inAppConfig"];
+        if (![inAppConfig isKindOfClass:NSDictionary.class]) inAppConfig = @{};
+        NSInteger discardCount;
+        NSArray<WPIAMMessageDefinition *> *messagesFromStorage =
+        [self.responseParser parseAPIResponseDictionary:inAppConfig
+                                      discardedMsgCount:&discardCount];
+        [self setMessageData:messagesFromStorage];
+        if (completion) completion(YES);
+
     }];
 }
 @end

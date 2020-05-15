@@ -18,17 +18,24 @@
 
 #import "WPIAMDisplayCheckOnFetchDoneNotificationFlow.h"
 #import "WPIAMDisplayExecutor.h"
+#import "WPRemoteConfig.h"
 
 extern NSString *const kWPIAMFetchIsDoneNotification;
 
 @implementation WPIAMDisplayCheckOnFetchDoneNotificationFlow
 
+- (instancetype) initWithDisplayFlow:(WPIAMDisplayExecutor *)displayExecutor messageCache:(id)messageCache {
+    if (self = [super initWithDisplayFlow:displayExecutor]) {
+        _messageCache = messageCache;
+    }
+    return self;
+}
 - (void)start {
     WPLogDebug(
                 @"Start observing fetch done notifications for rendering messages.");
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(fetchIsDone)
-                                                 name:kWPIAMFetchIsDoneNotification
+                                                 name:WPRemoteConfigUpdatedNotification
                                                object:nil];
 }
 
@@ -44,7 +51,9 @@ extern NSString *const kWPIAMFetchIsDoneNotification;
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * (int64_t)NSEC_PER_MSEC),
                    dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0ul), ^{
-        [self checkAndRenderMessage];
+        [self.messageCache loadMessagesFromRemoteConfigWithCompletion:^(BOOL success) {
+            [self checkAndRenderMessage];
+        }];
     });
 }
 

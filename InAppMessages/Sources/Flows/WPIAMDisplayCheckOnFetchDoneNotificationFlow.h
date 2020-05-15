@@ -15,8 +15,16 @@
  */
 
 #import "WPIAMDisplayCheckTriggerFlow.h"
+#import "WPIAMMessageClientCache.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface WPIAMDisplayCheckOnFetchDoneNotificationFlow : WPIAMDisplayCheckTriggerFlow
+@property(nonatomic, nonnull, readonly) WPIAMMessageClientCache *messageCache;
+- (instancetype)initWithDisplayFlow:(WPIAMDisplayExecutor *)displayExecutor
+                       messageCache:(WPIAMMessageClientCache *)messageCache;
 - (void)start;
 - (void)stop;
 @end
+
+NS_ASSUME_NONNULL_END

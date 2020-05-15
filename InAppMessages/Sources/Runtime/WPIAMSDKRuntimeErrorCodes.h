@@ -25,4 +25,7 @@ typedef NS_ENUM(NSInteger, WPIAMSDKRuntimeError) {
     
     // The response when fetching the image is non-HTTP.
     WPIAMSDKRuntimeErrorNonHTTPResponseForImage = 2,
+    
+    // The remote config can't be fetched
+    WPIAMSDKRuntimeErrorRemoteConfigCouldNotBeFetched = 3,
 };

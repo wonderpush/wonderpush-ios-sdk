@@ -30,21 +30,15 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 // this protocol defines the interface for classes that can be used to track info regarding
-// display & fetch of iam messages. The info tracked here can be used to decide if it's due for
-// next display and/or fetch of iam messages.
+// display of iam messages. The info tracked here can be used to decide if it's due for
+// next display of iam messages.
 @protocol WPIAMBookKeeper
 @property(nonatomic, readonly) double lastDisplayTime;
-@property(nonatomic, readonly) double lastFetchTime;
-@property(nonatomic, readonly) NSTimeInterval nextFetchWaitTime;
 
 // only call this when it's considered to be a valid impression (for example, meeting the minimum
 // display time requirement).
 - (void)recordNewImpressionForReportingData:(WPReportingData *)reportingData
                 withStartTimestampInSeconds:(double)timestamp;
-
-- (void)recordNewFetchWithFetchCount:(NSInteger)fetchedMsgCount
-              withTimestampInSeconds:(double)fetchTimestamp
-                   nextFetchWaitTime:(nullable NSNumber *)nextFetchWaitTime;
 
 // fetch the impression list
 - (NSArray<WPIAMImpressionRecord *> *)getImpressions;
@@ -64,7 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // for testing, don't use them for production purpose
 - (void)cleanupImpressions;
-- (void)cleanupFetchRecords;
 
 @end
 

@@ -20,13 +20,12 @@
 #import "WPIAMDisplayCheckOnAppForegroundFlow.h"
 #import "WPIAMDisplayCheckOnFetchDoneNotificationFlow.h"
 #import "WPIAMDisplayExecutor.h"
-#import "WPIAMFetchOnAppForegroundFlow.h"
 #import "WPIAMFetchResponseParser.h"
 #import "WPIAMMessageClientCache.h"
-#import "WPIAMMsgFetcherUsingRestful.h"
 #import "WPIAMRuntimeManager.h"
 #import "WPIAMSDKModeManager.h"
 #import "WPInAppMessaging.h"
+#import "WonderPush_private.h"
 
 @interface WPInAppMessaging ()
 @end
@@ -44,12 +43,10 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
 };
 
 @interface WPIAMRuntimeManager () <WPIAMTestingModeListener>
-@property(nonatomic, nonnull) WPIAMMsgFetcherUsingRestful *restfulFetcher;
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAppForegroundFlow *displayOnAppForegroundFlow;
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnFetchDoneNotificationFlow *displayOnFetchDoneFlow;
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAnalyticEventsFlow *displayOnWonderPushEventsFlow;
 
-@property(nonatomic, nonnull) WPIAMFetchOnAppForegroundFlow *fetchOnAppForegroundFlow;
 @property(nonatomic, nonnull) WPIAMFetchResponseParser *responseParser;
 @end
 
@@ -92,7 +89,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     
     @synchronized(self) {
         if (!_running) {
-            [self.fetchOnAppForegroundFlow start];
             [self.displayOnAppForegroundFlow start];
             [self.displayOnWonderPushEventsFlow start];
             WPLogDebug(
@@ -113,7 +109,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     
     @synchronized(self) {
         if (_running) {
-            [self.fetchOnAppForegroundFlow stop];
             [self.displayOnAppForegroundFlow stop];
             [self.displayOnWonderPushEventsFlow stop];
             WPLogDebug(
@@ -141,7 +136,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
 - (void)internalStartRuntimeWithSDKSettings:(WPIAMSDKSettings *)settings {
     if (_running) {
         // Runtime has been started previously. Stop all the flows first.
-        [self.fetchOnAppForegroundFlow stop];
         [self.displayOnAppForegroundFlow stop];
         [self.displayOnWonderPushEventsFlow stop];
     }
@@ -158,11 +152,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     
     self.messageCache = [[WPIAMMessageClientCache alloc] initWithBookkeeper:self.bookKeeper
                                                          usingResponseParser:self.responseParser];
-    self.fetchResultStorage = [[WPIAMServerMsgFetchStorage alloc] init];
-    
-    self.restfulFetcher =
-    [[WPIAMMsgFetcherUsingRestful alloc] initWithFetchStorage:self.fetchResultStorage
-                                                responseParser:self.responseParser];
     
     // start render on app foreground flow
     WPIAMDisplaySetting *appForegroundDisplaysetting = [[WPIAMDisplaySetting alloc] init];
@@ -179,15 +168,7 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
                                              messageCache:self.messageCache
                                               timeFetcher:timeFetcher
                                                bookKeeper:self.bookKeeper];
-    
-    self.fetchOnAppForegroundFlow =
-    [[WPIAMFetchOnAppForegroundFlow alloc] initWithMessageCache:self.messageCache
-                                                  messageFetcher:self.restfulFetcher
-                                                     timeFetcher:timeFetcher
-                                                      bookKeeper:self.bookKeeper
-                                             WPIAMSDKModeManager:sdkModeManager
-                                                 displayExecutor:self.displayExecutor];
-    
+        
     // Setting the message display component and suppression. It's needed in case
     // headless SDK is initialized after the these properties are already set on WPInAppMessaging.
     self.displayExecutor.messageDisplayComponent =
@@ -198,7 +179,8 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     // Both display flows are created on startup. But they would only be turned on (started) based on
     // the sdk mode for the current instance
     self.displayOnFetchDoneFlow = [[WPIAMDisplayCheckOnFetchDoneNotificationFlow alloc]
-                                   initWithDisplayFlow:self.displayExecutor];
+                                   initWithDisplayFlow:self.displayExecutor
+                                   messageCache:self.messageCache];
     self.displayOnAppForegroundFlow =
     [[WPIAMDisplayCheckOnAppForegroundFlow alloc] initWithDisplayFlow:self.displayExecutor];
     
@@ -207,8 +189,7 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     
     self.messageCache.analycisEventDislayCheckFlow = self.displayOnWonderPushEventsFlow;
     [self.messageCache
-     loadMessageDataFromServerFetchStorage:self.fetchResultStorage
-     withCompletion:^(BOOL success) {
+     loadMessagesFromRemoteConfigWithCompletion:^(BOOL success) {
         // start flows regardless whether we can load messages from fetch
         // storage successfully
         WPLogDebug(
@@ -218,7 +199,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
             WPLogDebug(
                         @"Start SDK runtime components.");
             
-            [self.fetchOnAppForegroundFlow start];
             [self.displayOnWonderPushEventsFlow start];
             
             self->_running = YES;
@@ -235,14 +215,11 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
                             "instance mode");
                 [self.displayOnAppForegroundFlow start];
                 
+                [self.displayExecutor checkAndDisplayNextAppLaunchMessage];
                 // Simulate app going into foreground on startup
                 [self.displayExecutor checkAndDisplayNextAppForegroundMessage];
             }
             
-            // One-time triggering of checks for both fetch flow
-            // upon SDK/app startup.
-            [self.fetchOnAppForegroundFlow
-             checkAndFetchForInitialAppLaunch:YES];
         } else {
             WPLogDebug(
                         @"No IAM SDK startup due to settings.");
@@ -256,12 +233,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
 }
 
 - (void) forceFetchInApps {
-    [self.restfulFetcher
-    fetchMessagesWithCompletion:^(NSArray<WPIAMMessageDefinition *> *_Nullable messages,
-                                  NSNumber *_Nullable nextFetchWaitTime,
-                                  NSInteger discardedMessageCount,
-                                  NSError *_Nullable error) {
-        [self.messageCache setMessageData:messages];
-    }];
+    [self.messageCache loadMessagesFromRemoteConfigWithCompletion:nil];
 }
 @end

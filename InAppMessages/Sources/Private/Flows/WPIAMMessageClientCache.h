@@ -21,7 +21,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class WPIAMServerMsgFetchStorage;
 @class WPIAMDisplayCheckOnAnalyticEventsFlow;
 
 @interface WPIAMContextualTrigger
@@ -87,7 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
 // reset messages data
 - (void)setMessageData:(NSArray<WPIAMMessageDefinition *> *)messages;
 // load messages from persistent storage
-- (void)loadMessageDataFromServerFetchStorage:(WPIAMServerMsgFetchStorage *)fetchStorage
-                               withCompletion:(void (^)(BOOL success))completion;
+- (void)loadMessagesFromRemoteConfigWithCompletion:(void (^ _Nullable)(BOOL success))completion;
 @end
 NS_ASSUME_NONNULL_END

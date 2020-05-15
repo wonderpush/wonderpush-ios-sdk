@@ -21,7 +21,6 @@
 
 NSString *const WPIAM_UserDefaultsKeyForImpressions = @"wonderpush-iam-message-impressions";
 NSString *const WPIAM_UserDefaultsKeyForLastImpressionTimestamp = @"wonderpush-iam-last-impression-timestamp";
-NSString *WPIAM_UserDefaultsKeyForLastFetchTimestamp = @"wonderpush-iam-last-fetch-timestamp";
 
 // The two keys used to map WPIAMImpressionRecord object to a NSDictionary object for
 // persistence.
@@ -29,18 +28,8 @@ NSString *WPIAM_UserDefaultsKeyForLastFetchTimestamp = @"wonderpush-iam-last-fet
 NSString *const WPIAM_ImpressionDictKeyForTimestampMilliseconds = @"impressionTime";
 NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
 
-static NSString *const kUserDefaultsKeyForFetchWaitTime = @"wonderpush-iam-fetch-wait-time";
-
-// TODO: change this to 24 hours when we really fetch from a server.
-static NSTimeInterval kDefaultFetchWaitTimeInSeconds = 60; //24 * 60 * 60;
-
-// 3 days
-static NSTimeInterval kMaxFetchWaitTimeInSeconds = 3 * 24 * 60 * 60;
-
 @interface WPIAMBookKeeperViaUserDefaults ()
 @property(nonatomic) double lastDisplayTime;
-@property(nonatomic) double lastFetchTime;
-@property(nonatomic) double nextFetchWaitTime;
 @property(nonatomic, nonnull) NSUserDefaults *defaults;
 @end
 
@@ -89,18 +78,6 @@ static NSTimeInterval kMaxFetchWaitTimeInSeconds = 3 * 24 * 60 * 60;
         
         // ok if it returns 0 due to the entry being absent
         _lastDisplayTime = [_defaults doubleForKey:WPIAM_UserDefaultsKeyForLastImpressionTimestamp];
-        _lastFetchTime = [_defaults doubleForKey:WPIAM_UserDefaultsKeyForLastFetchTimestamp];
-        
-        id fetchWaitTimeEntry = [_defaults objectForKey:kUserDefaultsKeyForFetchWaitTime];
-        
-        if (![fetchWaitTimeEntry isKindOfClass:NSNumber.class]) {
-            // This corresponds to the case there is no wait time entry is set in user defaults yet
-            _nextFetchWaitTime = kDefaultFetchWaitTimeInSeconds;
-        } else {
-            _nextFetchWaitTime = ((NSNumber *)fetchWaitTimeEntry).doubleValue;
-            WPLogDebug(
-                        @"Next fetch wait time loaded from user defaults is %lf", _nextFetchWaitTime);
-        }
     }
     return self;
 }
@@ -209,34 +186,8 @@ static NSTimeInterval kMaxFetchWaitTimeInSeconds = 3 * 24 * 60 * 60;
     return resultArray;
 }
 
-- (void)recordNewFetchWithFetchCount:(NSInteger)fetchedMsgCount
-              withTimestampInSeconds:(double)fetchTimestamp
-                   nextFetchWaitTime:(nullable NSNumber *)nextFetchWaitTime;
-{
-    [self.defaults setDouble:fetchTimestamp forKey:WPIAM_UserDefaultsKeyForLastFetchTimestamp];
-    self.lastFetchTime = fetchTimestamp;
-    
-    if (nextFetchWaitTime != nil) {
-        if (nextFetchWaitTime.doubleValue > kMaxFetchWaitTimeInSeconds) {
-            WPLog(
-                       @"next fetch wait time %lf is too large. Ignore it.",
-                       nextFetchWaitTime.doubleValue);
-        } else {
-            WPLogDebug(
-                        @"Setting next fetch wait time as %lf from fetch response.",
-                        nextFetchWaitTime.doubleValue);
-            self.nextFetchWaitTime = nextFetchWaitTime.doubleValue;
-            [self.defaults setObject:nextFetchWaitTime forKey:kUserDefaultsKeyForFetchWaitTime];
-        }
-    }
-}
-
 - (void)cleanupImpressions {
     [self.defaults setObject:@[] forKey:WPIAM_UserDefaultsKeyForImpressions];
 }
 
-- (void)cleanupFetchRecords {
-    [self.defaults setDouble:0 forKey:WPIAM_UserDefaultsKeyForLastFetchTimestamp];
-    self.lastFetchTime = 0;
-}
 @end

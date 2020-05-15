@@ -20,7 +20,6 @@
 #import "WPIAMDisplayExecutor.h"
 #import "WPIAMMessageClientCache.h"
 #import "WPIAMSDKSettings.h"
-#import "WPIAMServerMsgFetchStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 // A class for managing the objects/dependencies for supporting different IAM flows at runtime
@@ -28,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, nonnull) WPIAMSDKSettings *currentSetting;
 @property(nonatomic, nonnull) WPIAMBookKeeperViaUserDefaults *bookKeeper;
 @property(nonatomic, nonnull) WPIAMMessageClientCache *messageCache;
-@property(nonatomic, nonnull) WPIAMServerMsgFetchStorage *fetchResultStorage;
 @property(nonatomic, nonnull) WPIAMDisplayExecutor *displayExecutor;
 
 // Initialize IAM SDKs and start various flows with specified settings.
