@@ -483,13 +483,16 @@
     NSBundle *bundle = [NSBundle bundleForClass:self.class];
     NSURL *configURL = [bundle URLForResource:@"remote-config-example" withExtension:@"json"];
     NSData *configData = [NSData dataWithContentsOfURL:configURL];
+    NSDate *fetchDate = [NSDate date];
     NSError *JSONError = nil;
     id configJSON = [NSJSONSerialization JSONObjectWithData:configData options:0 error:&JSONError];
     NSString *version = [configJSON valueForKey:@"_configVersion"];
+    NSNumber *maxAgeNumber = [configJSON valueForKey:@"_configMaxAge"];
     XCTAssertNil(JSONError);
     XCTAssertEqualObjects(version, @"1.0.0");
+    XCTAssertEqualObjects(maxAgeNumber, @123456);
 
-    WPRemoteConfig *remoteConfig = [[WPRemoteConfig alloc] initWithData:configJSON version:version];
+    WPRemoteConfig *remoteConfig = [[WPRemoteConfig alloc] initWithData:configJSON version:version fetchDate:fetchDate maxAge: maxAgeNumber.doubleValue / 1000];
     NSError *archiverError = nil;
     NSData *encoded = [NSKeyedArchiver archivedDataWithRootObject:remoteConfig requiringSecureCoding:YES error:&archiverError];
     XCTAssertNotNil(encoded);
@@ -501,6 +504,9 @@
 
     XCTAssertEqualObjects(remoteConfig.version, decoded.version);
     XCTAssertEqualObjects(remoteConfig.fetchDate, decoded.fetchDate);
+    XCTAssertEqualObjects(fetchDate, decoded.fetchDate);
+    XCTAssertEqual(remoteConfig.maxAge, decoded.maxAge);
+    XCTAssertEqual(remoteConfig.maxAge, 123.456);
     XCTAssertEqualObjects(remoteConfig.data[@"_configVersion"], decoded.data[@"_configVersion"]);
 }
 

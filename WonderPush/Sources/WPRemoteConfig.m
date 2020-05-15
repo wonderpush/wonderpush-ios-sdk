@@ -60,13 +60,15 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     NSDate *fetchDate = [coder decodeObjectOfClass:NSDate.class forKey:@"fetchDate"];
     NSSet *classes = [NSSet setWithObjects:NSString.class, NSNull.class, NSDate.class, NSArray.class, NSDictionary.class, NSNumber.class, nil];
     NSDictionary *data = [coder decodeObjectOfClasses:classes forKey:@"data"];
-    return [self initWithData:data version:version fetchDate:fetchDate];
+    NSTimeInterval maxAge = [coder decodeDoubleForKey:@"maxAge"];
+    return [self initWithData:data version:version fetchDate:fetchDate maxAge:maxAge];
 }
 
 - (void) encodeWithCoder:(NSCoder *)coder {
     [coder encodeObject:self.version forKey:@"version"];
     [coder encodeObject:self.fetchDate forKey:@"fetchDate"];
     [coder encodeObject:self.data forKey:@"data"];
+    [coder encodeDouble:self.maxAge forKey:@"maxAge"];
 }
 
 - (BOOL) isExpired {
