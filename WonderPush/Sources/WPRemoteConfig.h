@@ -32,7 +32,7 @@ typedef void(^WPRemoteConfigReadCompletionHandler)(WPRemoteConfig * _Nullable, N
 
 @protocol WPRemoteConfigFetcher
 - (void) fetchConfigWithVersion: (NSString * _Nullable)version
-                     completion: (void(^)(WPRemoteConfig * _Nullable,  NSError * _Nullable))completion;
+                     completion: (WPRemoteConfigReadCompletionHandler)completion;
 @end
 
 @protocol WPRemoteConfigStorage
