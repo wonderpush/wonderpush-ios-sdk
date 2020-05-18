@@ -53,7 +53,7 @@
     if (!self.storedHighestVersion || [WPRemoteConfig compareVersion:self.storedHighestVersion withVersion:version] == NSOrderedAscending) {
         self.storedHighestVersion = version;
     }
-    completion(nil);
+    completion(self.error);
 }
 
 
@@ -72,6 +72,8 @@
 @implementation MockAsyncRemoteConfigFetcher
 
 - (void) fetchConfigWithVersion:(NSString *)version completion:(void (^)(WPRemoteConfig * _Nullable, NSError * _Nullable))completion {
+    self.lastRequestedDate = [NSDate new];
+    self.lastRequestedVersion = version;
     self.completion = completion;
 }
 
@@ -327,7 +329,7 @@
     XCTAssertNotNil(self.fetcher.lastRequestedDate);
     
     // Yet, when we read, the version should still be 1.0.0 because we fetched version 0.1
-    // And no fetch should have happened (it's too early)
+    // And no fetch should happen (it's too early)
     self.fetcher.lastRequestedDate = nil;
     [self.manager read:^(WPRemoteConfig *config, NSError *error) {
         XCTAssertNil(self.fetcher.lastRequestedDate);
