@@ -401,7 +401,9 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
                         if (declareVersionError) {
                             WPLog(@"Error declaring version to storate: %@", declareVersionError.description);
                         }
-                        [[NSNotificationCenter defaultCenter] postNotificationName:WPRemoteConfigUpdatedNotification object:newConfig];
+                        if (!currentConfig || [newConfig hasHigherVersionThan:currentConfig]) {
+                            [[NSNotificationCenter defaultCenter] postNotificationName:WPRemoteConfigUpdatedNotification object:newConfig];
+                        }
                         handler(newConfig, nil);
                     }];
                 }

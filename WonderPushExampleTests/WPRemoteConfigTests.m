@@ -401,9 +401,13 @@
     XCTAssertNil(notification);
     
     WPRemoteConfig *storedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.0"];
+    self.manager.minimumConfigAge = 0;
+    self.manager.maximumConfigAge = 0;
+    self.manager.minimumFetchInterval = 0;
     self.storage.storedConfig = storedConfig;
     self.fetcher.fetchedConfig = storedConfig;
     [self.manager declareVersion:@"1.0.1"];
+    XCTAssertNotNil(self.fetcher.lastRequestedDate);
     XCTAssertNil(notification);
 }
 /**
