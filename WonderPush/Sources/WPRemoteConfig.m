@@ -316,7 +316,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         }
         BOOL higherVersionExists = NSOrderedAscending == [WPRemoteConfig compareVersion:config.version withVersion:highestVersion];
         BOOL shouldFetch = higherVersionExists;
-        NSString *shouldFetchVersion = highestVersion;
+        NSString *versionToFetch = highestVersion;
         
         // Do not fetch too often
         NSTimeInterval configAge = -[config.fetchDate timeIntervalSinceNow];
@@ -329,7 +329,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
             || config.isExpired;
         if (!shouldFetch && isExpired) {
             shouldFetch = YES;
-            if (!higherVersionExists) shouldFetchVersion = config.version;
+            if (!higherVersionExists) versionToFetch = config.version;
         }
 
         // Do not fetch too often
@@ -342,7 +342,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
             return;
         }
         
-        [self fetchAndStoreConfigWithVersion:shouldFetchVersion currentConfig:config completion:^(WPRemoteConfig *config, NSError *error) {
+        [self fetchAndStoreConfigWithVersion:versionToFetch currentConfig:config completion:^(WPRemoteConfig *config, NSError *error) {
             completion(config, error);
         }];
     }];    
