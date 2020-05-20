@@ -394,7 +394,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
                     self.storedConfig = newConfig;
                     [self.remoteConfigStorage declareVersion:newConfig.version completion:^(NSError *declareVersionError) {
                         if (declareVersionError) {
-                            WPLog(@"Error declaring version to storate: %@", declareVersionError.description);
+                            WPLog(@"Error declaring version to storage: %@", declareVersionError.description);
                         }
                         if (!currentConfig || [newConfig hasHigherVersionThan:currentConfig]) {
                             [[NSNotificationCenter defaultCenter] postNotificationName:WPRemoteConfigUpdatedNotification object:newConfig];
