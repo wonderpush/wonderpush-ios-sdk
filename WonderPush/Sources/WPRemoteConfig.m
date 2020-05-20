@@ -374,8 +374,8 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     self.isFetching = YES;
     [self.remoteConfigFetcher fetchConfigWithVersion:version completion:^(WPRemoteConfig *newConfig, NSError *fetchError) {
         WPRemoteConfigReadCompletionHandler handler = ^(WPRemoteConfig *config, NSError *error) {
-            for (WPRemoteConfigReadCompletionHandler queuedHandler in self.queuedHandlers) queuedHandler(config, error);
             @synchronized (self.queuedHandlers) {
+                for (WPRemoteConfigReadCompletionHandler queuedHandler in self.queuedHandlers) queuedHandler(config, error);
                 [self.queuedHandlers removeAllObjects];
             }
             self.isFetching = NO;
