@@ -571,7 +571,7 @@
         [expectation fulfill];
     }];
     
-    // A new fetch should not have been triggered
+    // A new fetch should have been triggered
     XCTAssertNotNil(fetcher.completion);
     id completion = fetcher.completion;
 
