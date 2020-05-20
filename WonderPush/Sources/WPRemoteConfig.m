@@ -249,12 +249,13 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 }
 
 - (void) declareVersion:(NSString *)version {
-    if (!self.storedHighestVersion || [WPRemoteConfig compareVersion:self.storedHighestVersion withVersion:version] == NSOrderedAscending) {
-        self.storedHighestVersion = version;
-    }
     [self.remoteConfigStorage declareVersion:version completion:^(NSError *declareVersionError) {
         if (declareVersionError) {
             WPLog(@"Error declaring version to storage: %@", declareVersionError.description);
+        } else {
+            if (!self.storedHighestVersion || [WPRemoteConfig compareVersion:self.storedHighestVersion withVersion:version] == NSOrderedAscending) {
+                self.storedHighestVersion = version;
+            }
         }
         [self readConfigAndHighestDeclaredVersionFromStorageWithCompletion:^(WPRemoteConfig *config, NSString *highestVersion, NSError *error) {
             if (error) {
