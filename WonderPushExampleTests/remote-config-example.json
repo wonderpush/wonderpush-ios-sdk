@@ -1,6 +1,6 @@
 {
-  "_configVersion": "1.0.0",
-  "_configMaxAge": 123456,
+  "version": 2,
+  "maxAge": 123456,
   "inAppConfig": {
     "campaigns": [
       {

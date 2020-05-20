@@ -492,10 +492,12 @@
     NSDate *fetchDate = [NSDate date];
     NSError *JSONError = nil;
     id configJSON = [NSJSONSerialization JSONObjectWithData:configData options:0 error:&JSONError];
-    NSString *version = [configJSON valueForKey:@"_configVersion"];
-    NSNumber *maxAgeNumber = [configJSON valueForKey:@"_configMaxAge"];
+    id version = [configJSON valueForKey:@"version"];
+    if ([version isKindOfClass:NSNumber.class]) version = [version stringValue];
+
+    NSNumber *maxAgeNumber = [configJSON valueForKey:@"maxAge"];
     XCTAssertNil(JSONError);
-    XCTAssertEqualObjects(version, @"1.0.0");
+    XCTAssertEqualObjects(version, @"2");
     XCTAssertEqualObjects(maxAgeNumber, @123456);
 
     WPRemoteConfig *remoteConfig = [[WPRemoteConfig alloc] initWithData:configJSON version:version fetchDate:fetchDate maxAge: maxAgeNumber.doubleValue / 1000];
@@ -513,7 +515,7 @@
     XCTAssertEqualObjects(fetchDate, decoded.fetchDate);
     XCTAssertEqual(remoteConfig.maxAge, decoded.maxAge);
     XCTAssertEqual(remoteConfig.maxAge, 123.456);
-    XCTAssertEqualObjects(remoteConfig.data[@"_configVersion"], decoded.data[@"_configVersion"]);
+    XCTAssertEqualObjects(remoteConfig.data[@"version"], decoded.data[@"version"]);
 }
 
 - (void) testUserDefaultsStorage {

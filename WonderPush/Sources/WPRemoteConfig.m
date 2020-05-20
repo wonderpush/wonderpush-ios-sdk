@@ -121,8 +121,14 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
             return;
         }
         NSDictionary *configurationDict = [JSONObject isKindOfClass:NSDictionary.class] ? JSONObject : [NSDictionary new];
-        NSString *version = [configurationDict objectForKey:@"_configVersion"];
-        NSNumber *maxAgeNumber = [configurationDict objectForKey:@"_configMaxAge"]; // milliseconds
+
+        // Get the version
+        id version = [configurationDict objectForKey:@"version"];
+
+        // Version can be a number, turn into a string
+        if ([version isKindOfClass:NSNumber.class]) version = [version stringValue];
+
+        NSNumber *maxAgeNumber = [configurationDict objectForKey:@"maxAge"]; // milliseconds
         if ([version isKindOfClass:NSString.class]) {
             NSTimeInterval maxAge = [maxAgeNumber isKindOfClass:NSNumber.class] ? maxAgeNumber.doubleValue / 1000 : WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE;
             WPRemoteConfig *remoteConfig = [[WPRemoteConfig alloc] initWithData:configurationDict version:version fetchDate:[NSDate date] maxAge:maxAge];
