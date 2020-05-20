@@ -361,10 +361,12 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     }
 }
 
-- (void) fetchAndStoreConfigWithVersion:(NSString * _Nullable)version currentConfig:(WPRemoteConfig * _Nullable)currentConfig completion:(WPRemoteConfigReadCompletionHandler)completion {
+- (void) fetchAndStoreConfigWithVersion:(NSString * _Nullable)version currentConfig:(WPRemoteConfig * _Nullable)currentConfig completion:(WPRemoteConfigReadCompletionHandler _Nullable)completion {
     if (self.isFetching) {
-        @synchronized (self.queuedHandlers) {
-            [self.queuedHandlers addObject:completion];
+        if (completion) {
+            @synchronized (self.queuedHandlers) {
+                [self.queuedHandlers addObject:completion];
+            }
         }
         return;
     }
