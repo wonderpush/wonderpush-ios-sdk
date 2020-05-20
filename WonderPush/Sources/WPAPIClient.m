@@ -207,6 +207,8 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
             id configVersion = [result objectForKey:@"_configVersion"];
             if ([configVersion isKindOfClass:NSString.class]) {
                 [WonderPush.remoteConfigManager declareVersion:configVersion];
+            } else if ([configVersion isKindOfClass:NSNumber.class]) {
+                [WonderPush.remoteConfigManager declareVersion:[configVersion stringValue]];
             }
         }
         callSuccessBlock(task, result);
