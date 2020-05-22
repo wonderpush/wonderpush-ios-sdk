@@ -240,6 +240,8 @@
     XCTAssertTrue([WPSemver semverWithString:@"0"].isValid);
     XCTAssertTrue([WPSemver semverWithString:@"1"].isValid);
     XCTAssertTrue([WPSemver semverWithString:@"1234"].isValid);
+    
+    XCTAssertEqual(NSOrderedAscending, [WPRemoteConfig compareVersion:@"1589987090471" withVersion:@"1589987090472"]);
 }
 /**
  Ensure we fetch config when isExpired is true
