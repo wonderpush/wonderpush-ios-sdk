@@ -275,6 +275,15 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
                 // Do not fetch too often
                 if (configAge < self.minimumConfigAge) return;
 
+                // If we're declaring the same version as the current config, update the current config's fetchDate
+                if ([WPRemoteConfig compareVersion:config.version withVersion:version] == NSOrderedSame) {
+                    WPRemoteConfig *configWithUpdatedDate = [[WPRemoteConfig alloc] initWithData:config.data version:config.version fetchDate:[NSDate date] maxAge:config.maxAge];
+                    [self.remoteConfigStorage storeRemoteConfig:configWithUpdatedDate completion:^(NSError *error) {
+                        if (!error) self.storedConfig = configWithUpdatedDate;
+                    }];
+                    return;
+                }
+
                 // Only fetch a higher version
                 if ([WPRemoteConfig compareVersion:config.version withVersion:highestVersion] != NSOrderedAscending) return;
             }

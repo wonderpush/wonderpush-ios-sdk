@@ -485,6 +485,69 @@
     [waiter waitForExpectations:@[expectation] timeout:2];
 }
 
+/**
+ When a version is declared, that is the same as the current stored config, its fetch date should be updated.
+ */
+- (void) testUpdateConfigAge2 {
+    self.manager.minimumFetchInterval = 0;
+    self.manager.minimumConfigAge = 0;
+    self.manager.maximumConfigAge = 10;
+    self.fetcher.fetchedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0"];
+
+    __block NSDate *fetchDate = nil;
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        fetchDate = config.fetchDate;
+    }];
+
+    XCTAssertNotNil(fetchDate);
+    XCTAssert(-[fetchDate timeIntervalSinceNow] < 0.1);
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.fetcher.lastRequestedVersion = nil;
+        [self.manager declareVersion:@"1.0"];
+        XCTAssertNil(self.fetcher.lastRequestedVersion);
+        [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+            XCTAssert([config.fetchDate timeIntervalSinceDate:fetchDate] >= 1);
+            [expectation fulfill];
+        }];
+    });
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:2];
+}
+
+/**
+ When a version is declared, that is earlier as the stored config's version, its fetch date should NOT be updated.
+ This is the opposite of testUpdateConfigAge2.
+ */
+- (void) testUpdateConfigAge3 {
+    self.manager.minimumFetchInterval = 0;
+    self.manager.minimumConfigAge = 0;
+    self.manager.maximumConfigAge = 10;
+    self.fetcher.fetchedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0"];
+
+    __block NSDate *fetchDate = nil;
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        fetchDate = config.fetchDate;
+    }];
+
+    XCTAssertNotNil(fetchDate);
+    XCTAssert(-[fetchDate timeIntervalSinceNow] < 0.1);
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.fetcher.lastRequestedVersion = nil;
+        [self.manager declareVersion:@"0.1"];
+        [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+            XCTAssertEqualObjects(config.fetchDate, fetchDate);
+            [expectation fulfill];
+        }];
+    });
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:2];
+}
+
+
 - (void) testSerialize {
     NSBundle *bundle = [NSBundle bundleForClass:self.class];
     NSURL *configURL = [bundle URLForResource:@"remote-config-example" withExtension:@"json"];
