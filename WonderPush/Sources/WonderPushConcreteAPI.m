@@ -173,6 +173,9 @@
             case WPActionFollowUpTypeAddTag:
                 [WonderPush addTags:followUp.tags];
                 break;
+            case WPActionFollowUpTypeSubscribeToNotifications:
+                [WonderPush subscribeToNotifications];
+                break;
             case WPActionFollowUpTypeRemoveTag:
                 [WonderPush removeTags:followUp.tags];
                 break;

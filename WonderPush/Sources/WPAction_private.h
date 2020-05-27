@@ -26,6 +26,7 @@ typedef enum {
     WPActionFollowUpTypeOverrideSetLogging,
     WPActionFollowUpTypeOverrideNotificationReceipt,
     WPActionFollowUpTypeCloseNotifications,
+    WPActionFollowUpTypeSubscribeToNotifications,
 } WPActionFollowUpType;
 
 @interface WPActionFollowUp : NSObject

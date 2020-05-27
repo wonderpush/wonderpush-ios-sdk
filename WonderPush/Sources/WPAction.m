@@ -71,6 +71,7 @@
     else if ([typeStr isEqualToString:@"_overrideSetLogging"]) type = WPActionFollowUpTypeOverrideSetLogging;
     else if ([typeStr isEqualToString:@"_overrideNotificationReceipt"]) type = WPActionFollowUpTypeOverrideNotificationReceipt;
     else if ([typeStr isEqualToString:@"closeNotifications"]) type = WPActionFollowUpTypeCloseNotifications;
+    else if ([typeStr isEqualToString:@"subscribeToNotifications"]) type = WPActionFollowUpTypeSubscribeToNotifications;
     else return nil;
     WPActionFollowUp *result = [[WPActionFollowUp alloc] initWithType:type];
     
@@ -87,6 +88,8 @@
             result.methodName = [WPUtil stringForKey:@"method" inDictionary:dict];
             result.methodArg = [WPUtil nullsafeObjectForKey:@"methodArg" inDictionary:dict];
         }
+            break;
+        case WPActionFollowUpTypeSubscribeToNotifications:
             break;
         case WPActionFollowUpTypeRating:
             break;
