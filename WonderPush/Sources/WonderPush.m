@@ -709,6 +709,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     NSDictionary *wpData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
     id receipt        = conf.overrideNotificationReceipt ?: [WPNSUtil nullsafeObjectForKey:@"receipt" inDictionary:wpData];
+    id receiptUsingMeasurements = [WPNSUtil nullsafeObjectForKey:@"receiptUsingMeasurements" inDictionary:wpData];
     id campagnId      = [WPNSUtil stringForKey:@"c" inDictionary:wpData];
     id notificationId = [WPNSUtil stringForKey:@"n" inDictionary:wpData];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
@@ -716,7 +717,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
     conf.lastReceivedNotificationDate = [NSDate date];
     conf.lastReceivedNotification = notificationInformation;
-    if ([receipt boolValue]) {
+    if ([receipt boolValue] && ![receiptUsingMeasurements boolValue]) {
         [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
     }
         
