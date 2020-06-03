@@ -716,9 +716,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
     conf.lastReceivedNotificationDate = [NSDate date];
     conf.lastReceivedNotification = notificationInformation;
-    if (![receipt boolValue]) {
-        [self trackInternalEventWithMeasurementsApi:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
-    } else {
+    if ([receipt boolValue]) {
         [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
     }
         
