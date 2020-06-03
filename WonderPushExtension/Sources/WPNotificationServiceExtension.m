@@ -16,6 +16,7 @@
 
 #import "WPNotificationServiceExtension.h"
 #import "WPURLConstants.h"
+#import "WPMeasurementsApiClient.h"
 
 #import "WPLog.h"
 #import "WPNotificationCategoryManager.h"
@@ -27,6 +28,7 @@
  Key of the WonderPush content in a push notification
  */
 #define WP_PUSH_NOTIFICATION_KEY @"_wp"
+#define USER_DEFAULTS_DEVICE_ID_KEY @"_wonderpush_deviceId"
 
 @interface WonderPushFileDownloader: NSObject
 @property (nonatomic, strong) NSURL *downloadURL;
@@ -40,7 +42,38 @@
 @end
 
 
+static WPMeasurementsApiClient *measurementsApiClient = nil;
+static NSString *deviceId = nil;
+
 @implementation WPNotificationServiceExtension
+
++ (WPMeasurementsApiClient * _Nullable) measurementsApiClient {
+    if (!measurementsApiClient && [self clientId] && [self clientSecret]) {
+        measurementsApiClient = [[WPMeasurementsApiClient alloc] initWithClientId:[self clientId] secret:[self clientSecret] deviceId:[self deviceId]];
+    }
+    return measurementsApiClient;
+}
+
++ (NSString *)clientId {
+    return nil;
+}
+
++ (NSString *)clientSecret {
+    return nil;
+}
+
++ (NSString *)deviceId {
+    if (!deviceId) {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        deviceId = [defaults stringForKey:USER_DEFAULTS_DEVICE_ID_KEY];
+        if (!deviceId) {
+            deviceId = [[NSUUID UUID] UUIDString];
+            [defaults setObject:deviceId forKey:USER_DEFAULTS_DEVICE_ID_KEY];
+            [defaults synchronize];
+        }
+    }
+    return deviceId;
+}
 
 - (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
     // Forward the call to the WonderPush NotificationServiceExtension SDK
@@ -67,6 +100,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
 
 + (BOOL)serviceExtension:(UNNotificationServiceExtension *)extension didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
     @try {
+        dispatch_semaphore_t measurementsApiSemaphore = nil;
         WPLog(@"didReceiveNotificationRequest:%@", request);
         WPLog(@"                     userInfo:%@", request.content.userInfo);
         
@@ -81,6 +115,22 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         
         id _Nullable wpData = [content.userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY];
         id _Nullable alertData = [wpData valueForKey:@"alert"];
+        BOOL receiptUsingMeasurements = [[wpData valueForKey:@"receiptUsingMeasurements"] boolValue];
+        if (receiptUsingMeasurements && [self measurementsApiClient]) {
+            measurementsApiSemaphore = dispatch_semaphore_create(0);
+            NSString *campaignId = [wpData objectForKey:@"c"];
+            NSString *notificationId = [wpData objectForKey:@"n"];
+            if (campaignId && notificationId) {
+                [[self measurementsApiClient] POST:@"/events" bodyParam:@{
+                    @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],
+                    @"campaignId" : campaignId,
+                    @"notificationId" : notificationId,
+                    @"type" : @"@NOTIFICATION_RECEIVED",
+                } userId:nil completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                    dispatch_semaphore_signal(measurementsApiSemaphore);
+                }];
+            }
+        }
         NSArray *_Nullable buttons = [alertData valueForKey:@"buttons"];
         if ([buttons isKindOfClass:NSArray.class]) {
             NSUInteger buttonCounter = 0;
@@ -155,6 +205,10 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         }
         
         WPLog(@"Final content: %@", content);
+        // Wait for the measurement API for 15 secs
+        if (measurementsApiSemaphore) {
+            dispatch_semaphore_wait(measurementsApiSemaphore, DISPATCH_TIME_FOREVER);
+        }
         contentHandler(content);
         return YES;
     } @catch (NSException *exception) {

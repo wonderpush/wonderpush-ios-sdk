@@ -43,6 +43,16 @@ API_AVAILABLE(ios(10.0))
  */
 + (BOOL)serviceExtensionTimeWillExpire:(UNNotificationServiceExtension *)extension;
 
+/**
+ Override this method to provide your app's client ID.
+ */
++ (NSString *)clientId;
+
+/**
+Override this method to provide your app's client secret.
+*/
++ (NSString *)clientSecret;
+
 @end
 
 NS_ASSUME_NONNULL_END
