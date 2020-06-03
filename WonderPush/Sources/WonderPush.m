@@ -17,6 +17,7 @@
 #import <CoreGraphics/CGGeometry.h>
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
+#import "WPNSUtil.h"
 #import "WPUtil.h"
 #import "WonderPush_private.h"
 #import "WPAppDelegate.h"
@@ -365,7 +366,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 + (BOOL) isNotificationForWonderPush:(NSDictionary *)userInfo
 {
     if ([userInfo isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
+        NSDictionary *wonderpushData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
         return !!wonderpushData;
     } else {
         WPLogDebug(@"isNotificationForWonderPush: received a non NSDictionary: %@", userInfo);
@@ -377,7 +378,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 {
     if (![WonderPush isNotificationForWonderPush:userInfo])
         return NO;
-    return [WP_PUSH_NOTIFICATION_DATA isEqualToString:[WPUtil stringForKey:WP_PUSH_NOTIFICATION_TYPE_KEY inDictionary:([WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo] ?: @{})]];
+    return [WP_PUSH_NOTIFICATION_DATA isEqualToString:[WPNSUtil stringForKey:WP_PUSH_NOTIFICATION_TYPE_KEY inDictionary:([WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo] ?: @{})]];
 }
 
 + (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
@@ -422,14 +423,14 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if (![WPUtil hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHandler] // didReceiveRemoteNotification will be called in such a case
         && launchOptions != nil
     ) {
-        NSDictionary *notificationDictionary = [WPUtil dictionaryForKey:UIApplicationLaunchOptionsRemoteNotificationKey inDictionary:launchOptions];
+        NSDictionary *notificationDictionary = [WPNSUtil dictionaryForKey:UIApplicationLaunchOptionsRemoteNotificationKey inDictionary:launchOptions];
         if ([notificationDictionary isKindOfClass:[NSDictionary class]]) {
             _notificationFromAppLaunchCampaignId = nil;
             _notificationFromAppLaunchNotificationId = nil;
             if ([WonderPush isNotificationForWonderPush:notificationDictionary]) {
-                NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
-                _notificationFromAppLaunchCampaignId = [WPUtil stringForKey:@"c" inDictionary:wonderpushData];
-                _notificationFromAppLaunchNotificationId = [WPUtil stringForKey:@"n" inDictionary:wonderpushData];
+                NSDictionary *wonderpushData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
+                _notificationFromAppLaunchCampaignId = [WPNSUtil stringForKey:@"c" inDictionary:wonderpushData];
+                _notificationFromAppLaunchNotificationId = [WPNSUtil stringForKey:@"n" inDictionary:wonderpushData];
             }
             return [self handleNotification:notificationDictionary];
         }
@@ -476,7 +477,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
-    NSString *newToken = [WPUtil hexForData:deviceToken];
+    NSString *newToken = [WPNSUtil hexForData:deviceToken];
     [WonderPush setDeviceToken:newToken];
 }
 
@@ -488,7 +489,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
     WPLogDebug(@"Failed to register to push notifications: %@", error);
     if (error.code == 3000) {
-        if ([[WPUtil stringForKey:NSLocalizedDescriptionKey inDictionary:error.userInfo] rangeOfString:@"aps-environment"].location != NSNotFound) {
+        if ([[WPNSUtil stringForKey:NSLocalizedDescriptionKey inDictionary:error.userInfo] rangeOfString:@"aps-environment"].location != NSNotFound) {
             WPLog(@"ERROR: You need to enable the Push Notifications capability under Project / Targets / Signing & Capabilities in XCode.");
         }
     } else if (error.code == 3010) {
@@ -538,11 +539,11 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             NSArray *queuedNotifications = [configuration getQueuedNotifications];
             for (NSDictionary *userInfo in queuedNotifications) {
                 if (![userInfo isKindOfClass:[NSDictionary class]]) continue;
-                NSDictionary *aps = [WPUtil dictionaryForKey:@"aps" inDictionary:userInfo];
-                NSDictionary *alertDict = [WPUtil dictionaryForKey:@"alert" inDictionary:aps];
-                NSString *title = alertDict ? [WPUtil stringForKey:@"title" inDictionary:alertDict] : nil;
-                NSString *alert = alertDict ? [WPUtil stringForKey:@"body" inDictionary:alertDict] : [WPUtil stringForKey:@"alert" inDictionary:aps];
-                NSString *sound = [WPUtil stringForKey:@"sound" inDictionary:aps];
+                NSDictionary *aps = [WPNSUtil dictionaryForKey:@"aps" inDictionary:userInfo];
+                NSDictionary *alertDict = [WPNSUtil dictionaryForKey:@"alert" inDictionary:aps];
+                NSString *title = alertDict ? [WPNSUtil stringForKey:@"title" inDictionary:alertDict] : nil;
+                NSString *alert = alertDict ? [WPNSUtil stringForKey:@"body" inDictionary:alertDict] : [WPNSUtil stringForKey:@"alert" inDictionary:aps];
+                NSString *sound = [WPNSUtil stringForKey:@"sound" inDictionary:aps];
                 if (@available(iOS 10.0, *)) {
                     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                     content.title = title;
@@ -556,8 +557,8 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
                     UILocalNotification *notification = [[UILocalNotification alloc] init];
                     notification.alertBody = alert;
-                    notification.soundName = [WPUtil stringForKey:@"sound" inDictionary:aps];
-                    notification.userInfo = [WPUtil dictionaryByFilteringNulls:userInfo];
+                    notification.soundName = [WPNSUtil stringForKey:@"sound" inDictionary:aps];
+                    notification.userInfo = [WPNSUtil dictionaryByFilteringNulls:userInfo];
                     [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 #pragma clang diagnostic pop
                 }
@@ -609,14 +610,14 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     }
 
     // Ensure that we display the notification even if the application is in foreground
-    NSDictionary *wpData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
-    NSDictionary *apsForeground = [WPUtil dictionaryForKey:@"apsForeground" inDictionary:wpData];
+    NSDictionary *wpData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
+    NSDictionary *apsForeground = [WPNSUtil dictionaryForKey:@"apsForeground" inDictionary:wpData];
     if (!apsForeground || apsForeground.count == 0) apsForeground = nil;
     BOOL apsForegroundAutoOpen = NO;
     BOOL apsForegroundAutoDrop = NO;
     if (apsForeground) {
-        apsForegroundAutoOpen = [[WPUtil numberForKey:@"autoOpen" inDictionary:apsForeground] isEqual:@YES];
-        apsForegroundAutoDrop = [[WPUtil numberForKey:@"autoDrop" inDictionary:apsForeground] isEqual:@YES];
+        apsForegroundAutoOpen = [[WPNSUtil numberForKey:@"autoOpen" inDictionary:apsForeground] isEqual:@YES];
+        apsForegroundAutoDrop = [[WPNSUtil numberForKey:@"autoDrop" inDictionary:apsForeground] isEqual:@YES];
     }
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && (apsForegroundAutoDrop || apsForegroundAutoOpen)) {
         WPLogDebug(@"NOT displaying the notification");
@@ -706,10 +707,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 {
     if (![WonderPush isNotificationForWonderPush:userInfo]) return;
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-    NSDictionary *wpData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
-    id receipt        = conf.overrideNotificationReceipt ?: [WPUtil nullsafeObjectForKey:@"receipt" inDictionary:wpData];
-    id campagnId      = [WPUtil stringForKey:@"c" inDictionary:wpData];
-    id notificationId = [WPUtil stringForKey:@"n" inDictionary:wpData];
+    NSDictionary *wpData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
+    id receipt        = conf.overrideNotificationReceipt ?: [WPNSUtil nullsafeObjectForKey:@"receipt" inDictionary:wpData];
+    id campagnId      = [WPNSUtil stringForKey:@"c" inDictionary:wpData];
+    id notificationId = [WPNSUtil stringForKey:@"n" inDictionary:wpData];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
@@ -748,9 +749,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
 + (void) handleTextNotification:(NSDictionary *)wonderPushData
 {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[WPUtil stringForKey:@"title" inDictionary:wonderPushData] message:[WPUtil stringForKey:@"message" inDictionary:wonderPushData] preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[WPNSUtil stringForKey:@"title" inDictionary:wonderPushData] message:[WPNSUtil stringForKey:@"message" inDictionary:wonderPushData] preferredStyle:UIAlertControllerStyleAlert];
 
-    NSArray *buttons = [WPUtil arrayForKey:@"buttons" inDictionary:wonderPushData];
+    NSArray *buttons = [WPNSUtil arrayForKey:@"buttons" inDictionary:wonderPushData];
     WPDialogButtonHandler *buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.notificationConfiguration = wonderPushData;
     buttonHandler.buttonConfiguration = buttons;
@@ -759,7 +760,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         for (NSDictionary *button in buttons) {
             int index = ++i;
             if (![button isKindOfClass:[NSDictionary class]]) continue;
-            [alert addAction:[UIAlertAction actionWithTitle:[WPUtil stringForKey:@"label" inDictionary:button] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [alert addAction:[UIAlertAction actionWithTitle:[WPNSUtil stringForKey:@"label" inDictionary:button] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                 [buttonHandler clickedButtonAtIndex:index];
             }]];
         }
@@ -807,7 +808,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     controller.modalPresentationStyle = UIModalPresentationOverFullScreen;
     controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     
-    controller.HTMLString = [WPUtil stringForKey:@"message" inDictionary:wonderPushData];
+    controller.HTMLString = [WPNSUtil stringForKey:@"message" inDictionary:wonderPushData];
     NSString *URLString = [wonderPushData valueForKey:@"url"];
     if (URLString) {
         controller.URL = [NSURL URLWithString:URLString];
@@ -873,8 +874,8 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         // - if the user is switching between apps, we are called just like if the app was active,
         //   but the application state is actually inactive too, test the previous state to distinguish.
         if (appState != UIApplicationStateInactive || _previousApplicationState == UIApplicationStateActive) {
-            NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
-            id atReceptionActions = [WPUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
+            NSDictionary *wonderpushData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
+            id atReceptionActions = [WPNSUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
             if ([atReceptionActions isKindOfClass:NSArray.class]) {
                 WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
                 WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
@@ -914,21 +915,21 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         return NO;
     WPLogDebug(@"handleNotification:%@ withOriginalApplicationState:%ld", notificationDictionary, (long)applicationState);
 
-    NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
-    NSDictionary *apsForeground = [WPUtil dictionaryForKey:@"apsForeground" inDictionary:wonderpushData];
+    NSDictionary *wonderpushData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
+    NSDictionary *apsForeground = [WPNSUtil dictionaryForKey:@"apsForeground" inDictionary:wonderpushData];
     if (!apsForeground || apsForeground.count == 0) apsForeground = nil;
     BOOL apsForegroundAutoOpen = NO;
     BOOL apsForegroundAutoDrop = NO;
     if (apsForeground) {
-        apsForegroundAutoOpen = [[WPUtil numberForKey:@"autoOpen" inDictionary:apsForeground] isEqual:@YES];
-        apsForegroundAutoDrop = [[WPUtil numberForKey:@"autoDrop" inDictionary:apsForeground] isEqual:@YES];
+        apsForegroundAutoOpen = [[WPNSUtil numberForKey:@"autoOpen" inDictionary:apsForeground] isEqual:@YES];
+        apsForegroundAutoDrop = [[WPNSUtil numberForKey:@"autoDrop" inDictionary:apsForeground] isEqual:@YES];
     }
 
     if (![WPUtil hasBackgroundModeRemoteNotification]) {
         // We have no remote-notification background execution mode but we try our best to honor receiveActions when we can
         // (they will not be honored for silent notifications, nor for regular notifications that are not clicked)
-        NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
-        id atReceptionActions = [WPUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
+        NSDictionary *wonderpushData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
+        id atReceptionActions = [WPNSUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
         if ([atReceptionActions isKindOfClass:NSArray.class]) {
             WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
             WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
@@ -942,9 +943,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         return NO;
     }
 
-    NSDictionary *aps = [WPUtil dictionaryForKey:@"aps" inDictionary:notificationDictionary];
+    NSDictionary *aps = [WPNSUtil dictionaryForKey:@"aps" inDictionary:notificationDictionary];
     if (!aps || aps.count == 0) aps = nil;
-    NSDictionary *apsAlert = aps ? [WPUtil nullsafeObjectForKey:@"alert" inDictionary:aps] : nil;
+    NSDictionary *apsAlert = aps ? [WPNSUtil nullsafeObjectForKey:@"alert" inDictionary:aps] : nil;
 
     if (_userNotificationCenterDelegateInstalled && !apsForegroundAutoOpen) {
         WPLogDebug(@"handleNotification:withOriginalApplicationState: leaving to userNotificationCenter");
@@ -971,10 +972,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         NSString *alert = nil;
         NSString *action = nil;
         if ([apsAlert isKindOfClass:[NSDictionary class]]) {
-            title = [WPUtil stringForKey:@"title-loc-key" inDictionary:apsAlert];
+            title = [WPNSUtil stringForKey:@"title-loc-key" inDictionary:apsAlert];
             if (title) title = [WPUtil localizedStringIfPossible:title];
             if (title) {
-                id locArgsId = [WPUtil arrayForKey:@"title-loc-args" inDictionary:apsAlert];
+                id locArgsId = [WPNSUtil arrayForKey:@"title-loc-args" inDictionary:apsAlert];
                 if (locArgsId) {
                     NSArray *locArgs = locArgsId;
                     title = [NSString stringWithFormat:title,
@@ -991,12 +992,12 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                              nil];
                 }
             } else {
-                title = [WPUtil stringForKey:@"title" inDictionary:apsAlert];
+                title = [WPNSUtil stringForKey:@"title" inDictionary:apsAlert];
             }
-            alert = [WPUtil stringForKey:@"loc-key" inDictionary:apsAlert];
+            alert = [WPNSUtil stringForKey:@"loc-key" inDictionary:apsAlert];
             if (alert) alert = [WPUtil localizedStringIfPossible:alert];
             if (alert) {
-                id locArgsId = [WPUtil arrayForKey:@"loc-args" inDictionary:apsAlert];
+                id locArgsId = [WPNSUtil arrayForKey:@"loc-args" inDictionary:apsAlert];
                 if (locArgsId) {
                     NSArray *locArgs = locArgsId;
                     alert = [NSString stringWithFormat:alert,
@@ -1013,19 +1014,19 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                              nil];
                 }
             } else {
-                alert = [WPUtil stringForKey:@"body" inDictionary:apsAlert];
+                alert = [WPNSUtil stringForKey:@"body" inDictionary:apsAlert];
             }
-            action = [WPUtil stringForKey:@"action-loc-key" inDictionary:apsAlert];
+            action = [WPNSUtil stringForKey:@"action-loc-key" inDictionary:apsAlert];
             if (action) action = [WPUtil localizedStringIfPossible:action];
         } else if ([apsAlert isKindOfClass:[NSString class]]) {
             alert = (NSString *)apsAlert;
         }
-        if (!title) title = [WPUtil stringForKey:@"CFBundleDisplayName" inDictionary:localizedInfoDictionary];
-        if (!title) title = [WPUtil stringForKey:@"CFBundleDisplayName" inDictionary:infoDictionary];
-        if (!title) title = [WPUtil stringForKey:@"CFBundleName" inDictionary:localizedInfoDictionary];
-        if (!title) title = [WPUtil stringForKey:@"CFBundleName" inDictionary:infoDictionary];
-        if (!title) title = [WPUtil stringForKey:@"CFBundleExecutable" inDictionary:localizedInfoDictionary];
-        if (!title) title = [WPUtil stringForKey:@"CFBundleExecutable" inDictionary:infoDictionary];
+        if (!title) title = [WPNSUtil stringForKey:@"CFBundleDisplayName" inDictionary:localizedInfoDictionary];
+        if (!title) title = [WPNSUtil stringForKey:@"CFBundleDisplayName" inDictionary:infoDictionary];
+        if (!title) title = [WPNSUtil stringForKey:@"CFBundleName" inDictionary:localizedInfoDictionary];
+        if (!title) title = [WPNSUtil stringForKey:@"CFBundleName" inDictionary:infoDictionary];
+        if (!title) title = [WPNSUtil stringForKey:@"CFBundleExecutable" inDictionary:localizedInfoDictionary];
+        if (!title) title = [WPNSUtil stringForKey:@"CFBundleExecutable" inDictionary:infoDictionary];
 
         if (!action) {
             action = [WPUtil wpLocalizedString:@"VIEW" withDefault:@"View"];
@@ -1067,32 +1068,32 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     conf.justOpenedNotification = notificationDictionary;
 
-    NSDictionary *wonderpushData = [WPUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
+    NSDictionary *wonderpushData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
     WPLogDebug(@"Opened notification: %@", notificationDictionary);
 
     [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_OPENED object:nil userInfo:notificationDictionary];
 
-    id campagnId      = [WPUtil stringForKey:@"c" inDictionary:wonderpushData];
-    id notificationId = [WPUtil stringForKey:@"n" inDictionary:wonderpushData];
+    id campagnId      = [WPNSUtil stringForKey:@"c" inDictionary:wonderpushData];
+    id notificationId = [WPNSUtil stringForKey:@"n" inDictionary:wonderpushData];
     NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
     if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
     if (notificationId) notificationInformation[@"notificationId"] = notificationId;
 
-    NSString *targetUrl = [WPUtil stringForKey:WP_TARGET_URL_KEY inDictionary:wonderpushData];
-    id actionsToExecute = [WPUtil arrayForKey:@"actions" inDictionary:wonderpushData];
+    NSString *targetUrl = [WPNSUtil stringForKey:WP_TARGET_URL_KEY inDictionary:wonderpushData];
+    id actionsToExecute = [WPNSUtil arrayForKey:@"actions" inDictionary:wonderpushData];
 
     if (@available(iOS 10.0, *)) {
         WPNotificationCategoryHelper *categoryHelper = [WPNotificationCategoryHelper sharedInstance];
         UNNotificationResponse *notificationResponse = [response isKindOfClass:UNNotificationResponse.class] ? (UNNotificationResponse *)response : nil;
         if (notificationResponse && notificationResponse.actionIdentifier && [categoryHelper isWonderPushActionIdentifier:notificationResponse.actionIdentifier]) {
             NSInteger indexOfButton = [categoryHelper indexOfButtonWithActionIdentifier:notificationResponse.actionIdentifier];
-            NSDictionary *alertDict = [WPUtil dictionaryForKey:@"alert" inDictionary:wonderpushData];
-            NSArray *buttons = [alertDict isKindOfClass:NSDictionary.class] ? [WPUtil arrayForKey:@"buttons" inDictionary:alertDict] : nil;
+            NSDictionary *alertDict = [WPNSUtil dictionaryForKey:@"alert" inDictionary:wonderpushData];
+            NSArray *buttons = [alertDict isKindOfClass:NSDictionary.class] ? [WPNSUtil arrayForKey:@"buttons" inDictionary:alertDict] : nil;
             if (buttons && indexOfButton >= 0 && indexOfButton < buttons.count) {
                 NSDictionary *button = [buttons objectAtIndex:indexOfButton];
-                actionsToExecute = [WPUtil arrayForKey:@"actions" inDictionary:button];
-                targetUrl = [WPUtil stringForKey:@"targetUrl" inDictionary:button];
-                NSString *buttonLabel = [WPUtil stringForKey:@"label" inDictionary:button];
+                actionsToExecute = [WPNSUtil arrayForKey:@"actions" inDictionary:button];
+                targetUrl = [WPNSUtil stringForKey:@"targetUrl" inDictionary:button];
+                NSString *buttonLabel = [WPNSUtil stringForKey:@"label" inDictionary:button];
                 if (buttonLabel) notificationInformation[@"buttonLabel"] = buttonLabel;
             }
         }
@@ -1130,7 +1131,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         WPLogDebug(@"handleNotificationOpened: data notification stopping");
         return NO;
     }
-    NSString *type = [WPUtil stringForKey:@"type" inDictionary:wonderpushData];
+    NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:wonderpushData];
     if ([WP_PUSH_NOTIFICATION_SHOW_TEXT isEqualToString:type]) {
         WPLogDebug(@"handleNotificationOpened: showing text in-app");
         [self handleTextNotification:wonderpushData];

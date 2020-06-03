@@ -16,7 +16,7 @@
 
 #import "WPDialogButtonHandler.h"
 #import "WonderPush_private.h"
-#import "WPUtil.h"
+#import "WPNSUtil.h"
 #import "WPAction_private.h"
 
 @implementation WPDialogButtonHandler
@@ -47,14 +47,14 @@
 
     NSNumber *shownTime = [[NSNumber alloc] initWithLong:(long)(([[NSProcessInfo processInfo] systemUptime] - self.showTime) * 1000)];
     [WonderPush trackInternalEvent:@"@NOTIFICATION_ACTION"
-                         eventData:@{@"buttonLabel":[WPUtil stringForKey:@"label" inDictionary:clickedButton] ?: [NSNull null],
+                         eventData:@{@"buttonLabel":[WPNSUtil stringForKey:@"label" inDictionary:clickedButton] ?: [NSNull null],
                                      @"reactionTime":shownTime,
-                                     @"campaignId": [WPUtil stringForKey:@"c" inDictionary:notificationConfiguration] ?: [NSNull null],
-                                     @"notificationId": [WPUtil stringForKey:@"n" inDictionary:notificationConfiguration] ?: [NSNull null],
+                                     @"campaignId": [WPNSUtil stringForKey:@"c" inDictionary:notificationConfiguration] ?: [NSNull null],
+                                     @"notificationId": [WPNSUtil stringForKey:@"n" inDictionary:notificationConfiguration] ?: [NSNull null],
                                      }
                         customData:nil];
 
-    NSArray *clickedButtonAction = [WPUtil arrayForKey:@"actions" inDictionary:clickedButton];
+    NSArray *clickedButtonAction = [WPNSUtil arrayForKey:@"actions" inDictionary:clickedButton];
     [self executeButtonActions:clickedButtonAction];
 }
 

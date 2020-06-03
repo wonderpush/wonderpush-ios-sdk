@@ -2,7 +2,7 @@
 
 #import "WPJsonUtil.h"
 #import "WPLog.h"
-#import "WPUtil.h"
+#import "WPNSUtil.h"
 
 
 #define SAVED_STATE_FIELD__SYNC_STATE_VERSION @"_syncStateVersion"
@@ -55,15 +55,15 @@
 
         savedState = savedState ?: @{};
         NSNumber *syncStateVersion;
-        syncStateVersion        = [WPUtil numberForKey:SAVED_STATE_FIELD__SYNC_STATE_VERSION inDictionary:savedState] ?: @0;
-        _upgradeMeta            = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_UPGRADE_META inDictionary:savedState] ?: @{};
-        _sdkState               = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_SDK_STATE inDictionary:savedState] ?: @{};
-        _serverState            = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_SERVER_STATE inDictionary:savedState] ?: @{};
-        _putAccumulator         = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
-        _inflightDiff           = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_DIFF inDictionary:savedState] ?: @{};
-        _inflightPutAccumulator = [WPUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
-        _scheduledPatchCall     = [([WPUtil numberForKey:SAVED_STATE_FIELD_SCHEDULED_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
-        _inflightPatchCall      = [([WPUtil numberForKey:SAVED_STATE_FIELD_INFLIGHT_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
+        syncStateVersion        = [WPNSUtil numberForKey:SAVED_STATE_FIELD__SYNC_STATE_VERSION inDictionary:savedState] ?: @0;
+        _upgradeMeta            = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_UPGRADE_META inDictionary:savedState] ?: @{};
+        _sdkState               = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_SDK_STATE inDictionary:savedState] ?: @{};
+        _serverState            = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_SERVER_STATE inDictionary:savedState] ?: @{};
+        _putAccumulator         = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
+        _inflightDiff           = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_DIFF inDictionary:savedState] ?: @{};
+        _inflightPutAccumulator = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
+        _scheduledPatchCall     = [([WPNSUtil numberForKey:SAVED_STATE_FIELD_SCHEDULED_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
+        _inflightPatchCall      = [([WPNSUtil numberForKey:SAVED_STATE_FIELD_INFLIGHT_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
         
         // Handle state version upgrades (syncStateVersion)
         // - 0 -> 1: No-op. 0 means no previous state.

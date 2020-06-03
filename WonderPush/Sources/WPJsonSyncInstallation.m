@@ -3,7 +3,7 @@
 #import "WPConfiguration.h"
 #import "WonderPush_private.h"
 #import "WPLog.h"
-#import "WPUtil.h"
+#import "WPNSUtil.h"
 
 
 #define UPGRADE_META_VERSION_KEY @"version"
@@ -44,7 +44,7 @@ static NSMutableDictionary *instancePerUserId = nil;
         // Populate entries
         NSDictionary *installationCustomSyncStatePerUserId = conf.installationCustomSyncStatePerUserId ?: @{};
         for (NSString *userId in installationCustomSyncStatePerUserId) {
-            NSDictionary *state = [WPUtil dictionaryForKey:userId inDictionary:installationCustomSyncStatePerUserId];
+            NSDictionary *state = [WPNSUtil dictionaryForKey:userId inDictionary:installationCustomSyncStatePerUserId];
             instancePerUserId[userId ?: @""] = [[WPJsonSyncInstallation alloc] initFromSavedState:state userId:userId];
         }
         NSString *oldUserId = conf.userId;
@@ -118,7 +118,7 @@ static NSMutableDictionary *instancePerUserId = nil;
                [self scheduleServerPatchCallCallback];
            }
                      upgradeCallback:^(NSMutableDictionary *upgradeMeta, NSMutableDictionary *sdkState, NSMutableDictionary *serverState, NSMutableDictionary *putAccumulator, NSMutableDictionary *inflightDiff, NSMutableDictionary *inflightPutAccumulator) {
-                         NSNumber *currentVersion = [WPUtil numberForKey:UPGRADE_META_VERSION_KEY inDictionary:upgradeMeta] ?: UPGRADE_META_VERSION_0_INITIAL;
+                         NSNumber *currentVersion = [WPNSUtil numberForKey:UPGRADE_META_VERSION_KEY inDictionary:upgradeMeta] ?: UPGRADE_META_VERSION_0_INITIAL;
                          if ([currentVersion compare:UPGRADE_META_VERSION_CURRENT] != NSOrderedAscending) {
                              // Do not alter current, or future versions we don't understand
                              return;
@@ -236,7 +236,7 @@ static NSMutableDictionary *instancePerUserId = nil;
                         params:@{@"body": diff}
                        handler:^(WPResponse *response, NSError *error) {
                            NSDictionary *responseJson = (NSDictionary *)response.object;
-                           if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[WPUtil numberForKey:@"success" inDictionary:responseJson] boolValue]) {
+                           if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[WPNSUtil numberForKey:@"success" inDictionary:responseJson] boolValue]) {
                                WPLogDebug(@"Succeded to send diff for user %@: %@", self->_userId, responseJson);
                                onSuccess();
                            } else {

@@ -14,6 +14,7 @@
 #import "WPAction.h"
 #import "WonderPush_private.h"
 #import "WPUtil.h"
+#import "WPNSUtil.h"
 #import <UIKit/UIKit.h>
 #import "WPInstallationCoreProperties.h"
 #import "WPDataManager.h"
@@ -442,7 +443,7 @@
 
 - (NSDictionary *)getInstallationCustomProperties {
     @synchronized (self) {
-        NSDictionary *customProperties = [([WPUtil dictionaryForKey:@"custom" inDictionary:[WPJsonSyncInstallation forCurrentUser].sdkState] ?: @{}) copy];
+        NSDictionary *customProperties = [([WPNSUtil dictionaryForKey:@"custom" inDictionary:[WPJsonSyncInstallation forCurrentUser].sdkState] ?: @{}) copy];
         NSMutableDictionary *rtn = [NSMutableDictionary new];
         for (id key in customProperties) {
             if ([key isKindOfClass:[NSString class]] && [(NSString *)key containsString:@"_"]) {
@@ -648,8 +649,8 @@
 
 - (NSOrderedSet<NSString *> *) getTags {
     @synchronized(self) {
-        NSDictionary *custom = [([WPUtil dictionaryForKey:@"custom" inDictionary:[WPJsonSyncInstallation forCurrentUser].sdkState] ?: @{}) copy];
-        NSArray *tags = [WPUtil arrayForKey:@"tags" inDictionary:custom];
+        NSDictionary *custom = [([WPNSUtil dictionaryForKey:@"custom" inDictionary:[WPJsonSyncInstallation forCurrentUser].sdkState] ?: @{}) copy];
+        NSArray *tags = [WPNSUtil arrayForKey:@"tags" inDictionary:custom];
         if (tags == nil) {
             // Recover from a potential scalar string value
             if ([custom[@"tags"] isKindOfClass:[NSString class]]) {

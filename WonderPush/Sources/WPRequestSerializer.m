@@ -10,7 +10,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import "WonderPush_private.h"
 #import "WPConfiguration.h"
-#import "WPUtil.h"
+#import "WPNSUtil.h"
 #import "WPJsonUtil.h"
 #import "WPLog.h"
 
@@ -109,16 +109,16 @@
     [buffer appendString:@"&"];
     
     // Step 2: add scheme://host/path
-    [buffer appendString:[WPUtil percentEncodedString:[NSString stringWithFormat:@"%@://%@%@", request.URL.scheme, request.URL.host, request.URL.path]]];
+    [buffer appendString:[WPNSUtil percentEncodedString:[NSString stringWithFormat:@"%@://%@%@", request.URL.scheme, request.URL.host, request.URL.path]]];
     
     // Gather GET params
-    NSDictionary *getParams = [WPUtil dictionaryWithFormEncodedString:request.URL.query];
+    NSDictionary *getParams = [WPNSUtil dictionaryWithFormEncodedString:request.URL.query];
     
     // Gather POST params
     NSData *dBody = nil;
     NSDictionary *postParams = nil;
     if ([@"application/x-www-form-urlencoded" isEqualToString:[request valueForHTTPHeaderField:@"Content-Type"]]) {
-        postParams = [WPUtil dictionaryWithFormEncodedString:[[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]];
+        postParams = [WPNSUtil dictionaryWithFormEncodedString:[[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]];
     } else {
         postParams = @{};
         dBody = request.HTTPBody;
@@ -131,11 +131,11 @@
     if (paramNames.count) {
         NSString *last = paramNames.lastObject;
         for (NSString *paramName in paramNames) {
-            NSString *val = [WPUtil stringForKey:paramName inDictionary:postParams];
+            NSString *val = [WPNSUtil stringForKey:paramName inDictionary:postParams];
             if (!val)
-                val = [WPUtil stringForKey:paramName inDictionary:getParams];
+                val = [WPNSUtil stringForKey:paramName inDictionary:getParams];
             
-            [buffer appendString:[WPUtil percentEncodedString:[NSString stringWithFormat:@"%@=%@", [WPUtil percentEncodedString:paramName], [WPUtil percentEncodedString:val]]]];
+            [buffer appendString:[WPNSUtil percentEncodedString:[NSString stringWithFormat:@"%@=%@", [WPNSUtil percentEncodedString:paramName], [WPNSUtil percentEncodedString:val]]]];
             
             if (![last isEqualToString:paramName]) {
                 [buffer appendString:@"%26"];
@@ -161,9 +161,9 @@
     }
     CCHmacFinal(&hmacCtx, cHMAC);
     NSData *HMAC = [[NSData alloc] initWithBytes:cHMAC length:sizeof(cHMAC)];
-    NSString *hash = [WPUtil base64forData:HMAC];
+    NSString *hash = [WPNSUtil base64forData:HMAC];
     
-    return [NSString stringWithFormat:@"WonderPush sig=\"%@\", meth=\"0\"", [WPUtil percentEncodedString:hash]];
+    return [NSString stringWithFormat:@"WonderPush sig=\"%@\", meth=\"0\"", [WPNSUtil percentEncodedString:hash]];
 }
 
 + (NSString *)queryStringFromParameters:(NSDictionary *)parameters

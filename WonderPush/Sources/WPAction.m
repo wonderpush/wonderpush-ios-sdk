@@ -7,7 +7,7 @@
 //
 
 #import "WPAction_private.h"
-#import "WPUtil.h"
+#import "WPNSUtil.h"
 #import "WPLog.h"
 
 @interface WPAction (SuperPrivate)
@@ -77,16 +77,16 @@
     
     switch (result.type) {
         case WPActionFollowUpTypeMapOpen: {
-            NSDictionary *mapData = [WPUtil dictionaryForKey:@"map" inDictionary:dict] ?: @{};
-            NSDictionary *place = [WPUtil dictionaryForKey:@"place" inDictionary:mapData] ?: @{};
-            NSDictionary *point = [WPUtil dictionaryForKey:@"point" inDictionary:place] ?: @{};
-            result.latitude = [WPUtil numberForKey:@"lat" inDictionary:point];
-            result.longitude = [WPUtil numberForKey:@"lon" inDictionary:point];
+            NSDictionary *mapData = [WPNSUtil dictionaryForKey:@"map" inDictionary:dict] ?: @{};
+            NSDictionary *place = [WPNSUtil dictionaryForKey:@"place" inDictionary:mapData] ?: @{};
+            NSDictionary *point = [WPNSUtil dictionaryForKey:@"point" inDictionary:place] ?: @{};
+            result.latitude = [WPNSUtil numberForKey:@"lat" inDictionary:point];
+            result.longitude = [WPNSUtil numberForKey:@"lon" inDictionary:point];
         }
             break;
         case WPActionFollowUpTypeMethod: {
-            result.methodName = [WPUtil stringForKey:@"method" inDictionary:dict];
-            result.methodArg = [WPUtil nullsafeObjectForKey:@"methodArg" inDictionary:dict];
+            result.methodName = [WPNSUtil stringForKey:@"method" inDictionary:dict];
+            result.methodArg = [WPNSUtil nullsafeObjectForKey:@"methodArg" inDictionary:dict];
         }
             break;
         case WPActionFollowUpTypeSubscribeToNotifications:
@@ -94,18 +94,18 @@
         case WPActionFollowUpTypeRating:
             break;
         case WPActionFollowUpTypeTrackEvent: {
-            NSDictionary *event = [WPUtil dictionaryForKey:@"event" inDictionary:dict] ?: @{};
-            NSString *type = [WPUtil stringForKey:@"type" inDictionary:event];
+            NSDictionary *event = [WPNSUtil dictionaryForKey:@"event" inDictionary:dict] ?: @{};
+            NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:event];
             if (!type) return nil;
             result.event = type;
-            result.custom = [WPUtil dictionaryForKey:@"custom" inDictionary:event];
+            result.custom = [WPNSUtil dictionaryForKey:@"custom" inDictionary:event];
         }
             break;
         case WPActionFollowUpTypeUpdateInstallation: {
-            NSNumber *appliedServerSide = [WPUtil numberForKey:@"appliedServerSide" inDictionary:dict];
+            NSNumber *appliedServerSide = [WPNSUtil numberForKey:@"appliedServerSide" inDictionary:dict];
             result.appliedServerSide = [appliedServerSide isEqual:@YES];
-            NSDictionary *installation = [WPUtil dictionaryForKey:@"installation" inDictionary:dict];
-            NSDictionary *directCustom = [WPUtil dictionaryForKey:@"custom" inDictionary:dict];
+            NSDictionary *installation = [WPNSUtil dictionaryForKey:@"installation" inDictionary:dict];
+            NSDictionary *directCustom = [WPNSUtil dictionaryForKey:@"custom" inDictionary:dict];
             if (installation == nil && directCustom != nil) {
                 installation = @{@"custom":directCustom};
             }
@@ -113,23 +113,23 @@
         }
             break;
         case WPActionFollowUpTypeAddProperty: {
-            result.custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:dict] ?: dict)];
+            result.custom = [WPNSUtil dictionaryForKey:@"custom" inDictionary:([WPNSUtil dictionaryForKey:@"installation" inDictionary:dict] ?: dict)];
         }
             break;
         case WPActionFollowUpTypeRemoveProperty: {
-            result.custom = [WPUtil dictionaryForKey:@"custom" inDictionary:([WPUtil dictionaryForKey:@"installation" inDictionary:dict] ?: dict)];
+            result.custom = [WPNSUtil dictionaryForKey:@"custom" inDictionary:([WPNSUtil dictionaryForKey:@"installation" inDictionary:dict] ?: dict)];
 
         }
             break;
         case WPActionFollowUpTypeResyncInstallation: {
-            result.installation = [WPUtil dictionaryForKey:@"installation" inDictionary:dict] ?: @{};
-            result.reset = [[WPUtil numberForKey:@"reset" inDictionary:dict] isEqual:@YES];
-            result.force = [[WPUtil numberForKey:@"force" inDictionary:dict] isEqual:@YES];
+            result.installation = [WPNSUtil dictionaryForKey:@"installation" inDictionary:dict] ?: @{};
+            result.reset = [[WPNSUtil numberForKey:@"reset" inDictionary:dict] isEqual:@YES];
+            result.force = [[WPNSUtil numberForKey:@"force" inDictionary:dict] isEqual:@YES];
         }
             break;
         case WPActionFollowUpTypeAddTag:
         case WPActionFollowUpTypeRemoveTag:
-            result.tags = [WPUtil arrayForKey:@"tags" inDictionary:dict];
+            result.tags = [WPNSUtil arrayForKey:@"tags" inDictionary:dict];
             break;
         case WPActionFollowUpTypeRemoveAllTags:
             break;
@@ -137,17 +137,17 @@
             break;
         case WPActionFollowUpTypeOverrideSetLogging:
         case WPActionFollowUpTypeOverrideNotificationReceipt:
-            result.force = [[WPUtil numberForKey:@"force" inDictionary:dict] isEqual:@YES];
+            result.force = [[WPNSUtil numberForKey:@"force" inDictionary:dict] isEqual:@YES];
             break;
         case WPActionFollowUpTypeCloseNotifications: {
             result.tags = @[];
-            NSArray *tags = [WPUtil arrayForKey:@"tags" inDictionary:dict];
-            NSString *tag = [WPUtil stringForKey:@"tag" inDictionary:dict];
+            NSArray *tags = [WPNSUtil arrayForKey:@"tags" inDictionary:dict];
+            NSString *tag = [WPNSUtil stringForKey:@"tag" inDictionary:dict];
             if ([tags isKindOfClass:NSArray.class]) result.tags = [result.tags arrayByAddingObjectsFromArray:tags];
             if ([tag isKindOfClass:NSString.class]) result.tags = [result.tags arrayByAddingObject:tag];
-            result.category = [WPUtil stringForKey:@"category" inDictionary:dict];
-            result.targetContentId = [WPUtil stringForKey:@"targetContentId" inDictionary:dict];
-            result.threadId = [WPUtil stringForKey:@"threadId" inDictionary:dict];
+            result.category = [WPNSUtil stringForKey:@"category" inDictionary:dict];
+            result.targetContentId = [WPNSUtil stringForKey:@"targetContentId" inDictionary:dict];
+            result.threadId = [WPNSUtil stringForKey:@"threadId" inDictionary:dict];
         }
             break;
     }

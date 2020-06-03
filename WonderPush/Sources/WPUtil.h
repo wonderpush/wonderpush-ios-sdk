@@ -23,23 +23,6 @@
  */
 @interface WPUtil : NSObject
 
-
-///-----------------------
-/// @name Percent encoding
-///-----------------------
-
-+ (NSString *) percentEncodedString:(NSString *)s;
-
-+ (NSDictionary *)dictionaryWithFormEncodedString:(NSString *)encodedString;
-
-
-///--------------
-/// @name base 64
-///--------------
-
-+ (NSString*)base64forData:(NSData*)theData;
-
-
 ///--------------
 /// @name Device
 ///--------------
@@ -80,24 +63,6 @@
 + (NSString *) wpLocalizedString:(NSString *)key withDefault:(NSString *)defaultValue;
 
 + (void) askUserPermission;
-
-///-----------------------
-/// @name Dictionary utils
-///-----------------------
-+ (NSDictionary *)dictionaryByFilteringNulls:(NSDictionary *)dictionary;
-+ (NSArray *)arrayByFilteringNulls:(NSArray *)array;
-+ (id) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary *)dictionary;
-+ (id) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-
-+ (NSDictionary *) dictionaryForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-+ (NSArray *) arrayForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-+ (NSString *) stringForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-+ (NSNumber *) numberForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-
-///-----------------------
-/// @name NSData utils
-///-----------------------
-+ (NSString *) hexForData:(NSData *)data;
 
 @end
 

@@ -28,6 +28,7 @@
       "source_files": [
         "WonderPushExtension/Sources/*.{m,h}",
         "WonderPush/Sources/WPURLConstants.h",
+        "WonderPush/Sources/WPNSUtil.{h,m}",
         "WonderPush/Sources/WPLog.{m,h}"
       ]
     }
