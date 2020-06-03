@@ -7,7 +7,6 @@
 //
 
 #import "WPMeasurementsApiClient.h"
-#import "WonderPush_private.h"
 #import "WPConfiguration.h"
 #import "WPRequestSerializer.h"
 

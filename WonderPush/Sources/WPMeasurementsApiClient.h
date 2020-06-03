@@ -10,6 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define MEASUREMENTS_API_DOMAIN @"measurements-api.wonderpush.com"
+#define MEASUREMENTS_API_URL @"https://" MEASUREMENTS_API_DOMAIN @"/v1/"
+
 @interface WPMeasurementsApiClient : NSObject
 
 + (instancetype) sharedClient;

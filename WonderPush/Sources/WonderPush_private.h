@@ -27,8 +27,6 @@
 #define SDK_VERSION @"iOS-3.3.3"
 #define PRODUCTION_API_DOMAIN @"api.wonderpush.com"
 #define PRODUCTION_API_URL @"https://" PRODUCTION_API_DOMAIN @"/v1/"
-#define MEASUREMENTS_API_DOMAIN @"measurements-api.wonderpush.com"
-#define MEASUREMENTS_API_URL @"https://" MEASUREMENTS_API_DOMAIN @"/v1/"
 #define REMOTE_CONFIG_BASE_URL @"https://cdn.by.wonderpush.com/config/clientids/"
 #define REMOTE_CONFIG_SUFFIX @"-iOS"
 
