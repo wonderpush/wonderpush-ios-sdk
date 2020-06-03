@@ -168,10 +168,12 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     NSError *error = nil;
     NSMutableURLRequest *mutableRequest = [NSMutableURLRequest requestWithURL:URL];
     mutableRequest.HTTPMethod = method;
+    NSString *clientSecret = [WPConfiguration sharedConfiguration].clientSecret;
     NSURLRequest *request = [self.requestSerializer
-               requestBySerializingRequest:mutableRequest
-               withParameters:parameters
-               error:&error];
+                             requestBySerializingRequest:mutableRequest
+                             withParameters:parameters
+                             clientSecret:clientSecret
+                             error:&error];
     if (error) {
         callFailureBlock(nil, error);
         return;

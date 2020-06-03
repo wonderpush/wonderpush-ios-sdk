@@ -7,10 +7,12 @@
 //
 
 #import "WPMeasurementsApiClient.h"
-#import "WPConfiguration.h"
 #import "WPRequestSerializer.h"
 
 @interface WPMeasurementsApiClient ()
+@property (nonatomic, strong, nonnull) NSString *clientSecret;
+@property (nonatomic, strong, nonnull) NSString *clientId;
+@property (nonatomic, strong, nonnull) NSString *deviceId;
 @property (nonatomic, strong, nonnull) NSURLSession *URLSession;
 @property (nonatomic, strong, nonnull) NSURL *baseURL;
 @end
@@ -26,8 +28,11 @@
     return sharedClient;
 }
 
-- (instancetype) init {
+- (instancetype) initWithClientId:(NSString *)clientId secret:(nonnull NSString *)secret deviceId:(nonnull NSString *)deviceId {
     if (self = [super init]) {
+        _clientSecret = secret;
+        _clientId = clientId;
+        _deviceId = deviceId;
         // We don't need cache, persistence, etc.
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
         self.URLSession = [NSURLSession sessionWithConfiguration:configuration];
@@ -35,7 +40,7 @@
     }
     return self;
 }
-- (void) POST:(NSString *)path bodyParam:(id)bodyParam completionHandler:(void (^)(NSData *, NSURLResponse *, NSError *))completionHandler {
+- (void) POST:(NSString *)path bodyParam:(id)bodyParam userId:(NSString * _Nullable)userId completionHandler:(void (^ _Nullable)(NSData * _Nullable, NSURLResponse * _Nullable, NSError * _Nullable))completionHandler {
     
     NSString *method = @"POST";
 
@@ -49,27 +54,26 @@
     
     // Build the request body
     NSMutableString *requestBodyString = [NSMutableString new];
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     
     // Add the bodyParam
     [requestBodyString appendFormat:@"body=%@", [[[NSString alloc] initWithData:bodyParamData encoding:NSUTF8StringEncoding] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
 
     // Client ID
-    if (configuration.clientId && configuration.clientId.length) {
-        [requestBodyString appendFormat:@"&clientId=%@", [configuration.clientId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+    if (self.clientId && self.clientId.length) {
+        [requestBodyString appendFormat:@"&clientId=%@", [self.clientId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
     }
     
     // Device platform
     [requestBodyString appendString:@"&devicePlatform=iOS"];
     
     // User ID
-    if (configuration.userId && configuration.userId.length) {
-        [requestBodyString appendFormat:@"&userId=%@", [configuration.userId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+    if (userId && userId.length) {
+        [requestBodyString appendFormat:@"&userId=%@", [userId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
     }
     
     // Device ID
-    if (configuration.deviceId && configuration.deviceId.length) {
-        [requestBodyString appendFormat:@"&deviceId=%@", [configuration.deviceId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+    if (self.deviceId && self.deviceId.length) {
+        [requestBodyString appendFormat:@"&deviceId=%@", [self.deviceId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
     }
 
     // Resource is computed from the path by removing any leading slash
@@ -80,7 +84,7 @@
     request.HTTPMethod = method;
     request.HTTPBody = [requestBodyString dataUsingEncoding:NSUTF8StringEncoding];
     // Add the authorization header after JSON serialization
-    NSString *authorizationHeader = [WPRequestSerializer wonderPushAuthorizationHeaderValueForRequest:request];
+    NSString *authorizationHeader = [WPRequestSerializer wonderPushAuthorizationHeaderValueForRequest:request clientSecret:self.clientSecret];
     if (authorizationHeader) {
         [request addValue:authorizationHeader forHTTPHeaderField:@"X-WonderPush-Authorization"];
     }

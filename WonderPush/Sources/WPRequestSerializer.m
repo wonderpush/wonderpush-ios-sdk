@@ -8,8 +8,6 @@
 
 #import "WPRequestSerializer.h"
 #import <CommonCrypto/CommonCrypto.h>
-#import "WonderPush_private.h"
-#import "WPConfiguration.h"
 #import "WPNSUtil.h"
 #import "WPJsonUtil.h"
 #import "WPLog.h"
@@ -91,18 +89,16 @@
     
     return escaped;
 }
-+ (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request
++ (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request clientSecret:(NSString *)secret
 {
+    if (!secret) {
+        return nil;
+    }
     NSString *method = request.HTTPMethod.uppercaseString;
     
     // GET requests do not need signing
     if ([@"GET" isEqualToString:method])
         return nil;
-    
-    if (![WonderPush isInitialized]) {
-        WPLog(@"Authorization header cannot be calculated because the SDK is not initialized");
-        return nil;
-    }
     
     // Step 1: add HTTP method uppercase
     NSMutableString *buffer = [[NSMutableString alloc] initWithString:method];
@@ -149,7 +145,7 @@
     // body will be hmac-ed directly after buffer
     
     // Sign the buffer with the client secret using HMacSha1
-    const char *cKey  = [[WPConfiguration sharedConfiguration].clientSecret cStringUsingEncoding:NSASCIIStringEncoding];
+    const char *cKey  = [secret cStringUsingEncoding:NSASCIIStringEncoding];
     const char *cData = [buffer cStringUsingEncoding:NSASCIIStringEncoding];
     unsigned char cHMAC[CC_SHA1_DIGEST_LENGTH];
     CCHmacContext hmacCtx;
@@ -208,7 +204,7 @@
 }
 
 
-- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request withParameters:(id)parameters error:(NSError *__autoreleasing  _Nullable *)error
+- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request withParameters:(id)parameters clientSecret:(NSString *)secret error:(NSError *__autoreleasing _Nullable *)error
 {
     NSMutableURLRequest *mutableRequest = [request mutableCopy];
     NSMutableDictionary *mutableParameters = [parameters mutableCopy];
@@ -255,7 +251,7 @@
     }
 
     // Add the authorization header after JSON serialization
-    NSString *authorizationHeader = [[self class] wonderPushAuthorizationHeaderValueForRequest:mutableRequest];
+    NSString *authorizationHeader = secret ? [[self class] wonderPushAuthorizationHeaderValueForRequest:mutableRequest clientSecret:secret] : nil;
     if (authorizationHeader) {
         [mutableRequest addValue:authorizationHeader forHTTPHeaderField:@"X-WonderPush-Authorization"];
     }

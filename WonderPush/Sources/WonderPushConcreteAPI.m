@@ -23,7 +23,8 @@
 #import "WPAction_private.h"
 #import "WPMeasurementsApiClient.h"
 
-@interface WonderPushConcreteAPI (private)
+@interface WonderPushConcreteAPI ()
+@property (nonatomic, strong, nonnull) WPMeasurementsApiClient *measurementApiClient;
 @end
 
 @implementation WonderPushConcreteAPI
@@ -42,6 +43,14 @@
         self.locationManager = [CLLocationManager new];
     }
     return self;
+}
+
+- (WPMeasurementsApiClient *) measurementApiClient {
+    if (!_measurementApiClient && [WPConfiguration sharedConfiguration].clientSecret) {
+        WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+        _measurementApiClient = [[WPMeasurementsApiClient alloc] initWithClientId:configuration.clientId secret:configuration.clientSecret deviceId:[WPUtil deviceIdentifier]];
+    }
+    return _measurementApiClient;
 }
 /**
  Makes sure we have an up-to-date device token, and send it to WonderPush servers if necessary.
@@ -112,7 +121,7 @@
             }];
         });
         if (useMeasurementsApi) {
-            [[WPMeasurementsApiClient sharedClient] POST:eventEndPoint bodyParam:params completionHandler:nil];
+            [self.measurementApiClient POST:eventEndPoint bodyParam:params userId:WPConfiguration.sharedConfiguration.userId completionHandler:nil];
         } else {
             [WonderPush postEventually:eventEndPoint params:@{@"body":params}];
         }

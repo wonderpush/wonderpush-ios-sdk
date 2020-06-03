@@ -15,9 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WPMeasurementsApiClient : NSObject
 
-+ (instancetype) sharedClient;
+- (instancetype) initWithClientId:(NSString *)clientId
+                           secret:(NSString *)secret
+                         deviceId:(NSString *)deviceId;
 
-- (void) POST:(NSString*)path bodyParam:(id)bodyParam completionHandler:(void(^ _Nullable)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
+- (void) POST:(NSString*)path bodyParam:(id)bodyParam userId:(NSString * _Nullable)userId completionHandler:(void(^ _Nullable)(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error))completionHandler;
 
 @end
 

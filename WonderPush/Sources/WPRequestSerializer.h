@@ -12,9 +12,12 @@
 @property (strong, nonatomic) NSSet *HTTPMethodsEncodingParametersInURI;
 @property (assign, nonatomic) NSStringEncoding stringEncoding;
 + (NSString *) percentEscapedStringFromString:(NSString *)string;
-+ (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request;
++ (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request clientSecret:(NSString *)secret;
 + (NSString *) queryStringFromParameters:(NSDictionary *)parameters;
-- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request withParameters:(id)parameters error:(NSError **)error;
+- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request
+                               withParameters:(id)parameters
+                                 clientSecret:(NSString *)secret
+                                        error:(NSError **)error;
 @end
 
 
