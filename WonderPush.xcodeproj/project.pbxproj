@@ -131,6 +131,9 @@
 		99EA164A2487DDC000AA01BC /* WPNSUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EA16472487DDC000AA01BC /* WPNSUtil.h */; };
 		99EA164B2487DDC000AA01BC /* WPNSUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EA16482487DDC000AA01BC /* WPNSUtil.m */; };
 		99EA164C2487DDC000AA01BC /* WPNSUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EA16482487DDC000AA01BC /* WPNSUtil.m */; };
+		99EA16532487E2A700AA01BC /* WPJsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D663E5E1BA7B83800BBAB45 /* WPJsonUtil.m */; };
+		99EA16552487E75C00AA01BC /* WPMeasurementsApiClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 99D16F1F2463E68C00C14989 /* WPMeasurementsApiClient.m */; };
+		99EA16562487E78B00AA01BC /* WPRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 99885AF222157F98002CA269 /* WPRequestSerializer.m */; };
 		99EF833823F4452C00B9B287 /* WPInAppMessageDisplayStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99EF82BA23F4452C00B9B287 /* WPInAppMessageDisplayStoryboard.storyboard */; };
 		99EF833923F4452C00B9B287 /* close-with-transparency@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 99EF82BB23F4452C00B9B287 /* close-with-transparency@2x.png */; };
 		99EF833A23F4452C00B9B287 /* close-with-transparency.png in Resources */ = {isa = PBXBuildFile; fileRef = 99EF82BC23F4452C00B9B287 /* close-with-transparency.png */; };
@@ -1398,11 +1401,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99EA16532487E2A700AA01BC /* WPJsonUtil.m in Sources */,
 				9909CE5C2221602500F73A0B /* WPNotificationServiceExtension.m in Sources */,
+				99EA16562487E78B00AA01BC /* WPRequestSerializer.m in Sources */,
 				99EA164C2487DDC000AA01BC /* WPNSUtil.m in Sources */,
 				99E95EBE2407FA1100B8B062 /* WPNotificationCategoryManager.m in Sources */,
 				9909CE5D2221602B00F73A0B /* WPLog.m in Sources */,
 				99F384952225A5E400EA2ECD /* NotificationServiceExtension.m in Sources */,
+				99EA16552487E75C00AA01BC /* WPMeasurementsApiClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
