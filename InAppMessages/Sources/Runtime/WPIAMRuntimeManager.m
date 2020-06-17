@@ -215,9 +215,21 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
                             "instance mode");
                 [self.displayOnAppForegroundFlow start];
                 
-                [self.displayExecutor checkAndDisplayNextAppLaunchMessage];
-                // Simulate app going into foreground on startup
-                [self.displayExecutor checkAndDisplayNextAppForegroundMessage];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    void(^displayNext)(void) = ^{
+                        [self.displayExecutor checkAndDisplayNextAppLaunchMessage];
+                        // Simulate app going into foreground on startup
+                        [self.displayExecutor checkAndDisplayNextAppForegroundMessage];
+                    };
+                    if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
+                        displayNext();
+                    } else {
+                        id __block registration = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+                            [NSNotificationCenter.defaultCenter removeObserver:registration];
+                            displayNext();
+                        }];
+                    }
+                });
             }
             
         } else {
