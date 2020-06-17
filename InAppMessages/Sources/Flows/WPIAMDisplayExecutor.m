@@ -79,6 +79,16 @@
         [eventData addEntriesFromDictionary:_currentMsgBeingDisplayed.renderData.reportingData.dictValue];
         eventData[@"actionDate"] = [NSNumber numberWithLong:(long)([self.timeFetcher currentTimestampInSeconds] * 1000)];
         if (action.targetUrl) eventData[@"targetUrl"] = action.targetUrl;
+        NSString *buttonLabel = nil;
+        if ([inAppMessage respondsToSelector:@selector(action)]) {
+            buttonLabel = [inAppMessage performSelector:@selector(action)] == (id)action ? @"primary" : nil;
+        } else if ([inAppMessage respondsToSelector:@selector(primaryAction)]) {
+            buttonLabel = [inAppMessage performSelector:@selector(primaryAction)] == (id)action ? @"primary" : nil;
+        }
+        if (!buttonLabel && [inAppMessage respondsToSelector:@selector(secondaryAction)]) {
+            buttonLabel = [inAppMessage performSelector:@selector(secondaryAction)] == (id)action ? @"secondary" : nil;
+        }
+        if (buttonLabel) eventData[@"buttonLabel"] = buttonLabel;
         [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
     }
     [WonderPush executeAction:action withReportingData:_currentMsgBeingDisplayed.renderData.reportingData];
