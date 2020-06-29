@@ -13,16 +13,16 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPSPParserConfig : NSObject
-@property (nonnull, readonly) id<WPSPASTValueNodeParser> valueParser;
-@property (nonnull, readonly) id<WPSPASTCriterionNodeParser> criterionParser;
+@property (nonnull, readonly) WPSPASTValueNodeParser valueParser;
+@property (nonnull, readonly) WPSPASTCriterionNodeParser criterionParser;
 @property (readonly) BOOL throwOnUnknownCriterion;
 @property (readonly) BOOL throwOnUnknownValue;
-- (instancetype) initWithValueParser:(id<WPSPASTValueNodeParser>)valueParser
-                     criterionParser:(id<WPSPASTCriterionNodeParser>)criterionParser
+- (instancetype) initWithValueParser:(WPSPASTValueNodeParser)valueParser
+                     criterionParser:(WPSPASTCriterionNodeParser)criterionParser
              throwOnUnknownCriterion:(BOOL)throwOnUnknownCriterion
                  throwOnUnknownValue:(BOOL)throwOnUnknownValue;
-- (instancetype) initWithValueParser:(id<WPSPASTValueNodeParser>)valueParser
-                     criterionParser:(id<WPSPASTCriterionNodeParser>)criterionParser;
+- (instancetype) initWithValueParser:(WPSPASTValueNodeParser)valueParser
+                     criterionParser:(WPSPASTCriterionNodeParser)criterionParser;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -10,11 +10,11 @@
 #import "WPSPASTValueNodeParser.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WPSPConfigurableValueNodeParser : NSObject <WPSPASTValueNodeParser>
+@interface WPSPConfigurableValueNodeParser : NSObject
 
-- (void) registerExactNameParserWithKey:(NSString *)key parser:(id<WPSPASTValueNodeParser>)parser;
-- (void) registerDynamicNameParser:(id<WPSPASTValueNodeParser>)parser;
-
+- (void) registerExactNameParserWithKey:(NSString *)key parser:(WPSPASTValueNodeParser)parser;
+- (void) registerDynamicNameParser:(WPSPASTValueNodeParser)parser;
+- (WPSPASTValueNode *) parseValueWithContext:(WPSPParsingContext *)context key:(NSString *)key input:(id)input;
 @end
 
 NS_ASSUME_NONNULL_END

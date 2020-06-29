@@ -11,11 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WPSPConfigurableCriterionNodeParser : NSObject <WPSPASTCriterionNodeParser>
+@interface WPSPConfigurableCriterionNodeParser : NSObject
 
-- (void) registerExactNameParserWithKey:(NSString *)key parser:(id<WPSPASTCriterionNodeParser>)parser;
-- (void) registerDynamicNameParser:(id<WPSPASTCriterionNodeParser>)parser;
-
+- (void) registerExactNameParserWithKey:(NSString *)key parser:(WPSPASTCriterionNodeParser)parser;
+- (void) registerDynamicNameParser:(WPSPASTCriterionNodeParser)parser;
+- (WPSPASTCriterionNode *) parseCriterionWithContext:(WPSPParsingContext *)context key:(NSString *)key input:(id)input;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -7,14 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "WPSPParsingContext.h"
+#import "WPSPASTCriterionNode.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class WPSPASTCriterionNode;
-@class WPSPParsingContext;
-@protocol WPSPASTCriterionNodeParser <NSObject>
-- (WPSPASTCriterionNode * _Nullable) parseCriterionWithContext:(WPSPParsingContext *)context key:(NSString *)key input:(id) input;
+typedef WPSPASTCriterionNode * _Nullable(^WPSPASTCriterionNodeParser)(WPSPParsingContext *, NSString *, id);
 
-@end
+#define CRITERION_NODE_PARSER_BLOCK(code) ^WPSPASTCriterionNode * _Nullable (WPSPParsingContext *context, NSString *key, id input) { \
+code \
+}
 
 NS_ASSUME_NONNULL_END

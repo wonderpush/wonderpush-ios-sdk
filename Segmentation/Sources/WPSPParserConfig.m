@@ -10,11 +10,11 @@
 
 @implementation WPSPParserConfig
 
-- (instancetype) initWithValueParser:(id<WPSPASTValueNodeParser>)valueParser criterionParser:(id<WPSPASTCriterionNodeParser>)criterionParser {
+- (instancetype) initWithValueParser:(WPSPASTValueNodeParser)valueParser criterionParser:(WPSPASTCriterionNodeParser)criterionParser {
     return [self initWithValueParser:valueParser criterionParser:criterionParser throwOnUnknownCriterion:NO throwOnUnknownValue:NO];
 }
 
-- (instancetype) initWithValueParser:(id<WPSPASTValueNodeParser>)valueParser criterionParser:(id<WPSPASTCriterionNodeParser>)criterionParser throwOnUnknownCriterion:(BOOL)throwOnUnknownCriterion throwOnUnknownValue:(BOOL)throwOnUnknownValue {
+- (instancetype) initWithValueParser:(WPSPASTValueNodeParser)valueParser criterionParser:(WPSPASTCriterionNodeParser)criterionParser throwOnUnknownCriterion:(BOOL)throwOnUnknownCriterion throwOnUnknownValue:(BOOL)throwOnUnknownValue {
     if (self = [super init]) {
         _valueParser = valueParser;
         _criterionParser = criterionParser;

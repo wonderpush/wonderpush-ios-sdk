@@ -8,7 +8,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class WPSPASTUnknownValueNode;
+@class WPSPNullValueNode;
+@class WPSPBooleanValueNode;
+@class WPSPNumberValueNode;
+@class WPSPStringValueNode;
+
 @protocol WPSPASTValueVisitor <NSObject>
+
+-(id) visitASTUnknownValueNode:(WPSPASTUnknownValueNode *)node;
+-(id) visitNullValueNode:(WPSPNullValueNode *)node;
+-(id) visitBooleanValueNode:(WPSPBooleanValueNode *)node;
+-(id) visitNumberValueNode:(WPSPNumberValueNode *)node;
+-(id) visitStringValueNode:(WPSPStringValueNode *)node;
+
 @end
 
 NS_ASSUME_NONNULL_END

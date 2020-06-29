@@ -7,13 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "WPSPASTValueNode.h"
+#import "WPSPParsingContext.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@class WPSPASTValueNode;
-@class WPSPParsingContext;
-@protocol WPSPASTValueNodeParser <NSObject>
-- (WPSPASTValueNode * _Nullable) parseValueWithContext:(WPSPParsingContext *)context key:(NSString *)key input:(id)input;
-@end
+typedef WPSPASTValueNode * _Nullable(^WPSPASTValueNodeParser)(WPSPParsingContext *, NSString *, id);
+
+#define VALUE_NODE_PARSER_BLOCK(code) ^WPSPASTValueNode * _Nullable (WPSPParsingContext *context, NSString *key, id input) { \
+code \
+}
 
 NS_ASSUME_NONNULL_END

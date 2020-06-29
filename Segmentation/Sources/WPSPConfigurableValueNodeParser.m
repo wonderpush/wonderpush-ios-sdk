@@ -10,8 +10,8 @@
 
 @interface WPSPConfigurableValueNodeParser ()
 
-@property (nonnull, readonly) NSMutableDictionary<NSString *, id<WPSPASTValueNodeParser>> *exactNameParsers;
-@property (nonnull, readonly) NSMutableArray<id<WPSPASTValueNodeParser>> *dynamicNameParsers;
+@property (nonnull, readonly) NSMutableDictionary<NSString *, WPSPASTValueNodeParser> *exactNameParsers;
+@property (nonnull, readonly) NSMutableArray<WPSPASTValueNodeParser> *dynamicNameParsers;
 
 @end
 
@@ -25,27 +25,27 @@
     return self;
 }
 
-- (void)registerExactNameParserWithKey:(NSString *)key parser:(id<WPSPASTValueNodeParser>)parser {
-    id<WPSPASTValueNodeParser> oldParser = self.exactNameParsers[key];
+- (void)registerExactNameParserWithKey:(NSString *)key parser:(WPSPASTValueNodeParser)parser {
+    WPSPASTValueNodeParser oldParser = self.exactNameParsers[key];
     if (oldParser) {
         @throw @"ValueParserAlreadyExistsForKey";
     }
     self.exactNameParsers[key] = parser;
 }
 
-- (void)registerDynamicNameParser:(id<WPSPASTValueNodeParser>)parser {
+- (void)registerDynamicNameParser:(WPSPASTValueNodeParser)parser {
     [self.dynamicNameParsers addObject:parser];
 }
 
 - (WPSPASTValueNode *)parseValueWithContext:(WPSPParsingContext *)context key:(NSString *)key input:(id)input {
 
-    id<WPSPASTValueNodeParser> exactNameParser = self.exactNameParsers[key];
+    WPSPASTValueNodeParser exactNameParser = self.exactNameParsers[key];
 
     if (exactNameParser) {
         return [exactNameParser parseValueWithContext:context key:key input:input];
     }
     
-    for (id<WPSPASTValueNodeParser> parser in self.dynamicNameParsers) {
+    for (WPSPASTValueNodeParser parser in self.dynamicNameParsers) {
         WPSPASTValueNode *parsed = [parser parseValueWithContext:context key:key input:input];
         if (parsed) return parsed;
     }

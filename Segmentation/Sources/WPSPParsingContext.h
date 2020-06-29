@@ -7,10 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "WPSPSegmentationDSLParser.h"
 #import "WPSPDataSource.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class WPSPSegmentationDSLParser;
 
 @interface WPSPParsingContext : NSObject
 @property (nonnull, readonly) WPSPSegmentationDSLParser *parser;

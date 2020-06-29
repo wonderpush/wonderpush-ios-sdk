@@ -10,9 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class WPSPMatchAllCriterionNode;
+@class WPSPAndCriterionNode;
+@class WPSPASTUnknownCriterionNode;
+
 @protocol WPSPASTCriterionVisitor <NSObject>
 
-
+- (id) visitMatchAllCriterionNode:(WPSPMatchAllCriterionNode *)node;
+- (id) visitAndCriterionNode:(WPSPAndCriterionNode *)node;
+- (id) visitASTUnknownCriterionNode:(WPSPASTUnknownCriterionNode *)node;
 
 @end
 NS_ASSUME_NONNULL_END
