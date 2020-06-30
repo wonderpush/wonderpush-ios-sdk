@@ -12,9 +12,49 @@
 #import "WPSPAndCriterionNode.h"
 #import "WPSPASTUnknownCriterionNode.h"
 #import "WPJsonUtil.h"
+#import "WPSPDefaultValueNodeParser.h"
+#import "WPSPDefaultCriterionNodeParser.h"
+
 
 @implementation WPSPSegmentationDSLParser
-- (instancetype) initWithParserConfig:(WPSPParserConfig *)parserConfig {
+
++ (instancetype)defaultParser {
+    static dispatch_once_t onceToken;
+    static WPSPSegmentationDSLParser *rtn = nil;
+    static WPSPDefaultValueNodeParser *defaultValueNodeParser = nil;
+    static WPSPDefaultCriterionNodeParser *defaultCriterionNodeParser = nil;
+    dispatch_once(&onceToken, ^{
+        defaultValueNodeParser = [WPSPDefaultValueNodeParser new];
+        defaultCriterionNodeParser = [WPSPDefaultCriterionNodeParser new];
+        WPSPParserConfig *parserConfig = [[WPSPParserConfig alloc]
+                                          initWithValueParser:VALUE_NODE_PARSER_BLOCK(return [defaultValueNodeParser parseValueWithContext:context key:key input:input];)
+                                          criterionParser:CRITERION_NODE_PARSER_BLOCK(return [defaultCriterionNodeParser parseCriterionWithContext:context key:key input:input];)
+                                          throwOnUnknownCriterion:NO
+                                          throwOnUnknownValue:NO];
+        rtn = [[WPSPSegmentationDSLParser alloc] initWithParserConfig:parserConfig];
+    });
+    return rtn;
+}
+
++ (instancetype)defaultThrowingParser {
+    static dispatch_once_t onceToken;
+    static WPSPSegmentationDSLParser *rtn = nil;
+    static WPSPDefaultValueNodeParser *defaultValueNodeParser = nil;
+    static WPSPDefaultCriterionNodeParser *defaultCriterionNodeParser = nil;
+    dispatch_once(&onceToken, ^{
+        defaultValueNodeParser = [WPSPDefaultValueNodeParser new];
+        defaultCriterionNodeParser = [WPSPDefaultCriterionNodeParser new];
+        WPSPParserConfig *parserConfig = [[WPSPParserConfig alloc]
+                                          initWithValueParser:VALUE_NODE_PARSER_BLOCK(return [defaultValueNodeParser parseValueWithContext:context key:key input:input];)
+                                          criterionParser:CRITERION_NODE_PARSER_BLOCK(return [defaultCriterionNodeParser parseCriterionWithContext:context key:key input:input];)
+                                          throwOnUnknownCriterion:YES
+                                          throwOnUnknownValue:YES];
+        rtn = [[WPSPSegmentationDSLParser alloc] initWithParserConfig:parserConfig];
+    });
+    return rtn;
+}
+
+- (instancetype)initWithParserConfig:(WPSPParserConfig *)parserConfig {
     if (self = [super init]) {
         _parserConfig = parserConfig;
     }

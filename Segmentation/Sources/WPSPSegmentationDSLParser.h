@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WPSPSegmentationDSLParser : NSObject
 @property (nonnull, readonly) WPSPParserConfig *parserConfig;
 
++ (instancetype) defaultParser;
++ (instancetype) defaultThrowingParser;
+
 - (instancetype) initWithParserConfig:(WPSPParserConfig *)parserConfig;
 - (WPSPASTCriterionNode *) parse:(NSDictionary *)input dataSource:(WPSPDataSource *)dataSource;
 - (WPSPASTCriterionNode *) parseCriterionWithContext:(WPSPParsingContext *)context input:(NSDictionary *)input;
