@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "WPSPGeoLocation.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPSPGeoBox : NSObject
@@ -19,6 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype) initWithTop:(double)top right:(double)right bottom:(double)bottom left:(double)left;
 - (double) centerLat;
 - (double) centerLon;
+- (WPSPGeoLocation *) topLeft;
+- (WPSPGeoLocation *) topRight;
+- (WPSPGeoLocation *) bottomLeft;
+- (WPSPGeoLocation *) bottomRight;
+- (WPSPGeoLocation *) toGeoLocation;
+
 @end
 
 NS_ASSUME_NONNULL_END

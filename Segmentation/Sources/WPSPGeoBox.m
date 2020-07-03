@@ -33,4 +33,24 @@
     WPSPGeoBox *other = object;
     return self.top == other.top && self.right == other.right && self.bottom == other.bottom && self.left == other.left;
 }
+
+- (WPSPGeoLocation *)topLeft {
+    return [[WPSPGeoLocation alloc] initWithLat:self.top lon:self.left];
+}
+
+- (WPSPGeoLocation *)topRight {
+    return [[WPSPGeoLocation alloc] initWithLat:self.top lon:self.right];
+}
+
+- (WPSPGeoLocation *)bottomLeft {
+    return [[WPSPGeoLocation alloc] initWithLat:self.bottom lon:self.left];
+}
+
+- (WPSPGeoLocation *)bottomRight {
+    return [[WPSPGeoLocation alloc] initWithLat:self.bottom lon:self.right];
+}
+
+- (WPSPGeoLocation *)toGeoLocation {
+    return [[WPSPGeoLocation alloc] initWithLat:self.centerLat lon:self.centerLon];
+}
 @end
