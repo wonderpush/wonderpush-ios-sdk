@@ -12,20 +12,38 @@
 @end
 
 @implementation WPSPBadInputException
+
 - (instancetype)init {
-    return [super initWithName:@"WPSPBadInputException" reason:nil userInfo:nil];
+    return [self initWithReason:nil];
 }
+
+- (instancetype) initWithReason:(NSString *)reason {
+    return [super initWithName:@"WPSPBadInputException" reason:reason userInfo:nil];
+}
+
 @end
 
 @implementation WPSPUnknownCriterionException
+
 - (instancetype)init {
-    return [super initWithName:@"WPSPUnknownCriterionException" reason:nil userInfo:nil];
+    return [self initWithReason:nil];
 }
+
+- (instancetype) initWithReason:(NSString *)reason {
+    return [super initWithName:@"WPSPUnknownCriterionException" reason:reason userInfo:nil];
+}
+
 @end
 
 @implementation WPSPUnknownValueException
+
 - (instancetype)init {
-    return [super initWithName:@"WPSPUnknownValueException" reason:nil userInfo:nil];
+    return [self initWithReason:nil];
 }
+
+- (instancetype) initWithReason:(NSString *)reason {
+    return [super initWithName:@"WPSPUnknownValueException" reason:reason userInfo:nil];
+}
+
 @end
 

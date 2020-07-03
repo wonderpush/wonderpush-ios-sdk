@@ -29,7 +29,7 @@
 }
 
 + (WPSPASTCriterionNodeParser) parseDynamicDotField {
-    return CRITERION_NODE_PARSER_BLOCK({
+    return CRITERION_NODE_PARSER_BLOCK {
         if ([key characterAtIndex:0] == '.') {
             WPSPFieldSource *fieldSource = [[WPSPFieldSource alloc]
                                             initWithParent:context.dataSource
@@ -41,7 +41,7 @@
                     input:[[self class] ensureNSDictionary:input]];
         }
         return nil;
-    });
+    };
 }
 
 @end

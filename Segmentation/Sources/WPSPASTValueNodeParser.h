@@ -13,8 +13,5 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef WPSPASTValueNode * _Nullable(^WPSPASTValueNodeParser)(WPSPParsingContext *, NSString *, id);
 
-#define VALUE_NODE_PARSER_BLOCK(code) ^WPSPASTValueNode * _Nullable (WPSPParsingContext *context, NSString *key, id input) { \
-code \
-}
-
+#define VALUE_NODE_PARSER_BLOCK ^WPSPASTValueNode * _Nullable (WPSPParsingContext *context, NSString *key, id input)
 NS_ASSUME_NONNULL_END

@@ -14,12 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface WPSPBadInputException : NSException
+- (instancetype) initWithReason:(NSString * _Nullable)reason;
 @end
 
 @interface WPSPUnknownCriterionException : NSException
+- (instancetype) initWithReason:(NSString * _Nullable)reason;
 @end
 
 @interface WPSPUnknownValueException : NSException
+- (instancetype) initWithReason:(NSString * _Nullable)reason;
 @end
 
 

@@ -27,8 +27,8 @@
         defaultValueNodeParser = [WPSPDefaultValueNodeParser new];
         defaultCriterionNodeParser = [WPSPDefaultCriterionNodeParser new];
         WPSPParserConfig *parserConfig = [[WPSPParserConfig alloc]
-                                          initWithValueParser:VALUE_NODE_PARSER_BLOCK(return [defaultValueNodeParser parseValueWithContext:context key:key input:input];)
-                                          criterionParser:CRITERION_NODE_PARSER_BLOCK(return [defaultCriterionNodeParser parseCriterionWithContext:context key:key input:input];)
+                                          initWithValueParser:VALUE_NODE_PARSER_BLOCK { return [defaultValueNodeParser parseValueWithContext:context key:key input:input]; }
+                                          criterionParser:CRITERION_NODE_PARSER_BLOCK { return [defaultCriterionNodeParser parseCriterionWithContext:context key:key input:input]; }
                                           throwOnUnknownCriterion:NO
                                           throwOnUnknownValue:NO];
         rtn = [[WPSPSegmentationDSLParser alloc] initWithParserConfig:parserConfig];
@@ -45,8 +45,8 @@
         defaultValueNodeParser = [WPSPDefaultValueNodeParser new];
         defaultCriterionNodeParser = [WPSPDefaultCriterionNodeParser new];
         WPSPParserConfig *parserConfig = [[WPSPParserConfig alloc]
-                                          initWithValueParser:VALUE_NODE_PARSER_BLOCK(return [defaultValueNodeParser parseValueWithContext:context key:key input:input];)
-                                          criterionParser:CRITERION_NODE_PARSER_BLOCK(return [defaultCriterionNodeParser parseCriterionWithContext:context key:key input:input];)
+                                          initWithValueParser:VALUE_NODE_PARSER_BLOCK { return [defaultValueNodeParser parseValueWithContext:context key:key input:input]; }
+                                          criterionParser:CRITERION_NODE_PARSER_BLOCK { return [defaultCriterionNodeParser parseCriterionWithContext:context key:key input:input]; }
                                           throwOnUnknownCriterion:YES
                                           throwOnUnknownValue:YES];
         rtn = [[WPSPSegmentationDSLParser alloc] initWithParserConfig:parserConfig];

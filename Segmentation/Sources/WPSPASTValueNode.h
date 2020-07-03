@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "WPSPParsingContext.h"
 #import "WPSPASTValueVisitor.h"
+#import "WPSPISO8601Duration.h"
+#import "WPSPGeoLocation.h"
+#import "WPSPGeoBox.h"
+#import "WPSPGeoCircle.h"
+#import "WPSPGeoPolygon.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPSPASTValueNode<__covariant T> : NSObject
@@ -41,6 +47,38 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WPSPStringValueNode : WPSPASTValueNode<NSString *>
 
+@end
+
+@interface WPSPRelativeDateValueNode : WPSPASTValueNode<NSNumber *>
+@property (nonnull, readonly) WPSPISO8601Duration *duration;
+
+- (instancetype) initWithContext:(WPSPParsingContext *)context duration:(WPSPISO8601Duration *)duration;
+
+@end
+
+@interface WPSPDateValueNode : WPSPASTValueNode<NSNumber *>
+
+@end
+
+@interface WPSPDurationValueNode : WPSPASTValueNode<NSNumber *>
+
+- (instancetype) initWithContext:(WPSPParsingContext *)context duration:(WPSPISO8601Duration *)duration;
+
+@end
+
+@interface WPSPGeoLocationValueNode : WPSPASTValueNode<WPSPGeoLocation *>
+
+@end
+
+@interface WPSPGeoBoxValueNode : WPSPASTValueNode<WPSPGeoBox *>
+
+@end
+
+@interface WPSPGeoCircleValueNode : WPSPASTValueNode<WPSPGeoCircle *>
+
+@end
+
+@interface WPSPGeoPolygonValueNode : WPSPASTValueNode<WPSPGeoPolygon *>
 @end
 
 NS_ASSUME_NONNULL_END

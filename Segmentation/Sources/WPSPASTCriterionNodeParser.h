@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef WPSPASTCriterionNode * _Nullable(^WPSPASTCriterionNodeParser)(WPSPParsingContext *, NSString *, id);
 
-#define CRITERION_NODE_PARSER_BLOCK(code) ^WPSPASTCriterionNode * _Nullable (WPSPParsingContext *context, NSString *key, id input) { \
-code \
-}
+#define CRITERION_NODE_PARSER_BLOCK ^WPSPASTCriterionNode * _Nullable (WPSPParsingContext *context, NSString *key, id input)
 
 NS_ASSUME_NONNULL_END
