@@ -34,19 +34,15 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface WPSPNullValueNode : WPSPASTValueNode<NSNull *>
-
 @end
 
 @interface WPSPBooleanValueNode : WPSPASTValueNode<NSNumber *>
-
 @end
 
 @interface WPSPNumberValueNode : WPSPASTValueNode<NSNumber *>
-
 @end
 
 @interface WPSPStringValueNode : WPSPASTValueNode<NSString *>
-
 @end
 
 @interface WPSPRelativeDateValueNode : WPSPASTValueNode<NSNumber *>
@@ -57,7 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface WPSPDateValueNode : WPSPASTValueNode<NSNumber *>
-
 @end
 
 @interface WPSPDurationValueNode : WPSPASTValueNode<NSNumber *>
@@ -67,18 +62,18 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface WPSPGeoLocationValueNode : WPSPASTValueNode<WPSPGeoLocation *>
-
 @end
 
-@interface WPSPGeoBoxValueNode : WPSPASTValueNode<WPSPGeoBox *>
-
+@interface WPSPGeoAbstractAreaValueNode<__covariant T> : WPSPASTValueNode<T>
 @end
 
-@interface WPSPGeoCircleValueNode : WPSPASTValueNode<WPSPGeoCircle *>
-
+@interface WPSPGeoBoxValueNode : WPSPGeoAbstractAreaValueNode<WPSPGeoBox *>
 @end
 
-@interface WPSPGeoPolygonValueNode : WPSPASTValueNode<WPSPGeoPolygon *>
+@interface WPSPGeoCircleValueNode : WPSPGeoAbstractAreaValueNode<WPSPGeoCircle *>
+@end
+
+@interface WPSPGeoPolygonValueNode : WPSPGeoAbstractAreaValueNode<WPSPGeoPolygon *>
 @end
 
 NS_ASSUME_NONNULL_END

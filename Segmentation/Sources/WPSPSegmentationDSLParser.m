@@ -8,9 +8,6 @@
 
 #import "WPSPSegmentationDSLParser.h"
 #import "WPSPExceptions.h"
-#import "WPSPMatchAllCriterionNode.h"
-#import "WPSPAndCriterionNode.h"
-#import "WPSPASTUnknownCriterionNode.h"
 #import "WPJsonUtil.h"
 #import "WPSPDefaultValueNodeParser.h"
 #import "WPSPDefaultCriterionNodeParser.h"

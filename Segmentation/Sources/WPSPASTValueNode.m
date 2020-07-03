@@ -114,6 +114,9 @@
 @implementation WPSPGeoLocationValueNode
 @end
 
+@implementation WPSPGeoAbstractAreaValueNode
+@end
+
 @implementation WPSPGeoBoxValueNode
 @end
 
