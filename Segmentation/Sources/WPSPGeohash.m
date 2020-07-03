@@ -63,8 +63,6 @@
         }
     }
     return [[WPSPGeohash alloc] initWithGeohash:geohash top:maxLat right:maxLon bottom:minLat left:minLon];
-
-    // TODO: write unit tests here.
 }
 
 - (instancetype) initWithGeohash:(NSString *)geohash top:(double)top right:(double)right bottom:(double)bottom left:(double)left {
