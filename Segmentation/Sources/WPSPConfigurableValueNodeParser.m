@@ -42,7 +42,7 @@
     WPSPASTValueNodeParser exactNameParser = self.exactNameParsers[key];
 
     if (exactNameParser) {
-        return [exactNameParser parseValueWithContext:context key:key input:input];
+        return exactNameParser(context, key, input);
     }
     
     for (WPSPASTValueNodeParser parser in self.dynamicNameParsers) {

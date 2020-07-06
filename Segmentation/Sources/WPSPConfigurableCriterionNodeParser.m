@@ -40,11 +40,11 @@
     WPSPASTCriterionNodeParser exactNameParser = self.exactNameParsers[key];
 
     if (exactNameParser) {
-        return [exactNameParser parseCriterionWithContext:context key:key input:input];
+        return exactNameParser(context, key, input);
     }
     
     for (WPSPASTCriterionNodeParser parser in self.dynamicNameParsers) {
-        WPSPASTCriterionNode *parsed = [parser parseCriterionWithContext:context key:key input:input];
+        WPSPASTCriterionNode *parsed = parser(context, key, input);
         if (parsed) return parsed;
     }
     return nil;
