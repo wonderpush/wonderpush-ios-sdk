@@ -108,7 +108,7 @@
     return VALUE_NODE_PARSER_BLOCK {
         if ([WPJsonUtil isBoolNumber:input]) @throw [WPSPBadInputException new];
         if ([input isKindOfClass:NSNumber.class]) {
-            return [[WPSPNumberValueNode alloc] initWithContext:context value:input];
+            return [[WPSPDateValueNode alloc] initWithContext:context value:input];
         }
         if ([input isKindOfClass:NSString.class]) {
             NSString *stringValue = input;
