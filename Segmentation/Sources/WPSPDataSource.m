@@ -10,6 +10,10 @@
 
 @implementation WPSPDataSource
 
+- (instancetype) init {
+    return [self initWithParent:nil];
+}
+
 - (instancetype) initWithParent:(WPSPDataSource *)parent {
     if (self = [super init]) {
         _parent = parent;

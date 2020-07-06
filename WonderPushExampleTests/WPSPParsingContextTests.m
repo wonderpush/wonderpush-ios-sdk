@@ -22,7 +22,6 @@
     WPSPParsingContext *contextRoot = [[WPSPParsingContext alloc] initWithParser:[WPSPSegmentationDSLParser defaultParser] parentContext:nil dataSource:[[WPSPInstallationSource alloc] initWithParent:nil]];
     XCTAssertNil(contextRoot.parentContext);
     XCTAssertTrue([contextRoot.dataSource isKindOfClass:WPSPInstallationSource.class]);
-    
     WPSPParsingContext *contextChild = [contextRoot withDataSource:[[WPSPEventSource alloc] initWithParent:nil]];
     XCTAssertEqual(contextRoot, contextChild.parentContext);
     XCTAssertTrue([contextChild.dataSource isKindOfClass:WPSPEventSource.class]);
