@@ -140,6 +140,19 @@
 
 @implementation WPSPSubscriptionStatusCriterionNode
 
++ (WPSPSubscriptionStatusCriterionNode *)subscriptionStatusCriterionNodeWithContext:(WPSPParsingContext *)context input:(NSString *)input {
+    if ([input isEqualToString:@"optIn"]) {
+        return [[self alloc] initWithContext:context subscriptionStatus:WPSPSubscriptionStatusOptIn];
+    }
+    if ([input isEqualToString:@"optOut"]) {
+        return [[self alloc] initWithContext:context subscriptionStatus:WPSPSubscriptionStatusOptOut];
+    }
+    if ([input isEqualToString:@"softOptOut"]) {
+        return [[self alloc] initWithContext:context subscriptionStatus:WPSPSubscriptionStatusSoftOptOut];
+    }
+    return nil;
+}
+
 - (instancetype)initWithContext:(WPSPParsingContext *)context subscriptionStatus:(WPSPSubscriptionStatus)subscriptionStatus {
     if (self = [super initWithContext:context]) {
         _subscriptionStatus = subscriptionStatus;

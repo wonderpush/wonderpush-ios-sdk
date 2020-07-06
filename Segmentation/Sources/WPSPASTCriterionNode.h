@@ -87,6 +87,8 @@ typedef NS_ENUM(NSInteger, WPSPSubscriptionStatus) {
 @interface WPSPSubscriptionStatusCriterionNode : WPSPASTCriterionNode
 @property (assign, readonly) WPSPSubscriptionStatus subscriptionStatus;
 
++ (WPSPSubscriptionStatusCriterionNode * _Nullable)subscriptionStatusCriterionNodeWithContext:(WPSPParsingContext *)context input:(NSString *)input;
+
 - (instancetype) initWithContext:(WPSPParsingContext *)context
               subscriptionStatus:(WPSPSubscriptionStatus)subscriptionStatus;
 @end
