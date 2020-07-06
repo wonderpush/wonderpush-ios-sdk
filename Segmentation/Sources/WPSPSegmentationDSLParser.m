@@ -64,7 +64,6 @@
 }
 
 - (WPSPASTCriterionNode *)parseCriterionWithContext:(WPSPParsingContext *)context input:(NSDictionary *)input {
-    // TODO: code me
     if (!input) {
         @throw [WPSPBadInputException new]; // Expects an object
     }
