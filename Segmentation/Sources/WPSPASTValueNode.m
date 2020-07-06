@@ -90,9 +90,18 @@
     NSDate *now = [NSDate dateWithTimeIntervalSince1970:([WPUtil getServerDate] / 1000.0)];
     return [NSNumber numberWithDouble:[self.duration applyTo:now].timeIntervalSince1970 * 1000];
 }
+
+- (id)accept:(id<WPSPASTValueVisitor>)visitor {
+    return [visitor visitRelativeDateValueNode:self];
+}
+
 @end
 
 @implementation WPSPDateValueNode
+
+- (id)accept:(id<WPSPASTValueVisitor>)visitor {
+    return [visitor visitDateValueNode:self];
+}
 
 @end
 
@@ -109,19 +118,43 @@
     return [NSNumber numberWithLongLong:(then - now)];
 }
 
+- (id)accept:(id<WPSPASTValueVisitor>)visitor {
+    return [visitor visitDurationValueNode:self];
+}
+
 @end
 
 @implementation WPSPGeoLocationValueNode
+
+- (id)accept:(id<WPSPASTValueVisitor>)visitor {
+    return [visitor visitGeoLocationValueNode:self];
+}
+
 @end
 
 @implementation WPSPGeoAbstractAreaValueNode
 @end
 
 @implementation WPSPGeoBoxValueNode
+
+- (id)accept:(id<WPSPASTValueVisitor>)visitor {
+    return [visitor visitGeoBoxValueNode:self];
+}
+
 @end
 
 @implementation WPSPGeoCircleValueNode
+
+- (id)accept:(id<WPSPASTValueVisitor>)visitor {
+    return [visitor visitGeoCircleValueNode:self];
+}
+
 @end
 
 @implementation WPSPGeoPolygonValueNode
+
+- (id)accept:(id<WPSPASTValueVisitor>)visitor {
+    return [visitor visitGeoPolygonValueNode:self];
+}
+
 @end

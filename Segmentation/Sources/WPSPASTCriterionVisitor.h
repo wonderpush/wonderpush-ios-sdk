@@ -29,9 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol WPSPASTCriterionVisitor <NSObject>
 
+- (id) visitASTUnknownCriterionNode:(WPSPASTUnknownCriterionNode *)node;
 - (id) visitMatchAllCriterionNode:(WPSPMatchAllCriterionNode *)node;
 - (id) visitAndCriterionNode:(WPSPAndCriterionNode *)node;
-- (id) visitASTUnknownCriterionNode:(WPSPASTUnknownCriterionNode *)node;
 - (id) visitOrCriterionNode:(WPSPOrCriterionNode *)node;
 - (id) visitNotCriterionNode:(WPSPNotCriterionNode *)node;
 - (id) visitGeoCriterionNode:(WPSPGeoCriterionNode *)node;

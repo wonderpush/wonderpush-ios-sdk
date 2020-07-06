@@ -13,6 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class WPSPBooleanValueNode;
 @class WPSPNumberValueNode;
 @class WPSPStringValueNode;
+@class WPSPDateValueNode;
+@class WPSPRelativeDateValueNode;
+@class WPSPDurationValueNode;
+@class WPSPGeoLocationValueNode;
+@class WPSPGeoBoxValueNode;
+@class WPSPGeoCircleValueNode;
+@class WPSPGeoPolygonValueNode;
 
 @protocol WPSPASTValueVisitor <NSObject>
 
@@ -21,6 +28,13 @@ NS_ASSUME_NONNULL_BEGIN
 -(id) visitBooleanValueNode:(WPSPBooleanValueNode *)node;
 -(id) visitNumberValueNode:(WPSPNumberValueNode *)node;
 -(id) visitStringValueNode:(WPSPStringValueNode *)node;
+-(id) visitDateValueNode:(WPSPDateValueNode *)node;
+-(id) visitRelativeDateValueNode:(WPSPRelativeDateValueNode *)node;
+-(id) visitDurationValueNode:(WPSPDurationValueNode *)node;
+-(id) visitGeoLocationValueNode:(WPSPGeoLocationValueNode *)node;
+-(id) visitGeoBoxValueNode:(WPSPGeoBoxValueNode *)node;
+-(id) visitGeoCircleValueNode:(WPSPGeoCircleValueNode *)node;
+-(id) visitGeoPolygonValueNode:(WPSPGeoPolygonValueNode *)node;
 
 @end
 
