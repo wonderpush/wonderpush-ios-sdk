@@ -60,22 +60,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WPSPPresenceCriterionNode : WPSPASTCriterionNode
 @property (assign, readonly) BOOL present;
-@property (nonnull, readonly) WPSPASTCriterionNode *sinceDateComparison;
-@property (nonnull, readonly) WPSPASTCriterionNode *elapsedTimeComparison;
+@property (nullable, readonly) WPSPASTCriterionNode *sinceDateComparison;
+@property (nullable, readonly) WPSPASTCriterionNode *elapsedTimeComparison;
 
 - (instancetype) initWithContext:(WPSPParsingContext *)context
                          present:(BOOL)present
-             sinceDateComparison:(WPSPASTCriterionNode *)sinceDateComparison
-           elapsedTimeComparison:(WPSPASTCriterionNode *)elapsedTimeComparison;
+             sinceDateComparison:(WPSPASTCriterionNode * _Nullable)sinceDateComparison
+           elapsedTimeComparison:(WPSPASTCriterionNode * _Nullable)elapsedTimeComparison;
 @end
 
 @interface WPSPGeoCriterionNode : WPSPASTCriterionNode
-@property (nonnull, readonly) WPSPASTCriterionNode *locationComparison;
-@property (nonnull, readonly) WPSPASTCriterionNode *dateComparison;
+@property (nullable, readonly) WPSPASTCriterionNode *locationComparison;
+@property (nullable, readonly) WPSPASTCriterionNode *dateComparison;
 
 - (instancetype) initWithContext:(WPSPParsingContext *)context
-              locationComparison:(WPSPASTCriterionNode *)locationComparison
-                  dateComparison:(WPSPASTCriterionNode *)dateComparison;
+              locationComparison:(WPSPASTCriterionNode * _Nullable)locationComparison
+                  dateComparison:(WPSPASTCriterionNode * _Nullable)dateComparison;
 @end
 
 typedef NS_ENUM(NSInteger, WPSPSubscriptionStatus) {

@@ -143,7 +143,6 @@
                input:[self ensureDictionary:checkedInputValue[@"date"] forKey:[key stringByAppendingString:@".date"]]]
             : nil;
         
-        // FIXME: can geoLocationCriterion be nil ? According to constructor it shouldn't.
         return [[WPSPGeoCriterionNode alloc] initWithContext:context locationComparison:geoLocationCriterion dateComparison:dateCriterion];
     };
 }
