@@ -33,6 +33,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        gregorianCalendar.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
     });
     return gregorianCalendar;
 }

@@ -80,6 +80,7 @@
     ];
     
     NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    gregorianCalendar.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
     for (NSArray *testCase in testCases) {
         
         NSArray<NSNumber *> *durationComponents = testCase[0];
