@@ -309,4 +309,607 @@ static const WPSPSegmentationDSLParser *parser = nil;
         XCTAssertEqualObjects(checkedAst.value.value, expected);
     }
 }
+
+- (void)testParseDate {
+    // it should parse {".field":{"eq":{"date":"P1Y"}}}
+    NSDictionary *input = @{
+        @".field" : @{
+            @"eq": @{
+                @"date": @"P1Y",
+            },
+        },
+    };
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPEqualityCriterionNode.class]);
+    WPSPEqualityCriterionNode *checkedAst = ast;
+    XCTAssertTrue([checkedAst.value isKindOfClass:WPSPRelativeDateValueNode.class]);
+    WPSPRelativeDateValueNode *checkedAstValue = (WPSPRelativeDateValueNode *)checkedAst.value;
+    XCTAssertEqualObjects(checkedAstValue.duration, [[WPSPISO8601Duration alloc] initWithYears:@1 months:@0 weeks:@0 days:@0 hours:@0 minutes:@0 seconds:@0 positive:YES]);
+    
+
+    NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    gregorianCalendar.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    NSDateComponents *dateComponents = [NSDateComponents new];
+    dateComponents.year = 1;
+    NSDate *nextYear = [gregorianCalendar dateByAddingUnit:NSCalendarUnitYear value:1 toDate:[NSDate new] options:0];
+    XCTAssertEqualWithAccuracy(checkedAstValue.value.integerValue, (NSInteger)(nextYear.timeIntervalSince1970 * 1000), 500);
+}
+
+- (void)testAll {
+    // it should parse {".field":{"all":[0,"foo"]}}
+    NSDictionary *input = @{
+        @".field": @{
+            @"all" : @[
+                @0,
+                @"foo",
+            ],
+        },
+    };
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPAllCriterionNode.class]);
+    WPSPAllCriterionNode *checkedAst = ast;
+    XCTAssertEqual(checkedAst.values.count, 2);
+
+    XCTAssertTrue([checkedAst.values[0] isKindOfClass:WPSPNumberValueNode.class]);
+    WPSPNumberValueNode *checkedAstValues0 = (WPSPNumberValueNode *)checkedAst.values[0];
+    XCTAssertEqual(checkedAstValues0.value, @0);
+
+    XCTAssertTrue([checkedAst.values[1] isKindOfClass:WPSPStringValueNode.class]);
+    WPSPStringValueNode *checkedAstValues1 = (WPSPStringValueNode *)checkedAst.values[1];
+    XCTAssertEqual(checkedAstValues1.value, @"foo");
+}
+
+- (void)testAny {
+    // it should parse {".field":{"any":[0,"foo"]}}
+    NSDictionary *input = @{
+        @".field": @{
+            @"any" : @[
+                @0,
+                @"foo",
+            ],
+        },
+    };
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPAnyCriterionNode.class]);
+    WPSPAnyCriterionNode *checkedAst = ast;
+    XCTAssertEqual(checkedAst.values.count, 2);
+
+    XCTAssertTrue([checkedAst.values[0] isKindOfClass:WPSPNumberValueNode.class]);
+    WPSPNumberValueNode *checkedAstValues0 = (WPSPNumberValueNode *)checkedAst.values[0];
+    XCTAssertEqual(checkedAstValues0.value, @0);
+
+    XCTAssertTrue([checkedAst.values[1] isKindOfClass:WPSPStringValueNode.class]);
+    WPSPStringValueNode *checkedAstValues1 = (WPSPStringValueNode *)checkedAst.values[1];
+    XCTAssertEqual(checkedAstValues1.value, @"foo");
+}
+
+- (void)testNot {
+    // it should parse {".field":{"not":{"eq":"foo"}}}
+    NSDictionary *input = @{
+        @".field": @{
+            @"not": @{
+                @"eq": @"foo",
+            },
+        },
+    };
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPNotCriterionNode.class]);
+    WPSPNotCriterionNode *checkedAst = ast;
+    XCTAssertTrue([checkedAst.child isKindOfClass:WPSPEqualityCriterionNode.class]);
+    WPSPEqualityCriterionNode *checkedAstChild = (WPSPEqualityCriterionNode *)checkedAst.child;
+    XCTAssertTrue([checkedAstChild.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedAstChildDataSource = (WPSPFieldSource *)checkedAstChild.context.dataSource;
+    XCTAssertEqualObjects(checkedAstChildDataSource.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild.value isKindOfClass:WPSPStringValueNode.class]);
+    WPSPStringValueNode *checkedAstChildValue = (WPSPStringValueNode *)checkedAstChild.value;
+    XCTAssertEqualObjects(checkedAstChildValue.value, @"foo");
+}
+
+- (void)testAnd {
+    // it should parse {".field":{"and":[{"gt":0},{"lt":1}]}}
+    NSDictionary *input = @{
+        @".field": @{
+            @"and": @[
+                @{
+                    @"gt": @0,
+                },
+                @{
+                    @"lt": @1,
+                },
+            ],
+        },
+    };
+    
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPAndCriterionNode.class]);
+    WPSPAndCriterionNode *checkedAst = ast;
+    XCTAssertEqual(checkedAst.children.count, 2);
+    
+    XCTAssertTrue([checkedAst.children[0] isKindOfClass:WPSPComparisonCriterionNode.class]);
+    WPSPComparisonCriterionNode *checkedAstChild0 = (WPSPComparisonCriterionNode *)checkedAst.children[0];
+    XCTAssertTrue([checkedAstChild0.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertEqual(checkedAstChild0.comparator, WPSPComparatorGt);
+    XCTAssertTrue([checkedAstChild0.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource0 = (WPSPFieldSource *)checkedAstChild0.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource0.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild0.value isKindOfClass:WPSPNumberValueNode.class]);
+    WPSPNumberValueNode *checkedValue0 = (WPSPNumberValueNode *)checkedAstChild0.value;
+    XCTAssertEqualObjects(checkedValue0.value, @0);
+
+    XCTAssertTrue([checkedAst.children[1] isKindOfClass:WPSPComparisonCriterionNode.class]);
+    WPSPComparisonCriterionNode *checkedAstChild1 = (WPSPComparisonCriterionNode *)checkedAst.children[1];
+    XCTAssertTrue([checkedAstChild1.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertEqual(checkedAstChild1.comparator, WPSPComparatorLt);
+    XCTAssertTrue([checkedAstChild1.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource1 = (WPSPFieldSource *)checkedAstChild1.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource1.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild1.value isKindOfClass:WPSPNumberValueNode.class]);
+    WPSPNumberValueNode *checkedValue1 = (WPSPNumberValueNode *)checkedAstChild1.value;
+    XCTAssertEqualObjects(checkedValue1.value, @1);
+}
+
+- (void)testOr {
+    // it should parse {".field":{"or":[{"gt":0},{"lt":1}]}}
+    NSDictionary *input = @{
+        @".field": @{
+            @"or": @[
+                @{
+                    @"gt": @0,
+                },
+                @{
+                    @"lt": @1,
+                },
+            ],
+        },
+    };
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPOrCriterionNode.class]);
+    WPSPOrCriterionNode *checkedAst = ast;
+    XCTAssertEqual(checkedAst.children.count, 2);
+
+    XCTAssertTrue([checkedAst.children[0] isKindOfClass:WPSPComparisonCriterionNode.class]);
+    WPSPComparisonCriterionNode *checkedAstChild0 = (WPSPComparisonCriterionNode *)checkedAst.children[0];
+    XCTAssertTrue([checkedAstChild0.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertEqual(checkedAstChild0.comparator, WPSPComparatorGt);
+    XCTAssertTrue([checkedAstChild0.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource0 = (WPSPFieldSource *)checkedAstChild0.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource0.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild0.value isKindOfClass:WPSPNumberValueNode.class]);
+    WPSPNumberValueNode *checkedValue0 = (WPSPNumberValueNode *)checkedAstChild0.value;
+    XCTAssertEqualObjects(checkedValue0.value, @0);
+
+    XCTAssertTrue([checkedAst.children[1] isKindOfClass:WPSPComparisonCriterionNode.class]);
+    WPSPComparisonCriterionNode *checkedAstChild1 = (WPSPComparisonCriterionNode *)checkedAst.children[1];
+    XCTAssertTrue([checkedAstChild1.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertEqual(checkedAstChild1.comparator, WPSPComparatorLt);
+    XCTAssertTrue([checkedAstChild1.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource1 = (WPSPFieldSource *)checkedAstChild1.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource1.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild1.value isKindOfClass:WPSPNumberValueNode.class]);
+    WPSPNumberValueNode *checkedValue1 = (WPSPNumberValueNode *)checkedAstChild1.value;
+    XCTAssertEqualObjects(checkedValue1.value, @1);
+
+}
+
+- (void)testComparisonOperators {
+    // it should parse {".field":{"%s":"foo"}} with %s one of "gt", "lt", "gte", "lte"
+    for (NSString *comparatorOp in @[@"gt", @"gte", @"lt", @"lte"]) {
+        NSDictionary *input = @{
+            @".field": @{
+                comparatorOp: @"foo",
+            },
+        };
+        id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+        XCTAssertTrue([ast isKindOfClass:WPSPComparisonCriterionNode.class]);
+        WPSPComparisonCriterionNode *checkedAst = ast;
+        XCTAssertEqual(checkedAst.comparator, [WPSPComparisonCriterionNode comparatorWithString:comparatorOp]);
+
+        XCTAssertTrue([checkedAst.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+        XCTAssertTrue([checkedAst.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+        WPSPFieldSource *checkedDataSource = (WPSPFieldSource *)checkedAst.context.dataSource;
+        XCTAssertEqualObjects(checkedDataSource.path.parts, @[@"field"]);
+        XCTAssertTrue([checkedAst.value isKindOfClass:WPSPStringValueNode.class]);
+        WPSPStringValueNode *checkedValue = (WPSPStringValueNode *)checkedAst.value;
+        XCTAssertEqualObjects(checkedValue.value, @"foo");
+    }
+}
+
+- (void)testComparisonRange {
+    // it should parse {".field":{"gt":0,"lt":1}}
+    NSDictionary *input = @{
+        @".field": @{
+            @"gt": @0,
+            @"lt": @1,
+        },
+    };
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPAndCriterionNode.class]);
+    WPSPAndCriterionNode *checkedAst = (WPSPAndCriterionNode *)ast;
+    XCTAssertEqual(checkedAst.children.count, 2);
+
+    XCTAssertTrue([checkedAst.children[0] isKindOfClass:WPSPComparisonCriterionNode.class]);
+    WPSPComparisonCriterionNode *checkedAstChild0 = (WPSPComparisonCriterionNode *)checkedAst.children[0];
+    XCTAssertTrue([checkedAstChild0.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertEqual(checkedAstChild0.comparator, [WPSPComparisonCriterionNode comparatorWithString:@"gt"]);
+    XCTAssertTrue([checkedAstChild0.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource0 = (WPSPFieldSource *)checkedAstChild0.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource0.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild0.value isKindOfClass:WPSPNumberValueNode.class]);
+    WPSPNumberValueNode *checkedValue0 = (WPSPNumberValueNode *)checkedAstChild0.value;
+    XCTAssertEqualObjects(checkedValue0.value, @0);
+
+    XCTAssertTrue([checkedAst.children[1] isKindOfClass:WPSPComparisonCriterionNode.class]);
+    WPSPComparisonCriterionNode *checkedAstChild1 = (WPSPComparisonCriterionNode *)checkedAst.children[1];
+    XCTAssertTrue([checkedAstChild1.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertEqual(checkedAstChild1.comparator, [WPSPComparisonCriterionNode comparatorWithString:@"lt"]);
+    XCTAssertTrue([checkedAstChild1.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource1 = (WPSPFieldSource *)checkedAstChild1.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource1.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild1.value isKindOfClass:WPSPNumberValueNode.class]);
+    WPSPNumberValueNode *checkedValue1 = (WPSPNumberValueNode *)checkedAstChild1.value;
+    XCTAssertEqualObjects(checkedValue1.value, @1);
+}
+
+- (void)testPrefix {
+    // it should parse {".field":{"prefix":"foo"}}
+    NSDictionary *input = @{
+        @".field": @{
+            @"prefix": @"foo",
+        },
+    };
+
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPPrefixCriterionNode.class]);
+    WPSPPrefixCriterionNode *checkedAst = (WPSPPrefixCriterionNode *)ast;
+    XCTAssertTrue([checkedAst.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAst.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+
+    WPSPFieldSource *checkedDataSource = (WPSPFieldSource *)checkedAst.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAst.value isKindOfClass:WPSPStringValueNode.class]);
+    XCTAssertEqualObjects(checkedAst.value.value, @"foo");
+}
+
+- (void)testInsideGeoBox {
+    // it should parse {".field":{"inside":{"geobox":"ezs42"}}}
+    WPSPGeohash *geohash = [WPSPGeohash parse:@"ezs42"];
+    NSDictionary *input = @{
+        @".field": @{
+            @"inside": @{
+                @"geobox": geohash.geohash,
+            },
+        },
+    };
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPInsideCriterionNode.class]);
+    WPSPInsideCriterionNode *checkedAst = (WPSPInsideCriterionNode *)ast;
+
+    XCTAssertTrue([checkedAst.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAst.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource = (WPSPFieldSource *)checkedAst.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource.path.parts, @[@"field"]);
+
+    XCTAssertTrue([checkedAst.value isKindOfClass:WPSPGeoBoxValueNode.class]);
+    XCTAssertTrue([checkedAst.value.value isKindOfClass:WPSPGeoBox.class]);
+    WPSPGeoBox *checkedAstValueValue = (WPSPGeoBox *)checkedAst.value.value;
+    XCTAssertEqual(checkedAstValueValue.top, geohash.top);
+    XCTAssertEqual(checkedAstValueValue.right, geohash.right);
+    XCTAssertEqual(checkedAstValueValue.bottom, geohash.bottom);
+    XCTAssertEqual(checkedAstValueValue.left, geohash.left);
+}
+
+- (void)testInsideGeoCircle {
+    // it should parse {".field":{"inside":{"geocircle":{radius:1,center:{"lat":1,"lon":2}}}}}
+    NSDictionary *input = @{
+        @".field": @{
+            @"inside": @{
+                @"geocircle": @{
+                    @"radius": @1,
+                    @"center": @{
+                        @"lat": @1,
+                        @"lon": @2,
+                    },
+                },
+            },
+        },
+    };
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPInsideCriterionNode.class]);
+    WPSPInsideCriterionNode *checkedAst = (WPSPInsideCriterionNode *)ast;
+    XCTAssertTrue([checkedAst.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAst.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource = (WPSPFieldSource *)checkedAst.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAst.value isKindOfClass:WPSPGeoCircleValueNode.class]);
+    XCTAssertTrue([checkedAst.value.value isKindOfClass:WPSPGeoCircle.class]);
+    WPSPGeoCircle *checkedAstValueValue = (WPSPGeoCircle *)checkedAst.value.value;
+    XCTAssertEqual(checkedAstValueValue.radiusMeters, 1);
+    XCTAssertEqual(checkedAstValueValue.center.lat, 1);
+    XCTAssertEqual(checkedAstValueValue.center.lon, 2);
+}
+
+- (void)testInsideGeoPolygon {
+    // it should parse {".field":{"inside":{"geopolygon":["t",{"lat":0,"lon":0},"v"]}}}
+    NSDictionary *input = @{
+               @".field": @{
+                   @"inside": @{
+                       @"geopolygon": @[
+                           @"t",
+                           @{
+                               @"lat": @0,
+                               @"lon": @0,
+                           },
+                           @"v",
+                       ],
+                   },
+               },
+           };
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPInsideCriterionNode.class]);
+    WPSPInsideCriterionNode *checkedAst = (WPSPInsideCriterionNode *)ast;
+    XCTAssertTrue([checkedAst.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAst.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource = (WPSPFieldSource *)checkedAst.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAst.value isKindOfClass:WPSPGeoPolygonValueNode.class]);
+    XCTAssertTrue([checkedAst.value.value isKindOfClass:WPSPGeoPolygon.class]);
+    WPSPGeoPolygon *checkedAstValueValue = (WPSPGeoPolygon *)checkedAst.value.value;
+    XCTAssertEqual(checkedAstValueValue.points.count, 3);
+    XCTAssertEqualObjects(checkedAstValueValue.points[0], [WPSPGeohash parse:@"t"].toGeoLocation);
+    XCTAssertEqual(checkedAstValueValue.points[1].lat, 0);
+    XCTAssertEqual(checkedAstValueValue.points[1].lon, 0);
+    XCTAssertEqualObjects(checkedAstValueValue.points[2], [WPSPGeohash parse:@"v"].toGeoLocation);
+}
+
+- (void)testPresence {
+    NSArray *testCases = @[
+        @[NSNull.null,  NSNull.null, NSNull.null,],
+        @[@YES,         NSNull.null, NSNull.null,],
+        @[@NO,          NSNull.null, NSNull.null,],
+        @[@YES,         @{ @"gt": @0 }, NSNull.null,],
+        @[@YES,         NSNull.null, @{ @"gt": @0 },],
+        @[@YES,         @{ @"gt": @0, @"lt": @0 }, NSNull.null,],
+        @[@YES,         NSNull.null, @{ @"gt": @0, @"lt": @0 },],
+        @[@YES,         @{ @"gt": @0, @"lt": @0 }, @{ @"gt": @0, @"lt": @0 },],
+    ];
+    for (NSArray *testCase in testCases) {
+        NSMutableDictionary *presence = [NSMutableDictionary new];
+        NSNumber *present = testCase[0];
+        id sinceDate = testCase[1];
+        id elapsedTime = testCase[2];
+        NSDictionary *input = @{
+            @"presence": presence,
+        };
+        if (testCase[0] != NSNull.null) presence[@"present"] = testCase[0];
+        else {
+            XCTAssertThrowsSpecific([parser parse:input dataSource:[WPSPInstallationSource new]], WPSPBadInputException);
+            continue;
+        }
+        if (sinceDate != NSNull.null) presence[@"sinceDate"] = sinceDate;
+        if (elapsedTime != NSNull.null) presence[@"elapsedTime"] = elapsedTime;
+
+
+        id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+        XCTAssertTrue([ast isKindOfClass:WPSPPresenceCriterionNode.class]);
+        WPSPPresenceCriterionNode *checkedAst = ast;
+        XCTAssertTrue([checkedAst.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+        XCTAssertEqual(checkedAst.present, present.boolValue);
+        
+        if (sinceDate == NSNull.null) {
+            XCTAssertNil(checkedAst.sinceDateComparison);
+        } else {
+            if ([sinceDate count] == 1) {
+                XCTAssertTrue([checkedAst.sinceDateComparison isKindOfClass:WPSPComparisonCriterionNode.class]);
+                WPSPComparisonCriterionNode *checkedComparison = (WPSPComparisonCriterionNode *)checkedAst.sinceDateComparison;
+                XCTAssertTrue([checkedComparison.context.dataSource isKindOfClass:WPSPPresenceSinceDateSource.class]);
+                WPSPPresenceSinceDateSource *checkedComparisonContextDataSource = (WPSPPresenceSinceDateSource *)checkedComparison.context.dataSource;
+                XCTAssertEqual(checkedComparisonContextDataSource.present, present.boolValue);
+            } else {
+                XCTAssertTrue([checkedAst.sinceDateComparison isKindOfClass:WPSPAndCriterionNode.class]);
+                XCTAssertEqual(((WPSPAndCriterionNode *)checkedAst.sinceDateComparison).children.count, [sinceDate count]);
+                for (id child in ((WPSPAndCriterionNode *)checkedAst.sinceDateComparison).children) {
+                    XCTAssertTrue([child isKindOfClass:WPSPComparisonCriterionNode.class]);
+                    WPSPComparisonCriterionNode *checkedComparison = (WPSPComparisonCriterionNode *)child;
+                    XCTAssertTrue([checkedComparison.context.dataSource isKindOfClass:WPSPPresenceSinceDateSource.class]);
+                    WPSPPresenceSinceDateSource *checkedComparisonContextDataSource = (WPSPPresenceSinceDateSource *)checkedComparison.context.dataSource;
+                    XCTAssertEqual(checkedComparisonContextDataSource.present, present.boolValue);
+                }
+            }
+        }
+        
+        if (elapsedTime == NSNull.null) {
+            XCTAssertNil(checkedAst.elapsedTimeComparison);
+        } else {
+            if ([elapsedTime count] == 1) {
+                XCTAssertTrue([checkedAst.elapsedTimeComparison isKindOfClass:WPSPComparisonCriterionNode.class]);
+                WPSPComparisonCriterionNode *checkedComparison = (WPSPComparisonCriterionNode *)checkedAst.elapsedTimeComparison;
+                XCTAssertTrue([checkedComparison.context.dataSource isKindOfClass:WPSPPresenceElapsedTimeSource.class]);
+                WPSPPresenceElapsedTimeSource *checkedComparisonContextDataSource = (WPSPPresenceElapsedTimeSource *)checkedComparison.context.dataSource;
+                XCTAssertEqual(checkedComparisonContextDataSource.present, present.boolValue);
+            } else {
+                XCTAssertTrue([checkedAst.elapsedTimeComparison isKindOfClass:WPSPAndCriterionNode.class]);
+                XCTAssertEqual(((WPSPAndCriterionNode *)checkedAst.elapsedTimeComparison).children.count, [elapsedTime count]);
+                for (id child in ((WPSPAndCriterionNode *)checkedAst.elapsedTimeComparison).children) {
+                    XCTAssertTrue([child isKindOfClass:WPSPComparisonCriterionNode.class]);
+                    WPSPComparisonCriterionNode *checkedComparison = (WPSPComparisonCriterionNode *)child;
+                    XCTAssertTrue([checkedComparison.context.dataSource isKindOfClass:WPSPPresenceElapsedTimeSource.class]);
+                    WPSPPresenceElapsedTimeSource *checkedComparisonContextDataSource = (WPSPPresenceElapsedTimeSource *)checkedComparison.context.dataSource;
+                    XCTAssertEqual(checkedComparisonContextDataSource.present, present.boolValue);
+                }
+            }
+        }
+    }
+}
+
+- (void)testPresentSinceDateOr {
+    // it should parse {"presence":{"present":true,"sinceDate":{"or":[{"gt":0,"lt":1},{"gt":10,"lt":11}]}}}
+    NSDictionary *input = @{
+        @"presence": @{
+            @"present": @YES,
+            @"sinceDate": @{
+                @"or": @[
+                    @{
+                        @"gt": @0,
+                        @"lt": @1,
+                    },
+                    @{
+                        @"gt": @10,
+                        @"lt": @11,
+                    },
+                ],
+            },
+        },
+    };
+    XCTAssertTrue([[parser parse:input dataSource:WPSPInstallationSource.new] isKindOfClass:WPSPPresenceCriterionNode.class]);
+}
+
+- (void)testPresenceWrongDataSource {
+    // it should not parse {"%s":{"presence":{"present":true}}} where %s is "user" or "event"
+    for (NSString *objectType in @[@"user", @"event"]) {
+        NSDictionary *input = @{
+            objectType: @{
+                    @"presence": @{
+                            @"present": @YES,
+                    }
+            }
+        };
+        XCTAssertThrowsSpecific([parser parse:input dataSource:WPSPInstallationSource.new], WPSPBadInputException);
+    }
+}
+
+- (void)testInside {
+    // it should parse {"geo":{"location":%p,"date":%p}}
+    NSArray *testCases = @[
+        @[NSNull.null, NSNull.null,],
+        @[@{ @"inside": @{ @"geobox": @"u" } }, NSNull.null],
+        @[NSNull.null, @{ @"gt": @{ @"date": @"-PT1H" } }],
+        @[@{ @"inside": @{ @"geobox": @"u" } }, @{ @"gt": @{ @"date": @"-PT1H" } }],
+    ];
+    
+    for (NSArray *testCase in testCases) {
+        NSMutableDictionary *geoDictionary = [NSMutableDictionary new];
+        NSDictionary *input = @{
+            @"geo" : geoDictionary,
+        };
+        id location = testCase[0];
+        id date = testCase[1];
+        if (location != NSNull.null) geoDictionary[@"location"] = location;
+        if (date != NSNull.null) geoDictionary[@"date"] = date;
+        id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+        XCTAssertTrue([ast isKindOfClass:WPSPGeoCriterionNode.class]);
+        WPSPGeoCriterionNode *checkedAst = ast;
+        XCTAssertTrue([checkedAst.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+        if (location == NSNull.null) {
+            XCTAssertNil(checkedAst.locationComparison);
+        } else {
+            XCTAssertTrue([checkedAst.locationComparison isKindOfClass:WPSPInsideCriterionNode.class]);
+            WPSPInsideCriterionNode *checkedComparison = (WPSPInsideCriterionNode *)checkedAst.locationComparison;
+            XCTAssertTrue([checkedComparison.context.dataSource isKindOfClass:WPSPGeoLocationSource.class]);
+        }
+        if (date == NSNull.null) {
+            XCTAssertNil(checkedAst.dateComparison);
+        } else {
+            XCTAssertTrue([checkedAst.dateComparison isKindOfClass:WPSPComparisonCriterionNode.class]);
+            WPSPComparisonCriterionNode *checkedComparison = (WPSPComparisonCriterionNode *)checkedAst.dateComparison;
+            XCTAssertTrue([checkedComparison.context.dataSource isKindOfClass:WPSPGeoDateSource.class]);
+        }
+
+    }
+}
+- (void)testSimpleGeo {
+    // it should parse {"geo":{}}
+    NSDictionary *input = @{
+        @"geo": @{},
+    };
+    XCTAssertTrue([[parser parse:input dataSource:WPSPInstallationSource.new] isKindOfClass:WPSPGeoCriterionNode.class]);
+
+}
+
+- (void)testComplexGeo {
+    NSDictionary *input = @{
+        @"geo": @{
+            @"location": @{
+                @"and": @[
+                    @{
+                        @"inside": @{
+                            @"geobox": @"u",
+                        },
+                    },
+                    @{
+                        @"inside": @{
+                            @"geocircle": @{
+                                @"center": @"u",
+                                @"radius": @1,
+                            },
+                        },
+                    },
+                ],
+            },
+            @"date": @{
+                @"or": @[
+                    @{
+                        @"gt": @1,
+                    },
+                    @{
+                        @"lt": @0,
+                    },
+                ],
+            },
+        },
+    };
+    XCTAssertTrue([[parser parse:input dataSource:WPSPInstallationSource.new] isKindOfClass:WPSPGeoCriterionNode.class]);
+}
+
+- (void) testGeoWrongDataSource {
+    // it should not parse {"%s":{"geo":{}}} where %s is "user" or "event"
+    for (NSString *objectType in @[@"user", @"event"]) {
+        NSDictionary *input = @{
+            objectType: @{
+                    @"geo": @{}
+            }
+        };
+        XCTAssertThrowsSpecific([parser parse:input dataSource:WPSPInstallationSource.new], WPSPBadInputException);
+    }
+
+}
+
+- (void) testFieldSources {
+    // it should parse {"%s":{".field":{"eq":"foo"}}} from a %o context (#%#)
+    NSArray *testCases = @[
+        @[@"user",         WPSPUserSource.new,         NSNull.null],
+        @[@"user",         WPSPInstallationSource.new, WPSPUserSource.class],
+        @[@"user",         WPSPEventSource.new,        NSNull.null],
+        @[@"installation", WPSPUserSource.new,         WPSPInstallationSource.class],
+        @[@"installation", WPSPInstallationSource.new, NSNull.null],
+        @[@"installation", WPSPEventSource.new,        WPSPInstallationSource.class],
+        @[@"event",        WPSPUserSource.new,         NSNull.null],
+        @[@"event",        WPSPInstallationSource.new, WPSPEventSource.class],
+        @[@"event",        WPSPEventSource.new,        NSNull.null],
+    ];
+    
+    for (NSArray *testCase in testCases) {
+        NSString *joinType = testCase[0];
+        WPSPDataSource *startDataSource = testCase[1];
+        Class expectedDataSourceClass = testCase[2];
+        
+        NSDictionary *input = @{
+            joinType: @{
+                @".field": @{
+                    @"eq": @"foo",
+                },
+            },
+        };
+        if (expectedDataSourceClass == NSNull.null) {
+            XCTAssertThrowsSpecific([parser parse:input dataSource:startDataSource], WPSPBadInputException);
+            continue;
+        }
+        id ast = [parser parse:input dataSource:startDataSource];
+        XCTAssertTrue([ast isKindOfClass:WPSPJoinCriterionNode.class]);
+        WPSPJoinCriterionNode *checkedAst = ast;
+        XCTAssertNotNil(checkedAst.context.parentContext);
+        XCTAssertEqual(checkedAst.context.parentContext.dataSource, startDataSource);
+        XCTAssert([checkedAst.context.dataSource isKindOfClass:expectedDataSourceClass]);
+        XCTAssert([checkedAst.context.dataSource.rootDataSource isKindOfClass:expectedDataSourceClass]);
+    }
+}
 @end
