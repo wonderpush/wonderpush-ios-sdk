@@ -64,7 +64,7 @@
 }
 
 - (WPSPASTCriterionNode *)parseCriterionWithContext:(WPSPParsingContext *)context input:(NSDictionary *)input {
-    if (!input) {
+    if (!input || ![input isKindOfClass:NSDictionary.class]) {
         @throw [WPSPBadInputException new]; // Expects an object
     }
     if (input.count == 0) {

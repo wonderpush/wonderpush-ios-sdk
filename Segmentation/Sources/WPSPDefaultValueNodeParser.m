@@ -12,6 +12,7 @@
 #import "WPSPGeohash.h"
 #import "WPSPGeoCircle.h"
 #import "WPSPGeoPolygon.h"
+#import "WPJsonUtil.h"
 
 @implementation WPSPDefaultValueNodeParser
 
@@ -105,6 +106,7 @@
 
 + (WPSPASTValueNodeParser) parseDate {
     return VALUE_NODE_PARSER_BLOCK {
+        if ([WPJsonUtil isBoolNumber:input]) @throw [WPSPBadInputException new];
         if ([input isKindOfClass:NSNumber.class]) {
             return [[WPSPNumberValueNode alloc] initWithContext:context value:input];
         }
@@ -165,6 +167,7 @@
 
 + (WPSPASTValueNodeParser) parseDuration {
     return VALUE_NODE_PARSER_BLOCK {
+        if ([WPJsonUtil isBoolNumber:input]) @throw [WPSPBadInputException new];
         if ([input isKindOfClass:NSNumber.class]) return [[WPSPDurationValueNode alloc] initWithContext:context value:input];
         
         if ([input isKindOfClass:NSString.class]) {
