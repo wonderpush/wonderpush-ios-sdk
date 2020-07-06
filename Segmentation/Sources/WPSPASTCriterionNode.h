@@ -128,6 +128,11 @@ typedef NS_ENUM(NSInteger, WPSPComparator) {
 @property (assign, readonly) WPSPComparator comparator;
 @property (nonnull, readonly) WPSPASTValueNode *value;
 
+/**
+ Returns a WPSPComparator when fed a valid string ("gt", "gte", "lt", "lte"), or -1 otherwise.
+ */
++ (WPSPComparator) comparatorWithString:(NSString *)input;
+
 - (instancetype) initWithContext:(WPSPParsingContext *)context
                       comparator:(WPSPComparator)comparator
                            value:(WPSPASTValueNode *)value;

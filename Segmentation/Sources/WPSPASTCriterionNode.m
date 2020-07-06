@@ -228,6 +228,14 @@
 
 @implementation WPSPComparisonCriterionNode
 
++ (WPSPComparator)comparatorWithString:(NSString *)input {
+    if ([input isEqualToString:@"gt"]) return WPSPComparatorGt;
+    if ([input isEqualToString:@"gte"]) return WPSPComparatorGte;
+    if ([input isEqualToString:@"lt"]) return WPSPComparatorLt;
+    if ([input isEqualToString:@"lte"]) return WPSPComparatorLte;
+    return -1;
+}
+
 - (instancetype)initWithContext:(WPSPParsingContext *)context comparator:(WPSPComparator)comparator value:(WPSPASTValueNode *)value {
     if (self = [super initWithContext:context]) {
         _comparator = comparator;
