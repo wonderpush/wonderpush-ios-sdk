@@ -868,7 +868,11 @@ static WPConfiguration *sharedConfiguration = nil;
         if ([[event valueForKey:@"type"] isEqualToString:type]) continue;
         [newTrackedEvents addObject:event];
     }
-    [newTrackedEvents addObject:eventParams];
+    NSMutableDictionary *eventToStore = [NSMutableDictionary dictionaryWithDictionary:eventParams];
+    // FIXME: remove me when the server sends a different DSL to clients and the database
+    eventToStore[@"collapsing"] = @"last";
+    [newTrackedEvents addObject:eventToStore];
+
     [self _setNSDictionaryAsJSON:@{ @"lastForType": newTrackedEvents } forKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
 }
 

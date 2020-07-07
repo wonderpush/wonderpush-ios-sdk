@@ -32,8 +32,7 @@
 
 + (instancetype)forCurrentUser {
     NSDictionary *installationData = [WPJsonSyncInstallation forCurrentUser].sdkState;
-    // TODO: code me
-    NSArray <NSDictionary *> *events = @[];
+    NSArray <NSDictionary *> *events = WPConfiguration.sharedConfiguration.trackedEvents;
     WPConfiguration *configuration = WPConfiguration.sharedConfiguration;
     NSDate *lastAppOpenDate = configuration.lastAppOpenDate;
     WPSPSegmenterData *data = [[WPSPSegmenterData alloc]
