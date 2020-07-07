@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, nonnull, readonly) WPIAMMessageRenderData *renderData;
 
 @property(nonatomic, nullable, readonly) id payload;
+@property(nonatomic, nullable, readonly) NSDictionary *segmentDefinition;
 
 // metadata data that does not affect the rendering content/effect directly
 @property(nonatomic, readonly) NSTimeInterval startTime;
@@ -46,7 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
                            payload:(NSDictionary *)payload
                          startTime:(NSTimeInterval)startTime
                            endTime:(NSTimeInterval)endTime
-                 triggerDefinition:(NSArray<WPIAMDisplayTriggerDefinition *> *)renderTriggers;
+                 triggerDefinition:(NSArray<WPIAMDisplayTriggerDefinition *> *)renderTriggers
+                 segmentDefinition:(NSDictionary *)segmentDefinition;
 
 /**
  * Create a test message definition.
