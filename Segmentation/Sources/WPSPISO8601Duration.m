@@ -101,7 +101,7 @@
     NSCalendar *calendar = self.class.calendar;
 
     NSInteger sign = self.positive ? 1 : -1;
-    NSTimeInterval remainder = 0;
+    double remainder = 0;
     
     NSInteger yearsInt = (self.years.doubleValue + remainder);
     date = [calendar dateByAddingUnit:NSCalendarUnitYear value:sign * yearsInt toDate:date options:0];
