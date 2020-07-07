@@ -20,6 +20,7 @@
 #import "WPIAMFetchResponseParser.h"
 #import "WPIAMMessageClientCache.h"
 #import "WonderPush_private.h"
+#import "WPSPSegmenter.h"
 
 @interface WPIAMMessageClientCache ()
 
@@ -151,13 +152,26 @@
     // message fetch
     NSSet<NSString *> *impressionSet =
     [NSSet setWithArray:[self.bookKeeper getCampaignIdsFromImpressions]];
+    WPSPSegmenter *segmenter = [[WPSPSegmenter alloc] initWithData:[WPSPSegmenterData forCurrentUser]];
     
     @synchronized(self) {
         for (WPIAMMessageDefinition *next in self.regularMessages) {
             // message being active and message not impressed yet
-            if ([next messageHasStarted] && ![next messageHasExpired] &&
-                ![impressionSet containsObject:next.renderData.reportingData.campaignId] &&
-                [next messageRenderedOnTrigger:trigger]) {
+            if ([next messageHasStarted] && ![next messageHasExpired] // Time check
+                && ![impressionSet containsObject:next.renderData.reportingData.campaignId] // Not impressed check
+                && [next messageRenderedOnTrigger:trigger] // Trigger check
+                ) {
+                if (next.segmentDefinition) {
+                    @try {
+                        WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:next.segmentDefinition];
+                        if (![segmenter parsedSegmentMatchesInstallation:parsedSegment]) continue; // Segmentation check
+                    } @catch (NSException *exception) {
+                        WPLog(@"Invalid segment: %@", next.segmentDefinition);
+                        // Let's not use this in-app with a buggy segment
+                        continue;
+                    }
+                    
+                }
                 return next;
             }
         }
