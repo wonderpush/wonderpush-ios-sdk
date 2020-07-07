@@ -87,6 +87,11 @@ typedef NS_ENUM(NSInteger, WPSPSubscriptionStatus) {
 @interface WPSPSubscriptionStatusCriterionNode : WPSPASTCriterionNode
 @property (assign, readonly) WPSPSubscriptionStatus subscriptionStatus;
 
+/**
+ Returns a WPSPSubscriptionStatus when fed a valid string ("optIn", "optOut", "softOptOut"), or -1 otherwise.
+ */
++ (WPSPSubscriptionStatus) subscriptionStatusWithString:(NSString *)input;
+
 + (WPSPSubscriptionStatusCriterionNode * _Nullable)subscriptionStatusCriterionNodeWithContext:(WPSPParsingContext *)context input:(NSString *)input;
 
 - (instancetype) initWithContext:(WPSPParsingContext *)context
