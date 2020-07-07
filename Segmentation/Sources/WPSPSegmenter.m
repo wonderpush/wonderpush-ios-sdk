@@ -222,7 +222,7 @@
             return @NO;
         }
     }
-    if (_debug) WPLog(@"[%@] return false for %@", NSStringFromSelector(_cmd), dataSourceValues);
+    if (_debug) WPLog(@"[%@] return true for %@", NSStringFromSelector(_cmd), dataSourceValues);
     return @YES;
 }
 
@@ -247,7 +247,7 @@
         }
     }
     if (_debug) WPLog(@"[%@] return false for %@", NSStringFromSelector(_cmd), dataSourceValues);
-    return @YES;
+    return @NO;
 }
 
 NSComparisonResult compareObjectOrThrow(id a, id b) {
