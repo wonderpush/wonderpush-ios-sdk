@@ -46,7 +46,7 @@
     }
     
     for (WPSPASTValueNodeParser parser in self.dynamicNameParsers) {
-        WPSPASTValueNode *parsed = [parser parseValueWithContext:context key:key input:input];
+        WPSPASTValueNode *parsed = parser(context, key, input);
         if (parsed) return parsed;
     }
     return nil;
