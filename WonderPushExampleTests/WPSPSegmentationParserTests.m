@@ -14,6 +14,17 @@
 #import "WPSPGeohash.h"
 #import "WPSPGeoCircle.h"
 
+@interface AlienDataSource : WPSPDataSource
+@end
+@implementation AlienDataSource
+- (id)accept:(id<WPSPDataSourceVisitor>)visitor {
+    return nil;
+}
+- (NSString *)name {
+    return @"alien";
+}
+@end
+
 @interface WPSPSegmentationParserTests : XCTestCase
 
 @end
@@ -105,10 +116,10 @@ static const WPSPSegmentationDSLParser *parser = nil;
 
 - (void)testWithOrWithoutDataSource {
     NSArray *cases = @[
-        @{@"gt": @0}, // only available with a data source
-        @{ @".field": @{ @"not": @{ @"presence": @{ @"present": @YES } } } }, // only available without a data source
-        @{ @".field": @{ @"not": @{ @"geo": @{ } } } }, // only available without a data source
-        @{ @".field": @{ @"not": @{ @"event": @{} } } }, // only available without a data source
+        @{@"gt": @0}, // only available with a field data source
+        @{ @".field": @{ @"not": @{ @"presence": @{ @"present": @YES } } } }, // only available directly under an installation data source
+        @{ @".field": @{ @"not": @{ @"geo": @{ } } } }, // only available directly under an installation data source
+        @{ @".field": @{ @"not": @{ @"lastActivityDate": @{ @"gte": @0 } } } }, // only available directly under an installation data source
     ];
     
     for (NSDictionary *input in cases) {
@@ -661,6 +672,33 @@ static const WPSPSegmentationDSLParser *parser = nil;
     XCTAssertEqualObjects(checkedAstValueValue.points[2], [WPSPGeohash parse:@"v"].toGeoLocation);
 }
 
+- (void)testLastActivityThrow {
+    // it should parse {"lastActivityDate":{}}
+    NSDictionary *input = @{
+        @"lastActivityDate": @{},
+    };
+    // Missing data comparison. We've moved into comparing some field but we're not giving any comparison to perform.
+    XCTAssertThrowsSpecific([parser parse:input dataSource:[WPSPInstallationSource new]], WPSPBadInputException);
+}
+
+- (void)testLastActivity {
+    // it should parse {"lastActivityDate":{"gte":{"date":"-P1D"}}}
+    NSDictionary *input = @{
+       @"lastActivityDate": @{
+           @"gte": @{
+               @"date": @"-P1D",
+            },
+        },
+    };
+    
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPLastActivityDateCriterionNode.class]);
+    WPSPLastActivityDateCriterionNode *checkedAst = ast;
+    XCTAssertTrue([checkedAst.context.dataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAst.dateComparison.context.dataSource isKindOfClass:WPSPLastActivityDateSource.class]);
+    XCTAssertTrue([checkedAst.dateComparison isKindOfClass:WPSPComparisonCriterionNode.class]);
+}
+
 - (void)testPresence {
     NSArray *testCases = @[
         @[NSNull.null,  NSNull.null, NSNull.null,],
@@ -873,24 +911,52 @@ static const WPSPSegmentationDSLParser *parser = nil;
 
 }
 
+- (void) testSubscriptionStatus {
+    for (NSString *status in @[@"optIn", @"optOut", @"softOptOut"]) {
+        NSDictionary *input = @{
+            @"subscriptionStatus": status,
+        };
+        
+        id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+        XCTAssertTrue([ast isKindOfClass:WPSPSubscriptionStatusCriterionNode.class]);
+
+        WPSPSubscriptionStatusCriterionNode *checkedAst = ast;
+        XCTAssertEqual(checkedAst.subscriptionStatus, [WPSPSubscriptionStatusCriterionNode subscriptionStatusWithString:status]);
+    }
+}
+
+- (void) testBadSubscriptionStatus {
+    NSArray *testCases = @[
+        @{ @"subscriptionStatus": @"foo" },
+        @{ @"event": @{ @"subscriptionStatus": @"optIn" } },
+    ];
+    for (NSDictionary *input in testCases) {
+        XCTAssertThrowsSpecific([parser parse:input dataSource:WPSPInstallationSource.new], WPSPBadInputException);
+        
+    }
+}
+
 - (void) testFieldSources {
     // it should parse {"%s":{".field":{"eq":"foo"}}} from a %o context (#%#)
     NSArray *testCases = @[
-        @[@"user",         WPSPUserSource.new,         NSNull.null],
-        @[@"user",         WPSPInstallationSource.new, WPSPUserSource.class],
-        @[@"user",         WPSPEventSource.new,        NSNull.null],
-        @[@"installation", WPSPUserSource.new,         WPSPInstallationSource.class],
-        @[@"installation", WPSPInstallationSource.new, NSNull.null],
-        @[@"installation", WPSPEventSource.new,        WPSPInstallationSource.class],
-        @[@"event",        WPSPUserSource.new,         NSNull.null],
-        @[@"event",        WPSPInstallationSource.new, WPSPEventSource.class],
-        @[@"event",        WPSPEventSource.new,        NSNull.null],
+        @[@"user",        WPSPUserSource.new,         @NO,  WPSPUserSource.class,          WPSPUserSource.class],
+        @[@"user",        WPSPInstallationSource.new, @YES, WPSPUserSource.class,          WPSPUserSource.class],
+        @[@"user",        WPSPEventSource.new,        @YES, WPSPInstallationSource.class,  WPSPUserSource.class],
+        @[@"installation",WPSPUserSource.new,         @YES, WPSPInstallationSource.class,  WPSPInstallationSource.class],
+        @[@"installation",WPSPInstallationSource.new, @NO,  WPSPInstallationSource.class,  WPSPInstallationSource.class],
+        @[@"installation",WPSPEventSource.new,        @YES, WPSPInstallationSource.class,  WPSPInstallationSource.class],
+        @[@"event",       WPSPUserSource.new,         @YES, WPSPInstallationSource.class,  WPSPEventSource.class],
+        @[@"event",       WPSPInstallationSource.new, @YES, WPSPEventSource.class,         WPSPEventSource.class],
+        @[@"event",       WPSPEventSource.new,        @NO,  WPSPEventSource.class,         WPSPEventSource.class],
     ];
     
     for (NSArray *testCase in testCases) {
         NSString *joinType = testCase[0];
         WPSPDataSource *startDataSource = testCase[1];
-        Class expectedDataSourceClass = testCase[2];
+        BOOL expectedsJoinCriterion = [testCase[2] boolValue];
+        Class expectedDataSource = testCase[3];
+        Class expectedChildDataSource = testCase[4];
+        
         
         NSDictionary *input = @{
             joinType: @{
@@ -899,18 +965,78 @@ static const WPSPSegmentationDSLParser *parser = nil;
                 },
             },
         };
-        if (expectedDataSourceClass == NSNull.null) {
+        if (expectedDataSource == NSNull.null) {
             XCTAssertThrowsSpecific([parser parse:input dataSource:startDataSource], WPSPBadInputException);
             continue;
         }
+        
         id ast = [parser parse:input dataSource:startDataSource];
-        XCTAssertTrue([ast isKindOfClass:WPSPJoinCriterionNode.class]);
-        WPSPJoinCriterionNode *checkedAst = ast;
-        XCTAssertNotNil(checkedAst.context.parentContext);
-        XCTAssertEqual(checkedAst.context.parentContext.dataSource, startDataSource);
-        XCTAssert([checkedAst.context.dataSource isKindOfClass:expectedDataSourceClass]);
-        XCTAssert([checkedAst.context.dataSource.rootDataSource isKindOfClass:expectedDataSourceClass]);
+        if (!expectedsJoinCriterion) {
+            XCTAssertTrue([ast isKindOfClass:WPSPASTCriterionNode.class]);
+            WPSPASTCriterionNode *checkedAst = ast;
+            XCTAssertTrue([checkedAst.context.dataSource.rootDataSource isKindOfClass:expectedDataSource]);
+        } else {
+            XCTAssertTrue([ast isKindOfClass:WPSPJoinCriterionNode.class]);
+            WPSPJoinCriterionNode *checkedAst = ast;
+            XCTAssertNotNil(checkedAst.context.parentContext);
+            XCTAssertEqual(checkedAst.context.parentContext.dataSource, startDataSource);
+            XCTAssertTrue([checkedAst.context.dataSource isKindOfClass:expectedDataSource]);
+            XCTAssertTrue([checkedAst.child.context.dataSource.rootDataSource isKindOfClass:expectedChildDataSource]);
+        }
     }
+}
+
+- (void)testAlienDataSource {
+    // it should refuse %j on alien data source
+    NSArray *testCases = @[
+        @[@{@"user": @{} }],
+        @[@{@"installation": @{} }],
+        @[@{@"event": @{} }],
+        @[@{@"lastActivityDate": @{@"gte": @0 } }],
+        @[@{@"presence": @{} }],
+        @[@{@"geo": @{} }],
+    ];
+    for (id input in testCases) {
+        AlienDataSource *startDataSource = [[AlienDataSource alloc] initWithParent:nil];
+        XCTAssertThrowsSpecific([parser parse:input dataSource:startDataSource], WPSPBadInputException);
+    }
+}
+
+- (void)testRewind {
+    // it should rewind field path for {".foo":{"installation":{".bar":{"eq":"bar"}}}}
+    NSDictionary *input = @{
+        @".foo": @{
+           @"eq": @"foo",
+            @"installation": @{
+                @".bar": @{
+                   @"eq": @"bar",
+                },
+            },
+        }
+    };
+    
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPAndCriterionNode.class]);
+    WPSPAndCriterionNode *checkedAst = (WPSPAndCriterionNode *)ast;
+    XCTAssertEqual(checkedAst.children.count, 2);
+    XCTAssertTrue([checkedAst.children[0] isKindOfClass:WPSPEqualityCriterionNode.class]);
+    WPSPEqualityCriterionNode *checkedAstChild0 = (WPSPEqualityCriterionNode *)checkedAst.children[0];
+    XCTAssertTrue([checkedAstChild0.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAstChild0.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource0 = (WPSPFieldSource *)checkedAstChild0.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource0.path.parts, @[@"foo"]);
+    XCTAssertTrue([checkedAstChild0.value isKindOfClass:WPSPStringValueNode.class]);
+    WPSPStringValueNode *checkedValue0 = (WPSPStringValueNode *)checkedAstChild0.value;
+    XCTAssertEqualObjects(checkedValue0.value, @"foo");
+    XCTAssertTrue([checkedAst.children[1] isKindOfClass:WPSPEqualityCriterionNode.class]);
+    WPSPEqualityCriterionNode *checkedAstChild1 = (WPSPEqualityCriterionNode *)checkedAst.children[1];
+    XCTAssertTrue([checkedAstChild1.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAstChild1.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource1 = (WPSPFieldSource *)checkedAstChild1.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource1.path.parts, @[@"bar"]);
+    XCTAssertTrue([checkedAstChild1.value isKindOfClass:WPSPStringValueNode.class]);
+    WPSPStringValueNode *checkedValue1 = (WPSPStringValueNode *)checkedAstChild1.value;
+    XCTAssertEqualObjects(checkedValue1.value, @"bar");
 }
 
 - (void)testNotEqual {

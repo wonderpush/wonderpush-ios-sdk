@@ -177,6 +177,7 @@
 		99ED541824B33A2700EECDE0 /* WPSPDataSourceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99ED541724B33A2700EECDE0 /* WPSPDataSourceTests.m */; };
 		99ED541A24B33DFB00EECDE0 /* WPSPGeoBoxTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99ED541924B33DFB00EECDE0 /* WPSPGeoBoxTests.m */; };
 		99ED541C24B340F600EECDE0 /* WPSPSegmentationParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99ED541B24B340F600EECDE0 /* WPSPSegmentationParserTests.m */; };
+		99ED541E24B466D100EECDE0 /* WPSPParserConfigTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99ED541D24B466D100EECDE0 /* WPSPParserConfigTests.m */; };
 		99EE9ACC24AF5BBB00EC2A28 /* WPSPGeohashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EE9ACB24AF5BBB00EC2A28 /* WPSPGeohashTests.m */; };
 		99EF833823F4452C00B9B287 /* WPInAppMessageDisplayStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99EF82BA23F4452C00B9B287 /* WPInAppMessageDisplayStoryboard.storyboard */; };
 		99EF833923F4452C00B9B287 /* close-with-transparency@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 99EF82BB23F4452C00B9B287 /* close-with-transparency@2x.png */; };
@@ -486,6 +487,7 @@
 		99ED541724B33A2700EECDE0 /* WPSPDataSourceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPDataSourceTests.m; sourceTree = "<group>"; };
 		99ED541924B33DFB00EECDE0 /* WPSPGeoBoxTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPGeoBoxTests.m; sourceTree = "<group>"; };
 		99ED541B24B340F600EECDE0 /* WPSPSegmentationParserTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmentationParserTests.m; sourceTree = "<group>"; };
+		99ED541D24B466D100EECDE0 /* WPSPParserConfigTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPParserConfigTests.m; sourceTree = "<group>"; };
 		99EE9ACB24AF5BBB00EC2A28 /* WPSPGeohashTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPGeohashTests.m; sourceTree = "<group>"; };
 		99EF82BA23F4452C00B9B287 /* WPInAppMessageDisplayStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = WPInAppMessageDisplayStoryboard.storyboard; sourceTree = "<group>"; };
 		99EF82BB23F4452C00B9B287 /* close-with-transparency@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close-with-transparency@2x.png"; sourceTree = "<group>"; };
@@ -709,6 +711,7 @@
 				99ED541724B33A2700EECDE0 /* WPSPDataSourceTests.m */,
 				99ED541924B33DFB00EECDE0 /* WPSPGeoBoxTests.m */,
 				99ED541B24B340F600EECDE0 /* WPSPSegmentationParserTests.m */,
+				99ED541D24B466D100EECDE0 /* WPSPParserConfigTests.m */,
 			);
 			path = WonderPushExampleTests;
 			sourceTree = "<group>";
@@ -1600,6 +1603,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99ED541E24B466D100EECDE0 /* WPSPParserConfigTests.m in Sources */,
 				99ED541C24B340F600EECDE0 /* WPSPSegmentationParserTests.m in Sources */,
 				99ED541824B33A2700EECDE0 /* WPSPDataSourceTests.m in Sources */,
 				99ED541A24B33DFB00EECDE0 /* WPSPGeoBoxTests.m in Sources */,
