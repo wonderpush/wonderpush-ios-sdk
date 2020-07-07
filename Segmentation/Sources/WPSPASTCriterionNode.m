@@ -92,7 +92,7 @@
 
 @implementation WPSPLastActivityDateCriterionNode
 
-- (instancetype)initWithContext:(WPSPParsingContext *)context dateComparison:(WPSPASTCriterionNode *)dateComparison {
+- (instancetype)initWithContext:(WPSPParsingContext *)context dateComparison:(WPSPASTCriterionNode * _Nullable)dateComparison {
     if (self = [super initWithContext:context]) {
         _dateComparison = dateComparison;
     }

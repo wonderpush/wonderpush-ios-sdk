@@ -53,9 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface WPSPLastActivityDateCriterionNode : WPSPASTCriterionNode
-@property (nonnull, readonly) WPSPASTCriterionNode *dateComparison;
+@property (nullable, readonly) WPSPASTCriterionNode *dateComparison;
 
-- (instancetype) initWithContext:(WPSPParsingContext *)context dateComparison:(WPSPASTCriterionNode *)child;
+- (instancetype) initWithContext:(WPSPParsingContext *)context dateComparison:(WPSPASTCriterionNode * _Nullable)child;
 @end
 
 @interface WPSPPresenceCriterionNode : WPSPASTCriterionNode
