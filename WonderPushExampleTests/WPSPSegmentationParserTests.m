@@ -912,4 +912,125 @@ static const WPSPSegmentationDSLParser *parser = nil;
         XCTAssert([checkedAst.context.dataSource.rootDataSource isKindOfClass:expectedDataSourceClass]);
     }
 }
+
+- (void)testNotEqual {
+    // it should parse {"not":{".field":{"eq":"foo"}}}
+    NSDictionary *input = @{
+        @"not": @{
+            @".field": @{
+               @"eq": @"foo",
+            },
+        },
+    };
+    
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPNotCriterionNode.class]);
+    WPSPNotCriterionNode *checkedAst = (WPSPNotCriterionNode *)ast;
+    XCTAssertTrue([checkedAst.child isKindOfClass:WPSPEqualityCriterionNode.class]);
+    WPSPEqualityCriterionNode *checkedAstChild = (WPSPEqualityCriterionNode *)checkedAst.child;
+    XCTAssertTrue([checkedAstChild.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAstChild.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource = (WPSPFieldSource *)checkedAstChild.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild.value isKindOfClass:WPSPStringValueNode.class]);
+    WPSPStringValueNode *checkedValue = (WPSPStringValueNode *)checkedAstChild.value;
+    XCTAssertEqualObjects(checkedValue.value, @"foo");
+}
+
+- (void)testAndEqual {
+    // it should parse {"and":[{".field":{"eq":"foo"}},{".field":{"eq":"bar"}}]}
+    NSDictionary *input = @{
+        @"and": @[
+            @{ @".field": @{@"eq": @"foo" } },
+            @{ @".field": @{@"eq": @"bar" } },
+        ],
+    };
+    
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPAndCriterionNode.class]);
+    WPSPAndCriterionNode *checkedAst = (WPSPAndCriterionNode *)ast;
+    XCTAssertEqual(checkedAst.children.count, 2);
+    
+    XCTAssertTrue([checkedAst.children[0] isKindOfClass:WPSPEqualityCriterionNode.class]);
+    WPSPEqualityCriterionNode *checkedAstChild0 = (WPSPEqualityCriterionNode *)checkedAst.children[0];
+    XCTAssertTrue([checkedAstChild0.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAstChild0.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource0 = (WPSPFieldSource *)checkedAstChild0.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource0.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild0.value isKindOfClass:WPSPStringValueNode.class]);
+    WPSPStringValueNode *checkedValue0 = (WPSPStringValueNode *)checkedAstChild0.value;
+    XCTAssertEqualObjects(checkedValue0.value, @"foo");
+
+    XCTAssertTrue([checkedAst.children[1] isKindOfClass:WPSPEqualityCriterionNode.class]);
+    WPSPEqualityCriterionNode *checkedAstChild1 = (WPSPEqualityCriterionNode *)checkedAst.children[1];
+    XCTAssertTrue([checkedAstChild1.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+    XCTAssertTrue([checkedAstChild1.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+    WPSPFieldSource *checkedDataSource1 = (WPSPFieldSource *)checkedAstChild1.context.dataSource;
+    XCTAssertEqualObjects(checkedDataSource1.path.parts, @[@"field"]);
+    XCTAssertTrue([checkedAstChild1.value isKindOfClass:WPSPStringValueNode.class]);
+    WPSPStringValueNode *checkedValue1 = (WPSPStringValueNode *)checkedAstChild1.value;
+    XCTAssertEqualObjects(checkedValue1.value, @"bar");
+}
+
+- (void)testAndMultipleFields {
+    // it should parse {".fieldFoo":{"eq":"foo"},".fieldBar":{"eq":"bar"}}
+    NSDictionary *input = @{
+        @".fieldFoo": @{@"eq": @"foo" },
+        @".fieldBar": @{@"eq": @"bar" },
+    };
+    
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPAndCriterionNode.class]);
+    WPSPAndCriterionNode *checkedAst = (WPSPAndCriterionNode *)ast;
+    XCTAssertEqual(checkedAst.children.count, 2);
+    
+    // We can't make an assumption on the order of the keys in a dictionary in objective-c
+    for (NSInteger i = 0; i < 2; i++) {
+        XCTAssertTrue([checkedAst.children[i] isKindOfClass:WPSPEqualityCriterionNode.class]);
+        WPSPEqualityCriterionNode *checkedAstChild = (WPSPEqualityCriterionNode *)checkedAst.children[i];
+        XCTAssertTrue([checkedAstChild.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+        XCTAssertTrue([checkedAstChild.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+        WPSPFieldSource *checkedDataSource = (WPSPFieldSource *)checkedAstChild.context.dataSource;
+        XCTAssertTrue(
+                      [checkedDataSource.path.parts isEqualToArray:@[@"fieldBar"]]
+                      || [checkedDataSource.path.parts isEqualToArray:@[@"fieldFoo"]]
+                      );
+        BOOL isFoo = [checkedDataSource.path.parts isEqualToArray:@[@"fieldFoo"]];
+        XCTAssertTrue([checkedAstChild.value isKindOfClass:WPSPStringValueNode.class]);
+        WPSPStringValueNode *checkedValue = (WPSPStringValueNode *)checkedAstChild.value;
+        XCTAssertEqualObjects(checkedValue.value, isFoo ? @"foo" : @"bar");
+    }
+}
+- (void)testOrMultipleFields {
+    // it should parse {"or":[{".field":{"eq":"foo"}},{".field":{"eq":"bar"}}]}
+    NSDictionary *input = @{
+        @"or": @[
+            @{ @".field": @{@"eq": @"foo" } },
+            @{ @".field": @{@"eq": @"bar" } },
+        ],
+    };
+    
+    id ast = [parser parse:input dataSource:WPSPInstallationSource.new];
+    XCTAssertTrue([ast isKindOfClass:WPSPOrCriterionNode.class]);
+    WPSPOrCriterionNode *checkedAst = (WPSPOrCriterionNode *)ast;
+    XCTAssertEqual(checkedAst.children.count, 2);
+    
+    // We can't make an assumption on the order of the keys in a dictionary in objective-c
+    for (NSInteger i = 0; i < 2; i++) {
+        XCTAssertTrue([checkedAst.children[i] isKindOfClass:WPSPEqualityCriterionNode.class]);
+        WPSPEqualityCriterionNode *checkedAstChild = (WPSPEqualityCriterionNode *)checkedAst.children[i];
+        XCTAssertTrue([checkedAstChild.context.dataSource.rootDataSource isKindOfClass:WPSPInstallationSource.class]);
+        XCTAssertTrue([checkedAstChild.context.dataSource isKindOfClass:WPSPFieldSource.class]);
+        WPSPFieldSource *checkedDataSource = (WPSPFieldSource *)checkedAstChild.context.dataSource;
+        XCTAssertEqualObjects(checkedDataSource.path.parts, @[@"field"]);
+        XCTAssertTrue([checkedAstChild.value isKindOfClass:WPSPStringValueNode.class]);
+        WPSPStringValueNode *checkedValue = (WPSPStringValueNode *)checkedAstChild.value;
+        XCTAssertTrue(
+                      [checkedValue.value isEqualToString:@"foo"]
+                      || [checkedValue.value isEqualToString:@"bar"]
+                      );
+    }
+}
+
+
 @end
