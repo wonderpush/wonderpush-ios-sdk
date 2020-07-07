@@ -23,6 +23,7 @@
 #define USER_DEFAULTS_DEVICE_TOKEN_ASSOCIATED_TO_USER_ID_KEY @"__wonderpush_device_token_associated_to_user_id"
 #define USER_DEFAULTS_CACHED_DEVICE_TOKEN_ACCESS_TOKEN_KEY @"__wonderpush_cachedDeviceTokenAccessToken"
 #define USER_DEFAULTS_CACHED_DEVICE_TOKEN_DATE @"_wonderpush_cachedDeviceTokenDate"
+#define USER_DEFAULTS_TRACKED_EVENTS_KEY @"__wonderpush_tracked_events"
 
 #define USER_DEFAULTS_PER_USER_ARCHIVE_KEY @"__wonderpush_per_user_archive"
 #define USER_DEFAULTS_ACCESS_TOKEN_KEY @"__wonderpush_access_token"
@@ -158,4 +159,9 @@
 - (NSString *) getAccessTokenForUserId:(NSString *)userId;
 
 - (void) clearStorageKeepUserConsent:(BOOL)keepUserConsent keepDeviceId:(BOOL)keepDeviceId;
+
+- (void) rememberTrackedEvent:(NSDictionary *)eventParams;
+
+- (NSArray *) trackedEvents;
+
 @end
