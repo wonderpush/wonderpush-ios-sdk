@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, readonly) WPSPSegmenterPresenceInfo *presenceInfo;
 @property (nonatomic, assign, readonly) long long lastAppOpenDate;
 
++ (instancetype)forCurrentUser;
 - (instancetype)initWithInstallation:(NSDictionary *)installation allEvents:(NSArray<NSDictionary *> *)allEvents presenceInfo:(WPSPSegmenterPresenceInfo * _Nullable)presenceInfo lastAppOpenDate:(long long)lastAppOpenDate;
 
 @end

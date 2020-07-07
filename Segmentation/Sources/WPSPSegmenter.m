@@ -12,6 +12,8 @@
 #import "WPLog.h"
 #import "WPUtil.h"
 #import "WPJsonUtil.h"
+#import "WPJsonSyncInstallation.h"
+#import "WPConfiguration.h"
 
 @implementation WPSPSegmenterPresenceInfo
 
@@ -27,6 +29,20 @@
 @end
 
 @implementation WPSPSegmenterData
+
++ (instancetype)forCurrentUser {
+    NSDictionary *installationData = [WPJsonSyncInstallation forCurrentUser].sdkState;
+    // TODO: code me
+    NSArray <NSDictionary *> *events = @[];
+    WPConfiguration *configuration = WPConfiguration.sharedConfiguration;
+    NSDate *lastAppOpenDate = configuration.lastAppOpenDate;
+    WPSPSegmenterData *data = [[WPSPSegmenterData alloc]
+                               initWithInstallation:installationData
+                               allEvents:events
+                               presenceInfo:nil // Presence not available on iOS
+                               lastAppOpenDate:(long long)(lastAppOpenDate.timeIntervalSince1970 * 1000)];
+    return data;
+}
 
 - (instancetype)initWithInstallation:(NSDictionary *)installation allEvents:(NSArray<NSDictionary *> *)allEvents presenceInfo:(WPSPSegmenterPresenceInfo * _Nullable)presenceInfo lastAppOpenDate:(long long)lastAppOpenDate {
     if (self = [super init]) {
