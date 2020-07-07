@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WPSPDefaultValueNodeParser : WPSPConfigurableValueNodeParser
 
++ (NSDate * _Nullable) parseAbsoluteDate:(NSString *)input;
+
 @end
 
 NS_ASSUME_NONNULL_END
