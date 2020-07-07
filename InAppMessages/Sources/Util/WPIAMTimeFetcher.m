@@ -19,6 +19,6 @@
 
 @implementation WPIAMTimerWithNSDate
 - (NSTimeInterval)currentTimestampInSeconds {
-    return [WPUtil getServerDate];
+    return [WPUtil getServerDate] / 1000.0;
 }
 @end
