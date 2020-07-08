@@ -28,4 +28,6 @@
 
 + (id) ensureJSONEncodable:(id)data;
 
++ (BOOL) isBoolNumber:(NSNumber *)num;
+
 @end

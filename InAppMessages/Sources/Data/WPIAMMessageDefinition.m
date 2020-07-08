@@ -35,13 +35,15 @@
                            payload:(NSDictionary *)payload
                          startTime:(NSTimeInterval)startTime
                            endTime:(NSTimeInterval)endTime
-                 triggerDefinition:(NSArray<WPIAMDisplayTriggerDefinition *> *)renderTriggers {
+                 triggerDefinition:(NSArray<WPIAMDisplayTriggerDefinition *> *)renderTriggers
+                 segmentDefinition:(NSDictionary *)segmentDefinition {
     if (self = [super init]) {
         _renderData = renderData;
         _renderTriggers = renderTriggers;
         _startTime = startTime;
         _endTime = endTime;
         _isTestMessage = NO;
+        _segmentDefinition = segmentDefinition;
         _payload = [payload isKindOfClass:NSDictionary.class] ? payload : [NSDictionary new];
     }
     return self;

@@ -82,7 +82,7 @@ static WPConfiguration *sharedConfiguration = nil;
         NSError *error = NULL;
         NSData *data = [NSJSONSerialization dataWithJSONObject:value options:kNilOptions error:&error];
         if (error) WPLog(@"WPConfiguration: Error while serializing %@: %@", key, error);
-        [defaults setValue:data forKeyPath:key];
+        else [defaults setValue:data forKeyPath:key];
     } else {
         [defaults removeObjectForKey:key];
     }
@@ -856,6 +856,30 @@ static WPConfiguration *sharedConfiguration = nil;
     _justOpenedNotification = nil;
 }
 
+- (void)rememberTrackedEvent:(NSDictionary *)eventParams {
+    NSString *type = eventParams[@"type"];
+    if (!type) return;
 
+    NSArray *trackedEvents = [self trackedEvents];
+    NSMutableArray *newTrackedEvents = [NSMutableArray new];
+    for (id event in trackedEvents) {
+        // Filter out events of the given type
+        // We only keep one copy per event type
+        if ([[event valueForKey:@"type"] isEqualToString:type]) continue;
+        [newTrackedEvents addObject:event];
+    }
+    NSMutableDictionary *eventToStore = [NSMutableDictionary dictionaryWithDictionary:eventParams];
+    // FIXME: remove me when the server sends a different DSL to clients and the database
+    eventToStore[@"collapsing"] = @"last";
+    [newTrackedEvents addObject:eventToStore];
+
+    [self _setNSDictionaryAsJSON:@{ @"lastForType": newTrackedEvents } forKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
+}
+
+- (NSArray *)trackedEvents {
+    NSDictionary *stored = [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
+    NSArray *rtn = stored ? stored[@"lastForType"] : @[];
+    return rtn ? rtn : @[];
+}
 
 @end

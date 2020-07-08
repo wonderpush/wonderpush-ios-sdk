@@ -119,6 +119,12 @@
                   campaignNode);
             return nil;
         }
+        id segmentNode = campaignNode[@"segment"];
+        if (segmentNode && ![segmentNode isKindOfClass:NSDictionary.class]) {
+            WPLog(@"Invalid segment %@", segmentNode);
+            return nil;
+        }
+        
         id notificationsNode = campaignNode[@"notifications"];
         if (![notificationsNode isKindOfClass:[NSArray class]] || [notificationsNode count] <= 0) {
             WPLog(
@@ -341,7 +347,8 @@
                                                               payload:([payload isKindOfClass:NSDictionary.class] ? payload : [NSDictionary new])
                                                             startTime:startTimeInSeconds
                                                               endTime:endTimeInSeconds
-                                                    triggerDefinition:triggersDefinition];
+                                                    triggerDefinition:triggersDefinition
+                                                    segmentDefinition:segmentNode];
         }
     } @catch (NSException *e) {
         WPLog(

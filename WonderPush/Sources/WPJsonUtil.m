@@ -19,6 +19,14 @@
 
 @implementation WPJsonUtil
 
++ (BOOL) isBoolNumber:(NSNumber *)num
+{
+    // https://stackoverflow.com/a/30223989/12046205
+    CFTypeID boolID = CFBooleanGetTypeID(); // the type ID of CFBoolean
+    CFTypeID numID = CFGetTypeID((__bridge CFTypeRef)(num)); // the type ID of num
+    return numID == boolID;
+}
+
 + (NSDictionary *)merge:(NSDictionary *)base with:(NSDictionary *)diff
 {
     return [self merge:base with:diff nullFieldRemoves:YES];

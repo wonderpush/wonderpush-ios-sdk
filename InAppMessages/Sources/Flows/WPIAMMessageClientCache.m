@@ -20,6 +20,7 @@
 #import "WPIAMFetchResponseParser.h"
 #import "WPIAMMessageClientCache.h"
 #import "WonderPush_private.h"
+#import "WPSPSegmenter.h"
 
 @interface WPIAMMessageClientCache ()
 
@@ -146,43 +147,43 @@
 }
 
 - (nullable WPIAMMessageDefinition *)nextMessageForTrigger:(WPIAMRenderTrigger)trigger {
-    // search from the start to end in the list (which implies the display priority) for the
-    // first match (some messages in the cache may not be eligible for the current display
-    // message fetch
-    NSSet<NSString *> *impressionSet =
-    [NSSet setWithArray:[self.bookKeeper getCampaignIdsFromImpressions]];
-    
-    @synchronized(self) {
-        for (WPIAMMessageDefinition *next in self.regularMessages) {
-            // message being active and message not impressed yet
-            if ([next messageHasStarted] && ![next messageHasExpired] &&
-                ![impressionSet containsObject:next.renderData.reportingData.campaignId] &&
-                [next messageRenderedOnTrigger:trigger]) {
-                return next;
-            }
-        }
-    }
-    return nil;
+    return [self nextMsgMatchingCondition:^(WPIAMMessageDefinition *next) {
+        return [next messageRenderedOnTrigger:trigger];
+    }];
 }
 
 - (nullable WPIAMMessageDefinition *)nextOnEventDisplayMsg:(NSString *)eventName {
-    WPLogDebug(
-                @"Inside nextOnEventDisplay for checking contextual trigger match");
     if (![self.wonderpushEventsToWatch containsObject:eventName]) {
         return nil;
     }
-    
-    WPLogDebug(
-                @"There could be a potential message match for analytics event %@", eventName);
-    NSSet<NSString *> *impressionSet =
-    [NSSet setWithArray:[self.bookKeeper getCampaignIdsFromImpressions]];
+    return [self nextMsgMatchingCondition:^(WPIAMMessageDefinition *next) {
+        return [next messageRenderedOnWonderPushEvent:eventName];
+    }];
+}
+
+- (nullable WPIAMMessageDefinition *)nextMsgMatchingCondition:(BOOL(^)(WPIAMMessageDefinition *))condition {
+    NSSet<NSString *> *impressionSet = [NSSet setWithArray:[self.bookKeeper getCampaignIdsFromImpressions]];
+    WPSPSegmenter *segmenter = [[WPSPSegmenter alloc] initWithData:[WPSPSegmenterData forCurrentUser]];
     @synchronized(self) {
+        // search from the start to end in the list (which implies the display priority) for the
+        // first match (some messages in the cache may not be eligible for the current display
+        // message fetch
         for (WPIAMMessageDefinition *next in self.regularMessages) {
             // message being active and message not impressed yet and the contextual trigger condition
             // match
-            if ([next messageHasStarted] && ![next messageHasExpired] &&
-                ![impressionSet containsObject:next.renderData.reportingData.campaignId] &&
-                [next messageRenderedOnWonderPushEvent:eventName]) {
+            if ([next messageHasStarted] && ![next messageHasExpired]
+                && ![impressionSet containsObject:next.renderData.reportingData.campaignId]
+                && condition(next)) {
+                if (next.segmentDefinition) {
+                    @try {
+                        WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:next.segmentDefinition];
+                        if (![segmenter parsedSegmentMatchesInstallation:parsedSegment]) continue; // Segmentation check
+                    } @catch (NSException *exception) {
+                        WPLog(@"Invalid segment: %@", next.segmentDefinition);
+                        // Let's not use this in-app with a buggy segment
+                        continue;
+                    }
+                }
                 return next;
             }
         }

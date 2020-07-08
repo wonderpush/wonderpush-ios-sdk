@@ -114,6 +114,9 @@
             params[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
                                     @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
         }
+
+        [WPConfiguration.sharedConfiguration rememberTrackedEvent:params];
+
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:WPEventFiredNotification object:nil userInfo:@{
                 WPEventFiredNotificationEventTypeKey : type,
