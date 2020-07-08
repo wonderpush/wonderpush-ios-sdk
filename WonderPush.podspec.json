@@ -42,6 +42,7 @@
       ],
       "source_files": [
         "WonderPush/Sources/*.{m,h}",
+        "Segmentation/Sources/*.{m,h}",
         "InAppMessages/Sources/*.{m,h}",
         "InAppMessages/Sources/**/*.{m,h}"
       ],
@@ -53,13 +54,6 @@
           "WonderPush/Resources/*.{lproj,storyboard}"
         ]
       }
-    },
-    {
-      "name": "Extension",
-      "source_files": [
-        "WonderPush/Sources/WPNotificationServiceExtension.{m,h}",
-        "WonderPush/Sources/WPLog.*"
-      ]
     }
   ]
 }
