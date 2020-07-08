@@ -137,15 +137,6 @@
     NSInteger nanosecondsInt = round(remainder);
     date = [calendar dateByAddingUnit:NSCalendarUnitNanosecond value:sign * nanosecondsInt toDate:date options:0];
     return date;
-    /**
-     int secondsInt = (int) (this.seconds + remainder);
-     rtn.add(Calendar.SECOND, sign * secondsInt);
-     remainder = this.seconds + remainder - secondsInt;
-     remainder *= 1000;
-     int milliSecondsInt = (int) (0 + remainder);
-     rtn.add(Calendar.MILLISECOND, sign * milliSecondsInt);
-     return rtn.getTimeInMillis();
-     */
 }
 
 @end

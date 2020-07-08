@@ -11,6 +11,7 @@
 #import "WPSPDefaultValueNodeParser.h"
 #import "WPLog.h"
 #import "WPUtil.h"
+#import "WPNSUtil.h"
 #import "WPJsonUtil.h"
 #import "WPJsonSyncInstallation.h"
 #import "WPConfiguration.h"
@@ -336,8 +337,22 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
     }
     BOOL result = NO;
     for (id dataSourceValue in dataSourceValues) {
-        if (!dataSourceValue) continue;
-        result = [actualValue isEqual:dataSourceValue];
+        if (!dataSourceValue || [dataSourceValue isKindOfClass:NSNull.class]) continue;
+        if (([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue]) || ([dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue])) {
+            if ([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue] && [dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue]) {
+                result = ((NSNumber *)actualValue).boolValue == ((NSNumber *)dataSourceValue).boolValue;
+            } else {
+                result = NO;
+            }
+        } else if ([actualValue isKindOfClass:NSNumber.class]) {
+            if ([dataSourceValue isKindOfClass:NSNumber.class]) {
+                result = [actualValue isEqual:dataSourceValue];
+            } else {
+                result = NO;
+            }
+        } else {
+            result = [actualValue isEqual:dataSourceValue];
+        }
         if (result) break;
     }
     if (_debug) WPLog(@"[%@] return %@ because %@ %@ %@", NSStringFromSelector(_cmd), result ? @"true" : @"false", dataSourceValues, result ? @"==" : @"!=", actualValue);
@@ -423,9 +438,9 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
 }
 
 - (nonnull id)visitSubscriptionStatusCriterionNode:(nonnull WPSPSubscriptionStatusCriterionNode *)node {
-    NSString *pushTokenData = self.data.installation[@"pushToken"][@"data"];
+    NSString *pushTokenData = [WPNSUtil stringForKey:@"data" inDictionary:[WPNSUtil dictionaryForKey:@"pushToken" inDictionary:self.data.installation]];
     BOOL hasPushToken = [pushTokenData isKindOfClass:NSString.class] && [(NSString *)pushTokenData length] > 0;
-    NSString *preferencesSubscriptionStatus = self.data.installation[@"preferences"][@"subscriptionStatus"];
+    NSString *preferencesSubscriptionStatus = [WPNSUtil stringForKey:@"subscriptionStatus" inDictionary:[WPNSUtil dictionaryForKey:@"preferences" inDictionary:self.data.installation]];
     WPSPSubscriptionStatus actualStatus;
     if (!hasPushToken) {
         actualStatus = WPSPSubscriptionStatusOptOut;

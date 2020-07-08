@@ -272,7 +272,7 @@ static const WPSPSegmentationDSLParser *parser = nil;
         @[@{ @"date": @"2015-10-21T16:29:00-07:00" }, WPSPDateValueNode.class, @1445470140000],
         // Durations
         @[@{ @"duration": @42 }, WPSPDurationValueNode.class, @42],
-        @[@{ @"duration": @"P1W2DT3H4M5.6S" }, WPSPDurationValueNode.class, @(((((7 * 1 + 2) * 24 + 3) * 60 + 4) * 60 + 5.6) * 1000)],
+        @[@{ @"duration": @"P1W2DT3H4M5.6S" }, WPSPDurationValueNode.class, @(((((7 * 1 + 2) * 24 + 3) * 60 + 4) * 60 + 5.6) * 1000)], // this test sometimes fails with a 1ms difference
         @[@{ @"duration": @"1.5 ns" }, WPSPDurationValueNode.class, @0.0000015],
         @[@{ @"duration": @"1.5 us" }, WPSPDurationValueNode.class, @0.0015],
         @[@{ @"duration": @"1.5 ms" }, WPSPDurationValueNode.class, @1.5],
