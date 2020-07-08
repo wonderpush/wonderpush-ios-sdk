@@ -77,7 +77,7 @@ id parseJson(NSString *input) {
     return [[WPSPSegmenterData alloc] initWithInstallation:installation allEvents:data.allEvents presenceInfo:data.presenceInfo lastAppOpenDate:data.lastAppOpenDate];
 }
 
-- (void) testItShouldMatchAll {
+- (void) testItShouldMatchMatchAll {
     WPSPSegmenter *s = [[WPSPSegmenter alloc] initWithData:emptyData];
     WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{}];
     XCTAssertTrue([s parsedSegmentMatchesInstallation:parsedSegment]);
@@ -87,6 +87,7 @@ id parseJson(NSString *input) {
     WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"eq": NSNull.null } }];
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": NSNull.null }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @[] }]] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ NSNull.null, NSNull.null] })]] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
@@ -258,7 +259,7 @@ id parseJson(NSString *input) {
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @0, @"", @YES ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
 }
 
-- (void) testItShouldMatchFieldcustomDateFooEqNumber {
+- (void) testItShouldMatchFieldCustomDateFooEqNumber {
     WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".custom.date_foo": @{ @"eq": @1577836800000 } }];
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"custom": @{ @"date_foo": NSNull.null } }]] parsedSegmentMatchesInstallation:parsedSegment]);
@@ -279,7 +280,7 @@ id parseJson(NSString *input) {
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"custom": @{ @"date_foo": @"2020Z" } }]] parsedSegmentMatchesInstallation:parsedSegment]);
 }
 
-- (void) testItShouldMatchFieldcustomDateFooEqString {
+- (void) testItShouldMatchFieldCustomDateFooEqDateString {
     WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".custom.date_foo": @{ @"eq": @{ @"date": @"2020-01-01T00:00:00.000Z" } } }];
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"custom": @{ @"date_foo": NSNull.null } }]] parsedSegmentMatchesInstallation:parsedSegment]);
@@ -409,6 +410,26 @@ id parseJson(NSString *input) {
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"mz" }]] parsedSegmentMatchesInstallation:parsedSegment]);
 }
 
+- (void) testItShouldMatchFieldFooComparisonMixed {
+    WPSPASTCriterionNode *parsedSegment;
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"lt": @0 } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"lte": @0 } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"gt": @0 } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"gte": @0 } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+}
+
 - (void) testItShouldMatchFieldFooComparisonBooleans {
     WPSPASTCriterionNode *parsedSegment;
 
@@ -475,6 +496,11 @@ id parseJson(NSString *input) {
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[[emptyData withInstallation:@{ @"foo": @"foo" }] withNewerEvent:@{ @"type": @"nope" }]] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[[emptyData withInstallation:@{ @"foo": @"foo" }] withNewerEvent:@{ @"type": @"test" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+}
+
+- (void) testItShouldMatchUser {
+    WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @"user": @{ } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
 }
 
 - (void) testItShouldMatchAnd {
@@ -633,13 +659,140 @@ id parseJson(NSString *input) {
 }
 
 - (void) testItShouldMatchPrefix {
-    WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"prefix": @"fo" } }];
+    WPSPASTCriterionNode *parsedSegment;
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"prefix": @"fo" } }];
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"fo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"f" }]] parsedSegmentMatchesInstallation:parsedSegment]);
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"FOO" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"prefix": @"fo" } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+}
+
+- (void) testItShouldMatchAny {
+    WPSPASTCriterionNode *parsedSegment;
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"any": @[] } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"any": @[ @1 ] } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @NO }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @1 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1 ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @"foo" ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1, @"foo" ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"any": @[ @1, @"foo" ] } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": NSNull.null }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @NO }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @1 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1 ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @"foo" ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1, @"foo" ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:(@{ @".foo": @{ @"any": @[ @1, NSNull.null ] } })];
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": NSNull.null }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @NO }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @1 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @[] }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1 ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, NSNull.null ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1, NSNull.null ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"any": @[ NSNull.null ] } }];
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": NSNull.null }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @NO }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @1 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @[] }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1 ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, NSNull.null ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1, NSNull.null ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+}
+
+- (void) testItShouldMatchAll {
+    WPSPASTCriterionNode *parsedSegment;
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"all": @[] } }];
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"all": @[ @1 ] } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @NO }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @1 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1 ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @"foo" ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1, @"foo" ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"all": @[ @1, @"foo" ] } }];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": NSNull.null }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @NO }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @1 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1 ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @"foo" ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1, @"foo" ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:(@{ @".foo": @{ @"all": @[ @1, NSNull.null ] } })];
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": NSNull.null }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @NO }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @1 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @[] }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1 ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, NSNull.null ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1, NSNull.null ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+
+    parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"all": @[ NSNull.null ] } }];
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"bar" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @"foo" }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": NSNull.null }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @NO }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @0 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @1 }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"foo": @[] }]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1 ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, NSNull.null ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:(@{ @"foo": @[ @"bar", @NO, @1, NSNull.null ] })]] parsedSegmentMatchesInstallation:parsedSegment]);
 }
 
 @end
