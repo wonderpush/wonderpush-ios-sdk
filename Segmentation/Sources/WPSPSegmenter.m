@@ -407,7 +407,7 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
     BOOL result = NO;
     for (id dataSourceValue in dataSourceValues) {
         if (![dataSourceValue isKindOfClass:NSString.class]) {
-            WPLog(@"[%@] value %@ is not a string", NSStringFromSelector(_cmd), actualValue);
+            WPLog(@"[%@] value %@ is not a string", NSStringFromSelector(_cmd), dataSourceValue);
             continue;
         }
         result = [((NSString *)dataSourceValue) hasPrefix:actualValue];
