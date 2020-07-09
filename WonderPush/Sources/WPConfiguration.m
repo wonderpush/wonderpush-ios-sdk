@@ -74,7 +74,39 @@ static WPConfiguration *sharedConfiguration = nil;
     return nil;
 }
 
+- (NSArray *) _getNSArrayFromJSONForKey:(NSString *)key
+{
+    id rawValue = [[NSUserDefaults standardUserDefaults] valueForKey:key];
+    if (!rawValue) return nil;
+    if ([rawValue isKindOfClass:[NSArray class]]) {
+        return (NSArray *)rawValue;
+    } else if ([rawValue isKindOfClass:[NSData class]]) {
+        NSError *error = NULL;
+        NSArray *value = [NSJSONSerialization JSONObjectWithData:(NSData *)rawValue options:kNilOptions error:&error];
+        if (error) WPLog(@"WPConfiguration: Error while deserializing %@: %@", key, error);
+        return value;
+    }
+    WPLog(@"WPConfiguration: Expected an NSArray of JSON NSData but got: (%@) %@, for key %@", [rawValue class], rawValue, key);
+    return nil;
+}
+
 - (void) _setNSDictionaryAsJSON:(NSDictionary *)value forKey:(NSString *)key
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (value) {
+        NSError *error = NULL;
+        NSData *data = [NSJSONSerialization dataWithJSONObject:value options:kNilOptions error:&error];
+        if (error) WPLog(@"WPConfiguration: Error while serializing %@: %@", key, error);
+        else [defaults setValue:data forKeyPath:key];
+    } else {
+        [defaults removeObjectForKey:key];
+    }
+
+    [defaults synchronize];
+}
+
+- (void) _setNSArrayAsJSON:(NSArray *)value forKey:(NSString *)key
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
@@ -216,9 +248,19 @@ static WPConfiguration *sharedConfiguration = nil;
     return value ?: [NSNull null];
 }
 
+- (id) _NSArrayToJSON:(NSArray *)value
+{
+    return value ?: [NSNull null];
+}
+
 - (NSDictionary *) _JSONToNSDictionary:(id)value
 {
     return [value isKindOfClass:[NSDictionary class]] ? value : nil;
+}
+
+- (NSArray *) _JSONToNSArray:(id)value
+{
+    return [value isKindOfClass:[NSArray class]] ? value : nil;
 }
 
 #pragma mark - User consent
@@ -265,6 +307,7 @@ static WPConfiguration *sharedConfiguration = nil;
                                          USER_DEFAULTS_CURRENCY: [self _NSStringToJSON:self.currency],
                                          USER_DEFAULTS_LOCALE: [self _NSStringToJSON:self.locale],
                                          USER_DEFAULTS_TIME_ZONE: [self _NSStringToJSON:self.timeZone],
+                                         USER_DEFAULTS_TRACKED_EVENTS_KEY: [self _NSArrayToJSON:self.trackedEvents],
                                          };
     NSMutableDictionary *usersArchive = [([self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY] ?: @{}) mutableCopy];
     usersArchive[self.userId ?: @""] = currentUserArchive;
@@ -295,6 +338,7 @@ static WPConfiguration *sharedConfiguration = nil;
     self.currency            = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_CURRENCY]];
     self.locale              = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_LOCALE]];
     self.timeZone            = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_TIME_ZONE]];
+    self.trackedEvents       = [self _JSONToNSArray:     newUserArchive[USER_DEFAULTS_TRACKED_EVENTS_KEY]];
 }
 
 // Uses @"" for nil userId
@@ -873,13 +917,16 @@ static WPConfiguration *sharedConfiguration = nil;
     eventToStore[@"collapsing"] = @"last";
     [newTrackedEvents addObject:eventToStore];
 
-    [self _setNSDictionaryAsJSON:@{ @"lastForType": newTrackedEvents } forKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
+    [self setTrackedEvents:newTrackedEvents];
 }
 
 - (NSArray *)trackedEvents {
-    NSDictionary *stored = [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
-    NSArray *rtn = stored ? stored[@"lastForType"] : @[];
+    NSArray *rtn = [self _getNSArrayFromJSONForKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
     return rtn ? rtn : @[];
+}
+
+- (void)setTrackedEvents:(NSArray *)trackedEvents {
+    [self _setNSArrayAsJSON:trackedEvents forKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
 }
 
 @end
