@@ -29,6 +29,8 @@
 @property(weak, nonatomic) IBOutlet UIView *messageCardView;
 @property(weak, nonatomic) IBOutlet UITextView *bodyTextView;
 @property(weak, nonatomic) IBOutlet UIButton *closeButton;
+@property(weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonInsideHorizontalConstraint;
+@property(weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonInsideVerticalConstraint;
 
 // this is only needed for removing the layout errors in interface builder. At runtime
 // we determine the height via its content size. So disable this at runtime.
@@ -109,6 +111,15 @@ static CGFloat LandScapePaddingBetweenImageAndTextColumn = 24;
     [self.view setBackgroundColor:[UIColor.grayColor colorWithAlphaComponent:0.5]];
     self.messageCardView.layer.cornerRadius = 4;
     
+    if (self.modalDisplayMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone) {
+        UITapGestureRecognizer *closeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeButtonClicked:)];
+        closeGestureRecognizer.delaysTouchesBegan = YES;
+        closeGestureRecognizer.numberOfTapsRequired = 1;
+        self.view.userInteractionEnabled = YES;
+        [self.view addGestureRecognizer:closeGestureRecognizer];
+    }
+
+    
     // populating values for display elements
     
     self.titleLabel.text = self.modalDisplayMessage.title;
@@ -151,6 +162,22 @@ static CGFloat LandScapePaddingBetweenImageAndTextColumn = 24;
     [self.view addConstraint:self.imageActualHeightConstraint];
     self.imageActualHeightConstraint.active = YES;
     self.fixedMessageCardHeightConstraint.active = NO;
+    
+    switch (self.modalDisplayMessage.closeButtonPosition) {
+        case WPInAppMessagingCloseButtonPositionInside:
+            self.closeButtonInsideVerticalConstraint.priority = 999;
+            self.closeButtonInsideHorizontalConstraint.priority = 999;
+            self.closeButton.hidden = NO;
+            break;
+        case WPInAppMessagingCloseButtonPositionOutside:
+            self.closeButtonInsideVerticalConstraint.priority = 1;
+            self.closeButtonInsideHorizontalConstraint.priority = 1;
+            self.closeButton.hidden = NO;
+            break;
+        case WPInAppMessagingCloseButtonPositionNone:
+            self.closeButton.hidden = YES;
+            break;
+    }
 }
 
 // for text display UIview, which could be a UILabel or UITextView, decide the fit height under a

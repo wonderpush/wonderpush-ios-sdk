@@ -39,6 +39,16 @@ typedef NS_ENUM(NSInteger, WPInAppMessagingDisplayTriggerType) {
     WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent
 };
 
+/// Where to place the close button
+typedef NS_ENUM(NSInteger, WPInAppMessagingCloseButtonPosition) {
+    /// Centered on the upper right corner
+    WPInAppMessagingCloseButtonPositionOutside,
+    /// Inside the upper right corner
+    WPInAppMessagingCloseButtonPositionInside,
+    /// Hidden
+    WPInAppMessagingCloseButtonPositionNone,
+};
+
 /** Contains the display information for an action button.
  */
 NS_SWIFT_NAME(InAppMessagingActionButton)
@@ -209,6 +219,11 @@ NS_SWIFT_NAME(InAppMessagingModalDisplay)
  */
 @property(nonatomic, copy, nonnull) UIColor *textColor;
 
+/**
+ * Where to put the close button
+ */
+@property(nonatomic, readonly) WPInAppMessagingCloseButtonPosition closeButtonPosition;
+
 /// Unavailable.
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -268,6 +283,11 @@ NS_SWIFT_NAME(InAppMessagingImageOnlyDisplay)
  * Gets the action URL for an image-only IAM message.
  */
 @property(nonatomic, nullable, readonly) WPAction *action;
+
+/**
+ * Where to put the close button
+ */
+@property(nonatomic, readonly) WPInAppMessagingCloseButtonPosition closeButtonPosition;
 
 /// Unavailable.
 - (instancetype)init NS_UNAVAILABLE;

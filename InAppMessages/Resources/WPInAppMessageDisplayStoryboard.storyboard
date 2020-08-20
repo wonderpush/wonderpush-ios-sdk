@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -318,14 +318,16 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="akA-AE-VPc" firstAttribute="top" secondItem="jER-Re-ODh" secondAttribute="top" priority="1" id="0SP-Ki-u98"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="centerY" secondItem="1pz-BP-O6T" secondAttribute="centerY" identifier="Message Card View.centerY = centerY" id="GSo-F2-pSS"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="42w-41-Nyy" secondAttribute="bottom" constant="24" identifier="Message Card View.top ≥ Top Layout Guide.bottom + 24" id="Yvr-Y4-aEK"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="leading" secondItem="1pz-BP-O6T" secondAttribute="leadingMargin" constant="10" identifier="Message Card View.leading = leadingMargin + 10" id="bX2-s2-74w"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="42w-41-Nyy" secondAttribute="bottom" constant="10" identifier="Message Card View.top ≥ Top Layout Guide.bottom + 10" id="fyU-hx-Wh1"/>
+                            <constraint firstItem="akA-AE-VPc" firstAttribute="trailing" secondItem="jER-Re-ODh" secondAttribute="trailing" priority="1" id="iG7-Oa-Iwh"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="leading" secondItem="1pz-BP-O6T" secondAttribute="leading" constant="20" identifier="Card Leading Margin In Landscape Mode" id="kj1-PP-7nG"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="centerX" secondItem="1pz-BP-O6T" secondAttribute="centerX" identifier="Message Card View.centerX = centerX" id="m0a-I2-6sC"/>
-                            <constraint firstItem="akA-AE-VPc" firstAttribute="centerX" secondItem="jER-Re-ODh" secondAttribute="trailing" identifier="Close Button.centerX = Message Card View.trailing" id="nIB-zo-TIv"/>
-                            <constraint firstItem="akA-AE-VPc" firstAttribute="centerY" secondItem="jER-Re-ODh" secondAttribute="top" identifier="Close Button.centerY = Message Card View.top" id="va9-kv-0KG"/>
+                            <constraint firstItem="akA-AE-VPc" firstAttribute="centerX" secondItem="jER-Re-ODh" secondAttribute="trailing" priority="900" identifier="Close Button.centerX = Message Card View.trailing" id="nIB-zo-TIv"/>
+                            <constraint firstItem="akA-AE-VPc" firstAttribute="centerY" secondItem="jER-Re-ODh" secondAttribute="top" priority="900" identifier="Close Button.centerY = Message Card View.top" id="va9-kv-0KG"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
@@ -357,6 +359,8 @@
                         <outlet property="buttonTopToBodyBottomConstraint" destination="Vej-p0-b6w" id="Q7d-su-7PP"/>
                         <outlet property="cardLeadingMarginInLandscapeMode" destination="kj1-PP-7nG" id="6LC-4f-EBE"/>
                         <outlet property="closeButton" destination="akA-AE-VPc" id="lI3-0d-NnR"/>
+                        <outlet property="closeButtonInsideHorizontalConstraint" destination="iG7-Oa-Iwh" id="7KY-Bw-azA"/>
+                        <outlet property="closeButtonInsideVerticalConstraint" destination="0SP-Ki-u98" id="gV5-5v-88f"/>
                         <outlet property="fixedMessageCardHeightConstraint" destination="8Yx-fI-jXG" id="aiZ-Vx-bJe"/>
                         <outlet property="imageActualHeightConstraint" destination="EeQ-n5-WE7" id="GQ9-em-yWE"/>
                         <outlet property="imageTopToCardTopInLandscapeMode" destination="pyI-1U-ujR" id="ZiI-y6-v8i"/>

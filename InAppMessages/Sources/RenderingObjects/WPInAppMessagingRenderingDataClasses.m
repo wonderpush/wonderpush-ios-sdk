@@ -110,7 +110,8 @@
                     backgroundColor:(UIColor *)backgroundColor
                           imageData:(nullable WPInAppMessagingImageData *)imageData
                        actionButton:(nullable WPInAppMessagingActionButton *)actionButton
-                             action:(nullable WPAction *)action {
+                             action:(nullable WPAction *)action
+                closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition {
     if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeModal
                               triggerType:triggerType
                                   payload:payload]) {
@@ -121,6 +122,7 @@
         _imageData = imageData;
         _actionButton = actionButton;
         _action = action;
+        _closeButtonPosition = closeButtonPosition;
     }
     return self;
 }
@@ -131,12 +133,14 @@
 - (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                             payload:(NSDictionary *)payload
                           imageData:(nullable WPInAppMessagingImageData *)imageData
-                             action:(nullable WPAction *)action {
+                             action:(nullable WPAction *)action
+                closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition {
     if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeModal
                               triggerType:triggerType
                                   payload:payload]) {
         _imageData = imageData;
         _action = action;
+        _closeButtonPosition = closeButtonPosition;
     }
     return self;
 }

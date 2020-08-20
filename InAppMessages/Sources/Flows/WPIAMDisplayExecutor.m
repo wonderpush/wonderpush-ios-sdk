@@ -364,13 +364,27 @@
     imageOnlyDisplayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
                                        imageData:(WPInAppMessagingImageData *)imageData
                                      triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
+    WPInAppMessagingCloseButtonPosition closeButtonPosition;
+    switch (definition.renderData.contentData.closeButtonPosition) {
+        case WPInAppMessagingCloseButtonPositionOutside:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionOutside;
+            break;
+        case WPInAppMessagingCloseButtonPositionInside:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionInside;
+            break;
+        case WPInAppMessagingCloseButtonPositionNone:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionNone;
+            break;
+    }
+    
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingImageOnlyDisplay *imageOnlyMessage = [[WPInAppMessagingImageOnlyDisplay alloc]
                                                           initWithTriggerType:triggerType
                                                           payload:definition.payload
                                                           imageData:imageData
-                                                          action:definition.renderData.contentData.action];
+                                                          action:definition.renderData.contentData.action
+                                                          closeButtonPosition:closeButtonPosition];
 #pragma clang diagnostic pop
     
     return imageOnlyMessage;
@@ -398,6 +412,19 @@
 #pragma clang diagnostic pop
     }
     
+    WPInAppMessagingCloseButtonPosition closeButtonPosition;
+    switch (definition.renderData.contentData.closeButtonPosition) {
+        case WPInAppMessagingCloseButtonPositionOutside:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionOutside;
+            break;
+        case WPInAppMessagingCloseButtonPositionInside:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionInside;
+            break;
+        case WPInAppMessagingCloseButtonPositionNone:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionNone;
+            break;
+    }
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingModalDisplay *modalViewMessage = [[WPInAppMessagingModalDisplay alloc]
@@ -409,7 +436,8 @@
                                                       backgroundColor:renderData.renderingEffectSettings.displayBGColor
                                                       imageData:imageData
                                                       actionButton:actionButton
-                                                      action:definition.renderData.contentData.action];
+                                                      action:definition.renderData.contentData.action
+                                                      closeButtonPosition:closeButtonPosition];
 #pragma clang diagnostic pop
     
     return modalViewMessage;

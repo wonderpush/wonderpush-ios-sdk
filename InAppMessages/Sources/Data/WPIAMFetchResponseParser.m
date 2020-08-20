@@ -194,6 +194,7 @@
         
         NSString *title, *body, *imageURLStr, *landscapeImageURLStr,
         *actionButtonText, *secondaryActionButtonText;
+        WPIAMCloseButtonPosition closeButtonPosition = WPIAMCloseButtonPositionOutside;
         title = body = imageURLStr = landscapeImageURLStr = actionButtonText =
         secondaryActionButtonText = nil;
         WPAction *action = nil, *secondaryAction = nil;
@@ -230,6 +231,10 @@
             action = [WPAction actionWithDictionaries:modalNode[@"actions"]];
             viewCardBackgroundColor =
             [UIColor firiam_colorWithHexString:modalNode[@"backgroundHexColor"]];
+            if ([modalNode[@"closeButtonPosition"] isEqualToString:@"outside"]) closeButtonPosition = WPIAMCloseButtonPositionOutside;
+            if ([modalNode[@"closeButtonPosition"] isEqualToString:@"inside"]) closeButtonPosition = WPIAMCloseButtonPositionInside;
+            if ([modalNode[@"closeButtonPosition"] isEqualToString:@"none"]) closeButtonPosition = WPIAMCloseButtonPositionNone;
+
         } else if ([content[@"imageOnly"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsImageOnlyView;
             NSDictionary *imageOnlyNode = (NSDictionary *)contentNode[@"imageOnly"];
@@ -242,6 +247,9 @@
                 return nil;
             }
             action = [WPAction actionWithDictionaries:imageOnlyNode[@"actions"]];
+            if ([imageOnlyNode[@"closeButtonPosition"] isEqualToString:@"outside"]) closeButtonPosition = WPIAMCloseButtonPositionOutside;
+            if ([imageOnlyNode[@"closeButtonPosition"] isEqualToString:@"inside"]) closeButtonPosition = WPIAMCloseButtonPositionInside;
+            if ([imageOnlyNode[@"closeButtonPosition"] isEqualToString:@"none"]) closeButtonPosition = WPIAMCloseButtonPositionNone;
         } else if ([content[@"card"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsCardView;
             NSDictionary *cardNode = (NSDictionary *)contentNode[@"card"];
@@ -333,6 +341,7 @@
                                                           secondaryAction:secondaryAction
                                                                  imageURL:imageURL
                                                         landscapeImageURL:landscapeImageURL
+                                                      closeButtonPosition:closeButtonPosition
                                                           usingURLSession:nil];
         
         WPIAMMessageRenderData *renderData =

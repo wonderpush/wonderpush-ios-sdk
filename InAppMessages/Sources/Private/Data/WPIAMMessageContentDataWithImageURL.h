@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                      secondaryAction:(nullable WPAction *)secondaryAction
                             imageURL:(nullable NSURL *)imageURL
                    landscapeImageURL:(nullable NSURL *)landscapeImageURL
+                 closeButtonPosition:(WPIAMCloseButtonPosition)closeButtonPosition
                      usingURLSession:(nullable NSURLSession *)URLSession;
 @end
 NS_ASSUME_NONNULL_END

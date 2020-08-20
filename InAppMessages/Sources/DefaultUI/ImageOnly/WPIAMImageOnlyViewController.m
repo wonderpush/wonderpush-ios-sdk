@@ -69,6 +69,14 @@
     
     self.imageView.userInteractionEnabled = YES;
     [self.imageView addGestureRecognizer:tapGestureRecognizer];
+    
+    if (self.imageOnlyMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone) {
+        UITapGestureRecognizer *closeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeButtonClicked:)];
+        closeGestureRecognizer.delaysTouchesBegan = YES;
+        closeGestureRecognizer.numberOfTapsRequired = 1;
+        self.view.userInteractionEnabled = YES;
+        [self.view addGestureRecognizer:closeGestureRecognizer];
+    }
 }
 
 - (void)messageTapped:(UITapGestureRecognizer *)recognizer {
@@ -144,6 +152,19 @@
     
     CGFloat closeButtonCenterX = CGRectGetMaxX(self.imageView.frame);
     CGFloat closeButtonCenterY = CGRectGetMinY(self.imageView.frame);
+    switch (self.imageOnlyMessage.closeButtonPosition) {
+        case WPInAppMessagingCloseButtonPositionInside:
+            closeButtonCenterX -= self.closeButton.frame.size.width / 2;
+            closeButtonCenterY += self.closeButton.frame.size.height / 2;
+            self.closeButton.hidden = NO;
+            break;
+        case WPInAppMessagingCloseButtonPositionNone:
+            self.closeButton.hidden = YES;
+            break;
+        case WPInAppMessagingCloseButtonPositionOutside:
+            self.closeButton.hidden = NO;
+            break;
+    }
     self.closeButton.center = CGPointMake(closeButtonCenterX, closeButtonCenterY);
     
     [self.view bringSubviewToFront:self.closeButton];

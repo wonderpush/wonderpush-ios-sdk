@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:(UIColor *)backgroundColor
                 primaryActionButton:(WPInAppMessagingActionButton *)primaryActionButton
                       primaryAction:(nullable WPAction *)primaryAction;
-
 @end
 
 @interface WPInAppMessagingActionButton (Private)
@@ -67,7 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:(UIColor *)backgroundColor
                           imageData:(nullable WPInAppMessagingImageData *)imageData
                        actionButton:(nullable WPInAppMessagingActionButton *)actionButton
-                             action:(nullable WPAction *)action;
+                             action:(nullable WPAction *)action
+                closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition;
 
 @end
 
@@ -89,7 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                             payload:(NSDictionary *)payload
                           imageData:(nullable WPInAppMessagingImageData *)imageData
-                             action:(nullable WPAction *)action;
+                             action:(nullable WPAction *)action
+                closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition;
 
 @end
 
