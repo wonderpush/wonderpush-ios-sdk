@@ -78,7 +78,7 @@
         NSMutableDictionary *eventData = [NSMutableDictionary new];
         [eventData addEntriesFromDictionary:_currentMsgBeingDisplayed.renderData.reportingData.dictValue];
         eventData[@"actionDate"] = [NSNumber numberWithLongLong:(long long)([self.timeFetcher currentTimestampInSeconds] * 1000)];
-        if (action.targetUrl) eventData[@"targetUrl"] = action.targetUrl;
+        if (action.targetUrl) eventData[@"targetUrl"] = [action.targetUrl absoluteString];
         NSString *buttonLabel = nil;
         if ([inAppMessage respondsToSelector:@selector(action)]) {
             buttonLabel = [inAppMessage performSelector:@selector(action)] == (id)action ? @"primary" : nil;
