@@ -49,6 +49,9 @@ typedef NS_ENUM(NSInteger, WPIAMRenderingMode) {
 // background color for action button
 @property(nonatomic, copy) UIColor *btnBGColor;
 
+// background color for secondary action button
+@property(nonatomic, copy) UIColor *secondaryActionBtnBGColor;
+
 // duration of the banner view before triggering auto-dismiss
 @property(nonatomic) CGFloat autoDimissBannerAfterNSeconds;
 

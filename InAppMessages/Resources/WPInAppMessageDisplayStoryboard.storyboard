@@ -392,7 +392,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Aft-rr-icV" userLabel="Card view">
-                                <rect key="frame" x="87" y="273" width="240" height="350.5"/>
+                                <rect key="frame" x="87" y="270" width="240" height="356.5"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gB0-8W-G9z">
                                         <rect key="frame" x="0.0" y="0.0" width="240" height="160"/>
@@ -460,22 +460,24 @@
                                         </constraints>
                                     </scrollView>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" horizontalCompressionResistancePriority="251" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aZE-3x-WHk" userLabel="Primary action button">
-                                        <rect key="frame" x="163" y="296.5" width="53" height="30"/>
+                                        <rect key="frame" x="131" y="296.5" width="85" height="36"/>
                                         <accessibility key="accessibilityConfiguration" identifier="card-primary-action-button"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="pxm-yD-xhm"/>
                                         </constraints>
+                                        <inset key="contentEdgeInsets" minX="16" minY="9" maxX="16" maxY="9"/>
                                         <state key="normal" title="Primary"/>
                                         <connections>
                                             <action selector="primaryActionButtonTapped:" destination="oTF-1C-LZP" eventType="touchUpInside" id="Jk0-dp-Qgj"/>
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Feg-VM-jUf" userLabel="Secondary action button">
-                                        <rect key="frame" x="65" y="296.5" width="74" height="30"/>
+                                        <rect key="frame" x="24" y="296.5" width="95" height="36"/>
                                         <accessibility key="accessibilityConfiguration" identifier="card-secondary-action-button"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="bpF-9w-pDe"/>
                                         </constraints>
+                                        <inset key="contentEdgeInsets" minX="16" minY="9" maxX="16" maxY="9"/>
                                         <state key="normal" title="Secondary"/>
                                         <connections>
                                             <action selector="secondaryActionButtonTapped:" destination="oTF-1C-LZP" eventType="touchUpInside" id="jCJ-3T-fim"/>
@@ -498,7 +500,7 @@
                                     <constraint firstItem="oVh-9O-yfC" firstAttribute="top" secondItem="gB0-8W-G9z" secondAttribute="bottom" constant="24" identifier="Title label top spacing under image view - portrait" id="T6F-Mi-UaM" userLabel="Title label top spacing under image view - portrait"/>
                                     <constraint firstAttribute="bottom" secondItem="aZE-3x-WHk" secondAttribute="bottom" constant="24" identifier="Primary action button bottom padding" id="THz-Qq-7VQ" userLabel="Primary action button bottom padding"/>
                                     <constraint firstAttribute="bottom" secondItem="gB0-8W-G9z" secondAttribute="bottom" identifier="Image view no bottom padding in card view - landscape" id="Voc-mp-Yh8" userLabel="Image view no bottom padding in card view - landscape"/>
-                                    <constraint firstItem="aZE-3x-WHk" firstAttribute="leading" secondItem="Feg-VM-jUf" secondAttribute="trailing" constant="24" identifier="Secondary action button left spacing before primary action button" id="WOx-4M-WHo" userLabel="Secondary action button left spacing before primary action button"/>
+                                    <constraint firstItem="aZE-3x-WHk" firstAttribute="leading" secondItem="Feg-VM-jUf" secondAttribute="trailing" constant="12" identifier="Secondary action button left spacing before primary action button" id="WOx-4M-WHo" userLabel="Secondary action button left spacing before primary action button"/>
                                     <constraint firstAttribute="trailing" secondItem="Tmr-ar-k7h" secondAttribute="trailing" constant="24" id="a9Y-vg-WG9"/>
                                     <constraint firstItem="Feg-VM-jUf" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="gB0-8W-G9z" secondAttribute="trailing" constant="24" identifier="Secondary action button minimum spacing after image view - landscape" id="dN2-Ih-eEj" userLabel="Secondary action button minimum spacing after image view - landscape"/>
                                     <constraint firstItem="Feg-VM-jUf" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Aft-rr-icV" secondAttribute="leading" constant="24" identifier="Secondary button minimum left padding - portrait" id="jgB-Ie-frE" userLabel="Secondary button minimum left padding - portrait"/>

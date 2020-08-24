@@ -189,7 +189,7 @@
         NSDictionary *content = (NSDictionary *)contentNode;
         WPIAMRenderingMode mode;
         UIColor *viewCardBackgroundColor, *btnBgColor, *btnTxtColor, *secondaryBtnTxtColor,
-        *titleTextColor;
+        *titleTextColor, *secondaryBtnBgColor;
         viewCardBackgroundColor = btnBgColor = btnTxtColor = titleTextColor = nil;
         
         NSString *title, *body, *imageURLStr, *landscapeImageURLStr,
@@ -266,11 +266,13 @@
             actionButtonText = cardNode[@"primaryActionButton"][@"text"][@"text"];
             btnTxtColor = [UIColor
                            firiam_colorWithHexString:cardNode[@"primaryActionButton"][@"text"][@"hexColor"]];
+            btnBgColor = [UIColor firiam_colorWithHexString:cardNode[@"primaryActionButton"][@"buttonHexColor"]];
             
             secondaryActionButtonText = cardNode[@"secondaryActionButton"][@"text"][@"text"];
             secondaryBtnTxtColor = [UIColor
                                     firiam_colorWithHexString:cardNode[@"secondaryActionButton"][@"text"][@"hexColor"]];
-            
+            secondaryBtnBgColor = [UIColor firiam_colorWithHexString:cardNode[@"secondaryActionButton"][@"buttonHexColor"]];
+
             action = [WPAction actionWithDictionaries:cardNode[@"primaryActions"]];
             secondaryAction = [WPAction actionWithDictionaries:cardNode[@"secondaryActions"]];
             
@@ -300,6 +302,10 @@
         
         if (btnBgColor) {
             renderEffect.btnBGColor = btnBgColor;
+        }
+        
+        if (secondaryBtnBgColor) {
+            renderEffect.secondaryActionBtnBGColor = secondaryBtnBgColor;
         }
         
         if (btnTxtColor) {

@@ -315,7 +315,7 @@
         secondaryActionButton = [[WPInAppMessagingActionButton alloc]
                                  initWithButtonText:renderData.contentData.secondaryActionButtonText
                                  buttonTextColor:renderData.renderingEffectSettings.secondaryActionBtnTextColor
-                                 backgroundColor:renderData.renderingEffectSettings.btnBGColor];
+                                 backgroundColor:renderData.renderingEffectSettings.secondaryActionBtnBGColor];
 #pragma clang diagnostic pop
     }
     

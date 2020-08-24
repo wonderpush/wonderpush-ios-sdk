@@ -20,10 +20,10 @@
 + (instancetype)getDefaultRenderingEffectSetting {
     WPIAMRenderingEffectSetting *setting = [[WPIAMRenderingEffectSetting alloc] init];
     
-    setting.btnBGColor = [UIColor colorWithRed:0.3 green:0.55 blue:0.28 alpha:1.0];
+    setting.btnBGColor = [UIColor colorWithWhite:1 alpha:0];
     setting.displayBGColor = [UIColor whiteColor];
     setting.textColor = [UIColor blackColor];
-    setting.btnTextColor = [UIColor whiteColor];
+    setting.btnTextColor = [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
     setting.autoDimissBannerAfterNSeconds = 12;
     setting.isTestMessage = NO;
     return setting;

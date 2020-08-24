@@ -100,6 +100,8 @@
     [self.primaryActionButton
      setTitleColor:self.cardDisplayMessage.primaryActionButton.buttonTextColor
      forState:UIControlStateNormal];
+    self.primaryActionButton.backgroundColor = self.cardDisplayMessage.primaryActionButton.buttonBackgroundColor;
+    self.primaryActionButton.layer.cornerRadius = 4;
     
     if (self.cardDisplayMessage.secondaryActionButton) {
         self.secondaryActionButton.hidden = NO;
@@ -108,6 +110,8 @@
         [self.secondaryActionButton
          setTitleColor:self.cardDisplayMessage.secondaryActionButton.buttonTextColor
          forState:UIControlStateNormal];
+        self.secondaryActionButton.backgroundColor = self.cardDisplayMessage.secondaryActionButton.buttonBackgroundColor;
+        self.secondaryActionButton.layer.cornerRadius = 4;
     }
 }
 
