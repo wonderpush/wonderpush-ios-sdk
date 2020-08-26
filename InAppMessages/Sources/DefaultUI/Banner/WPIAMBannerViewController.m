@@ -207,19 +207,11 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
 - (void)viewSafeAreaInsetsDidChange {
     [super viewSafeAreaInsetsDidChange];
     if (self.bannerDisplayMessage.bannerPosition == WPInAppMessagingBannerPositionTop) {
-        if (@available(iOS 11.0, *)) {
-            self.topPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.top;
-        } else {
-            self.topPaddingViewHeightConstraint.constant = UIApplication.sharedApplication.statusBarFrame.size.height;
-        }
+        self.topPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.top;
         self.bottomPaddingViewHeightConstraint.constant = 0;
     } else {
         self.topPaddingViewHeightConstraint.constant = 0;
-        if (@available(iOS 11.0, *)) {
-            self.bottomPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.bottom;
-        } else {
-            self.bottomPaddingViewHeightConstraint.constant = 0; // iPhone X started with iOS 11 and it's the first device with a bottom safe area inset
-        }
+        self.bottomPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.bottom;
     }
     [self.view setNeedsLayout];
 }
@@ -227,6 +219,20 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     [self adjustBodyLabelViewHeight];
+    if (@available(iOS 11.0, *)) {
+        // Handled in viewSafeAreaInsetsDidChange
+    } else {
+        switch (self.bannerDisplayMessage.bannerPosition) {
+            case WPInAppMessagingBannerPositionTop:
+                self.topPaddingViewHeightConstraint.constant = UIApplication.sharedApplication.statusBarFrame.size.height;
+                self.bottomPaddingViewHeightConstraint.constant = 0;
+                break;
+            case WPInAppMessagingBannerPositionBottom:
+                self.topPaddingViewHeightConstraint.constant = 0;
+                self.bottomPaddingViewHeightConstraint.constant = 0; // iPhone X started with iOS 11 and it's the first device with a bottom safe area inset
+                break;
+        }
+    }
     CGFloat bannerViewHeight = CGRectGetMaxY(self.bottomPaddingView.frame);
     
     CGFloat appWindowWidth = [self.view.window bounds].size.width;
