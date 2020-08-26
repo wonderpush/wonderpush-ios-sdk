@@ -195,6 +195,7 @@
         NSString *title, *body, *imageURLStr, *landscapeImageURLStr,
         *actionButtonText, *secondaryActionButtonText;
         WPIAMCloseButtonPosition closeButtonPosition = WPIAMCloseButtonPositionOutside;
+        WPIAMBannerPosition bannerPosition = WPIAMBannerPositionTop;
         title = body = imageURLStr = landscapeImageURLStr = actionButtonText =
         secondaryActionButtonText = nil;
         WPAction *action = nil, *secondaryAction = nil;
@@ -213,7 +214,9 @@
             action = [WPAction actionWithDictionaries:bannerNode[@"actions"]];
             viewCardBackgroundColor =
             [UIColor firiam_colorWithHexString:bannerNode[@"backgroundHexColor"]];
-            
+            if ([bannerNode[@"bannerPosition"] isEqualToString:@"bottom"]) {
+                bannerPosition = WPIAMBannerPositionBottom;
+            }            
         } else if ([content[@"modal"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsModalView;
             
@@ -348,6 +351,7 @@
                                                                  imageURL:imageURL
                                                         landscapeImageURL:landscapeImageURL
                                                       closeButtonPosition:closeButtonPosition
+                                                           bannerPosition:bannerPosition
                                                           usingURLSession:nil];
         
         WPIAMMessageRenderData *renderData =

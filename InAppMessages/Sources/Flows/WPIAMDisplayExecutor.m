@@ -343,7 +343,15 @@
                                   triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
     NSString *title = definition.renderData.contentData.titleText;
     NSString *body = definition.renderData.contentData.bodyText;
-    
+    WPInAppMessagingBannerPosition bannerPosition;
+    switch (definition.renderData.contentData.bannerPosition) {
+        case WPIAMBannerPositionTop:
+            bannerPosition = WPInAppMessagingBannerPositionTop;
+            break;
+        case WPIAMBannerPositionBottom:
+            bannerPosition = WPInAppMessagingBannerPositionBottom;
+            break;
+    }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingBannerDisplay *bannerMessage = [[WPInAppMessagingBannerDisplay alloc]
@@ -354,6 +362,7 @@
                                                     textColor:definition.renderData.renderingEffectSettings.textColor
                                                     backgroundColor:definition.renderData.renderingEffectSettings.displayBGColor
                                                     imageData:imageData
+                                                    bannerPosition:bannerPosition
                                                     action:definition.renderData.contentData.action];
 #pragma clang diagnostic pop
     

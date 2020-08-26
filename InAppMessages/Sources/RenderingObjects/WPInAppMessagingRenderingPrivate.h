@@ -80,6 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
                           textColor:(UIColor *)textColor
                     backgroundColor:(UIColor *)backgroundColor
                           imageData:(nullable WPInAppMessagingImageData *)imageData
+                     bannerPosition:(WPInAppMessagingBannerPosition)bannerPosition
                              action:(nullable WPAction *)action;
 
 @end

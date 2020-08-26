@@ -80,12 +80,13 @@
 @implementation WPInAppMessagingBannerDisplay
 - (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                             payload:(NSDictionary *)payload
-                            titleText:(NSString *)title
-                             bodyText:(NSString *)bodyText
-                            textColor:(UIColor *)textColor
-                      backgroundColor:(UIColor *)backgroundColor
-                            imageData:(nullable WPInAppMessagingImageData *)imageData
-                               action:(nullable WPAction *)action {
+                          titleText:(NSString *)title
+                           bodyText:(NSString *)bodyText
+                          textColor:(UIColor *)textColor
+                    backgroundColor:(UIColor *)backgroundColor
+                          imageData:(nullable WPInAppMessagingImageData *)imageData
+                     bannerPosition:(WPInAppMessagingBannerPosition)bannerPosition
+                             action:(nullable WPAction *)action {
     if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeBanner
                               triggerType:triggerType
                                   payload:payload]) {
@@ -95,6 +96,7 @@
         _displayBackgroundColor = backgroundColor;
         _imageData = imageData;
         _action = action;
+        _bannerPosition = bannerPosition;
     }
     return self;
 }

@@ -31,6 +31,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
 @property(nonatomic, nullable, copy) NSURL *imageURL;
 @property(nonatomic, nullable, copy) NSURL *landscapeImageURL;
 @property(nonatomic, readwrite) WPIAMCloseButtonPosition closeButtonPosition;
+@property(nonatomic, readwrite) WPIAMBannerPosition bannerPosition;
 @property(readonly) NSURLSession *URLSession;
 @end
 
@@ -44,6 +45,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
                             imageURL:(nullable NSURL *)imageURL
                    landscapeImageURL:(nullable NSURL *)landscapeImageURL
                  closeButtonPosition:(WPIAMCloseButtonPosition)closeButtonPosition
+                      bannerPosition:(WPIAMBannerPosition)bannerPosition
                      usingURLSession:(nullable NSURLSession *)URLSession {
     if (self = [super init]) {
         _titleText = title;
@@ -55,6 +57,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
         _action = action;
         _secondaryAction = secondaryAction;
         _closeButtonPosition = closeButtonPosition;
+        _bannerPosition = bannerPosition;
         
         if (imageURL) {
             _URLSession = URLSession ? URLSession : [NSURLSession sharedSession];

@@ -24,18 +24,15 @@
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *imageViewWidthConstraint;
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *imageViewHeightConstraint;
 
-@property(weak, nonatomic) IBOutlet NSLayoutConstraint *imageBottomAlignWithBodyLabelBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topPaddingViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomPaddingViewHeightConstraint;
+@property(nonatomic, assign) BOOL hidingForAnimation;
+@property(nonatomic, assign) BOOL initialSetupDone;
+@property(weak, nonatomic) IBOutlet UIView *bottomPaddingView;
+@property(weak, nonatomic) IBOutlet UIView *containerView;
 @property(weak, nonatomic) IBOutlet UIImageView *imageView;
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property(weak, nonatomic) IBOutlet UILabel *bodyLabel;
-
-// Banner view will be rendered and dismissed with animation. Within viewDidLayoutSubviews function,
-// we would position the view so that it's out of UIWindow range on the top so that later on it can
-// slide in with animation. However, viewDidLayoutSubviews is also triggred in other scenarios
-// like split view on iPad or device orientation changes where we don't want to hide the banner for
-// animations. So to have different logic, we use this property to tell the two different
-// cases apart and apply different positioning logic accordingly in viewDidLayoutSubviews.
-@property(nonatomic) BOOL hidingForAnimation;
 
 @property(nonatomic, nullable) NSTimer *autoDismissTimer;
 @end
@@ -55,6 +52,7 @@ static const NSTimeInterval kBannerAutoDimissTime = 12;
 static const CGFloat kBannerViewMaxWidth = 736;
 
 static const CGFloat kSwipeUpThreshold = -10.0f;
+static const CGFloat kSwipeDownThreshold = 10.0f;
 
 @implementation WPIAMBannerViewController
 
@@ -102,7 +100,12 @@ static const CGFloat kSwipeUpThreshold = -10.0f;
     // Detect the swipe gesture
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         CGPoint vel = [recognizer velocityInView:recognizer.view];
-        if (vel.y < kSwipeUpThreshold) {
+        if (self.bannerDisplayMessage.bannerPosition == WPInAppMessagingBannerPositionTop
+            &&  vel.y < kSwipeUpThreshold) {
+            [self closeViewFromManualDismiss];
+        }
+        if (self.bannerDisplayMessage.bannerPosition == WPInAppMessagingBannerPositionBottom
+            &&  vel.y > kSwipeDownThreshold) {
             [self closeViewFromManualDismiss];
         }
     }
@@ -113,7 +116,10 @@ static const CGFloat kSwipeUpThreshold = -10.0f;
     // Do any additional setup after loading the view from its nib.
     
     [self setupRecognizers];
-    
+
+    // When created, we are hiding it for later animation
+    self.hidingForAnimation = YES;
+
     self.titleLabel.text = self.bannerDisplayMessage.title;
     self.bodyLabel.text = self.bannerDisplayMessage.bodyText;
     
@@ -122,6 +128,7 @@ static const CGFloat kSwipeUpThreshold = -10.0f;
         
         UIImage *image = [UIImage imageWithData:self.bannerDisplayMessage.imageData.imageRawData];
         
+        // Adapt image aspect ratio if needed
         if (fabs(image.size.width / image.size.height - 1) > 0.02) {
             // width and height differ by at least 2%, need to adjust image view
             // size to respect the ratio
@@ -139,7 +146,6 @@ static const CGFloat kSwipeUpThreshold = -10.0f;
     } else {
         // Hide image and remove the bottom constraint between body label and image view.
         self.imageViewWidthConstraint.constant = 0;
-        self.imageBottomAlignWithBodyLabelBottomConstraint.active = NO;
     }
     
     // Set some rendering effects based on settings.
@@ -152,21 +158,15 @@ static const CGFloat kSwipeUpThreshold = -10.0f;
     self.view.layer.shadowRadius = 2;
     self.view.layer.shadowOpacity = 0.4;
     
-    // When created, we are hiding it for later animation
-    self.hidingForAnimation = YES;
     [self setupAutoDismissTimer];
 }
 
 - (void)dismissViewWithAnimation:(void (^)(void))completion {
-    CGRect rectInNormalState = self.view.frame;
-    CGAffineTransform hidingTransform =
-    CGAffineTransformMakeTranslation(0, -rectInNormalState.size.height);
-    
     [UIView animateWithDuration:kBannerViewAnimationDuration
                           delay:0
-                        options:UIViewAnimationOptionCurveEaseInOut
+                        options:UIViewAnimationOptionCurveLinear
                      animations:^{
-        self.view.transform = hidingTransform;
+        [self translateOffscreen];
     }
                      completion:^(BOOL finished) {
         completion();
@@ -208,53 +208,89 @@ static const CGFloat kSwipeUpThreshold = -10.0f;
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    CGFloat bannerViewHeight = 0;
-    
-    [self adjustBodyLabelViewHeight];
-    
-    if (self.bannerDisplayMessage.imageData) {
-        CGFloat imageBottom = CGRectGetMaxY(self.imageView.frame);
-        CGFloat bodyBottom = CGRectGetMaxY(self.bodyLabel.frame);
-        bannerViewHeight = MAX(imageBottom, bodyBottom);
-    } else {
-        bannerViewHeight = CGRectGetMaxY(self.bodyLabel.frame);
+    if (!self.initialSetupDone) {
+        self.initialSetupDone = YES;
+        if (self.bannerDisplayMessage.bannerPosition == WPInAppMessagingBannerPositionTop) {
+            if (@available(iOS 11.0, *)) {
+                self.topPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.top;
+            } else {
+                self.topPaddingViewHeightConstraint.constant = UIApplication.sharedApplication.statusBarFrame.size.height;
+            }
+            self.bottomPaddingViewHeightConstraint.constant = 0;
+        } else {
+            self.topPaddingViewHeightConstraint.constant = 0;
+            if (@available(iOS 11.0, *)) {
+                self.bottomPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.bottom;
+            } else {
+                self.bottomPaddingViewHeightConstraint.constant = 0; // iPhone X started with iOS 11 and it's the first device with a bottom safe area inset
+            }
+        }
+        [self.view layoutSubviews];
     }
     
-    bannerViewHeight += 5;  // Add some padding margin on the bottom of the view
+    [self adjustBodyLabelViewHeight];
+    CGFloat bannerViewHeight = CGRectGetMaxY(self.bottomPaddingView.frame);
     
     CGFloat appWindowWidth = [self.view.window bounds].size.width;
+    CGFloat appWindowHeight = self.view.window.bounds.size.height;
     CGFloat bannerViewWidth = appWindowWidth;
     
     if (bannerViewWidth > kBannerViewMaxWidth) {
         bannerViewWidth = kBannerViewMaxWidth;
-        self.view.layer.cornerRadius = 4;
+        self.containerView.layer.cornerRadius = 4;
     }
     
     CGRect viewRect =
-    CGRectMake((appWindowWidth - bannerViewWidth) / 2, 0, bannerViewWidth, bannerViewHeight);
+    CGRectMake(
+               (appWindowWidth - bannerViewWidth) / 2,
+               self.bannerDisplayMessage.bannerPosition == WPInAppMessagingBannerPositionTop ? 0 : appWindowHeight - bannerViewHeight,
+               bannerViewWidth,
+               bannerViewHeight
+               );
     self.view.frame = viewRect;
-    
     if (self.hidingForAnimation) {
-        // Move the banner to be just above the top of the window to hide it.
-        self.view.center = CGPointMake(appWindowWidth / 2, -viewRect.size.height / 2);
+        [self translateOffscreen];
     }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    CGRect rectInNormalState = self.view.frame;
-    CGPoint normalCenterPoint =
-    CGPointMake(rectInNormalState.origin.x + rectInNormalState.size.width / 2,
-                rectInNormalState.size.height / 2);
-    
-    self.hidingForAnimation = NO;
-    [UIView animateWithDuration:kBannerViewAnimationDuration
-                          delay:0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-        self.view.center = normalCenterPoint;
+
+    if (self.hidingForAnimation) {
+        self.hidingForAnimation = NO;
+        [UIView animateWithDuration:kBannerViewAnimationDuration
+                              delay:0
+                            options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+            [self translateOnscreen];
+        }
+                         completion:nil];
+
     }
-                     completion:nil];
+}
+
+- (void)translateOffscreen {
+    CGFloat appWindowHeight = self.view.window.bounds.size.height;
+    switch (self.bannerDisplayMessage.bannerPosition) {
+        case WPInAppMessagingBannerPositionBottom:
+            self.view.frame = CGRectMake(0, appWindowHeight, self.view.frame.size.width, self.view.frame.size.height);
+            break;
+        case WPInAppMessagingBannerPositionTop:
+            self.view.frame = CGRectMake(0, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height);
+            break;
+    }
+}
+
+- (void)translateOnscreen {
+    CGFloat appWindowHeight = self.view.window.bounds.size.height;
+    switch (self.bannerDisplayMessage.bannerPosition) {
+        case WPInAppMessagingBannerPositionBottom:
+            self.view.frame = CGRectMake(0, appWindowHeight - self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height);
+            break;
+        case WPInAppMessagingBannerPositionTop:
+            self.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+            break;
+    }
 }
 
 - (void)setupAutoDismissTimer {

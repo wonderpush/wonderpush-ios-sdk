@@ -23,6 +23,11 @@ typedef NS_ENUM(NSInteger, WPIAMCloseButtonPosition) {
     WPIAMCloseButtonPositionNone,
 };
 
+typedef NS_ENUM(NSInteger, WPIAMBannerPosition) {
+    WPIAMBannerPositionTop,
+    WPIAMBannerPositionBottom,
+};
+
 NS_ASSUME_NONNULL_BEGIN
 /**
  * This protocol models the message content (non-ui related) data for an in-app message.
@@ -37,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly, nullable) NSURL *imageURL;
 @property(nonatomic, readonly, nullable) NSURL *landscapeImageURL;
 @property(nonatomic, readonly) WPIAMCloseButtonPosition closeButtonPosition;
+@property(nonatomic, readonly) WPIAMBannerPosition bannerPosition;
 
 // Load image data, which can potentially have two images (one for landscape display). If only
 // one image URL exists, that image is loaded and its data is passed in the callback block.

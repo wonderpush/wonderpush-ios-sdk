@@ -49,6 +49,14 @@ typedef NS_ENUM(NSInteger, WPInAppMessagingCloseButtonPosition) {
     WPInAppMessagingCloseButtonPositionNone,
 };
 
+/// Where to place the banner
+typedef NS_ENUM(NSInteger, WPInAppMessagingBannerPosition) {
+    /// At the top of the screen
+    WPInAppMessagingBannerPositionTop,
+    /// At the bottom of the screen
+    WPInAppMessagingBannerPositionBottom,
+};
+
 /** Contains the display information for an action button.
  */
 NS_SWIFT_NAME(InAppMessagingActionButton)
@@ -258,6 +266,11 @@ NS_SWIFT_NAME(InAppMessagingBannerDisplay)
  * Gets the color for text in banner IAM message. It would apply to both title and body text.
  */
 @property(nonatomic, copy, nonnull) UIColor *textColor;
+
+/**
+ * Where to place the banner.
+ */
+@property(nonatomic, assign) WPInAppMessagingBannerPosition bannerPosition;
 
 /**
  * Gets the action URL for a banner IAM message.
