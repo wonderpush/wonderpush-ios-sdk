@@ -163,9 +163,13 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
 - (void)dismissViewWithAnimation:(void (^)(void))completion {
     [UIView animateWithDuration:kBannerViewAnimationDuration
                           delay:0
-                        options:UIViewAnimationOptionCurveLinear
+                        options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
-        [self translateOffscreen];
+        if (@available(iOS 13.0, *)) {
+            [self translateOffscreen];
+        } else {
+            [self translateOffscreenForDismissInIOS12];
+        }
     }
                      completion:^(BOOL finished) {
         completion();
@@ -264,7 +268,7 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
         self.hidingForAnimation = NO;
         [UIView animateWithDuration:kBannerViewAnimationDuration
                               delay:0
-                            options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
+                            options:UIViewAnimationOptionCurveEaseInOut
                          animations:^{
             [self translateOnscreen];
         }
@@ -281,6 +285,16 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
             break;
         case WPInAppMessagingBannerPositionTop:
             self.view.frame = CGRectMake(0, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height);
+            break;
+    }
+}
+- (void)translateOffscreenForDismissInIOS12 {
+    switch (self.bannerDisplayMessage.bannerPosition) {
+        case WPInAppMessagingBannerPositionBottom:
+            self.view.transform = CGAffineTransformMakeTranslation(0, self.view.frame.size.height);
+            break;
+        case WPInAppMessagingBannerPositionTop:
+            self.view.transform = CGAffineTransformMakeTranslation(0, -self.view.frame.size.height);
             break;
     }
 }
