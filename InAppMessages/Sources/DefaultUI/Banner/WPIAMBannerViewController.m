@@ -27,7 +27,6 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topPaddingViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomPaddingViewHeightConstraint;
 @property(nonatomic, assign) BOOL hidingForAnimation;
-@property(nonatomic, assign) BOOL initialSetupDone;
 @property(weak, nonatomic) IBOutlet UIView *bottomPaddingView;
 @property(weak, nonatomic) IBOutlet UIView *containerView;
 @property(weak, nonatomic) IBOutlet UIImageView *imageView;
@@ -205,29 +204,28 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
     self.bodyLabel.frame = theFrame;
 }
 
+- (void)viewSafeAreaInsetsDidChange {
+    [super viewSafeAreaInsetsDidChange];
+    if (self.bannerDisplayMessage.bannerPosition == WPInAppMessagingBannerPositionTop) {
+        if (@available(iOS 11.0, *)) {
+            self.topPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.top;
+        } else {
+            self.topPaddingViewHeightConstraint.constant = UIApplication.sharedApplication.statusBarFrame.size.height;
+        }
+        self.bottomPaddingViewHeightConstraint.constant = 0;
+    } else {
+        self.topPaddingViewHeightConstraint.constant = 0;
+        if (@available(iOS 11.0, *)) {
+            self.bottomPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.bottom;
+        } else {
+            self.bottomPaddingViewHeightConstraint.constant = 0; // iPhone X started with iOS 11 and it's the first device with a bottom safe area inset
+        }
+    }
+    [self.view setNeedsLayout];
+}
+
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    
-    if (!self.initialSetupDone) {
-        self.initialSetupDone = YES;
-        if (self.bannerDisplayMessage.bannerPosition == WPInAppMessagingBannerPositionTop) {
-            if (@available(iOS 11.0, *)) {
-                self.topPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.top;
-            } else {
-                self.topPaddingViewHeightConstraint.constant = UIApplication.sharedApplication.statusBarFrame.size.height;
-            }
-            self.bottomPaddingViewHeightConstraint.constant = 0;
-        } else {
-            self.topPaddingViewHeightConstraint.constant = 0;
-            if (@available(iOS 11.0, *)) {
-                self.bottomPaddingViewHeightConstraint.constant = self.view.safeAreaInsets.bottom;
-            } else {
-                self.bottomPaddingViewHeightConstraint.constant = 0; // iPhone X started with iOS 11 and it's the first device with a bottom safe area inset
-            }
-        }
-        [self.view layoutSubviews];
-    }
-    
     [self adjustBodyLabelViewHeight];
     CGFloat bannerViewHeight = CGRectGetMaxY(self.bottomPaddingView.frame);
     
