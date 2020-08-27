@@ -57,6 +57,8 @@
                           textColor:(UIColor *)textColor
                   portraitImageData:(WPInAppMessagingImageData *)portraitImageData
                     backgroundColor:(UIColor *)backgroundColor
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                 primaryActionButton:(WPInAppMessagingActionButton *)primaryActionButton
                       primaryAction:(WPAction *)primaryAction {
 #pragma clang diagnostic push
@@ -71,6 +73,8 @@
         _displayBackgroundColor = backgroundColor;
         _primaryActionButton = primaryActionButton;
         _primaryAction = primaryAction;
+        _entryAnimation = entryAnimation;
+        _exitAnimation = exitAnimation;
     }
     return self;
 }
@@ -111,6 +115,8 @@
                           textColor:(UIColor *)textColor
                     backgroundColor:(UIColor *)backgroundColor
                           imageData:(nullable WPInAppMessagingImageData *)imageData
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                        actionButton:(nullable WPInAppMessagingActionButton *)actionButton
                              action:(nullable WPAction *)action
                 closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition {
@@ -125,6 +131,8 @@
         _actionButton = actionButton;
         _action = action;
         _closeButtonPosition = closeButtonPosition;
+        _entryAnimation = entryAnimation;
+        _exitAnimation = exitAnimation;
     }
     return self;
 }
@@ -135,6 +143,8 @@
 - (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                             payload:(NSDictionary *)payload
                           imageData:(nullable WPInAppMessagingImageData *)imageData
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                              action:(nullable WPAction *)action
                 closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition {
     if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeModal
@@ -143,6 +153,8 @@
         _imageData = imageData;
         _action = action;
         _closeButtonPosition = closeButtonPosition;
+        _entryAnimation = entryAnimation;
+        _exitAnimation = exitAnimation;
     }
     return self;
 }

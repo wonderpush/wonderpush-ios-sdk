@@ -195,11 +195,31 @@
         NSString *title, *body, *imageURLStr, *landscapeImageURLStr,
         *actionButtonText, *secondaryActionButtonText;
         WPIAMCloseButtonPosition closeButtonPosition = WPIAMCloseButtonPositionOutside;
+        WPIAMEntryAnimation entryAnimation = WPIAMEntryAnimationFadeIn;
+        WPIAMExitAnimation exitAnimation = WPIAMExitAnimationFadeOut;
         WPIAMBannerPosition bannerPosition = WPIAMBannerPositionTop;
         title = body = imageURLStr = landscapeImageURLStr = actionButtonText =
         secondaryActionButtonText = nil;
         WPAction *action = nil, *secondaryAction = nil;
         
+        WPIAMEntryAnimation(^parseEntryAnimation)(NSDictionary *) = ^(id input) {
+            if ([input[@"entryAnimation"] isEqualToString:@"scaleUp"]) return WPIAMEntryAnimationScaleUp;
+            if ([input[@"entryAnimation"] isEqualToString:@"fadeIn"]) return WPIAMEntryAnimationFadeIn;
+            if ([input[@"entryAnimation"] isEqualToString:@"slideInFromRight"]) return WPIAMEntryAnimationSlideInFromRight;
+            if ([input[@"entryAnimation"] isEqualToString:@"slideInFromLeft"]) return WPIAMEntryAnimationSlideInFromLeft;
+            if ([input[@"entryAnimation"] isEqualToString:@"slideInFromTop"]) return WPIAMEntryAnimationSlideInFromTop;
+            if ([input[@"entryAnimation"] isEqualToString:@"slideInFromBottom"]) return WPIAMEntryAnimationSlideInFromBottom;
+            return WPIAMEntryAnimationFadeIn;
+        };
+        WPIAMExitAnimation(^parseExitAnimation)(NSDictionary *) = ^(id input) {
+            if ([input[@"exitAnimation"] isEqualToString:@"scaleDown"]) return WPIAMExitAnimationScaleDown;
+            if ([input[@"exitAnimation"] isEqualToString:@"fadeOut"]) return WPIAMExitAnimationFadeOut;
+            if ([input[@"exitAnimation"] isEqualToString:@"slideOutRight"]) return WPIAMExitAnimationSlideOutRight;
+            if ([input[@"exitAnimation"] isEqualToString:@"slideOutLeft"]) return WPIAMExitAnimationSlideOutLeft;
+            if ([input[@"exitAnimation"] isEqualToString:@"slideOutUp"]) return WPIAMExitAnimationSlideOutUp;
+            if ([input[@"exitAnimation"] isEqualToString:@"slideOutDown"]) return WPIAMExitAnimationSlideOutDown;
+            return WPIAMExitAnimationFadeOut;
+        };
         // TODO: Refactor this giant if-else block into separate parsing methods per message type.
         if ([content[@"banner"] isKindOfClass:[NSDictionary class]]) {
             NSDictionary *bannerNode = (NSDictionary *)contentNode[@"banner"];
@@ -219,8 +239,9 @@
             }            
         } else if ([content[@"modal"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsModalView;
-            
             NSDictionary *modalNode = (NSDictionary *)contentNode[@"modal"];
+            entryAnimation = parseEntryAnimation(modalNode);
+            exitAnimation = parseExitAnimation(modalNode);
             title = modalNode[@"title"][@"text"];
             titleTextColor = [UIColor firiam_colorWithHexString:modalNode[@"title"][@"hexColor"]];
             
@@ -241,7 +262,9 @@
         } else if ([content[@"imageOnly"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsImageOnlyView;
             NSDictionary *imageOnlyNode = (NSDictionary *)contentNode[@"imageOnly"];
-            
+            entryAnimation = parseEntryAnimation(imageOnlyNode);
+            exitAnimation = parseExitAnimation(imageOnlyNode);
+
             imageURLStr = imageOnlyNode[@"imageUrl"];
             
             if (!imageURLStr) {
@@ -256,6 +279,8 @@
         } else if ([content[@"card"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsCardView;
             NSDictionary *cardNode = (NSDictionary *)contentNode[@"card"];
+            entryAnimation = parseEntryAnimation(cardNode);
+            exitAnimation = parseExitAnimation(cardNode);
             title = cardNode[@"title"][@"text"];
             titleTextColor = [UIColor firiam_colorWithHexString:cardNode[@"title"][@"hexColor"]];
             
@@ -352,6 +377,8 @@
                                                         landscapeImageURL:landscapeImageURL
                                                       closeButtonPosition:closeButtonPosition
                                                            bannerPosition:bannerPosition
+                                                           entryAnimation:entryAnimation
+                                                            exitAnimation:exitAnimation
                                                           usingURLSession:nil];
         
         WPIAMMessageRenderData *renderData =

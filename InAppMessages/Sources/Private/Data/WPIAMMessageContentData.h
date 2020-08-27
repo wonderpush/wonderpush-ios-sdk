@@ -28,6 +28,24 @@ typedef NS_ENUM(NSInteger, WPIAMBannerPosition) {
     WPIAMBannerPositionBottom,
 };
 
+typedef NS_ENUM(NSInteger, WPIAMEntryAnimation) {
+    WPIAMEntryAnimationScaleUp,
+    WPIAMEntryAnimationFadeIn,
+    WPIAMEntryAnimationSlideInFromRight,
+    WPIAMEntryAnimationSlideInFromLeft,
+    WPIAMEntryAnimationSlideInFromTop,
+    WPIAMEntryAnimationSlideInFromBottom,
+};
+
+typedef NS_ENUM(NSInteger, WPIAMExitAnimation) {
+    WPIAMExitAnimationScaleDown,
+    WPIAMExitAnimationFadeOut,
+    WPIAMExitAnimationSlideOutRight,
+    WPIAMExitAnimationSlideOutLeft,
+    WPIAMExitAnimationSlideOutUp,
+    WPIAMExitAnimationSlideOutDown,
+};
+
 NS_ASSUME_NONNULL_BEGIN
 /**
  * This protocol models the message content (non-ui related) data for an in-app message.
@@ -42,6 +60,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly, nullable) NSURL *imageURL;
 @property(nonatomic, readonly, nullable) NSURL *landscapeImageURL;
 @property(nonatomic, readonly) WPIAMCloseButtonPosition closeButtonPosition;
+@property(nonatomic, readonly) WPIAMEntryAnimation entryAnimation;
+@property(nonatomic, readonly) WPIAMExitAnimation exitAnimation;
+
 @property(nonatomic, readonly) WPIAMBannerPosition bannerPosition;
 
 // Load image data, which can potentially have two images (one for landscape display). If only

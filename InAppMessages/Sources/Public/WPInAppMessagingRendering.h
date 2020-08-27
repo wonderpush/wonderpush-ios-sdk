@@ -57,6 +57,38 @@ typedef NS_ENUM(NSInteger, WPInAppMessagingBannerPosition) {
     WPInAppMessagingBannerPositionBottom,
 };
 
+/// Entry animations
+typedef NS_ENUM(NSInteger, WPInAppMessagingEntryAnimation) {
+    /// Scale up from the center
+    WPInAppMessagingEntryAnimationScaleUp,
+    /// Fade in
+    WPInAppMessagingEntryAnimationFadeIn,
+    /// Slide into view from the right side of the screen
+    WPInAppMessagingEntryAnimationSlideInFromRight,
+    /// Slide into view from the left side of the screen
+    WPInAppMessagingEntryAnimationSlideInFromLeft,
+    /// Slide into view from the top of the screen
+    WPInAppMessagingEntryAnimationSlideInFromTop,
+    /// Slide into view from the bottom of the screen
+    WPInAppMessagingEntryAnimationSlideInFromBottom,
+};
+
+/// Exit animations
+typedef NS_ENUM(NSInteger, WPInAppMessagingExitAnimation) {
+    /// Scale down to the center
+    WPInAppMessagingExitAnimationScaleDown,
+    /// Fade out
+    WPInAppMessagingExitAnimationFadeOut,
+    /// Slide out of the view from the right side of the screen
+    WPInAppMessagingExitAnimationSlideOutRight,
+    /// Slide out of the view from the left side of the screen
+    WPInAppMessagingExitAnimationSlideOutLeft,
+    /// Slide out of the view from the top of the screen
+    WPInAppMessagingExitAnimationSlideOutUp,
+    /// Slide out of the view from the bottom of the screen
+    WPInAppMessagingExitAnimationSlideOutDown,
+};
+
 /** Contains the display information for an action button.
  */
 NS_SWIFT_NAME(InAppMessagingActionButton)
@@ -182,6 +214,16 @@ NS_SWIFT_NAME(InAppMessagingCardDisplay)
  */
 @property(nonatomic, nullable, readonly) WPAction *secondaryAction;
 
+/**
+ * Entry animation
+ */
+@property(nonatomic, readonly) WPInAppMessagingEntryAnimation entryAnimation;
+
+/**
+ * Exit animation
+ */
+@property(nonatomic, readonly) WPInAppMessagingExitAnimation exitAnimation;
+
 /// Unavailable.
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -231,6 +273,16 @@ NS_SWIFT_NAME(InAppMessagingModalDisplay)
  * Where to put the close button
  */
 @property(nonatomic, readonly) WPInAppMessagingCloseButtonPosition closeButtonPosition;
+
+/**
+ * Entry animation
+ */
+@property(nonatomic, readonly) WPInAppMessagingEntryAnimation entryAnimation;
+
+/**
+ * Exit animation
+ */
+@property(nonatomic, readonly) WPInAppMessagingExitAnimation exitAnimation;
 
 /// Unavailable.
 - (instancetype)init NS_UNAVAILABLE;
@@ -301,6 +353,16 @@ NS_SWIFT_NAME(InAppMessagingImageOnlyDisplay)
  * Where to put the close button
  */
 @property(nonatomic, readonly) WPInAppMessagingCloseButtonPosition closeButtonPosition;
+
+/**
+ * Entry animation
+ */
+@property(nonatomic, readonly) WPInAppMessagingEntryAnimation entryAnimation;
+
+/**
+ * Exit animation
+ */
+@property(nonatomic, readonly) WPInAppMessagingExitAnimation exitAnimation;
 
 /// Unavailable.
 - (instancetype)init NS_UNAVAILABLE;

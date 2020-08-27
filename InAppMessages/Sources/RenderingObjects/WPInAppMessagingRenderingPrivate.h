@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
                           textColor:(UIColor *)textColor
                   portraitImageData:(WPInAppMessagingImageData *)portraitImageData
                     backgroundColor:(UIColor *)backgroundColor
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                 primaryActionButton:(WPInAppMessagingActionButton *)primaryActionButton
                       primaryAction:(nullable WPAction *)primaryAction;
 @end
@@ -65,6 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
                           textColor:(UIColor *)textColor
                     backgroundColor:(UIColor *)backgroundColor
                           imageData:(nullable WPInAppMessagingImageData *)imageData
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                        actionButton:(nullable WPInAppMessagingActionButton *)actionButton
                              action:(nullable WPAction *)action
                 closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition;
@@ -90,6 +94,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                             payload:(NSDictionary *)payload
                           imageData:(nullable WPInAppMessagingImageData *)imageData
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                              action:(nullable WPAction *)action
                 closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition;
 

@@ -48,6 +48,26 @@
     WPIAMMessageDefinition *_currentMsgBeingDisplayed;
 }
 
++ (WPInAppMessagingEntryAnimation)convertEntryAnimation:(WPIAMEntryAnimation)entryAnimation {
+    switch (entryAnimation) {
+        case WPIAMEntryAnimationScaleUp: return WPInAppMessagingEntryAnimationScaleUp;
+        case WPIAMEntryAnimationFadeIn: return WPInAppMessagingEntryAnimationFadeIn;
+        case WPIAMEntryAnimationSlideInFromTop: return WPInAppMessagingEntryAnimationSlideInFromTop;
+        case WPIAMEntryAnimationSlideInFromRight: return WPInAppMessagingEntryAnimationSlideInFromRight;
+        case WPIAMEntryAnimationSlideInFromBottom: return WPInAppMessagingEntryAnimationSlideInFromBottom;
+        case WPIAMEntryAnimationSlideInFromLeft: return WPInAppMessagingEntryAnimationSlideInFromLeft;
+    }
+}
++ (WPInAppMessagingExitAnimation)convertExitAnimation:(WPIAMExitAnimation)exitAnimation {
+    switch (exitAnimation) {
+        case WPIAMExitAnimationFadeOut: return WPInAppMessagingExitAnimationFadeOut;
+        case WPIAMExitAnimationScaleDown: return WPInAppMessagingExitAnimationScaleDown;
+        case WPIAMExitAnimationSlideOutDown: return WPInAppMessagingExitAnimationSlideOutDown;
+        case WPIAMExitAnimationSlideOutUp: return WPInAppMessagingExitAnimationSlideOutUp;
+        case WPIAMExitAnimationSlideOutLeft: return WPInAppMessagingExitAnimationSlideOutLeft;
+        case WPIAMExitAnimationSlideOutRight: return WPInAppMessagingExitAnimationSlideOutRight;
+    }
+}
 #pragma mark - WPInAppMessagingDisplayDelegate methods
 - (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
             withAction:(WPAction *)action {
@@ -297,7 +317,9 @@
     
     NSString *title = renderData.contentData.titleText;
     NSString *body = renderData.contentData.bodyText;
-    
+    WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
+    WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
+
     // Action button data is never nil for a card message.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -326,6 +348,8 @@
                                                 textColor:renderData.renderingEffectSettings.textColor
                                                 portraitImageData:portraitImageData
                                                 backgroundColor:renderData.renderingEffectSettings.displayBGColor
+                                                entryAnimation:entryAnimation
+                                                exitAnimation:exitAnimation
                                                 primaryActionButton:primaryActionButton
                                                 primaryAction:definition.renderData.contentData.action];
     
@@ -385,13 +409,17 @@
             closeButtonPosition = WPInAppMessagingCloseButtonPositionNone;
             break;
     }
-    
+    WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
+    WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingImageOnlyDisplay *imageOnlyMessage = [[WPInAppMessagingImageOnlyDisplay alloc]
                                                           initWithTriggerType:triggerType
                                                           payload:definition.payload
                                                           imageData:imageData
+                                                          entryAnimation:entryAnimation
+                                                          exitAnimation:exitAnimation
                                                           action:definition.renderData.contentData.action
                                                           closeButtonPosition:closeButtonPosition];
 #pragma clang diagnostic pop
@@ -408,7 +436,9 @@
     
     NSString *title = renderData.contentData.titleText;
     NSString *body = renderData.contentData.bodyText;
-    
+    WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
+    WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
+
     WPInAppMessagingActionButton *actionButton = nil;
     
     if (definition.renderData.contentData.actionButtonText) {
@@ -444,6 +474,8 @@
                                                       textColor:renderData.renderingEffectSettings.textColor
                                                       backgroundColor:renderData.renderingEffectSettings.displayBGColor
                                                       imageData:imageData
+                                                      entryAnimation:entryAnimation
+                                                      exitAnimation:exitAnimation
                                                       actionButton:actionButton
                                                       action:definition.renderData.contentData.action
                                                       closeButtonPosition:closeButtonPosition];
