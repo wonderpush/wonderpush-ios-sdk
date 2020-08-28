@@ -222,6 +222,7 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    [self.titleLabel sizeToFit];
     [self adjustBodyLabelViewHeight];
     if (@available(iOS 11.0, *)) {
         // Handled in viewSafeAreaInsetsDidChange
