@@ -282,20 +282,23 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
     CGFloat appWindowHeight = self.view.window.bounds.size.height;
     switch (self.bannerDisplayMessage.bannerPosition) {
         case WPInAppMessagingBannerPositionBottom:
-            self.view.frame = CGRectMake(0, appWindowHeight, self.view.frame.size.width, self.view.frame.size.height);
+            self.view.frame = CGRectMake(self.view.frame.origin.x,
+                                         appWindowHeight,
+                                         self.view.frame.size.width,
+                                         self.view.frame.size.height);
             break;
         case WPInAppMessagingBannerPositionTop:
-            self.view.frame = CGRectMake(0, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height);
+            self.view.frame = CGRectMake(self.view.frame.origin.x, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height);
             break;
     }
 }
 - (void)translateOffscreenForDismissInIOS12 {
     switch (self.bannerDisplayMessage.bannerPosition) {
         case WPInAppMessagingBannerPositionBottom:
-            self.view.transform = CGAffineTransformMakeTranslation(0, self.view.frame.size.height);
+            self.view.transform = CGAffineTransformMakeTranslation(self.view.frame.origin.x, self.view.frame.size.height);
             break;
         case WPInAppMessagingBannerPositionTop:
-            self.view.transform = CGAffineTransformMakeTranslation(0, -self.view.frame.size.height);
+            self.view.transform = CGAffineTransformMakeTranslation(self.view.frame.origin.x, -self.view.frame.size.height);
             break;
     }
 }
@@ -304,10 +307,10 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
     CGFloat appWindowHeight = self.view.window.bounds.size.height;
     switch (self.bannerDisplayMessage.bannerPosition) {
         case WPInAppMessagingBannerPositionBottom:
-            self.view.frame = CGRectMake(0, appWindowHeight - self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height);
+            self.view.frame = CGRectMake(self.view.frame.origin.x, appWindowHeight - self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height);
             break;
         case WPInAppMessagingBannerPositionTop:
-            self.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+            self.view.frame = CGRectMake(self.view.frame.origin.x, 0, self.view.frame.size.width, self.view.frame.size.height);
             break;
     }
 }
