@@ -59,8 +59,6 @@ typedef NS_ENUM(NSInteger, WPInAppMessagingBannerPosition) {
 
 /// Entry animations
 typedef NS_ENUM(NSInteger, WPInAppMessagingEntryAnimation) {
-    /// Scale up from the center
-    WPInAppMessagingEntryAnimationScaleUp,
     /// Fade in
     WPInAppMessagingEntryAnimationFadeIn,
     /// Slide into view from the right side of the screen
@@ -75,8 +73,6 @@ typedef NS_ENUM(NSInteger, WPInAppMessagingEntryAnimation) {
 
 /// Exit animations
 typedef NS_ENUM(NSInteger, WPInAppMessagingExitAnimation) {
-    /// Scale down to the center
-    WPInAppMessagingExitAnimationScaleDown,
     /// Fade out
     WPInAppMessagingExitAnimationFadeOut,
     /// Slide out of the view from the right side of the screen

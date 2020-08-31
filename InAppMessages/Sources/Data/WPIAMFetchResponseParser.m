@@ -203,7 +203,6 @@
         WPAction *action = nil, *secondaryAction = nil;
         
         WPIAMEntryAnimation(^parseEntryAnimation)(NSDictionary *) = ^(id input) {
-            if ([input[@"entryAnimation"] isEqualToString:@"scaleUp"]) return WPIAMEntryAnimationScaleUp;
             if ([input[@"entryAnimation"] isEqualToString:@"fadeIn"]) return WPIAMEntryAnimationFadeIn;
             if ([input[@"entryAnimation"] isEqualToString:@"slideInFromRight"]) return WPIAMEntryAnimationSlideInFromRight;
             if ([input[@"entryAnimation"] isEqualToString:@"slideInFromLeft"]) return WPIAMEntryAnimationSlideInFromLeft;
@@ -212,7 +211,6 @@
             return WPIAMEntryAnimationFadeIn;
         };
         WPIAMExitAnimation(^parseExitAnimation)(NSDictionary *) = ^(id input) {
-            if ([input[@"exitAnimation"] isEqualToString:@"scaleDown"]) return WPIAMExitAnimationScaleDown;
             if ([input[@"exitAnimation"] isEqualToString:@"fadeOut"]) return WPIAMExitAnimationFadeOut;
             if ([input[@"exitAnimation"] isEqualToString:@"slideOutRight"]) return WPIAMExitAnimationSlideOutRight;
             if ([input[@"exitAnimation"] isEqualToString:@"slideOutLeft"]) return WPIAMExitAnimationSlideOutLeft;

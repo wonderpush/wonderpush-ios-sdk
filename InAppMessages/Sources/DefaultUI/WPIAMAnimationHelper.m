@@ -32,7 +32,7 @@
             view.frame = CGRectMake(view.frame.origin.x + controller.view.frame.size.width, view.frame.origin.y, view.frame.size.width, view.frame.size.height);
         }
             break;
-        case WPInAppMessagingEntryAnimationScaleUp:
+        default:
             break;
     }
     
@@ -72,7 +72,7 @@
             } completion:completion];
         }
             break;
-        case WPInAppMessagingEntryAnimationScaleUp:
+        default:
             if (completion) completion(YES);
             break;
     }
@@ -114,7 +114,7 @@
             } completion:completion];
         }
             break;
-        case WPInAppMessagingExitAnimationScaleDown:
+        default:
             if (completion) completion(YES);
             break;
     }

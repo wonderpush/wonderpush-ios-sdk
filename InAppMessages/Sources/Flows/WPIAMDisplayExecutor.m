@@ -50,7 +50,6 @@
 
 + (WPInAppMessagingEntryAnimation)convertEntryAnimation:(WPIAMEntryAnimation)entryAnimation {
     switch (entryAnimation) {
-        case WPIAMEntryAnimationScaleUp: return WPInAppMessagingEntryAnimationScaleUp;
         case WPIAMEntryAnimationFadeIn: return WPInAppMessagingEntryAnimationFadeIn;
         case WPIAMEntryAnimationSlideInFromTop: return WPInAppMessagingEntryAnimationSlideInFromTop;
         case WPIAMEntryAnimationSlideInFromRight: return WPInAppMessagingEntryAnimationSlideInFromRight;
@@ -61,7 +60,6 @@
 + (WPInAppMessagingExitAnimation)convertExitAnimation:(WPIAMExitAnimation)exitAnimation {
     switch (exitAnimation) {
         case WPIAMExitAnimationFadeOut: return WPInAppMessagingExitAnimationFadeOut;
-        case WPIAMExitAnimationScaleDown: return WPInAppMessagingExitAnimationScaleDown;
         case WPIAMExitAnimationSlideOutDown: return WPInAppMessagingExitAnimationSlideOutDown;
         case WPIAMExitAnimationSlideOutUp: return WPInAppMessagingExitAnimationSlideOutUp;
         case WPIAMExitAnimationSlideOutLeft: return WPInAppMessagingExitAnimationSlideOutLeft;

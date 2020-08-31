@@ -29,7 +29,6 @@ typedef NS_ENUM(NSInteger, WPIAMBannerPosition) {
 };
 
 typedef NS_ENUM(NSInteger, WPIAMEntryAnimation) {
-    WPIAMEntryAnimationScaleUp,
     WPIAMEntryAnimationFadeIn,
     WPIAMEntryAnimationSlideInFromRight,
     WPIAMEntryAnimationSlideInFromLeft,
@@ -38,7 +37,6 @@ typedef NS_ENUM(NSInteger, WPIAMEntryAnimation) {
 };
 
 typedef NS_ENUM(NSInteger, WPIAMExitAnimation) {
-    WPIAMExitAnimationScaleDown,
     WPIAMExitAnimationFadeOut,
     WPIAMExitAnimationSlideOutRight,
     WPIAMExitAnimationSlideOutLeft,
