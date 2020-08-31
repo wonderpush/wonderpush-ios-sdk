@@ -20,9 +20,18 @@
             view.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y - controller.view.frame.size.height, view.frame.size.width, view.frame.size.height);
         }
             break;
-        case WPInAppMessagingEntryAnimationSlideInFromRight:
-        case WPInAppMessagingEntryAnimationSlideInFromBottom:
-        case WPInAppMessagingEntryAnimationSlideInFromLeft:
+        case WPInAppMessagingEntryAnimationSlideInFromBottom: {
+            view.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y + controller.view.frame.size.height, view.frame.size.width, view.frame.size.height);
+        }
+            break;
+        case WPInAppMessagingEntryAnimationSlideInFromLeft: {
+            view.frame = CGRectMake(view.frame.origin.x - controller.view.frame.size.width, view.frame.origin.y, view.frame.size.width, view.frame.size.height);
+        }
+            break;
+        case WPInAppMessagingEntryAnimationSlideInFromRight: {
+            view.frame = CGRectMake(view.frame.origin.x + controller.view.frame.size.width, view.frame.origin.y, view.frame.size.width, view.frame.size.height);
+        }
+            break;
         case WPInAppMessagingEntryAnimationScaleUp:
             break;
     }
@@ -42,13 +51,27 @@
         case WPInAppMessagingEntryAnimationSlideInFromTop: {
             [UIView animateWithDuration:0.3f animations:^{
                 view.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y + controller.view.frame.size.height, view.frame.size.width, view.frame.size.height);
-
             } completion:completion];
         }
             break;
-        case WPInAppMessagingEntryAnimationSlideInFromRight:
-        case WPInAppMessagingEntryAnimationSlideInFromBottom:
-        case WPInAppMessagingEntryAnimationSlideInFromLeft:
+        case WPInAppMessagingEntryAnimationSlideInFromBottom: {
+            [UIView animateWithDuration:0.3f animations:^{
+                view.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y - controller.view.frame.size.height, view.frame.size.width, view.frame.size.height);
+            } completion:completion];
+        }
+            break;
+        case WPInAppMessagingEntryAnimationSlideInFromLeft: {
+            [UIView animateWithDuration:0.3f animations:^{
+                view.frame = CGRectMake(view.frame.origin.x + controller.view.frame.size.width, view.frame.origin.y, view.frame.size.width, view.frame.size.height);
+            } completion:completion];
+        }
+            break;
+        case WPInAppMessagingEntryAnimationSlideInFromRight: {
+            [UIView animateWithDuration:0.3f animations:^{
+                view.frame = CGRectMake(view.frame.origin.x - controller.view.frame.size.width, view.frame.origin.y, view.frame.size.width, view.frame.size.height);
+            } completion:completion];
+        }
+            break;
         case WPInAppMessagingEntryAnimationScaleUp:
             if (completion) completion(YES);
             break;
@@ -70,13 +93,27 @@
         case WPInAppMessagingExitAnimationSlideOutUp: {
             [UIView animateWithDuration:0.3f animations:^{
                 view.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y - controller.view.frame.size.height, view.frame.size.width, view.frame.size.height);
-
             } completion:completion];
         }
             break;
-        case WPInAppMessagingExitAnimationSlideOutRight:
-        case WPInAppMessagingExitAnimationSlideOutDown:
-        case WPInAppMessagingExitAnimationSlideOutLeft:
+        case WPInAppMessagingExitAnimationSlideOutDown: {
+            [UIView animateWithDuration:0.3f animations:^{
+                view.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y + controller.view.frame.size.height, view.frame.size.width, view.frame.size.height);
+            } completion:completion];
+        }
+            break;
+        case WPInAppMessagingExitAnimationSlideOutLeft: {
+            [UIView animateWithDuration:0.3f animations:^{
+                view.frame = CGRectMake(view.frame.origin.x - controller.view.frame.size.width, view.frame.origin.y, view.frame.size.width, view.frame.size.height);
+            } completion:completion];
+        }
+            break;
+        case WPInAppMessagingExitAnimationSlideOutRight: {
+            [UIView animateWithDuration:0.3f animations:^{
+                view.frame = CGRectMake(view.frame.origin.x + controller.view.frame.size.width, view.frame.origin.y, view.frame.size.width, view.frame.size.height);
+            } completion:completion];
+        }
+            break;
         case WPInAppMessagingExitAnimationScaleDown:
             if (completion) completion(YES);
             break;
