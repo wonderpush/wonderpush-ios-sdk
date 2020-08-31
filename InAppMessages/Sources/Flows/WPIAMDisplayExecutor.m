@@ -376,6 +376,9 @@
             bannerPosition = WPInAppMessagingBannerPositionBottom;
             break;
     }
+    WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
+    WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingBannerDisplay *bannerMessage = [[WPInAppMessagingBannerDisplay alloc]
@@ -387,6 +390,8 @@
                                                     backgroundColor:definition.renderData.renderingEffectSettings.displayBGColor
                                                     imageData:imageData
                                                     bannerPosition:bannerPosition
+                                                    entryAnimation:entryAnimation
+                                                     exitAnimation:exitAnimation
                                                     action:definition.renderData.contentData.action];
 #pragma clang diagnostic pop
     

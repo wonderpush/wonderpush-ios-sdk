@@ -17,8 +17,9 @@
 #import <UIKit/UIKit.h>
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WPIAMModalViewController.h"
+#import "WPIAMHitTestDelegateView.h"
 
-@interface WPIAMModalViewController ()
+@interface WPIAMModalViewController () <WPIAMHitTestDelegate>
 
 @property(nonatomic, readwrite) WPInAppMessagingModalDisplay *modalDisplayMessage;
 
@@ -26,7 +27,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property(weak, nonatomic) IBOutlet UIButton *actionButton;
 
-@property(weak, nonatomic) IBOutlet UIView *messageCardView;
+@property(weak, nonatomic) IBOutlet WPIAMHitTestDelegateView *messageCardView;
 @property(weak, nonatomic) IBOutlet UITextView *bodyTextView;
 @property(weak, nonatomic) IBOutlet UIButton *closeButton;
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonInsideHorizontalConstraint;
@@ -106,17 +107,17 @@ static CGFloat LandScapePaddingBetweenImageAndTextColumn = 24;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // make the background half transparent
-    [self.view setBackgroundColor:[UIColor.grayColor colorWithAlphaComponent:0.5]];
+    self.view.backgroundColor = UIColor.clearColor;
     self.messageCardView.layer.cornerRadius = 4;
+    self.messageCardView.clipsToBounds = NO;
+    self.messageCardView.pointInsideDelegate = self;
     
     if (self.modalDisplayMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone) {
         UITapGestureRecognizer *closeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeButtonClicked:)];
         closeGestureRecognizer.delaysTouchesBegan = YES;
         closeGestureRecognizer.numberOfTapsRequired = 1;
-        self.view.userInteractionEnabled = YES;
-        [self.view addGestureRecognizer:closeGestureRecognizer];
+        self.dimBackgroundView.userInteractionEnabled = YES;
+        [self.dimBackgroundView addGestureRecognizer:closeGestureRecognizer];
     }
 
     
@@ -178,6 +179,18 @@ static CGFloat LandScapePaddingBetweenImageAndTextColumn = 24;
             self.closeButton.hidden = YES;
             break;
     }
+}
+
+- (BOOL)pointInside:(CGPoint)point view:(UIView *)view withEvent:(UIEvent *)event {
+    if (view == self.messageCardView) {
+        if ([self.closeButton pointInside:[self.closeButton convertPoint:point fromView:view] withEvent:event]) return YES;
+        return CGRectContainsPoint(self.messageCardView.bounds, [self.messageCardView convertPoint:point fromView:view]);
+    }
+    return NO;
+}
+
+- (UIView *)viewToAnimate {
+    return self.messageCardView;
 }
 
 // for text display UIview, which could be a UILabel or UITextView, decide the fit height under a
@@ -478,4 +491,5 @@ struct TitleBodyButtonHeightInfo {
         // Do nothing
     }];
 }
+
 @end

@@ -342,4 +342,12 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
     WPLogDebug(@"-[WPIAMBannerViewController dealloc] triggered for %p", self);
     [self.autoDismissTimer invalidate];
 }
+
+- (UIView *)viewToAnimate {
+    return nil; // do not animate
+}
+
+- (BOOL)dimsBackground {
+    return NO;
+}
 @end

@@ -54,7 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithMessageType:(WPInAppMessagingDisplayMessageType)messageType
                         triggerType:(WPInAppMessagingDisplayTriggerType)triggerType
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                             payload:(NSDictionary *)payload;
+
 
 @end
 
@@ -85,6 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:(UIColor *)backgroundColor
                           imageData:(nullable WPInAppMessagingImageData *)imageData
                      bannerPosition:(WPInAppMessagingBannerPosition)bannerPosition
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                              action:(nullable WPAction *)action;
 
 @end

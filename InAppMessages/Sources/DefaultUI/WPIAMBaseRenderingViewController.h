@@ -47,5 +47,13 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns the in-app message being displayed. Overridden by message type subclasses.
 - (nullable WPInAppMessagingDisplayMessage *)inAppMessage;
 
+// The view that should be animated on enter and exit. Return nil to avoid animation
+- (nullable UIView *)viewToAnimate;
+
+// Whether to add a semi-transparent background view. Defaults to YES. Override if necessary
+- (BOOL)dimsBackground;
+
+@property(nonatomic, nullable, weak) UIView *dimBackgroundView;
+
 @end
 NS_ASSUME_NONNULL_END

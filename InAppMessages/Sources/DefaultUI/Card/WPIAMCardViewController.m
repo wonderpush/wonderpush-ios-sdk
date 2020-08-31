@@ -20,7 +20,6 @@
 @interface WPIAMCardViewController ()
 
 @property(nonatomic, readwrite) WPInAppMessagingCardDisplay *cardDisplayMessage;
-
 @property(weak, nonatomic) IBOutlet UIView *cardView;
 @property(weak, nonatomic) IBOutlet UIImageView *imageView;
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -86,8 +85,8 @@
     self.bodyTextView.contentInset = UIEdgeInsetsZero;
     self.bodyTextView.textContainer.lineFragmentPadding = 0;
     
-    // Make the background half transparent.
-    [self.view setBackgroundColor:[UIColor.grayColor colorWithAlphaComponent:0.5]];
+    // Make the background transparent.
+    [self.view setBackgroundColor:UIColor.clearColor];
     
     self.titleLabel.text = self.cardDisplayMessage.title;
     self.titleLabel.textColor = self.cardDisplayMessage.textColor;
@@ -134,6 +133,10 @@
     
     self.textAreaScrollView.contentSize = self.bodyTextView.frame.size;
     [self.textAreaScrollView setContentOffset:CGPointZero];
+}
+
+- (UIView *)viewToAnimate {
+    return self.cardView;
 }
 
 @end

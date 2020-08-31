@@ -17,6 +17,7 @@
 #import "WPIAMBaseRenderingViewController.h"
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WPIAMTimeFetcher.h"
+#import "WPIAMAnimationHelper.h"
 
 @interface WPIAMBaseRenderingViewController ()
 // For IAM messages, it's required to be kMinValidImpressionTime to
@@ -39,6 +40,14 @@ static const NSTimeInterval kMinValidImpressionTime = 3.0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    if (self.dimsBackground) {
+        UIView *dimBackgroundView = [[UIView alloc] initWithFrame:self.view.bounds];
+        self.dimBackgroundView = dimBackgroundView;
+        self.dimBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+        self.dimBackgroundView.backgroundColor = [UIColor colorWithWhite:0.5f alpha:0.5f];
+        [self.view insertSubview:self.dimBackgroundView atIndex:0];
+    }
     
     // In order to track display time for this message, we need to respond to
     // app foreground/background events since viewDidAppear/viewDidDisappear are not
@@ -66,11 +75,20 @@ static const NSTimeInterval kMinValidImpressionTime = 3.0;
     }
 #endif  // defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
     self.aggregateImpressionTimeInSeconds = 0;
+    self.view.alpha = 0;
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self impressionStartCheckpoint];
+    self.dimBackgroundView.alpha = 0;
+    self.view.alpha = 1;
+    [WPIAMAnimationHelper prepareEntryAnimation:self.inAppMessage.entryAnimation onView:self.viewToAnimate controller:self];
+    [WPIAMAnimationHelper executeEntryAnimation:self.inAppMessage.entryAnimation onView:self.viewToAnimate controller:self completion:nil];
+    [UIView animateWithDuration:0.25f animations:^{
+        self.dimBackgroundView.alpha = 1;
+    }];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -139,10 +157,16 @@ static const NSTimeInterval kMinValidImpressionTime = 3.0;
 }
 
 - (void)dismissView:(WPInAppMessagingDismissType)dismissType {
-    [self.view.window setHidden:YES];
-    // This is for the purpose of releasing the potential memory associated with the image view.
-    self.view.window.rootViewController = nil;
-    
+    if (self.viewToAnimate) {
+        [UIView animateWithDuration:0.25f animations:^{
+            self.dimBackgroundView.alpha = 0;
+        }];
+        [WPIAMAnimationHelper executeExitAnimation:self.inAppMessage.exitAnimation onView:self.viewToAnimate controller:self completion:^(BOOL complete) {
+            [self hideAndClean];
+        }];
+    } else {
+        [self hideAndClean];
+    }
     if (self.displayDelegate) {
         [self.displayDelegate messageDismissed:[self inAppMessage] dismissType:dismissType];
     } else {
@@ -151,10 +175,23 @@ static const NSTimeInterval kMinValidImpressionTime = 3.0;
     return;
 }
 
-- (void)followAction:(WPAction *)action {
+- (void)hideAndClean {
     [self.view.window setHidden:YES];
     // This is for the purpose of releasing the potential memory associated with the image view.
     self.view.window.rootViewController = nil;
+}
+
+- (void)followAction:(WPAction *)action {
+    if (self.viewToAnimate) {
+        [UIView animateWithDuration:0.25f animations:^{
+            self.dimBackgroundView.alpha = 0;
+        }];
+        [WPIAMAnimationHelper executeExitAnimation:self.inAppMessage.exitAnimation onView:self.viewToAnimate controller:self completion:^(BOOL complete) {
+            [self hideAndClean];
+        }];
+    } else {
+        [self hideAndClean];
+    }
     
     if (self.displayDelegate) {
         [self.displayDelegate messageClicked:[self inAppMessage] withAction:action];
@@ -163,4 +200,13 @@ static const NSTimeInterval kMinValidImpressionTime = 3.0;
     }
     return;
 }
+
+- (UIView *)viewToAnimate {
+    return self.view;
+}
+
+- (BOOL)dimsBackground {
+    return YES;
+}
+
 @end

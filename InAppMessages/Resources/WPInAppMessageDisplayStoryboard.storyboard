@@ -19,34 +19,52 @@
                         <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rA8-LH-EYm">
-                                <rect key="frame" x="44" y="59" width="294" height="222"/>
+                            <view contentMode="scaleToFill" id="GjO-sP-n5e" customClass="WPIAMHitTestDelegateView">
+                                <rect key="frame" x="109" y="56" width="690" height="301"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <accessibility key="accessibilityConfiguration" identifier="image-view-in-image-only-view">
-                                    <bool key="isElement" value="YES"/>
-                                </accessibility>
-                            </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vYW-0X-e5S">
-                                <rect key="frame" x="313" y="42" width="40" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <accessibility key="accessibilityConfiguration" identifier="close-button"/>
-                                <state key="normal" backgroundImage="close-with-transparency.png"/>
-                                <connections>
-                                    <action selector="closeButtonClicked:" destination="lGH-bl-7Xw" eventType="touchUpInside" id="lpP-J3-1Jc"/>
-                                    <action selector="closeButtonClicked:" destination="x01-lq-3r6" eventType="touchUpInside" id="wxI-c1-DJ3"/>
-                                </connections>
-                            </button>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rA8-LH-EYm">
+                                        <rect key="frame" x="0.0" y="0.0" width="690" height="301"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="image-view-in-image-only-view">
+                                            <bool key="isElement" value="YES"/>
+                                        </accessibility>
+                                    </imageView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vYW-0X-e5S">
+                                        <rect key="frame" x="668" y="-22" width="44" height="44"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="close-button"/>
+                                        <state key="normal" backgroundImage="close-with-transparency.png"/>
+                                        <connections>
+                                            <action selector="closeButtonClicked:" destination="lGH-bl-7Xw" eventType="touchUpInside" id="lpP-J3-1Jc"/>
+                                            <action selector="closeButtonClicked:" destination="x01-lq-3r6" eventType="touchUpInside" id="wxI-c1-DJ3"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="vYW-0X-e5S" secondAttribute="trailing" priority="1" id="06g-TA-ucd"/>
+                                    <constraint firstItem="rA8-LH-EYm" firstAttribute="leading" secondItem="GjO-sP-n5e" secondAttribute="leading" id="5hV-xU-g5m"/>
+                                    <constraint firstItem="rA8-LH-EYm" firstAttribute="top" secondItem="GjO-sP-n5e" secondAttribute="top" id="7or-Ux-7mf"/>
+                                    <constraint firstItem="vYW-0X-e5S" firstAttribute="centerY" secondItem="GjO-sP-n5e" secondAttribute="top" priority="600" id="TUr-as-0lu"/>
+                                    <constraint firstAttribute="trailing" secondItem="rA8-LH-EYm" secondAttribute="trailing" id="VcM-qc-PEe"/>
+                                    <constraint firstAttribute="bottom" secondItem="rA8-LH-EYm" secondAttribute="bottom" id="ZJh-Wz-s4U"/>
+                                    <constraint firstAttribute="trailing" secondItem="vYW-0X-e5S" secondAttribute="centerX" priority="600" id="oQD-o5-B59"/>
+                                    <constraint firstItem="vYW-0X-e5S" firstAttribute="top" secondItem="GjO-sP-n5e" secondAttribute="top" priority="1" id="uTF-Pd-pEQ"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <connections>
                         <outlet property="closeButton" destination="vYW-0X-e5S" id="330-bY-24I"/>
+                        <outlet property="closeButtonPositionInsideHorizontalConstraint" destination="06g-TA-ucd" id="xyv-Eu-m6k"/>
+                        <outlet property="closeButtonPositionInsideVerticalConstraint" destination="uTF-Pd-pEQ" id="9xJ-UN-XI9"/>
+                        <outlet property="containerView" destination="GjO-sP-n5e" id="zIA-XQ-oXg"/>
                         <outlet property="imageView" destination="rA8-LH-EYm" id="Tdt-7e-Mi5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NZ8-Cx-8wo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-913.04347826086962" y="-17.119565217391305"/>
+            <point key="canvasLocation" x="-913.39285714285711" y="-17.39130434782609"/>
         </scene>
         <!--Banner View Controller-->
         <scene sceneID="zJa-hc-tKk">
@@ -160,9 +178,21 @@
                         <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jER-Re-ODh">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jER-Re-ODh" customClass="WPIAMHitTestDelegateView">
                                 <rect key="frame" x="20" y="71.5" width="856" height="271"/>
                                 <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="akA-AE-VPc">
+                                        <rect key="frame" x="836" y="-20" width="40" height="40"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="close-button"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" identifier="Close button width = 40" id="Dwi-In-x47"/>
+                                            <constraint firstAttribute="height" constant="40" identifier="Close button height = 40" id="tIe-pH-jRO"/>
+                                        </constraints>
+                                        <state key="normal" backgroundImage="close-with-transparency.png"/>
+                                        <connections>
+                                            <action selector="closeButtonClicked:" destination="x01-lq-3r6" eventType="touchUpInside" id="L0w-8X-Lcz"/>
+                                        </connections>
+                                    </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Message Title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Edi-DJ-cR8">
                                         <rect key="frame" x="318" y="20" width="514" height="34"/>
                                         <constraints>
@@ -228,6 +258,7 @@
                                 <constraints>
                                     <constraint firstItem="c7x-Lf-M58" firstAttribute="top" relation="greaterThanOrEqual" secondItem="jER-Re-ODh" secondAttribute="top" constant="24" identifier="Image View.top ≥ top + 24" id="0Fp-k2-48a"/>
                                     <constraint firstItem="24j-6H-N9j" firstAttribute="trailing" secondItem="Edi-DJ-cR8" secondAttribute="trailing" identifier="Body Text View.trailing = Title Label.trailing" id="0aC-BE-yfJ"/>
+                                    <constraint firstItem="akA-AE-VPc" firstAttribute="top" secondItem="jER-Re-ODh" secondAttribute="top" priority="500" id="3Lt-zd-yzO"/>
                                     <constraint firstItem="Edi-DJ-cR8" firstAttribute="leading" secondItem="c7x-Lf-M58" secondAttribute="trailing" constant="24" identifier="Title Label.leading = Image View.trailing + 24" id="7vK-9V-j5H"/>
                                     <constraint firstAttribute="height" priority="100" constant="650" identifier="Fixed Message Card Height Constraint" id="8Yx-fI-jXG"/>
                                     <constraint firstAttribute="height" constant="279" placeholder="YES" identifier="card height to make interface builder happy" id="8qu-C8-A9u" userLabel="card height to make interface builder happy"/>
@@ -247,8 +278,11 @@
                                     <constraint firstItem="VmW-ue-K1q" firstAttribute="top" secondItem="24j-6H-N9j" secondAttribute="bottom" constant="24" identifier="Button Top To Body Bottom Constraint" id="Vej-p0-b6w"/>
                                     <constraint firstAttribute="bottom" secondItem="VmW-ue-K1q" secondAttribute="bottom" constant="24" identifier="Button Bottom To Container Bottom In Portrait Mode" id="YoE-KS-uWS"/>
                                     <constraint firstItem="c7x-Lf-M58" firstAttribute="leading" secondItem="Edi-DJ-cR8" secondAttribute="leading" identifier="Image View.leading = Title Label.leading" id="bD7-OU-bEW"/>
+                                    <constraint firstAttribute="trailing" secondItem="akA-AE-VPc" secondAttribute="trailing" priority="500" id="eOI-tB-wzB"/>
                                     <constraint firstItem="24j-6H-N9j" firstAttribute="leading" secondItem="Edi-DJ-cR8" secondAttribute="leading" identifier="Body Text View.leading = Title Label.leading" id="fWU-5d-D4W"/>
                                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="c7x-Lf-M58" secondAttribute="bottom" constant="24" identifier="bottom ≥ Image View.bottom + 24" id="ivB-jb-LVl"/>
+                                    <constraint firstItem="akA-AE-VPc" firstAttribute="centerY" secondItem="jER-Re-ODh" secondAttribute="top" priority="600" id="jOE-71-qfK"/>
+                                    <constraint firstAttribute="trailing" secondItem="akA-AE-VPc" secondAttribute="centerX" priority="600" id="oms-iy-rae"/>
                                     <constraint firstItem="c7x-Lf-M58" firstAttribute="top" secondItem="jER-Re-ODh" secondAttribute="top" constant="20" identifier="Image Top To Card Top In Landscape Mode" id="pyI-1U-ujR" userLabel="Image Top To Card Top In Landscape Mode"/>
                                     <constraint firstItem="24j-6H-N9j" firstAttribute="top" secondItem="Edi-DJ-cR8" secondAttribute="bottom" constant="24" identifier="Body Top To Title Bottom In Land Scape Mode" id="qgb-13-uT4"/>
                                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="VmW-ue-K1q" secondAttribute="bottom" priority="900" constant="20" identifier="bottom ≥ Action Button.bottom + 20 @900" id="xXr-od-zOM"/>
@@ -333,31 +367,15 @@
                                     </mask>
                                 </variation>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="akA-AE-VPc">
-                                <rect key="frame" x="856" y="51.5" width="40" height="40"/>
-                                <accessibility key="accessibilityConfiguration" identifier="close-button"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="40" identifier="Close button width = 40" id="Dwi-In-x47"/>
-                                    <constraint firstAttribute="height" constant="40" identifier="Close button height = 40" id="tIe-pH-jRO"/>
-                                </constraints>
-                                <state key="normal" backgroundImage="close-with-transparency.png"/>
-                                <connections>
-                                    <action selector="closeButtonClicked:" destination="x01-lq-3r6" eventType="touchUpInside" id="L0w-8X-Lcz"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="akA-AE-VPc" firstAttribute="top" secondItem="jER-Re-ODh" secondAttribute="top" priority="1" id="0SP-Ki-u98"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="centerY" secondItem="1pz-BP-O6T" secondAttribute="centerY" identifier="Message Card View.centerY = centerY" id="GSo-F2-pSS"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="42w-41-Nyy" secondAttribute="bottom" constant="24" identifier="Message Card View.top ≥ Top Layout Guide.bottom + 24" id="Yvr-Y4-aEK"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="leading" secondItem="1pz-BP-O6T" secondAttribute="leadingMargin" constant="10" identifier="Message Card View.leading = leadingMargin + 10" id="bX2-s2-74w"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="42w-41-Nyy" secondAttribute="bottom" constant="10" identifier="Message Card View.top ≥ Top Layout Guide.bottom + 10" id="fyU-hx-Wh1"/>
-                            <constraint firstItem="akA-AE-VPc" firstAttribute="trailing" secondItem="jER-Re-ODh" secondAttribute="trailing" priority="1" id="iG7-Oa-Iwh"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="leading" secondItem="1pz-BP-O6T" secondAttribute="leading" constant="20" identifier="Card Leading Margin In Landscape Mode" id="kj1-PP-7nG"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="centerX" secondItem="1pz-BP-O6T" secondAttribute="centerX" identifier="Message Card View.centerX = centerX" id="m0a-I2-6sC"/>
-                            <constraint firstItem="akA-AE-VPc" firstAttribute="centerX" secondItem="jER-Re-ODh" secondAttribute="trailing" priority="900" identifier="Close Button.centerX = Message Card View.trailing" id="nIB-zo-TIv"/>
-                            <constraint firstItem="akA-AE-VPc" firstAttribute="centerY" secondItem="jER-Re-ODh" secondAttribute="top" priority="900" identifier="Close Button.centerY = Message Card View.top" id="va9-kv-0KG"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
@@ -389,8 +407,8 @@
                         <outlet property="buttonTopToBodyBottomConstraint" destination="Vej-p0-b6w" id="Q7d-su-7PP"/>
                         <outlet property="cardLeadingMarginInLandscapeMode" destination="kj1-PP-7nG" id="6LC-4f-EBE"/>
                         <outlet property="closeButton" destination="akA-AE-VPc" id="lI3-0d-NnR"/>
-                        <outlet property="closeButtonInsideHorizontalConstraint" destination="iG7-Oa-Iwh" id="7KY-Bw-azA"/>
-                        <outlet property="closeButtonInsideVerticalConstraint" destination="0SP-Ki-u98" id="gV5-5v-88f"/>
+                        <outlet property="closeButtonInsideHorizontalConstraint" destination="eOI-tB-wzB" id="7Ge-GZ-O0y"/>
+                        <outlet property="closeButtonInsideVerticalConstraint" destination="3Lt-zd-yzO" id="yQ8-x8-etn"/>
                         <outlet property="fixedMessageCardHeightConstraint" destination="8Yx-fI-jXG" id="aiZ-Vx-bJe"/>
                         <outlet property="imageActualHeightConstraint" destination="EeQ-n5-WE7" id="GQ9-em-yWE"/>
                         <outlet property="imageTopToCardTopInLandscapeMode" destination="pyI-1U-ujR" id="ZiI-y6-v8i"/>
@@ -407,7 +425,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bBr-eC-fVz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="916" y="-177.66116941529236"/>
+            <point key="canvasLocation" x="915.40178571428567" y="-178.2608695652174"/>
         </scene>
         <!--Card View Controller-->
         <scene sceneID="5eQ-Ln-que">
@@ -627,7 +645,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gTd-sb-y8u" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="426.08695652173918" y="632.8125"/>
+            <point key="canvasLocation" x="425.89285714285711" y="630.43478260869574"/>
         </scene>
     </scenes>
     <resources>

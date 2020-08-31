@@ -23,11 +23,15 @@
 
 - (instancetype)initWithMessageType:(WPInAppMessagingDisplayMessageType)messageType
                         triggerType:(WPInAppMessagingDisplayTriggerType)triggerType
-                            payload:(NSDictionary *)payload {
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
+                            payload:(nonnull NSDictionary *)payload {
     if (self = [super init]) {
         _type = messageType;
         _triggerType = triggerType;
         _payload = [payload isKindOfClass:NSDictionary.class] ? payload : [NSDictionary new];
+        _entryAnimation = entryAnimation;
+        _exitAnimation = exitAnimation;
     }
     return self;
 }
@@ -65,6 +69,8 @@
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeCard
                               triggerType:triggerType
+                           entryAnimation:entryAnimation
+                            exitAnimation:exitAnimation
                                   payload:payload]) {
 #pragma clang diagnostic pop
         _title = title;
@@ -73,8 +79,6 @@
         _displayBackgroundColor = backgroundColor;
         _primaryActionButton = primaryActionButton;
         _primaryAction = primaryAction;
-        _entryAnimation = entryAnimation;
-        _exitAnimation = exitAnimation;
     }
     return self;
 }
@@ -90,9 +94,13 @@
                     backgroundColor:(UIColor *)backgroundColor
                           imageData:(nullable WPInAppMessagingImageData *)imageData
                      bannerPosition:(WPInAppMessagingBannerPosition)bannerPosition
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                              action:(nullable WPAction *)action {
     if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeBanner
                               triggerType:triggerType
+                           entryAnimation:entryAnimation
+                            exitAnimation:exitAnimation
                                   payload:payload]) {
         _title = title;
         _bodyText = bodyText;
@@ -122,6 +130,8 @@
                 closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition {
     if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeModal
                               triggerType:triggerType
+                           entryAnimation:entryAnimation
+                            exitAnimation:exitAnimation
                                   payload:payload]) {
         _title = title;
         _bodyText = bodyText;
@@ -131,8 +141,6 @@
         _actionButton = actionButton;
         _action = action;
         _closeButtonPosition = closeButtonPosition;
-        _entryAnimation = entryAnimation;
-        _exitAnimation = exitAnimation;
     }
     return self;
 }
@@ -149,12 +157,12 @@
                 closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition {
     if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeModal
                               triggerType:triggerType
+                           entryAnimation:entryAnimation
+                            exitAnimation:exitAnimation
                                   payload:payload]) {
         _imageData = imageData;
         _action = action;
         _closeButtonPosition = closeButtonPosition;
-        _entryAnimation = entryAnimation;
-        _exitAnimation = exitAnimation;
     }
     return self;
 }
