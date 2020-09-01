@@ -438,8 +438,9 @@ NS_SWIFT_NAME(InAppMessagingDisplay)
  *   types at runtime.
  * @param displayDelegate the callback object used to trigger notifications about certain
  *        conditions related to message rendering.
+ * @return NO when the message should be handled by the default, buit-in WPInAppMessagingDisplay instance. This instance will take care of reporting impressions and clicks to the display delegate. YES if the message was handled.
  */
-- (void)displayMessage:(WPInAppMessagingDisplayMessage *)messageForDisplay
+- (BOOL)displayMessage:(WPInAppMessagingDisplayMessage *)messageForDisplay
        displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate;
 @end
 NS_ASSUME_NONNULL_END

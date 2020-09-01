@@ -27,7 +27,17 @@
 #import "WPIAMRenderingWindowHelper.h"
 #import "WPIAMTimeFetcher.h"
 #import "WonderPush_private.h"
+
+static WPIAMDefaultDisplayImpl *instance = nil;
 @implementation WPIAMDefaultDisplayImpl
+
++ (instancetype) instance {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [WPIAMDefaultDisplayImpl new];
+    });
+    return instance;
+}
 
 + (void)load {
     [self didReceiveConfigureSDKNotification:nil];
@@ -38,7 +48,7 @@
                 @"Got notification for kWPAppReadyToConfigureSDKNotification. Setting display "
                 "component on headless SDK.");
     
-    WPIAMDefaultDisplayImpl *display = [[WPIAMDefaultDisplayImpl alloc] init];
+    WPIAMDefaultDisplayImpl *display = [WPIAMDefaultDisplayImpl instance];
     [WPInAppMessaging inAppMessaging].messageDisplayComponent = display;
 }
 
@@ -223,7 +233,7 @@
 }
 
 #pragma mark - protocol WPInAppMessagingDisplay
-- (void)displayMessage:(WPInAppMessagingDisplayMessage *)messageForDisplay
+- (BOOL)displayMessage:(WPInAppMessagingDisplayMessage *)messageForDisplay
        displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate {
     if ([messageForDisplay isKindOfClass:[WPInAppMessagingModalDisplay class]]) {
         WPLogDebug( @"Display a modal message.");
@@ -253,6 +263,7 @@
                                          userInfo:@{}];
         [displayDelegate displayErrorForMessage:messageForDisplay error:error];
     }
+    return YES;
 }
 
 + (NSError *)applicationNotActiveError {

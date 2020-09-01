@@ -24,9 +24,6 @@ NS_SWIFT_NAME(InAppMessagingDefaultDisplayImpl)
  * to help UI Testing app access the UI layer directly.
  */
 @interface WPIAMDefaultDisplayImpl : NSObject <WPInAppMessagingDisplay>
-
-/// Conforms to display delegate for rendering of in-app messages.
-- (void)displayMessage:(WPInAppMessagingDisplayMessage *)messageForDisplay
-       displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate;
++ (instancetype) instance;
 @end
 NS_ASSUME_NONNULL_END

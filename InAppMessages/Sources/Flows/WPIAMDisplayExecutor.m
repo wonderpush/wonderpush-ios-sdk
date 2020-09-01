@@ -25,6 +25,7 @@
 #import "WonderPush_private.h"
 #import "WPAction_private.h"
 #import "WPIAMTimeFetcher.h"
+#import "WPIAMDefaultDisplayImpl.h"
 
 @implementation WPIAMDisplaySetting
 @end
@@ -573,10 +574,16 @@
         NSTimeInterval delayLeft = delay + originalDisplayTime - [timeProvider currentTimestampInSeconds];
         if (delayLeft > 0) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayLeft * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.messageDisplayComponent displayMessage:displayMessage displayDelegate:self];
+                BOOL handled = [self.messageDisplayComponent displayMessage:displayMessage displayDelegate:self];
+                if (!handled) {
+                    [WPIAMDefaultDisplayImpl.instance displayMessage:displayMessage displayDelegate:self];
+                }
             });
         } else {
-            [self.messageDisplayComponent displayMessage:displayMessage displayDelegate:self];
+            BOOL handled = [self.messageDisplayComponent displayMessage:displayMessage displayDelegate:self];
+            if (!handled) {
+                [WPIAMDefaultDisplayImpl.instance displayMessage:displayMessage displayDelegate:self];
+            }
         }
     }];
 }
