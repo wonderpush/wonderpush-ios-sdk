@@ -226,7 +226,9 @@
             title = bannerNode[@"title"][@"text"];
             titleTextColor = [UIColor firiam_colorWithHexString:bannerNode[@"title"][@"hexColor"]];
             
-            body = bannerNode[@"body"][@"text"];
+            if (bannerNode[@"body"] && bannerNode[@"body"] != NSNull.null) {
+                body = bannerNode[@"body"][@"text"];
+            }
             
             imageURLStr = bannerNode[@"imageUrl"];
             action = [WPAction actionWithDictionaries:bannerNode[@"actions"]];
@@ -243,12 +245,18 @@
             title = modalNode[@"title"][@"text"];
             titleTextColor = [UIColor firiam_colorWithHexString:modalNode[@"title"][@"hexColor"]];
             
-            body = modalNode[@"body"][@"text"];
+            if (modalNode[@"body"] && modalNode[@"body"] != NSNull.null) {
+                body = modalNode[@"body"][@"text"];
+            }
             
             imageURLStr = modalNode[@"imageUrl"];
-            actionButtonText = modalNode[@"actionButton"][@"text"][@"text"];
-            btnBgColor =
-            [UIColor firiam_colorWithHexString:modalNode[@"actionButton"][@"buttonHexColor"]];
+            if (modalNode[@"actionButton"] && modalNode[@"actionButton"] != NSNull.null) {
+                btnBgColor =
+                [UIColor firiam_colorWithHexString:modalNode[@"actionButton"][@"buttonHexColor"]];
+                if (modalNode[@"actionButton"][@"text"] && modalNode[@"actionButton"][@"text"] != NSNull.null) {
+                    actionButtonText = modalNode[@"actionButton"][@"text"][@"text"];
+                }
+            }
             
             action = [WPAction actionWithDictionaries:modalNode[@"actions"]];
             viewCardBackgroundColor =
@@ -282,22 +290,32 @@
             title = cardNode[@"title"][@"text"];
             titleTextColor = [UIColor firiam_colorWithHexString:cardNode[@"title"][@"hexColor"]];
             
-            body = cardNode[@"body"][@"text"];
+            if (cardNode[@"body"] && cardNode[@"body"] != NSNull.null) {
+                body = cardNode[@"body"][@"text"];
+            }
             
             imageURLStr = cardNode[@"portraitImageUrl"];
             landscapeImageURLStr = cardNode[@"landscapeImageUrl"];
             
             viewCardBackgroundColor = [UIColor firiam_colorWithHexString:cardNode[@"backgroundHexColor"]];
             
-            actionButtonText = cardNode[@"primaryActionButton"][@"text"][@"text"];
-            btnTxtColor = [UIColor
-                           firiam_colorWithHexString:cardNode[@"primaryActionButton"][@"text"][@"hexColor"]];
-            btnBgColor = [UIColor firiam_colorWithHexString:cardNode[@"primaryActionButton"][@"buttonHexColor"]];
+            if (cardNode[@"primaryActionButton"] && cardNode[@"primaryActionButton"] != NSNull.null) {
+                if (cardNode[@"primaryActionButton"][@"text"] && cardNode[@"primaryActionButton"][@"text"] != NSNull.null) {
+                    actionButtonText = cardNode[@"primaryActionButton"][@"text"][@"text"];
+                    btnTxtColor = [UIColor
+                                   firiam_colorWithHexString:cardNode[@"primaryActionButton"][@"text"][@"hexColor"]];
+                }
+                btnBgColor = [UIColor firiam_colorWithHexString:cardNode[@"primaryActionButton"][@"buttonHexColor"]];
+            }
             
-            secondaryActionButtonText = cardNode[@"secondaryActionButton"][@"text"][@"text"];
-            secondaryBtnTxtColor = [UIColor
-                                    firiam_colorWithHexString:cardNode[@"secondaryActionButton"][@"text"][@"hexColor"]];
-            secondaryBtnBgColor = [UIColor firiam_colorWithHexString:cardNode[@"secondaryActionButton"][@"buttonHexColor"]];
+            if (cardNode[@"secondaryActionButton"] && cardNode[@"secondaryActionButton"] != NSNull.null) {
+                if (cardNode[@"secondaryActionButton"][@"text"] && cardNode[@"secondaryActionButton"][@"text"] != NSNull.null) {
+                    secondaryActionButtonText = cardNode[@"secondaryActionButton"][@"text"][@"text"];
+                    secondaryBtnTxtColor = [UIColor
+                                            firiam_colorWithHexString:cardNode[@"secondaryActionButton"][@"text"][@"hexColor"]];
+                }
+                secondaryBtnBgColor = [UIColor firiam_colorWithHexString:cardNode[@"secondaryActionButton"][@"buttonHexColor"]];
+            }
 
             action = [WPAction actionWithDictionaries:cardNode[@"primaryActions"]];
             secondaryAction = [WPAction actionWithDictionaries:cardNode[@"secondaryActions"]];
