@@ -81,6 +81,7 @@
     
     self.cardView.backgroundColor = self.cardDisplayMessage.displayBackgroundColor;
     self.cardView.layer.cornerRadius = 4;
+    self.cardView.clipsToBounds = YES;
     
     self.bodyTextView.contentInset = UIEdgeInsetsZero;
     self.bodyTextView.textContainer.lineFragmentPadding = 0;
