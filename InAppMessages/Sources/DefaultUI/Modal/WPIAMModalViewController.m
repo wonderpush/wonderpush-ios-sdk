@@ -52,6 +52,7 @@
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *imageWidthInLandscapeMode;
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *titleTopToCardViewTop;
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *cardLeadingMarginInLandscapeMode;
+@property(weak, nonatomic) IBOutlet NSLayoutConstraint *imageLeadingMarginInLandscapeMode;
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *maxCardHeightInLandscapeMode;
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *imageTopToCardTopInLandscapeMode;
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *bodyTopToTitleBottomInLandScapeMode;
@@ -417,10 +418,12 @@ struct TitleBodyButtonHeightInfo {
         
         self.cardLeadingMarginInLandscapeMode.constant =
         fmax(15, (self.view.window.frame.size.width - cardFitWidth) / 2);
+        self.imageLeadingMarginInLandscapeMode.constant = 24;
     } else {
         self.imageWidthInLandscapeMode.constant = 0;
         self.imageActualHeightConstraint.constant = 0;
-        
+        self.imageLeadingMarginInLandscapeMode.constant = 0;
+
         // card would be of 3/5 width of the screen in landscape
         self.cardLeadingMarginInLandscapeMode.constant = self.view.window.frame.size.width / 5;
     }
