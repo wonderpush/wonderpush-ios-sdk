@@ -36,6 +36,7 @@
                          startTime:(NSTimeInterval)startTime
                            endTime:(NSTimeInterval)endTime
                  triggerDefinition:(NSArray<WPIAMDisplayTriggerDefinition *> *)renderTriggers
+                           capping:(WPIAMCappingDefinition *)capping
                  segmentDefinition:(NSDictionary *)segmentDefinition {
     if (self = [super init]) {
         _renderData = renderData;
@@ -44,6 +45,7 @@
         _endTime = endTime;
         _isTestMessage = NO;
         _segmentDefinition = segmentDefinition;
+        _capping = capping;
         _payload = [payload isKindOfClass:NSDictionary.class] ? payload : [NSDictionary new];
     }
     return self;

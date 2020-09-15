@@ -65,6 +65,14 @@
     return [definitions copy];
 }
 
+// Always returns a valid WPIAMCappingDefinition
+- (WPIAMCappingDefinition *)parseCapping:(id)capping {
+    if (![capping isKindOfClass:NSDictionary.class]) return [WPIAMCappingDefinition defaultCapping];
+    NSInteger maxImpressions = [capping[@"maxImpressions"] isKindOfClass:NSNumber.class] ? [capping[@"maxImpressions"] integerValue] : 1;
+    NSTimeInterval snoozeTime = [capping[@"snoozeTime"] isKindOfClass:NSNumber.class] ? [capping[@"snoozeTime"] doubleValue] / 1000 : 0;
+    return [[WPIAMCappingDefinition alloc] initWithMaxImpressions:maxImpressions snoozeTime:snoozeTime];
+}
+
 // Return nil if no valid triggering condition can be detected
 - (NSArray<WPIAMDisplayTriggerDefinition *> *)parseTriggeringCondition:
     (NSArray<NSDictionary *> *)triggerConditions {
@@ -367,6 +375,8 @@
         NSArray<WPIAMDisplayTriggerDefinition *> *triggersDefinition =
         [self parseTriggeringCondition:campaignNode[@"triggers"]];
         
+        WPIAMCappingDefinition *capping = [self parseCapping:campaignNode[@"capping"]];
+        
         if (isTestMessage) {
             WPLog(
                   @"A test message with campaign id %@, notification id %@ was parsed successfully.", reportingData.campaignId, reportingData.notificationId);
@@ -410,6 +420,7 @@
                                                             startTime:startTimeInSeconds
                                                               endTime:endTimeInSeconds
                                                     triggerDefinition:triggersDefinition
+                                                              capping:capping
                                                     segmentDefinition:segmentNode];
         }
     } @catch (NSException *e) {

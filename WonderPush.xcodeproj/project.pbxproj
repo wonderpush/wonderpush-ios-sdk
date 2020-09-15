@@ -52,6 +52,7 @@
 		99232AEF23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08651D33F39C001289BD /* WonderPushLocalizable.strings */; };
 		99232AF023708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08661D33F3A0001289BD /* WonderPushLocalizable.strings */; };
 		99232AF123708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08671D33F543001289BD /* WonderPushLocalizable.strings */; };
+		9929944C2510A27C00DF5F92 /* WPIAMCappingDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 9929944A2510A27C00DF5F92 /* WPIAMCappingDefinition.m */; };
 		9942FD3A246AA8F30002BEA0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD39246AA8F30002BEA0 /* AppDelegate.m */; };
 		9942FD40246AA8F30002BEA0 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD3F246AA8F30002BEA0 /* ViewController.m */; };
 		9942FD43246AA8F30002BEA0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9942FD41246AA8F30002BEA0 /* Main.storyboard */; };
@@ -402,6 +403,8 @@
 		99129C31220C8B1500111272 /* WPInstallationCoreProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPInstallationCoreProperties.h; sourceTree = "<group>"; };
 		99129C3F220D8E0F00111272 /* WonderPushLogErrorAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPushLogErrorAPI.h; sourceTree = "<group>"; };
 		99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPushLogErrorAPI.m; sourceTree = "<group>"; };
+		992994482510A26300DF5F92 /* WPIAMCappingDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMCappingDefinition.h; sourceTree = "<group>"; };
+		9929944A2510A27C00DF5F92 /* WPIAMCappingDefinition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMCappingDefinition.m; sourceTree = "<group>"; };
 		9942FD36246AA8F20002BEA0 /* WonderPushExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WonderPushExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9942FD38246AA8F20002BEA0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9942FD39246AA8F30002BEA0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -695,6 +698,22 @@
 			name = WonderPushAPI;
 			sourceTree = "<group>";
 		};
+		992994462510A22D00DF5F92 /* Capping */ = {
+			isa = PBXGroup;
+			children = (
+				9929944A2510A27C00DF5F92 /* WPIAMCappingDefinition.m */,
+			);
+			path = Capping;
+			sourceTree = "<group>";
+		};
+		992994472510A24300DF5F92 /* Capping */ = {
+			isa = PBXGroup;
+			children = (
+				992994482510A26300DF5F92 /* WPIAMCappingDefinition.h */,
+			);
+			path = Capping;
+			sourceTree = "<group>";
+		};
 		9942FD37246AA8F20002BEA0 /* WonderPushExample */ = {
 			isa = PBXGroup;
 			children = (
@@ -936,6 +955,7 @@
 				99EF82C723F4452C00B9B287 /* RenderingObjects */,
 				99EF82CA23F4452C00B9B287 /* Runtime */,
 				99EF82D123F4452C00B9B287 /* WPInAppMessaging.m */,
+				992994462510A22D00DF5F92 /* Capping */,
 				99EF82D223F4452C00B9B287 /* DisplayTrigger */,
 				99EF82D423F4452C00B9B287 /* Public */,
 				99EF82D823F4452C00B9B287 /* Private */,
@@ -1004,6 +1024,7 @@
 			children = (
 				99EF82D923F4452C00B9B287 /* Util */,
 				99EF82DC23F4452C00B9B287 /* Runtime */,
+				992994472510A24300DF5F92 /* Capping */,
 				99EF82E323F4452C00B9B287 /* DisplayTrigger */,
 				99EF82E523F4452C00B9B287 /* Data */,
 				99EF82EC23F4452C00B9B287 /* Flows */,
@@ -1708,6 +1729,7 @@
 				99EF836E23F4452C00B9B287 /* WPIAMBaseRenderingViewController.m in Sources */,
 				9998CAC2221C75480028D955 /* WPHTMLInAppController.m in Sources */,
 				99EF839323F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m in Sources */,
+				9929944C2510A27C00DF5F92 /* WPIAMCappingDefinition.m in Sources */,
 				99EF834B23F4452C00B9B287 /* WPInAppMessaging.m in Sources */,
 				990F269B23FD4B0E0015F8DE /* WPAction.m in Sources */,
 				9942FD7C246BDAB20002BEA0 /* WPRemoteConfig.m in Sources */,

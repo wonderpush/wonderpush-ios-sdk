@@ -16,6 +16,7 @@
 #import <Foundation/Foundation.h>
 
 #import "WPIAMDisplayTriggerDefinition.h"
+#import "WPIAMCappingDefinition.h"
 #import "WPIAMMessageRenderData.h"
 
 @class WPIAMDisplayTriggerDefinition;
@@ -35,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 // the message to be rendered
 @property(nonatomic, readonly) NSArray<WPIAMDisplayTriggerDefinition *> *renderTriggers;
 
+@property(nonatomic, readonly) WPIAMCappingDefinition *capping;
+
 /// A flag for client-side testing messages
 @property(nonatomic, readonly) BOOL isTestMessage;
 
@@ -48,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
                          startTime:(NSTimeInterval)startTime
                            endTime:(NSTimeInterval)endTime
                  triggerDefinition:(NSArray<WPIAMDisplayTriggerDefinition *> *)renderTriggers
+                           capping:(WPIAMCappingDefinition *)capping
                  segmentDefinition:(NSDictionary *)segmentDefinition;
 
 /**
