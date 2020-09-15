@@ -33,6 +33,7 @@
     settings.loggerMaxCountBeforeReduce = 100;
     settings.loggerSizeAfterReduce = 50;
     settings.loggerInVerboseMode = WPLogEnabled();
+    settings.appFGRenderMinIntervalInMinutes = 1 * 60; // render at most one message from app-foreground trigger every 12 hours;
     [WPInAppMessaging bootstrapIAMWithSettings:settings];
 }
 - (void) deactivate {}

@@ -20,7 +20,9 @@
 
 - (NSString *)description {
     return
-    [NSString stringWithFormat:@"Activity Logger Max:%lu;\n",
-     (unsigned long)self.loggerMaxCountBeforeReduce];
+    [NSString stringWithFormat:@"Activity Logger Max:%lu; "
+     "Foreground Display Trigger Minimal Interval:%lu seconds;\n",
+     (unsigned long)self.loggerMaxCountBeforeReduce,
+     (unsigned long)(self.appFGRenderMinIntervalInMinutes * 60)];
 }
 @end

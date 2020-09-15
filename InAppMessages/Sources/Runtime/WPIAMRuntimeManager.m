@@ -153,13 +153,18 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     self.messageCache = [[WPIAMMessageClientCache alloc] initWithBookkeeper:self.bookKeeper
                                                          usingResponseParser:self.responseParser];
     
-    // start render on app foreground flow    
+    // start render on app foreground flow
+    WPIAMDisplaySetting *appForegroundDisplaysetting = [[WPIAMDisplaySetting alloc] init];
+    appForegroundDisplaysetting.displayMinIntervalInMinutes =
+    settings.appFGRenderMinIntervalInMinutes;
+    
     WPIAMSDKModeManager *sdkModeManager =
     [[WPIAMSDKModeManager alloc] initWithUserDefaults:NSUserDefaults.standardUserDefaults
                                    testingModeListener:self];
     
     self.displayExecutor =
     [[WPIAMDisplayExecutor alloc] initWithInAppMessaging:[WPInAppMessaging inAppMessaging]
+                                                  setting:appForegroundDisplaysetting
                                              messageCache:self.messageCache
                                               timeFetcher:timeFetcher
                                                bookKeeper:self.bookKeeper];

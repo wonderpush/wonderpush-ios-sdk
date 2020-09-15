@@ -23,6 +23,9 @@
 #import "WPInAppMessagingRendering.h"
 
 NS_ASSUME_NONNULL_BEGIN
+@interface WPIAMDisplaySetting : NSObject
+@property(nonatomic) NSTimeInterval displayMinIntervalInMinutes;
+@end
 
 // The class for checking if there are appropriate messages to be displayed and if so, render it.
 // There are other flows that would determine the timing for the checking and then use this class
@@ -35,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WPIAMDisplayExecutor : NSObject
 
 - (instancetype)initWithInAppMessaging:(WPInAppMessaging *)inAppMessaging
+                               setting:(WPIAMDisplaySetting *)setting
                           messageCache:(WPIAMMessageClientCache *)cache
                            timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher
                             bookKeeper:(id<WPIAMBookKeeper>)displayBookKeeper;

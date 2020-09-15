@@ -27,6 +27,9 @@
 #import "WPIAMTimeFetcher.h"
 #import "WPIAMDefaultDisplayImpl.h"
 
+@implementation WPIAMDisplaySetting
+@end
+
 @interface WPIAMDisplayExecutor () <WPInAppMessagingDisplayDelegate>
 @property(nonatomic) id<WPIAMTimeFetcher> timeFetcher;
 
@@ -34,6 +37,7 @@
 @property(nonatomic) BOOL isMsgBeingDisplayed;
 @property(nonatomic) NSTimeInterval lastDisplayTime;
 @property(nonatomic, nonnull, readonly) WPInAppMessaging *inAppMessaging;
+@property(nonatomic, nonnull, readonly) WPIAMDisplaySetting *setting;
 @property(nonatomic, nonnull, readonly) WPIAMMessageClientCache *messageCache;
 @property(nonatomic, nonnull, readonly) id<WPIAMBookKeeper> displayBookKeeper;
 @property(nonatomic) BOOL impressionRecorded;
@@ -247,6 +251,7 @@
 }
 
 - (instancetype)initWithInAppMessaging:(WPInAppMessaging *)inAppMessaging
+                               setting:(WPIAMDisplaySetting *)setting
                           messageCache:(WPIAMMessageClientCache *)cache
                            timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher
                             bookKeeper:(id<WPIAMBookKeeper>)displayBookKeeper {
@@ -254,6 +259,7 @@
         _inAppMessaging = inAppMessaging;
         _timeFetcher = timeFetcher;
         _lastDisplayTime = displayBookKeeper.lastDisplayTime;
+        _setting = setting;
         _messageCache = cache;
         _displayBookKeeper = displayBookKeeper;
         _isMsgBeingDisplayed = NO;
@@ -581,6 +587,16 @@
     }];
 }
 
+- (BOOL)enoughIntervalFromLastDisplay {
+    NSTimeInterval intervalFromLastDisplayInSeconds =
+    [self.timeFetcher currentTimestampInSeconds] - self.lastDisplayTime;
+    
+    WPLogDebug(
+                @"Interval time from last display is %lf seconds", intervalFromLastDisplayInSeconds);
+    
+    return intervalFromLastDisplayInSeconds >= self.setting.displayMinIntervalInMinutes * 60.0;
+}
+
 - (void)checkAndDisplayNextAppLaunchMessage {
     // synchronizing on self so that we won't potentially enter the render flow from two
     // threads.
@@ -603,16 +619,24 @@
             return;
         }
         
-        WPIAMMessageDefinition *nextAppLaunchMessage = [self.messageCache nextOnAppLaunchDisplayMsg];
-        
-        if (nextAppLaunchMessage) {
-            [self displayForMessage:nextAppLaunchMessage
-                        triggerType:WPInAppMessagingDisplayTriggerTypeOnAppForeground
-                              delay:[nextAppLaunchMessage delayForTrigger:WPIAMRenderTriggerOnAppLaunch]];
-            self.lastDisplayTime = [self.timeFetcher currentTimestampInSeconds];
+        if ([self.messageCache hasTestMessage] || [self enoughIntervalFromLastDisplay]) {
+            // We can display test messages anytime or display regular messages when
+            // the display time interval has been reached
+            WPIAMMessageDefinition *nextAppLaunchMessage = [self.messageCache nextOnAppLaunchDisplayMsg];
+            
+            if (nextAppLaunchMessage) {
+                [self displayForMessage:nextAppLaunchMessage
+                            triggerType:WPInAppMessagingDisplayTriggerTypeOnAppForeground
+                                  delay:[nextAppLaunchMessage delayForTrigger:WPIAMRenderTriggerOnAppLaunch]];
+                self.lastDisplayTime = [self.timeFetcher currentTimestampInSeconds];
+            } else {
+                WPLogDebug(
+                            @"No appropriate in-app message detected for display.");
+            }
         } else {
             WPLogDebug(
-                        @"No appropriate in-app message detected for display.");
+                        @"Minimal display interval of %lf seconds has not been reached yet.",
+                        self.setting.displayMinIntervalInMinutes * 60.0);
         }
     }
 }
@@ -640,16 +664,24 @@
             return;
         }
         
-        WPIAMMessageDefinition *nextForegroundMessage = [self.messageCache nextOnAppOpenDisplayMsg];
-        
-        if (nextForegroundMessage) {
-            [self displayForMessage:nextForegroundMessage
-                        triggerType:WPInAppMessagingDisplayTriggerTypeOnAppForeground
-                              delay:[nextForegroundMessage delayForTrigger:WPIAMRenderTriggerOnAppForeground]];
-            self.lastDisplayTime = [self.timeFetcher currentTimestampInSeconds];
+        if ([self.messageCache hasTestMessage] || [self enoughIntervalFromLastDisplay]) {
+            // We can display test messages anytime or display regular messages when
+            // the display time interval has been reached
+            WPIAMMessageDefinition *nextForegroundMessage = [self.messageCache nextOnAppOpenDisplayMsg];
+            
+            if (nextForegroundMessage) {
+                [self displayForMessage:nextForegroundMessage
+                            triggerType:WPInAppMessagingDisplayTriggerTypeOnAppForeground
+                                  delay:[nextForegroundMessage delayForTrigger:WPIAMRenderTriggerOnAppForeground]];
+                self.lastDisplayTime = [self.timeFetcher currentTimestampInSeconds];
+            } else {
+                WPLogDebug(
+                            @"No appropriate in-app message detected for display.");
+            }
         } else {
             WPLogDebug(
-                        @"No appropriate in-app message detected for display.");
+                        @"Minimal display interval of %lf seconds has not been reached yet.",
+                        self.setting.displayMinIntervalInMinutes * 60.0);
         }
     }
 }
