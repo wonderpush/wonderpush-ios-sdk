@@ -23,9 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) NSInteger loggerSizeAfterReduce;
 @property(nonatomic) BOOL loggerInVerboseMode;
 
-// settings for controlling rendering frequency for messages rendered from app foreground triggers
-@property(nonatomic) NSTimeInterval appFGRenderMinIntervalInMinutes;
-
 - (NSString *)description;
 @end
 NS_ASSUME_NONNULL_END
