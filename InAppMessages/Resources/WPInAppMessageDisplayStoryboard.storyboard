@@ -98,7 +98,7 @@
                                             <constraint firstAttribute="height" constant="60" id="YXP-HZ-CYR"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalCompressionResistancePriority="999" text="message body" textAlignment="natural" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GOK-vx-mU8">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalCompressionResistancePriority="998" text="message body" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GOK-vx-mU8">
                                         <rect key="frame" x="70" y="25.5" width="946" height="39.5"/>
                                         <accessibility key="accessibilityConfiguration" identifier="banner-body-label"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
@@ -118,13 +118,15 @@
                                     <constraint firstItem="GOK-vx-mU8" firstAttribute="leading" secondItem="rzo-9i-rXZ" secondAttribute="leading" id="9cn-Zu-Dso"/>
                                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="GOK-vx-mU8" secondAttribute="bottom" constant="5" id="Aha-sp-khK"/>
                                     <constraint firstAttribute="bottom" secondItem="GOK-vx-mU8" secondAttribute="bottom" priority="998" constant="5" id="D55-Bq-pCf"/>
-                                    <constraint firstAttribute="bottom" secondItem="VfB-vw-7up" secondAttribute="bottom" priority="999" constant="5" id="HnF-GU-moi"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="VfB-vw-7up" secondAttribute="bottom" priority="999" constant="5" id="HnF-GU-moi"/>
                                     <constraint firstItem="rzo-9i-rXZ" firstAttribute="top" secondItem="VfB-vw-7up" secondAttribute="top" id="JdQ-z1-1M1"/>
                                     <constraint firstItem="GOK-vx-mU8" firstAttribute="top" secondItem="rzo-9i-rXZ" secondAttribute="bottom" id="Jwg-T3-86n"/>
                                     <constraint firstItem="rzo-9i-rXZ" firstAttribute="leading" secondItem="VfB-vw-7up" secondAttribute="trailing" constant="5" id="Lpx-AR-u6S"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="rzo-9i-rXZ" secondAttribute="trailing" id="QnT-Eo-AtO"/>
                                     <constraint firstItem="rzo-9i-rXZ" firstAttribute="top" secondItem="JHw-o2-1pu" secondAttribute="top" constant="5" id="Xot-XT-Wjk"/>
                                     <constraint firstItem="VfB-vw-7up" firstAttribute="leading" secondItem="JHw-o2-1pu" secondAttribute="leading" constant="5" id="be9-wg-iIA"/>
+                                    <constraint firstAttribute="height" relation="lessThanOrEqual" constant="120" id="vwd-Nh-mz6"/>
+                                    <constraint firstAttribute="bottom" secondItem="VfB-vw-7up" secondAttribute="bottom" priority="900" constant="5" id="wEF-2q-ZvE"/>
                                     <constraint firstItem="GOK-vx-mU8" firstAttribute="trailing" secondItem="rzo-9i-rXZ" secondAttribute="trailing" id="ybm-u7-CtW"/>
                                 </constraints>
                             </view>
@@ -299,6 +301,12 @@
                                         <exclude reference="8qu-C8-A9u"/>
                                         <exclude reference="Ln4-8U-D7V"/>
                                         <exclude reference="MCf-U1-0tP"/>
+                                        <exclude reference="7vK-9V-j5H"/>
+                                        <exclude reference="9La-QV-ftg"/>
+                                        <exclude reference="Ait-Na-aVF"/>
+                                        <exclude reference="FTB-yV-c00"/>
+                                        <exclude reference="JJo-tI-mvn"/>
+                                        <exclude reference="RbZ-9Q-1S3"/>
                                         <exclude reference="0Fp-k2-48a"/>
                                         <exclude reference="Hm8-0s-RTs"/>
                                         <exclude reference="JUy-lx-oR6"/>
@@ -307,12 +315,6 @@
                                         <exclude reference="ivB-jb-LVl"/>
                                         <exclude reference="pyI-1U-ujR"/>
                                         <exclude reference="ysk-iC-Hz4"/>
-                                        <exclude reference="7vK-9V-j5H"/>
-                                        <exclude reference="9La-QV-ftg"/>
-                                        <exclude reference="Ait-Na-aVF"/>
-                                        <exclude reference="FTB-yV-c00"/>
-                                        <exclude reference="JJo-tI-mvn"/>
-                                        <exclude reference="RbZ-9Q-1S3"/>
                                         <exclude reference="RdS-Ao-GH0"/>
                                         <exclude reference="qgb-13-uT4"/>
                                         <exclude reference="CSN-TG-E9H"/>
@@ -323,12 +325,12 @@
                                 <variation key="heightClass=compact">
                                     <mask key="constraints">
                                         <include reference="MCf-U1-0tP"/>
-                                        <include reference="Hm8-0s-RTs"/>
-                                        <include reference="pyI-1U-ujR"/>
-                                        <include reference="ysk-iC-Hz4"/>
                                         <include reference="7vK-9V-j5H"/>
                                         <include reference="9La-QV-ftg"/>
                                         <include reference="Ait-Na-aVF"/>
+                                        <include reference="Hm8-0s-RTs"/>
+                                        <include reference="pyI-1U-ujR"/>
+                                        <include reference="ysk-iC-Hz4"/>
                                         <include reference="qgb-13-uT4"/>
                                         <include reference="xXr-od-zOM"/>
                                     </mask>
@@ -336,23 +338,23 @@
                                 <variation key="widthClass=regular">
                                     <mask key="constraints">
                                         <include reference="MCf-U1-0tP"/>
-                                        <include reference="Hm8-0s-RTs"/>
-                                        <include reference="ysk-iC-Hz4"/>
                                         <include reference="7vK-9V-j5H"/>
                                         <include reference="9La-QV-ftg"/>
                                         <include reference="Ait-Na-aVF"/>
+                                        <include reference="Hm8-0s-RTs"/>
+                                        <include reference="ysk-iC-Hz4"/>
                                         <include reference="qgb-13-uT4"/>
                                         <include reference="xXr-od-zOM"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
-                                        <include reference="JUy-lx-oR6"/>
-                                        <include reference="Kec-yq-1Pz"/>
-                                        <include reference="bD7-OU-bEW"/>
                                         <include reference="FTB-yV-c00"/>
                                         <include reference="JJo-tI-mvn"/>
                                         <include reference="RbZ-9Q-1S3"/>
+                                        <include reference="JUy-lx-oR6"/>
+                                        <include reference="Kec-yq-1Pz"/>
+                                        <include reference="bD7-OU-bEW"/>
                                         <include reference="RdS-Ao-GH0"/>
                                         <include reference="CSN-TG-E9H"/>
                                         <include reference="YoE-KS-uWS"/>
