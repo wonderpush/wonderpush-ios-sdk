@@ -21,12 +21,16 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WPIAMImpressionRecord : NSObject
 @property(nonatomic, readonly) WPReportingData *reportingData;
 @property(nonatomic, readonly) long impressionTimeInSeconds;
+@property(nonatomic, readonly) NSTimeInterval lastImpressionTimestamp;
+@property(nonatomic, readonly) NSInteger impressionCount;
 
 - (NSString *)description;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithReportingData:(WPReportingData *)reportingData
-              impressionTimeInSeconds:(long)impressionTime NS_DESIGNATED_INITIALIZER;
+              impressionTimeInSeconds:(long)impressionTime
+              lastImpressionTimestamp:(NSTimeInterval)lastImpressionTimestamp
+                      impressionCount:(NSInteger)impressionCount NS_DESIGNATED_INITIALIZER;
 @end
 
 // this protocol defines the interface for classes that can be used to track info regarding

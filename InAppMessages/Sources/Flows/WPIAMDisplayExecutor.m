@@ -199,7 +199,6 @@
         [self.displayBookKeeper recordNewImpressionForReportingData:reportingData
                                         withStartTimestampInSeconds:self.lastDisplayTime];
         self.impressionRecorded = YES;
-        [self.messageCache removeMessagesWithCampaignId:reportingData.campaignId];
     }
 }
 

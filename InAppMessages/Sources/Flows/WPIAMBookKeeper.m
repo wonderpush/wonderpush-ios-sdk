@@ -22,10 +22,11 @@
 NSString *const WPIAM_UserDefaultsKeyForImpressions = @"wonderpush-iam-message-impressions";
 NSString *const WPIAM_UserDefaultsKeyForLastImpressionTimestamp = @"wonderpush-iam-last-impression-timestamp";
 
-// The two keys used to map WPIAMImpressionRecord object to a NSDictionary object for
+// The keys used to map WPIAMImpressionRecord object to a NSDictionary object for
 // persistence.
-// These keys will be part of a WonderPush event payload, so type prefixes are required.
-NSString *const WPIAM_ImpressionDictKeyForTimestampMilliseconds = @"impressionTime";
+NSString *const WPIAM_ImpressionDictKeyForDurationMilliseconds = @"impressionTime";
+NSString *const WPIAM_ImpressionDictKeyForCount = @"impressionCount";
+NSString *const WPIAM_ImpressionDictKeyForLastImpressionDateTimestamp = @"lastImpressionDate";
 NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
 
 @interface WPIAMBookKeeperViaUserDefaults ()
@@ -39,18 +40,21 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
 
 @implementation WPIAMImpressionRecord
 
-- (instancetype)initWithReportingData:(WPReportingData *)reportingData
-              impressionTimeInSeconds:(long)impressionTime {
+- (instancetype)initWithReportingData:(WPReportingData *)reportingData impressionTimeInSeconds:(long)impressionTime lastImpressionTimestamp:(NSTimeInterval)lastImpressionTimestamp impressionCount:(NSInteger)impressionCount {
     if (self = [super init]) {
         _reportingData = reportingData;
         _impressionTimeInSeconds = impressionTime;
+        _impressionCount = impressionCount;
+        _lastImpressionTimestamp = lastImpressionTimestamp;
     }
     return self;
 }
 
 - (instancetype)initWithStorageDictionary:(NSDictionary *)dict {
-    id timestamp = dict[WPIAM_ImpressionDictKeyForTimestampMilliseconds];
+    id timestamp = dict[WPIAM_ImpressionDictKeyForDurationMilliseconds];
     id reportingDataDict = dict[WPIAM_ImpressionDictKeyForReportingData];
+    id lastImpressionTimestamp = dict[WPIAM_ImpressionDictKeyForLastImpressionDateTimestamp];
+    id impressionCount = dict[WPIAM_ImpressionDictKeyForCount];
 
     if (![timestamp isKindOfClass:[NSNumber class]] || ![reportingDataDict isKindOfClass:[NSDictionary class]]) {
         WPLogDebug(
@@ -60,7 +64,9 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
     } else {
         WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:reportingDataDict];
         return [self initWithReportingData:reportingData
-                   impressionTimeInSeconds:((NSNumber *)timestamp).longValue / 1000l];
+                   impressionTimeInSeconds:((NSNumber *)timestamp).longValue / 1000l
+                   lastImpressionTimestamp:lastImpressionTimestamp ? [lastImpressionTimestamp doubleValue] : 0
+                           impressionCount:impressionCount ? [impressionCount integerValue] : 1];
     }
 }
 
@@ -106,13 +112,16 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         oldImpressions ? [oldImpressions mutableCopy] : [[NSMutableArray alloc] init];
         
         // Two cases
-        //    If a prior impression exists for that campaignId, update its impression timestamp
+        //    If a prior impression exists for that campaignId, update its impression timestamp and the impression count
         //    If a prior impression for that campaignId does not exist, add a new entry for the
         //    campaignId.
         
+        NSNumber *dateTimestamp = [NSNumber numberWithDouble:[NSDate date].timeIntervalSince1970];
         NSMutableDictionary *newImpressionEntry = [NSMutableDictionary dictionaryWithDictionary:@{
             WPIAM_ImpressionDictKeyForReportingData : reportingData.dictValue,
-            WPIAM_ImpressionDictKeyForTimestampMilliseconds : [NSNumber numberWithLong:(long)(timestamp * 1000)]
+            WPIAM_ImpressionDictKeyForDurationMilliseconds : [NSNumber numberWithLong:(long)(timestamp * 1000)],
+            WPIAM_ImpressionDictKeyForCount: @1,
+            WPIAM_ImpressionDictKeyForLastImpressionDateTimestamp: dateTimestamp,
         }];
         BOOL oldImpressionRecordFound = NO;
         
@@ -128,7 +137,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
                                     @"Updating timestamp of existing impression record to be %f for "
                                     "campaign %@, notification %@",
                                     timestamp, reportingData.campaignId, reportingData.notificationId);
-                        
+                        newImpressionEntry[WPIAM_ImpressionDictKeyForCount] = [NSNumber numberWithInteger:currentItem[WPIAM_ImpressionDictKeyForCount] ? [currentItem[WPIAM_ImpressionDictKeyForCount] integerValue] + 1 : 2 ];
                         [newImpressions replaceObjectAtIndex:i withObject:newImpressionEntry];
                         oldImpressionRecordFound = YES;
                         break;
@@ -145,6 +154,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         
         [self.defaults setObject:newImpressions forKey:WPIAM_UserDefaultsKeyForImpressions];
         [self.defaults setDouble:timestamp forKey:WPIAM_UserDefaultsKeyForLastImpressionTimestamp];
+        [self.defaults synchronize];
         self.lastDisplayTime = timestamp;
         NSMutableDictionary *eventData = [NSMutableDictionary new];
         [eventData addEntriesFromDictionary:reportingData.dictValue];

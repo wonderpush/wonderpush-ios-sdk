@@ -54,8 +54,8 @@
 // reset messages data
 - (void)setMessageData:(NSArray<WPIAMMessageDefinition *> *)messages {
     @synchronized(self) {
-        NSSet<NSString *> *impressionSet =
-        [NSSet setWithArray:[self.bookKeeper getCampaignIdsFromImpressions]];
+        
+        NSDictionary<NSString *, WPIAMImpressionRecord *> *impressionRecords = [self getImpressionRecords];
         
         NSMutableArray<WPIAMMessageDefinition *> *regularMessages = [[NSMutableArray alloc] init];
         self.testMessages = [[NSMutableArray alloc] init];
@@ -71,14 +71,18 @@
         
         // while resetting the whole message set, we do prefiltering based on the impressions
         // data to get rid of messages we don't care so that the future searches are more efficient
-        NSPredicate *notImpressedPredicate =
+        NSPredicate *notOverImpressedPredicate =
         [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
             WPIAMMessageDefinition *message = (WPIAMMessageDefinition *)evaluatedObject;
-            return ![impressionSet containsObject:message.renderData.reportingData.campaignId];
+            NSString *campaignId = message.renderData.reportingData.campaignId;
+            if (!campaignId) return NO;
+            WPIAMImpressionRecord *impressionRecord = impressionRecords[campaignId];
+            NSInteger impressionCount = impressionRecord ? impressionRecord.impressionCount : 0;
+            return impressionCount < message.capping.maxImpressions;
         }];
         
         self.regularMessages =
-        [[regularMessages filteredArrayUsingPredicate:notImpressedPredicate] mutableCopy];
+        [[regularMessages filteredArrayUsingPredicate:notOverImpressedPredicate] mutableCopy];
         [self setupWonderPushEventListening];
     }
     
@@ -161,18 +165,35 @@
     }];
 }
 
+- (NSDictionary<NSString *, WPIAMImpressionRecord *> *)getImpressionRecords {
+    NSArray<WPIAMImpressionRecord *> *records = [self.bookKeeper getImpressions];
+    NSMutableDictionary<NSString *, WPIAMImpressionRecord *> *result = [NSMutableDictionary new];
+    for (WPIAMImpressionRecord *record in records) {
+        NSString *campaignId = record.reportingData.campaignId;
+        if (!campaignId) continue;
+        result[campaignId] = record;
+    }
+    return result;
+}
+
 - (nullable WPIAMMessageDefinition *)nextMsgMatchingCondition:(BOOL(^)(WPIAMMessageDefinition *))condition {
-    NSSet<NSString *> *impressionSet = [NSSet setWithArray:[self.bookKeeper getCampaignIdsFromImpressions]];
+    NSDictionary<NSString *, WPIAMImpressionRecord *> *impressionRecords = [self getImpressionRecords];
     WPSPSegmenter *segmenter = [[WPSPSegmenter alloc] initWithData:[WPSPSegmenterData forCurrentUser]];
     @synchronized(self) {
+        NSTimeInterval timeSince1970 = [NSDate date].timeIntervalSince1970;
         // search from the start to end in the list (which implies the display priority) for the
         // first match (some messages in the cache may not be eligible for the current display
         // message fetch
         for (WPIAMMessageDefinition *next in self.regularMessages) {
+            NSString *campaignId = next.renderData.reportingData.campaignId;
+            WPIAMImpressionRecord *impressionRecord = impressionRecords[campaignId];
+            NSInteger impressionCount = impressionRecord ? impressionRecord.impressionCount : 0;
+            NSTimeInterval timeSinceLastImpression = impressionRecord ? timeSince1970 - impressionRecord.lastImpressionTimestamp : timeSince1970;
             // message being active and message not impressed yet and the contextual trigger condition
             // match
             if ([next messageHasStarted] && ![next messageHasExpired]
-                && ![impressionSet containsObject:next.renderData.reportingData.campaignId]
+                && impressionCount < next.capping.maxImpressions
+                && timeSinceLastImpression > next.capping.snoozeTime
                 && condition(next)) {
                 if (next.segmentDefinition) {
                     @try {
