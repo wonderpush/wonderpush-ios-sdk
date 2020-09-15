@@ -98,7 +98,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 }
 
 - (void) fetchConfigWithVersion:(NSString *)version completion:(void (^)(WPRemoteConfig * _Nullable, NSError * _Nullable))completion {
-    NSURL *URL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@%@", REMOTE_CONFIG_BASE_URL, self.clientId, REMOTE_CONFIG_SUFFIX]];
+    NSURL *URL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@%@?_=%f", REMOTE_CONFIG_BASE_URL, self.clientId, REMOTE_CONFIG_SUFFIX, [NSDate date].timeIntervalSince1970]];
     NSURLRequest *request = [NSURLRequest requestWithURL:URL cachePolicy:NSURLRequestReloadRevalidatingCacheData timeoutInterval:10];
     NSURLSessionTask *task = [self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
