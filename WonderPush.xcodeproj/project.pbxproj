@@ -74,6 +74,7 @@
 		9942FD85246C23DD0002BEA0 /* WPSemver.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD83246C23DD0002BEA0 /* WPSemver.m */; };
 		9947AD6824FD0BA8007EF7AA /* WPIAMHitTestDelegateView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9947AD6624FD0BA8007EF7AA /* WPIAMHitTestDelegateView.h */; };
 		9947AD6924FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9947AD6724FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m */; };
+		99575E662514A7CD00F7CC76 /* WPIAMCappingDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = 992994482510A26300DF5F92 /* WPIAMCappingDefinition.h */; };
 		995F14CB24A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 995F14C924A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.h */; };
 		995F14CC24A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 995F14CA24A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.m */; };
 		995F14D324A9D8D900CC499E /* WPSPFieldPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 995F14D124A9D8D900CC499E /* WPSPFieldPath.h */; };
@@ -1350,6 +1351,7 @@
 				9998CABA221C75370028D955 /* WPUtil.h in Headers */,
 				99EF834023F4452C00B9B287 /* UIColor+WPIAMHexString.h in Headers */,
 				99EF834623F4452C00B9B287 /* WPIAMSDKRuntimeErrorCodes.h in Headers */,
+				99575E662514A7CD00F7CC76 /* WPIAMCappingDefinition.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
