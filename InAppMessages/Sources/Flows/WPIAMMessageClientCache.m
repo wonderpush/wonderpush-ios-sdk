@@ -28,7 +28,6 @@
 @property(nonatomic) NSMutableArray<WPIAMMessageDefinition *> *regularMessages;
 // messages for client-side testing
 @property(nonatomic) NSMutableArray<WPIAMMessageDefinition *> *testMessages;
-@property(nonatomic, weak) id<WPIAMCacheDataObserver> observer;
 @property(nonatomic) NSMutableSet<NSString *> *wonderpushEventsToWatch;
 @property(nonatomic) id<WPIAMBookKeeper> bookKeeper;
 @property(readonly, nonatomic) WPIAMFetchResponseParser *responseParser;
@@ -45,10 +44,6 @@
         _responseParser = responseParser;
     }
     return self;
-}
-
-- (void)setDataObserver:(id<WPIAMCacheDataObserver>)observer {
-    self.observer = observer;
 }
 
 // reset messages data
@@ -92,7 +87,6 @@
                 "resetting the message cache",
                 (unsigned long)self.testMessages.count, (unsigned long)self.regularMessages.count,
                 (unsigned long)self.wonderpushEventsToWatch.count);
-    [self.observer dataChanged];
 }
 
 // triggered after self.messages are updated so that we can correctly enable/disable listening
@@ -228,10 +222,6 @@
         }
     }
     
-    // triggers the observer outside synchronization block
-    if (messagesToRemove.count) {
-        [self.observer dataChanged];
-    }
 }
 
 - (void)loadMessagesFromRemoteConfigWithCompletion:(void (^)(BOOL success))completion {

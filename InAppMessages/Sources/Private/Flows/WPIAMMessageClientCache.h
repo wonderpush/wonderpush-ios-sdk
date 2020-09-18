@@ -60,9 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithBookkeeper:(id<WPIAMBookKeeper>)bookKeeper
                usingResponseParser:(WPIAMFetchResponseParser *)responseParser;
 
-// set an observer for watching for data changes in the cache
-- (void)setDataObserver:(id<WPIAMCacheDataObserver>)observer;
-
 // Returns YES if there are any test messages in the cache.
 - (BOOL)hasTestMessage;
 
