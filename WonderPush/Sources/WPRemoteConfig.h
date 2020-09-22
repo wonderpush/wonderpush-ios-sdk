@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #define WP_REMOTE_CONFIG_DEFAULT_MINIMUM_CONFIG_AGE 0
-#define WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE 86400 * 10
+#define WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE 43200
 
 extern NSString * const WPRemoteConfigUpdatedNotification;
 
@@ -55,8 +55,6 @@ typedef void(^WPRemoteConfigReadCompletionHandler)(WPRemoteConfig * _Nullable, N
 @end
 
 @interface WPRemoteConfigManager : NSObject
-+ (NSString *)minimumConfigAgeUserDefaultsKey;
-+ (NSString *)maximumConfigAgeUserDefaultsKey;
 @property (nonatomic, nonnull, strong) id<WPRemoteConfigFetcher> remoteConfigFetcher;
 @property (nonatomic, nonnull, strong) id<WPRemoteConfigStorage> remoteConfigStorage;
 @property (nonatomic, assign) NSTimeInterval minimumFetchInterval;
