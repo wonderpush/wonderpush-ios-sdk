@@ -17,6 +17,28 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 #pragma mark - Data
 @implementation WPRemoteConfig
 
++ (instancetype)withJSON:(id)JSON error:(NSError *__autoreleasing  _Nullable * _Nullable)error {
+    NSDictionary *configurationDict = JSON;
+    if (![configurationDict isKindOfClass:NSDictionary.class]) return nil;
+    
+    // Get the version
+    id version = [configurationDict objectForKey:@"version"];
+
+    // Version can be a number, turn into a string
+    if ([version isKindOfClass:NSNumber.class]) version = [version stringValue];
+
+    if (![version isKindOfClass:NSString.class]) {
+        *error = [NSError errorWithDomain:WPErrorDomain code:WPErrorInvalidFormat userInfo:nil];
+        return nil;
+    }
+
+    NSNumber *maxAgeNumber = [configurationDict objectForKey:@"maxAge"]; // milliseconds
+    if (!maxAgeNumber) [configurationDict objectForKey:@"cacheTtl"]; // fallback on cacheTtl
+
+    NSTimeInterval maxAge = [maxAgeNumber isKindOfClass:NSNumber.class] ? maxAgeNumber.doubleValue / 1000 : 0;
+    return [[WPRemoteConfig alloc] initWithData:configurationDict version:version fetchDate:[NSDate date] maxAge:maxAge];
+}
+
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version {
     return [self initWithData:data version:version fetchDate:[NSDate date]];
 }
@@ -122,20 +144,10 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         }
         NSDictionary *configurationDict = [JSONObject isKindOfClass:NSDictionary.class] ? JSONObject : [NSDictionary new];
 
-        // Get the version
-        id version = [configurationDict objectForKey:@"version"];
+        NSError *fromJSONError = nil;
+        WPRemoteConfig *remoteConfig = [WPRemoteConfig withJSON:configurationDict error:&fromJSONError];
+        completion(remoteConfig, fromJSONError);
 
-        // Version can be a number, turn into a string
-        if ([version isKindOfClass:NSNumber.class]) version = [version stringValue];
-
-        NSNumber *maxAgeNumber = [configurationDict objectForKey:@"maxAge"]; // milliseconds
-        if ([version isKindOfClass:NSString.class]) {
-            NSTimeInterval maxAge = [maxAgeNumber isKindOfClass:NSNumber.class] ? maxAgeNumber.doubleValue / 1000 : 0;
-            WPRemoteConfig *remoteConfig = [[WPRemoteConfig alloc] initWithData:configurationDict version:version fetchDate:[NSDate date] maxAge:maxAge];
-            completion(remoteConfig, nil);
-            return;
-        }
-        completion(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorInvalidFormat userInfo:nil]);
     }];
     [task resume];
 }

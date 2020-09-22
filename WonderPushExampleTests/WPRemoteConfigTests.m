@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import "WPRemoteConfig.h"
 #import "WPSemver.h"
+#import "WPUtil.h"
 
 @interface MockRemoteConfigFetcher : NSObject<WPRemoteConfigFetcher>
 @property (nonatomic, nullable, strong) WPRemoteConfig *fetchedConfig;
@@ -658,6 +659,43 @@
 
     XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
     [waiter waitForExpectations:@[expectation] timeout:2];
+
+}
+
+- (void)testWithJSON {
+    NSError *error = nil;
+    WPRemoteConfig *config;
+    
+    // Missing version
+    config = [WPRemoteConfig withJSON:@{} error:&error];
+    XCTAssertNil(config);
+    XCTAssertEqual(error.code, WPErrorInvalidFormat);
+    
+    // With version
+    error = nil;
+    config = [WPRemoteConfig withJSON:@{
+        @"version": @"1.0.1"
+    } error:&error];
+    XCTAssertEqualObjects(config.version, @"1.0.1");
+    XCTAssertNil(error);
+
+    // TTL
+    error = nil;
+    config = [WPRemoteConfig withJSON:@{
+        @"version": @"1.0.1",
+        @"maxAge": @123456
+    } error:&error];
+    XCTAssertEqual(config.maxAge, 123.456);
+    XCTAssertNil(error);
+
+    // TTL, alt syntax
+    error = nil;
+    config = [WPRemoteConfig withJSON:@{
+        @"version": @"1.0.1",
+        @"cacheTtl": @123456
+    } error:&error];
+    XCTAssertEqual(config.maxAge, 123.456);
+    XCTAssertNil(error);
 
 }
 @end
