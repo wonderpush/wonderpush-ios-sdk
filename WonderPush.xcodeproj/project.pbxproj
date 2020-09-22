@@ -1029,7 +1029,6 @@
 				99EF82E323F4452C00B9B287 /* DisplayTrigger */,
 				99EF82E523F4452C00B9B287 /* Data */,
 				99EF82EC23F4452C00B9B287 /* Flows */,
-				99EF82F823F4452C00B9B287 /* Analytics */,
 			);
 			path = Private;
 			sourceTree = "<group>";
@@ -1086,13 +1085,6 @@
 				99EF82F723F4452C00B9B287 /* WPIAMBookKeeper.h */,
 			);
 			path = Flows;
-			sourceTree = "<group>";
-		};
-		99EF82F823F4452C00B9B287 /* Analytics */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Analytics;
 			sourceTree = "<group>";
 		};
 		99EF82FD23F4452C00B9B287 /* DefaultUI */ = {
