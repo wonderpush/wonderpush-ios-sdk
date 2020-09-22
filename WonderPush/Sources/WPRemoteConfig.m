@@ -241,13 +241,37 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 
 @implementation WPRemoteConfigManager
 
++ (NSString *)maximumConfigAgeUserDefaultsKey {
+    return @"_wonderpush_maximumConfigAgeUserDefaultsKey";
+}
+
++ (NSString *)minimumConfigAgeUserDefaultsKey {
+    return @"_wonderpush_minimumConfigAgeUserDefaultsKey";
+}
+
++ (void) setDefaultMinimumConfigAge:(NSTimeInterval)defaultMinimumConfigAge {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[NSNumber numberWithDouble:defaultMinimumConfigAge] forKey:self.minimumConfigAgeUserDefaultsKey];
+    [defaults synchronize];
+}
+
++ (void) setDefaultMaximumConfigAge:(NSTimeInterval)defaultMaximumConfigAge {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[NSNumber numberWithDouble:defaultMaximumConfigAge] forKey:self.maximumConfigAgeUserDefaultsKey];
+    [defaults synchronize];
+}
+
 - (instancetype) initWithRemoteConfigFetcher:(id<WPRemoteConfigFetcher>)remoteConfigFetcher
                                      storage:(nonnull id<WPRemoteConfigStorage>)remoteConfigStorage {
     if (self = [super init]) {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSNumber * _Nullable minimumConfigAge = [defaults objectForKey:WPRemoteConfigManager.minimumConfigAgeUserDefaultsKey];
+        NSNumber * _Nullable maximumConfigAge = [defaults objectForKey:WPRemoteConfigManager.maximumConfigAgeUserDefaultsKey];
+
         _remoteConfigFetcher = remoteConfigFetcher;
         _remoteConfigStorage = remoteConfigStorage;
-        _minimumConfigAge = WP_REMOTE_CONFIG_DEFAULT_MINIMUM_CONFIG_AGE;
-        _maximumConfigAge = WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE;
+        _minimumConfigAge = minimumConfigAge ? minimumConfigAge.doubleValue : WP_REMOTE_CONFIG_DEFAULT_MINIMUM_CONFIG_AGE;
+        _maximumConfigAge = maximumConfigAge ? maximumConfigAge.doubleValue : WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE;
         _minimumFetchInterval = WP_REMOTE_CONFIG_DEFAULT_MINIMUM_CONFIG_AGE;
         _queuedHandlers = [NSMutableArray new];
     }
@@ -396,11 +420,25 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
             self.isFetching = NO;
             if (completion) completion(config, error);
         };
+        // New config, no error
         if (newConfig && !fetchError) {
+            // If new config is older, abort and return current config
             if (currentConfig && [currentConfig hasHigherVersionThan:newConfig]) {
                 handler(currentConfig, nil);
                 return;
             }
+            // Extract the cache settings
+            NSNumber * _Nullable minimumConfigAgeMs = [newConfig.data objectForKey:@"cacheMinAge"];
+            NSNumber * _Nullable maximumConfigAgeMs = [newConfig.data objectForKey:@"cacheTtl"];
+            if ([minimumConfigAgeMs isKindOfClass:NSNumber.class]) {
+                self.minimumConfigAge = minimumConfigAgeMs.doubleValue / 1000;
+                [self.class setDefaultMinimumConfigAge: self.minimumConfigAge];
+            }
+            if ([maximumConfigAgeMs isKindOfClass:NSNumber.class]) {
+                self.maximumConfigAge = maximumConfigAgeMs.doubleValue / 1000;
+                [self.class setDefaultMaximumConfigAge: self.maximumConfigAge];
+            }
+            // Store new config
             [self.remoteConfigStorage storeRemoteConfig:newConfig completion:^(NSError *storageError) {
                 if (storageError) {
                     WPLog(@"Could not store RemoteConfig in storage: %@", storageError.description);
