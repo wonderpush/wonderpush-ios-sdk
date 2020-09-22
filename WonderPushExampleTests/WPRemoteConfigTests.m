@@ -92,7 +92,7 @@
 @implementation WPRemoteConfigTests
 
 - (void)setUp {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+    
     self.fetcher = [MockRemoteConfigFetcher new];
     self.storage = [MockRemoteConfigStorage new];
     self.manager = [[WPRemoteConfigManager alloc] initWithRemoteConfigFetcher:self.fetcher storage:self.storage];
@@ -146,6 +146,7 @@
  */
 - (void)testRateLimiting {
     self.manager.minimumConfigAge = 0.25;
+    self.manager.maximumConfigAge = 10;
     self.manager.minimumFetchInterval = 1;
     
     // A brand new config, just fetched

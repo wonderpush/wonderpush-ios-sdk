@@ -19,6 +19,9 @@ extern NSString * const WPRemoteConfigUpdatedNotification;
 @property (nonatomic, nonnull, readonly) NSDictionary *data;
 @property (nonatomic, nonnull, readonly) NSString *version;
 @property (nonatomic, nonnull, readonly) NSDate *fetchDate;
+/**
+ Maximum time since fetchDate before isExpired becomes true. Set to 0 to never expire.
+ */
 @property (nonatomic, readonly) NSTimeInterval maxAge;
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version;
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate;
