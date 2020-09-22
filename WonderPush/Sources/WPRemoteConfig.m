@@ -33,8 +33,9 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     }
 
     NSNumber *maxAgeNumber = [configurationDict objectForKey:@"maxAge"]; // milliseconds
-    if (!maxAgeNumber) [configurationDict objectForKey:@"cacheTtl"]; // fallback on cacheTtl
-
+    if (!maxAgeNumber) {
+        maxAgeNumber = [configurationDict objectForKey:@"cacheTtl"]; // fallback on cacheTtl
+    }
     NSTimeInterval maxAge = [maxAgeNumber isKindOfClass:NSNumber.class] ? maxAgeNumber.doubleValue / 1000 : 0;
     return [[WPRemoteConfig alloc] initWithData:configurationDict version:version fetchDate:[NSDate date] maxAge:maxAge];
 }
