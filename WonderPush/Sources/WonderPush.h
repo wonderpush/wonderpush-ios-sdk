@@ -19,7 +19,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UserNotifications/UserNotifications.h>
 
-#import "InAppMessaging.h"
+#import <WonderPush/InAppMessaging.h>
 FOUNDATION_EXPORT double WonderPushVersionNumber;
 FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
