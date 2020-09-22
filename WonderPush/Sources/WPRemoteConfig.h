@@ -24,9 +24,6 @@ extern NSString * const WPRemoteConfigUpdatedNotification;
  */
 @property (nonatomic, readonly) NSTimeInterval maxAge;
 + (instancetype _Nullable) withJSON:(id)JSON error:(NSError **)error;
-- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version;
-- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate;
-- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge;
 - (BOOL) hasHigherVersionThan:(WPRemoteConfig *)other;
 - (BOOL) isExpired;
 + (NSComparisonResult) compareVersion:(NSString *)version1 withVersion: (NSString *)version2;

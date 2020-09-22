@@ -11,6 +11,12 @@
 #import "WPSemver.h"
 #import "WPUtil.h"
 
+@interface WPRemoteConfig ()
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version;
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate;
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge;
+@end
+
 @interface MockRemoteConfigFetcher : NSObject<WPRemoteConfigFetcher>
 @property (nonatomic, nullable, strong) WPRemoteConfig *fetchedConfig;
 @property (nonatomic, nullable, strong) NSError *error;

@@ -15,6 +15,13 @@
 NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNotification";
 
 #pragma mark - Data
+
+@interface WPRemoteConfig ()
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version;
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate;
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge;
+@end
+
 @implementation WPRemoteConfig
 
 + (instancetype)withJSON:(id)JSON error:(NSError *__autoreleasing  _Nullable * _Nullable)error {
