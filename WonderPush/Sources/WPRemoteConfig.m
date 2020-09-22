@@ -20,6 +20,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version;
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate;
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge;
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge minAge:(NSTimeInterval)minAge;
 @end
 
 @implementation WPRemoteConfig
@@ -44,7 +45,9 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         maxAgeNumber = [configurationDict objectForKey:@"cacheTtl"]; // fallback on cacheTtl
     }
     NSTimeInterval maxAge = [maxAgeNumber isKindOfClass:NSNumber.class] ? maxAgeNumber.doubleValue / 1000 : 0;
-    return [[WPRemoteConfig alloc] initWithData:configurationDict version:version fetchDate:[NSDate date] maxAge:maxAge];
+    NSNumber *minAgeNumber = [configurationDict objectForKey:@"minAge"]; // milliseconds
+    NSTimeInterval minAge = [minAgeNumber isKindOfClass:NSNumber.class] ? minAgeNumber.doubleValue / 1000 : 0;
+    return [[WPRemoteConfig alloc] initWithData:configurationDict version:version fetchDate:[NSDate date] maxAge:maxAge minAge:minAge];
 }
 
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version {
@@ -56,11 +59,16 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 }
 
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge {
+    return [self initWithData:data version:version fetchDate:fetchDate maxAge:maxAge minAge:0];
+}
+
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge minAge:(NSTimeInterval)minAge {
     if (self = [super init]) {
         _data = data;
         _version = version;
         _fetchDate = fetchDate;
         _maxAge = maxAge;
+        _minAge = minAge;
     }
     return self;
 }
@@ -103,6 +111,10 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 
 - (BOOL) isExpired {
     return self.maxAge > 0 && [self.fetchDate timeIntervalSinceNow] < -self.maxAge;
+}
+
+- (BOOL)hasReachedMinAge {
+    return [self.fetchDate timeIntervalSinceNow] <= -self.minAge;
 }
 
 + (BOOL) supportsSecureCoding {
@@ -293,7 +305,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
                 NSTimeInterval configAge = -[config.fetchDate timeIntervalSinceNow];
 
                 // Do not fetch too often
-                if (configAge < self.minimumConfigAge) return;
+                if (configAge < self.minimumConfigAge || !config.hasReachedMinAge) return;
 
                 // If we're declaring the same version as the current config, update the current config's fetchDate
                 if ([WPRemoteConfig compareVersion:config.version withVersion:version] == NSOrderedSame) {
@@ -355,7 +367,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         
         // Do not fetch too often
         NSTimeInterval configAge = -[config.fetchDate timeIntervalSinceNow];
-        if (shouldFetch && configAge < self.minimumConfigAge) {
+        if (shouldFetch && (configAge < self.minimumConfigAge || !config.hasReachedMinAge)) {
             shouldFetch = NO;
         }
         

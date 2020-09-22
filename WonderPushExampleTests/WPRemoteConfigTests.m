@@ -15,6 +15,7 @@
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version;
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate;
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge;
+- (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version fetchDate:(NSDate *)fetchDate maxAge:(NSTimeInterval)maxAge minAge:(NSTimeInterval)minAge;
 @end
 
 @interface MockRemoteConfigFetcher : NSObject<WPRemoteConfigFetcher>
@@ -162,22 +163,22 @@
     // A fetcher ready to serve an even fresher config
     self.fetcher.fetchedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.1"];
     
-    // Yet, we'll get 1.0.0 because we don't fetch before minimumConfigAge.
+    // Yet, we'll get 1.0.0 because it's not expired yet and we haven't declared a newer version.
     [self.manager read:^(WPRemoteConfig *conf, NSError *error) {
         XCTAssertEqualObjects(conf.version, @"1.0.0");
     }];
     XCTAssertNil(self.fetcher.lastRequestedDate);
     
-    // Declare a later version
+    // Declare a newer version
     [self.manager declareVersion:@"1.0.1"];
     XCTAssertEqualObjects(self.storage.storedHighestVersion, @"1.0.1");
     
-    // We won't consider this version until configMaxAge is reached.
+    // We won't consider this version until minimumConfigAge and minimumFetchInterval are reached.
     XCTAssertNil(self.fetcher.lastRequestedDate);
     
     // Try to get the config
     [self.manager read:^(WPRemoteConfig *conf, NSError *error) {
-        // Should still be 1.0.0 because we haven't reached minimumFetchInterval yet
+        // Should still be 1.0.0 because we haven't reached minimumConfigAge and minimumFetchInterval yet
         XCTAssertEqualObjects(conf.version, @"1.0.0");
         XCTAssertNil(self.fetcher.lastRequestedDate);
     }];
@@ -702,6 +703,50 @@
     } error:&error];
     XCTAssertEqual(config.maxAge, 123.456);
     XCTAssertNil(error);
+
+    // minAge
+    error = nil;
+    config = [WPRemoteConfig withJSON:@{
+        @"version": @"1.0.1",
+        @"minAge": @123456
+    } error:&error];
+    XCTAssertEqual(config.minAge, 123.456);
+    XCTAssertNil(error);
+}
+
+/**
+ checks that minAge specified at config level is effective.
+ */
+- (void)testConfigMinAge {
+    self.manager.minimumConfigAge = 0;
+    self.manager.maximumConfigAge = 10;
+    self.manager.minimumFetchInterval = 1;
+    
+    // A brand new config, just fetched
+    self.storage.storedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.0" fetchDate:[NSDate date] maxAge:0 minAge:0.25];
+    
+    // A fetcher ready to serve an even fresher config
+    self.fetcher.fetchedConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1.0.1"];
+    
+    [self.manager declareVersion:@"1.0.1"];
+
+    // Yet, we'll get 1.0.0 because minAge hasn't been reached.
+    [self.manager read:^(WPRemoteConfig *conf, NSError *error) {
+        XCTAssertEqualObjects(conf.version, @"1.0.0");
+    }];
+    XCTAssertNil(self.fetcher.lastRequestedDate);
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+
+    // Wait for a little more than minAge
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+            XCTAssertEqualObjects(config.version, @"1.0.1");
+            [expectation fulfill];
+        }];
+    });
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:2];
 
 }
 @end
