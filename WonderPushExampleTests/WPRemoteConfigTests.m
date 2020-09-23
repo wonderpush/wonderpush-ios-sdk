@@ -749,4 +749,48 @@
     [waiter waitForExpectations:@[expectation] timeout:2];
 
 }
+
+/**
+ Defines behavior when a 404 on the config occurs.
+ */
+- (void) test404 {
+    self.fetcher.error = [[NSError alloc] initWithDomain:@"test" code:1 userInfo:nil];
+    self.fetcher.fetchedConfig = nil;
+    self.manager.minimumFetchInterval = 0.1;
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+
+    [self.manager read:^(WPRemoteConfig *config, NSError *e1) {
+
+        // no config, get an error, updated requested date
+        XCTAssertNil(config);
+        XCTAssertNotNil(e1);
+        XCTAssertNotNil(self.fetcher.lastRequestedDate);
+        
+        self.fetcher.lastRequestedDate = nil;
+
+        [self.manager read:^(WPRemoteConfig *config, NSError *e2) {
+
+            XCTAssertNil(config);
+
+            // We haven't made a fetch, so no error, and no requested date
+            XCTAssertNil(e2);
+            XCTAssertNil(self.fetcher.lastRequestedDate);
+            
+            // Wait for minimumFetchInterval
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self.manager read:^(WPRemoteConfig *config, NSError *e3) {
+                    XCTAssertNil(config);
+                    // We've made a fetch, so error and lastRequestedDate are not nil
+                    XCTAssertNotNil(e3);
+                    XCTAssertNotNil(self.fetcher.lastRequestedDate);
+                    [expectation fulfill];
+                }];
+            });
+
+        }];
+    }];
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:2];
+}
 @end

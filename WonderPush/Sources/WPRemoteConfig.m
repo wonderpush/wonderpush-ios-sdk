@@ -285,7 +285,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         _remoteConfigStorage = remoteConfigStorage;
         _minimumConfigAge = WP_REMOTE_CONFIG_DEFAULT_MINIMUM_CONFIG_AGE;
         _maximumConfigAge = WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE;
-        _minimumFetchInterval = WP_REMOTE_CONFIG_DEFAULT_MINIMUM_CONFIG_AGE;
+        _minimumFetchInterval = WP_REMOTE_CONFIG_DEFAULT_MINIMUM_FETCH_INTERVAL;
         _queuedHandlers = [NSMutableArray new];
     }
     return self;
