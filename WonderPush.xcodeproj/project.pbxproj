@@ -53,6 +53,9 @@
 		99232AF023708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08661D33F3A0001289BD /* WonderPushLocalizable.strings */; };
 		99232AF123708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08671D33F543001289BD /* WonderPushLocalizable.strings */; };
 		9929944C2510A27C00DF5F92 /* WPIAMCappingDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 9929944A2510A27C00DF5F92 /* WPIAMCappingDefinition.m */; };
+		992F65A4251C8B7100526C90 /* WPPresenceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 992F65A2251C8B7100526C90 /* WPPresenceManager.h */; };
+		992F65A5251C8B7100526C90 /* WPPresenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 992F65A3251C8B7100526C90 /* WPPresenceManager.m */; };
+		992F65AA251C8BA800526C90 /* WPPresenceManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 992F65A9251C8BA800526C90 /* WPPresenceManagerTests.m */; };
 		9942FD3A246AA8F30002BEA0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD39246AA8F30002BEA0 /* AppDelegate.m */; };
 		9942FD40246AA8F30002BEA0 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD3F246AA8F30002BEA0 /* ViewController.m */; };
 		9942FD43246AA8F30002BEA0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9942FD41246AA8F30002BEA0 /* Main.storyboard */; };
@@ -406,6 +409,9 @@
 		99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPushLogErrorAPI.m; sourceTree = "<group>"; };
 		992994482510A26300DF5F92 /* WPIAMCappingDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMCappingDefinition.h; sourceTree = "<group>"; };
 		9929944A2510A27C00DF5F92 /* WPIAMCappingDefinition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMCappingDefinition.m; sourceTree = "<group>"; };
+		992F65A2251C8B7100526C90 /* WPPresenceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPPresenceManager.h; sourceTree = "<group>"; };
+		992F65A3251C8B7100526C90 /* WPPresenceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPPresenceManager.m; sourceTree = "<group>"; };
+		992F65A9251C8BA800526C90 /* WPPresenceManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPPresenceManagerTests.m; sourceTree = "<group>"; };
 		9942FD36246AA8F20002BEA0 /* WonderPushExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WonderPushExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9942FD38246AA8F20002BEA0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9942FD39246AA8F30002BEA0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -747,6 +753,7 @@
 				99ED541B24B340F600EECDE0 /* WPSPSegmentationParserTests.m */,
 				99ED541D24B466D100EECDE0 /* WPSPParserConfigTests.m */,
 				3DB7A41D24B486DC00204437 /* WPSPSegmenterTests.m */,
+				992F65A9251C8BA800526C90 /* WPPresenceManagerTests.m */,
 			);
 			path = WonderPushExampleTests;
 			sourceTree = "<group>";
@@ -882,6 +889,8 @@
 				9942FD83246C23DD0002BEA0 /* WPSemver.m */,
 				99EA16472487DDC000AA01BC /* WPNSUtil.h */,
 				99EA16482487DDC000AA01BC /* WPNSUtil.m */,
+				992F65A2251C8B7100526C90 /* WPPresenceManager.h */,
+				992F65A3251C8B7100526C90 /* WPPresenceManager.m */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -1325,6 +1334,7 @@
 				9979E0E724A640EC002BC6EE /* WPSPASTValueNode.h in Headers */,
 				99D16F202463E68C00C14989 /* WPMeasurementsApiClient.h in Headers */,
 				99EF837123F4452C00B9B287 /* WPIAMRenderingWindowHelper.h in Headers */,
+				992F65A4251C8B7100526C90 /* WPPresenceManager.h in Headers */,
 				99EF836523F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.h in Headers */,
 				9998CAB5221C75370028D955 /* WPNotificationCenterDelegate.h in Headers */,
 				9998CAB6221C75370028D955 /* WPRequest.h in Headers */,
@@ -1642,6 +1652,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				992F65AA251C8BA800526C90 /* WPPresenceManagerTests.m in Sources */,
 				99ED541E24B466D100EECDE0 /* WPSPParserConfigTests.m in Sources */,
 				99ED541C24B340F600EECDE0 /* WPSPSegmentationParserTests.m in Sources */,
 				99ED541824B33A2700EECDE0 /* WPSPDataSourceTests.m in Sources */,
@@ -1692,6 +1703,7 @@
 				99D16F212463E68C00C14989 /* WPMeasurementsApiClient.m in Sources */,
 				9998CAD3221C75630028D955 /* WonderPushConcreteAPI.m in Sources */,
 				99EF838A23F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.m in Sources */,
+				992F65A5251C8B7100526C90 /* WPPresenceManager.m in Sources */,
 				99EF833F23F4452C00B9B287 /* NSString+WPInterlaceStrings.m in Sources */,
 				99EF837A23F4452C00B9B287 /* WPIAMRenderingWindowHelper.m in Sources */,
 				995F14D824A9F3F300CC499E /* WPSPDefaultValueNodeParser.m in Sources */,
