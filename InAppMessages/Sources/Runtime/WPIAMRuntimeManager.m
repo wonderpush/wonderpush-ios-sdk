@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
     WPIAMAutoDataCollectionSettingDisabled = 2,
 };
 
-@interface WPIAMRuntimeManager () <WPIAMTestingModeListener>
+@interface WPIAMRuntimeManager ()
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAppForegroundFlow *displayOnAppForegroundFlow;
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnFetchDoneNotificationFlow *displayOnFetchDoneFlow;
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAnalyticEventsFlow *displayOnWonderPushEventsFlow;
@@ -68,15 +68,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     return managerInstance;
 }
 
-// For protocol WPIAMTestingModeListener.
-- (void)testingModeSwitchedOn {
-    WPLogDebug(
-                @"Dynamically switch to the display flow for testing mode instance.");
-    
-    [self.displayOnAppForegroundFlow stop];
-    [self.displayOnFetchDoneFlow start];
-}
-
 - (BOOL)shouldRunSDKFlowsOnStartup {
     return YES;
 }
@@ -90,6 +81,7 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     @synchronized(self) {
         if (!_running) {
             [self.displayOnAppForegroundFlow start];
+            [self.displayOnFetchDoneFlow start];
             [self.displayOnWonderPushEventsFlow start];
             WPLogDebug(
                         @"Start WonderPush In-App Messaging flows from inactive.");
@@ -110,6 +102,7 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     @synchronized(self) {
         if (_running) {
             [self.displayOnAppForegroundFlow stop];
+            [self.displayOnFetchDoneFlow stop];
             [self.displayOnWonderPushEventsFlow stop];
             WPLogDebug(
                         @"Shutdown WonderPush In-App Messaging flows.");
@@ -137,6 +130,7 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     if (_running) {
         // Runtime has been started previously. Stop all the flows first.
         [self.displayOnAppForegroundFlow stop];
+        [self.displayOnFetchDoneFlow stop];
         [self.displayOnWonderPushEventsFlow stop];
     }
     
@@ -157,10 +151,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     WPIAMDisplaySetting *appForegroundDisplaysetting = [[WPIAMDisplaySetting alloc] init];
     appForegroundDisplaysetting.displayMinIntervalInMinutes =
     settings.appFGRenderMinIntervalInMinutes;
-    
-    WPIAMSDKModeManager *sdkModeManager =
-    [[WPIAMSDKModeManager alloc] initWithUserDefaults:NSUserDefaults.standardUserDefaults
-                                   testingModeListener:self];
     
     self.displayExecutor =
     [[WPIAMDisplayExecutor alloc] initWithInAppMessaging:[WPInAppMessaging inAppMessaging]
@@ -203,35 +193,28 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
             
             self->_running = YES;
             
-            if (sdkModeManager.currentMode == WPIAMSDKModeTesting) {
-                WPLogDebug(
-                            @"InAppMessaging testing mode enabled. App "
-                            "foreground messages will be displayed following "
-                            "fetch");
-                [self.displayOnFetchDoneFlow start];
-            } else {
-                WPLogDebug(
-                            @"Start regular display flow for non-testing "
-                            "instance mode");
-                [self.displayOnAppForegroundFlow start];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    void(^displayNext)(void) = ^{
-                        [self.displayExecutor checkAndDisplayNextAppLaunchMessage];
-                        // Simulate app going into foreground on startup
-                        [self.displayExecutor checkAndDisplayNextAppForegroundMessage];
-                    };
-                    if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
+            WPLogDebug(
+                        @"Start regular display flow for non-testing "
+                        "instance mode");
+            [self.displayOnAppForegroundFlow start];
+            [self.displayOnFetchDoneFlow start];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                void(^displayNext)(void) = ^{
+                    [self.displayExecutor checkAndDisplayNextAppLaunchMessage];
+                    // Simulate app going into foreground on startup
+                    [self.displayExecutor checkAndDisplayNextAppForegroundMessage];
+                };
+                if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
+                    displayNext();
+                } else {
+                    id __block registration = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+                        [NSNotificationCenter.defaultCenter removeObserver:registration];
                         displayNext();
-                    } else {
-                        id __block registration = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-                            [NSNotificationCenter.defaultCenter removeObserver:registration];
-                            displayNext();
-                        }];
-                    }
-                });
-            }
-            
+                    }];
+                }
+            });
+
         } else {
             WPLogDebug(
                         @"No IAM SDK startup due to settings.");

@@ -39,21 +39,13 @@ extern NSString *const kWPIAMFetchIsDoneNotification;
                                                object:nil];
 }
 
-- (void)checkAndRenderMessage {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0ul), ^{
-        [self.displayExecutor checkAndDisplayNextAppForegroundMessage];
-    });
-}
-
 - (void)fetchIsDone {
     WPLogDebug(
                 @"Fetch is done. Start message rendering flow.");
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * (int64_t)NSEC_PER_MSEC),
                    dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0ul), ^{
-        [self.messageCache loadMessagesFromRemoteConfigWithCompletion:^(BOOL success) {
-            [self checkAndRenderMessage];
-        }];
+        [self.messageCache loadMessagesFromRemoteConfigWithCompletion:nil];
     });
 }
 
