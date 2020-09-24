@@ -35,6 +35,7 @@
 #import "WPAction_private.h"
 #import "WPNotificationCategoryHelper.h"
 #import "WPIAMRuntimeManager.h"
+#import "WPPresenceManager.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -50,7 +51,21 @@ static BOOL _userNotificationCenterDelegateInstalled = NO;
 static NSString *_notificationFromAppLaunchCampaignId = nil;
 static NSString *_notificationFromAppLaunchNotificationId = nil;
 __weak static id<WonderPushDelegate> _delegate = nil;
+static WPPresenceManager *presenceManager = nil;
+@class WPPresenceManagerEventSender;
+static WPPresenceManagerEventSender *presenceManagerDelegate = nil;
+static NSDate *lastActivePresenceSentDate = nil;
 
+@interface WPPresenceManagerEventSender : NSObject<WPPresenceManagerAutoRenewDelegate>
+@end
+@implementation WPPresenceManagerEventSender
+
+- (void)presenceManager:(WPPresenceManager *)presenceManager wantsToRenewPresence:(WPPresencePayload *)presence {
+    if (!presence) return;
+    [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
+}
+
+@end
 @implementation WonderPush
 
 static NSString *_integrator = nil;
@@ -129,7 +144,21 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         [center addObserverForName:UIApplicationDidBecomeActiveNotification object:UIApplication.sharedApplication queue:nil usingBlock:^(NSNotification *notification) {
             [WonderPush applicationDidBecomeActive_private:notification.object];
         }];
+        [center addObserverForName:UIApplicationWillResignActiveNotification object:UIApplication.sharedApplication queue:nil usingBlock:^(NSNotification *notification) {
+            [WonderPush applicationWillResignActive_private:notification.object];
+        }];
     });
+}
++ (WPPresenceManager *)presenceManager {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        presenceManagerDelegate = [WPPresenceManagerEventSender new];
+        presenceManager = [[WPPresenceManager alloc]
+                           initWithAutoRenewDelegate:presenceManagerDelegate
+                           anticipatedTime:PRESENCE_ANTICIPATED_TIME
+                           safetyMarginTime:PRESENCE_UPDATE_SAFETY_MARGIN];
+    });
+    return presenceManager;
 }
 + (NSBundle *) resourceBundle
 {
@@ -537,6 +566,13 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [self refreshPreferencesAndConfiguration];
     [self onInteractionLeaving:NO];
 }
+
++ (void) applicationWillResignActive_private:(UIApplication *)application {
+    if (![self isInitialized]) return;
+    [WPJsonSyncInstallation flush];
+    [self onInteractionLeaving:YES];
+}
+
 + (void) applicationDidEnterBackground:(UIApplication *)application {
     // This method is here for background compat only
     // We are now calling [WonderPush applicationDidEnterBackground_private:application] from
@@ -550,7 +586,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
 
-    [WPJsonSyncInstallation flush];
 
     // Send queued notifications as LocalNotifications
     if ([self hasUserConsent]) {
@@ -587,7 +622,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         [configuration clearQueuedNotifications];
     }
 
-    [self onInteractionLeaving:YES];
 }
 
 + (void) application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
@@ -1204,7 +1238,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
         // Note the current time as the most accurate hint of last interaction
         conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
-
+        WPPresencePayload *presence = [[WonderPush presenceManager] presenceWillStop];
+        if (presence) {
+            [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
+        }
     } else {
 
         if (shouldInjectAppOpen) {
@@ -1233,11 +1270,24 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                 openInfo[@"notificationId"] = conf.justOpenedNotification[@"_wp"][@"n"] ?: [NSNull null];
                 conf.justOpenedNotification = nil;
             }
+            WPPresencePayload *presence = [[WonderPush presenceManager] presenceDidStart];
+            if (presence) openInfo[@"presence"] = presence.toJSON;
             [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil];
             conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
             conf.lastAppOpenInfo = openInfo;
+        } else {
+            NSTimeInterval timeSinceLastActivePresenceSentDate = -[lastActivePresenceSentDate timeIntervalSinceNow];
+            // We're calling onInteractionLeaving:NO twice in a row at application startup time
+            if (!lastActivePresenceSentDate || timeSinceLastActivePresenceSentDate > 0.1) {
+                WPPresencePayload *presence = [[WonderPush presenceManager] presenceDidStart];
+                if (presence) {
+                    [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
+                }
+            }
+
         }
 
+        lastActivePresenceSentDate = [NSDate date];
         conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
 
     }

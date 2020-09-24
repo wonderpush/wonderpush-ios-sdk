@@ -42,6 +42,9 @@
 #define DIFFERENT_SESSION_REGULAR_MIN_TIME_GAP      (30*60*1000)
 #define DIFFERENT_SESSION_NOTIFICATION_MIN_TIME_GAP (15*60*1000)
 
+#define PRESENCE_UPDATE_SAFETY_MARGIN 60
+#define PRESENCE_ANTICIPATED_TIME (30*60)
+
 /**
  Key to set in your .plist file to allow rating button action
  */
