@@ -120,6 +120,15 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_INITIALIZED object:nil queue:nil usingBlock:^(NSNotification *note) {
             [self setIsReady:YES];
         }];
+        
+        // Register application lifecycle callbacks
+        NSNotificationCenter *center = NSNotificationCenter.defaultCenter;
+        [center addObserverForName:UIApplicationDidEnterBackgroundNotification object:UIApplication.sharedApplication queue:nil usingBlock:^(NSNotification *notification) {
+            [WonderPush applicationDidEnterBackground_private:notification.object];
+        }];
+        [center addObserverForName:UIApplicationDidBecomeActiveNotification object:UIApplication.sharedApplication queue:nil usingBlock:^(NSNotification *notification) {
+            [WonderPush applicationDidBecomeActive_private:notification.object];
+        }];
     });
 }
 + (NSBundle *) resourceBundle
@@ -499,7 +508,13 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [WonderPush setDeviceToken:nil];
 }
 
-+ (void) applicationDidBecomeActive:(UIApplication *)application;
++ (void) applicationDidBecomeActive:(UIApplication *)application {
+    // This method is here for background compat only
+    // We are now calling [WonderPush applicationDidBecomeActive_private:application] from
+    // an NSNotificationCenter notification
+}
+
++ (void) applicationDidBecomeActive_private:(UIApplication *)application
 {
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
@@ -522,8 +537,13 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [self refreshPreferencesAndConfiguration];
     [self onInteractionLeaving:NO];
 }
++ (void) applicationDidEnterBackground:(UIApplication *)application {
+    // This method is here for background compat only
+    // We are now calling [WonderPush applicationDidEnterBackground_private:application] from
+    // an NSNotificationCenter notification
+}
 
-+ (void) applicationDidEnterBackground:(UIApplication *)application
++ (void) applicationDidEnterBackground_private:(UIApplication *)application
 {
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
