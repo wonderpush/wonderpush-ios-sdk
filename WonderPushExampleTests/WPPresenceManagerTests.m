@@ -84,8 +84,9 @@
     WPPresenceManager *manager = [[WPPresenceManager alloc] initWithAutoRenewDelegate:nil anticipatedTime:10 safetyMarginTime:0];
     NSDate *now = [NSDate date];
     WPPresencePayload *payload = [manager presenceWillStop];
+    XCTAssertEqual(0, payload.elapsedTime);
+    XCTAssertEqual(payload.fromDate.timeIntervalSince1970, payload.untilDate.timeIntervalSince1970);
     XCTAssertEqualWithAccuracy(now.timeIntervalSince1970, payload.fromDate.timeIntervalSince1970, 0.1);
-    XCTAssertEqualWithAccuracy(now.timeIntervalSince1970, payload.untilDate.timeIntervalSince1970, 0.1);
 }
 
 /**
@@ -146,8 +147,8 @@
         delegate.presenceToRenew = nil;
     });
     
-    // Wait 500ms and stop
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    // Wait 600ms and stop
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         WPPresencePayload *stopPayload = [manager presenceWillStop];
         NSDate *now = [NSDate date];
         
@@ -191,7 +192,7 @@
             lastStartDate = [NSDate date];
         });
     }
-    // Wait 500 + 210 ms and check the timer fired
+    // Wait 500 + (300 - 100 + 10) ms and check the timer fired
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.71 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         XCTAssertNotNil(delegate.presenceToRenew);
         WPPresencePayload *stopPayload = [manager presenceWillStop];

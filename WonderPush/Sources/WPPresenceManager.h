@@ -43,13 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
  Declare that presence started.
  @return A presence payload to send, or nil
  */
-- (nullable WPPresencePayload *) presenceDidStart;
+- (WPPresencePayload *) presenceDidStart;
 
 /**
  Declare that presence stopped.
  @return A presence payload to send, or nil
  */
-- (nullable WPPresencePayload *) presenceWillStop;
+- (WPPresencePayload *) presenceWillStop;
+
+- (BOOL) isCurrentlyPresent;
 @end
 
 NS_ASSUME_NONNULL_END

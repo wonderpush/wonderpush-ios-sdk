@@ -101,4 +101,10 @@
     [self.autoRenewDelegate presenceManager:self wantsToRenewPresence:self.lastPresencePayload];
 
 }
+
+- (BOOL)isCurrentlyPresent {
+    if (!self.lastPresencePayload) return NO;
+    return [self.lastPresencePayload.untilDate timeIntervalSinceNow] > 0;
+}
+
 @end

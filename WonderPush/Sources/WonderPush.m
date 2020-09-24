@@ -54,7 +54,6 @@ __weak static id<WonderPushDelegate> _delegate = nil;
 static WPPresenceManager *presenceManager = nil;
 @class WPPresenceManagerEventSender;
 static WPPresenceManagerEventSender *presenceManagerDelegate = nil;
-static NSDate *lastActivePresenceSentDate = nil;
 
 @interface WPPresenceManagerEventSender : NSObject<WPPresenceManagerAutoRenewDelegate>
 @end
@@ -586,6 +585,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
 
+    WPPresencePayload *presence = [[WonderPush presenceManager] presenceWillStop];
+    if (presence) {
+        [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
+    }
 
     // Send queued notifications as LocalNotifications
     if ([self hasUserConsent]) {
@@ -1238,10 +1241,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
         // Note the current time as the most accurate hint of last interaction
         conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
-        WPPresencePayload *presence = [[WonderPush presenceManager] presenceWillStop];
-        if (presence) {
-            [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
-        }
     } else {
 
         if (shouldInjectAppOpen) {
@@ -1276,18 +1275,13 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
             conf.lastAppOpenInfo = openInfo;
         } else {
-            NSTimeInterval timeSinceLastActivePresenceSentDate = -[lastActivePresenceSentDate timeIntervalSinceNow];
-            // We're calling onInteractionLeaving:NO twice in a row at application startup time
-            if (!lastActivePresenceSentDate || timeSinceLastActivePresenceSentDate > 0.1) {
+            if (![WonderPush presenceManager].isCurrentlyPresent) {
                 WPPresencePayload *presence = [[WonderPush presenceManager] presenceDidStart];
-                if (presence) {
-                    [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
-                }
+                [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
             }
 
         }
 
-        lastActivePresenceSentDate = [NSDate date];
         conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
 
     }
