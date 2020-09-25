@@ -44,7 +44,7 @@
     if (self = [super init]) {
         _autoRenewDelegate = autoRenewDelegate;
         _anticipatedTime = anticipatedTime;
-        _safetyMarginTime = MAX(0.01, safetyMarginTime); // minimum 100ms
+        _safetyMarginTime = MAX(0.1, safetyMarginTime); // minimum 100ms
     }
     return self;
 }
