@@ -39,7 +39,6 @@
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
-static BOOL _isReady = NO;
 static BOOL _isInitialized = NO;
 static BOOL _isReachable = NO;
 
@@ -130,11 +129,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                                @"uk", @"vi", @"zh", @"zh_CN", @"zh_TW", @"zh_HK",
                                ];
 
-        // setIsReady:YES when initialization notification received
-        [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_INITIALIZED object:nil queue:nil usingBlock:^(NSNotification *note) {
-            [self setIsReady:YES];
-        }];
-        
         // Register application lifecycle callbacks
         NSNotificationCenter *center = NSNotificationCenter.defaultCenter;
         [center addObserverForName:UIApplicationDidEnterBackgroundNotification object:UIApplication.sharedApplication queue:nil usingBlock:^(NSNotification *notification) {
@@ -261,16 +255,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     _isInitialized = isInitialized;
 }
 
-+ (BOOL) isReady
-{
-    return _isReady;
-}
-
-+ (void) setIsReady:(BOOL)isReady
-{
-    _isReady = isReady;
-}
-
 + (BOOL) isReachable
 {
     return _isReachable;
@@ -343,28 +327,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 + (void) initForNewUser:(NSString *)userId
 {
     WPLogDebug(@"initForNewUser:%@", userId);
-    [self setIsReady:NO];
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     [configuration changeUserId:userId];
     [WPJsonSyncInstallation forCurrentUser]; // ensures static initialization is done
-    [self safeDeferWithConsent:^{
-        void (^init)(void) = ^{
-            [self setIsReady:YES];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_INITIALIZED
-                                                                    object:self
-                                                                  userInfo:nil];
-                [self refreshPreferencesAndConfiguration];
-            });
-        };
-        // Fetch anonymous access token right away
-        BOOL isFetching = [[WPAPIClient sharedClient] fetchAccessTokenIfNeededAndCall:^(NSURLSessionTask *task, id responseObject) {
-            init();
-        } failure:^(NSURLSessionTask *task, NSError *error) {} forUserId:userId];
-        if (NO == isFetching) {
-            init();
-        }
-    } identifier:@"initForNewUser"];
 }
 
 + (BOOL) getNotificationEnabled

@@ -117,8 +117,6 @@ extern NSString * const WPEventFiredNotificationEventDataKey;
 
 + (void) sendPreferences;
 
-+ (void) setIsReady:(BOOL)isReady;
-
 + (void) setIsReachable:(BOOL)isReachable;
 
 + (NSString *) languageCode;

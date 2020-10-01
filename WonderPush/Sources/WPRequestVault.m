@@ -60,7 +60,6 @@
         self.operationQueue.name = @"WonderPush-RequestVault";
         self.operationQueue.maxConcurrentOperationCount = 1;
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedNotification:) name:WP_NOTIFICATION_INITIALIZED object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userConsentChangedNotification:) name:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:nil];
         // Set initial reachability
         [self reachabilityChanged:[WonderPush isReachable]];
@@ -181,15 +180,6 @@
 - (void) reachabilityChanged:(WPNetworkReachabilityStatus)status
 {
     [self updateOperationQueueStatus];
-}
-
-
-#pragma mark - Initialized
-
-- (void) initializedNotification:(NSNotification *)notification
-{
-    WPLogDebug(@"SDK initialized, starting queue to test reachability.");
-    [self.operationQueue setSuspended:NO];
 }
 
 #pragma mark - User consent
