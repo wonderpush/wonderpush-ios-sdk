@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define WP_REMOTE_CONFIG_DEFAULT_MAXIMUM_CONFIG_AGE 86400 * 10
 #define WP_REMOTE_CONFIG_DISABLE_FETCH_KEY @"disableConfigFetch"
 #define WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY @"disableJsonSync"
+#define WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY @"disableApiClient"
 
 extern NSString * const WPRemoteConfigUpdatedNotification;
 

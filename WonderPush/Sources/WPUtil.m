@@ -32,6 +32,7 @@ NSInteger const WPErrorMissingUserConsent = 11011;
 NSInteger const WPErrorHTTPFailure = 11012;
 NSInteger const WPErrorInvalidFormat = 11013;
 NSInteger const WPErrorNotFound = 11014;
+NSInteger const WPErrorForbidden = 11015;
 @implementation WPUtil
 
 #pragma mark - Device

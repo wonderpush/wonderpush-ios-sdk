@@ -80,6 +80,8 @@ extern NSInteger const WPErrorMissingUserConsent;
 extern NSInteger const WPErrorHTTPFailure;
 extern NSInteger const WPErrorInvalidFormat;
 extern NSInteger const WPErrorNotFound;
+extern NSInteger const WPErrorForbidden;
+
 //extern NSInteger const WPErrorSecureConnectionRequired;
 //extern NSInteger const WPErrorInvalidPrevNextParameter;
 //extern NSInteger const WPErrorInvalidSid;
