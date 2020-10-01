@@ -97,6 +97,8 @@
 		995F14FE24AB7B0300CC499E /* WPSPGeoBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 995F14FC24AB7B0300CC499E /* WPSPGeoBox.m */; };
 		995F150124AB7BB200CC499E /* WPSPGeohash.h in Headers */ = {isa = PBXBuildFile; fileRef = 995F14FF24AB7BB200CC499E /* WPSPGeohash.h */; };
 		995F150224AB7BB200CC499E /* WPSPGeohash.m in Sources */ = {isa = PBXBuildFile; fileRef = 995F150024AB7BB200CC499E /* WPSPGeohash.m */; };
+		99764148252648B9001EFD96 /* WPErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 99764146252648B9001EFD96 /* WPErrors.h */; };
+		9976414A252648B9001EFD96 /* WPErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 99764147252648B9001EFD96 /* WPErrors.m */; };
 		9979E0CA24A63711002BC6EE /* WPSPSegmentationDSLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 9979E0C824A63711002BC6EE /* WPSPSegmentationDSLParser.h */; };
 		9979E0CB24A63711002BC6EE /* WPSPSegmentationDSLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9979E0C924A63711002BC6EE /* WPSPSegmentationDSLParser.m */; };
 		9979E0CE24A6374F002BC6EE /* WPSPParserConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 9979E0CC24A6374F002BC6EE /* WPSPParserConfig.h */; };
@@ -459,6 +461,8 @@
 		995F14FF24AB7BB200CC499E /* WPSPGeohash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSPGeohash.h; sourceTree = "<group>"; };
 		995F150024AB7BB200CC499E /* WPSPGeohash.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPGeohash.m; sourceTree = "<group>"; };
 		99630BDB242A04F000747604 /* WPURLConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPURLConstants.h; sourceTree = "<group>"; };
+		99764146252648B9001EFD96 /* WPErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPErrors.h; sourceTree = "<group>"; };
+		99764147252648B9001EFD96 /* WPErrors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPErrors.m; sourceTree = "<group>"; };
 		9979E0C824A63711002BC6EE /* WPSPSegmentationDSLParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSPSegmentationDSLParser.h; sourceTree = "<group>"; };
 		9979E0C924A63711002BC6EE /* WPSPSegmentationDSLParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmentationDSLParser.m; sourceTree = "<group>"; };
 		9979E0CC24A6374F002BC6EE /* WPSPParserConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSPParserConfig.h; sourceTree = "<group>"; };
@@ -891,6 +895,8 @@
 				99EA16482487DDC000AA01BC /* WPNSUtil.m */,
 				992F65A2251C8B7100526C90 /* WPPresenceManager.h */,
 				992F65A3251C8B7100526C90 /* WPPresenceManager.m */,
+				99764146252648B9001EFD96 /* WPErrors.h */,
+				99764147252648B9001EFD96 /* WPErrors.m */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -1295,6 +1301,7 @@
 				9979E0E224A63B69002BC6EE /* WPSPDataSource.h in Headers */,
 				9998CAAB221C75370028D955 /* WPDataManager.h in Headers */,
 				9942FD7B246BDAB20002BEA0 /* WPRemoteConfig.h in Headers */,
+				99764148252648B9001EFD96 /* WPErrors.h in Headers */,
 				99EF835023F4452C00B9B287 /* NSString+WPInterlaceStrings.h in Headers */,
 				99EF836323F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.h in Headers */,
 				9998CAAC221C75370028D955 /* WPDialogButtonHandler.h in Headers */,
@@ -1701,6 +1708,7 @@
 				9947AD6924FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m in Sources */,
 				99EF834823F4452C00B9B287 /* WPIAMSDKSettings.m in Sources */,
 				99D16F212463E68C00C14989 /* WPMeasurementsApiClient.m in Sources */,
+				9976414A252648B9001EFD96 /* WPErrors.m in Sources */,
 				9998CAD3221C75630028D955 /* WonderPushConcreteAPI.m in Sources */,
 				99EF838A23F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.m in Sources */,
 				992F65A5251C8B7100526C90 /* WPPresenceManager.m in Sources */,

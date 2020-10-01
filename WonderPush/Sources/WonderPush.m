@@ -19,6 +19,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import "WPNSUtil.h"
 #import "WPUtil.h"
+#import "WPErrors.h"
 #import "WonderPush_private.h"
 #import "WPAppDelegate.h"
 #import "WPNotificationCenterDelegate.h"

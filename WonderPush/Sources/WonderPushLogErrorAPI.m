@@ -8,7 +8,7 @@
 
 #import "WonderPushLogErrorAPI.h"
 #import "WPLog.h"
-#import "WPUtil.h"
+#import "WPErrors.h"
 
 @implementation WonderPushLogErrorAPI
 - (void) activate {}

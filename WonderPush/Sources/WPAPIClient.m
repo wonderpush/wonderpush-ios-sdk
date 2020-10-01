@@ -16,6 +16,7 @@
 
 #import <UIKit/UIKit.h>
 #import "WPUtil.h"
+#import "WPErrors.h"
 #import "WPNSUtil.h"
 #import "WPAPIClient.h"
 #import "WPConfiguration.h"

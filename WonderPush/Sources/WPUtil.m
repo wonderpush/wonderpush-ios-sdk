@@ -15,6 +15,7 @@
  */
 
 #import "WPUtil.h"
+#import "WPErrors.h"
 #import "WPNSUtil.h"
 #import "WPConfiguration.h"
 #import "WPLog.h"
@@ -25,14 +26,6 @@
 #import <UserNotifications/UserNotifications.h>
 
 
-NSString * const WPErrorDomain = @"WPErrorDomain";
-NSInteger const WPErrorInvalidCredentials = 11000;
-NSInteger const WPErrorInvalidAccessToken = 11003;
-NSInteger const WPErrorMissingUserConsent = 11011;
-NSInteger const WPErrorHTTPFailure = 11012;
-NSInteger const WPErrorInvalidFormat = 11013;
-NSInteger const WPErrorNotFound = 11014;
-NSInteger const WPErrorForbidden = 11015;
 @implementation WPUtil
 
 #pragma mark - Device

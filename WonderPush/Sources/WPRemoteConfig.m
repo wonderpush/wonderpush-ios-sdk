@@ -10,7 +10,7 @@
 #import "WPSemver.h"
 #import "WPLog.h"
 #import "WonderPush_private.h"
-#import "WPUtil.h"
+#import "WPErrors.h"
 
 NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNotification";
 
