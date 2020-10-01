@@ -77,9 +77,19 @@ static BOOL patchCallDisabledByConfig = YES; // Disable patch calls when config 
                 }
             }
         }];
-        [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
-            patchCallDisabledByConfig = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
-        }];
+        void(^__block readConfig)(void) = ^{
+            [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+                if (!config) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        readConfig();
+                    });
+                    return;
+                }
+                readConfig = nil;
+                patchCallDisabledByConfig = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
+            }];
+        };
+        readConfig();
     }
 }
 
