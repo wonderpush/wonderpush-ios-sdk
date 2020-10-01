@@ -822,4 +822,34 @@
         XCTAssertEqualObjects(error.domain, @"some");
     }];
 }
+/**
+ Checks that when a particular config entry is present, no new configuration will ever be fetched
+ */
+- (void) testDisableFetch {
+
+    // Fetch as often as we like
+    self.manager.minimumConfigAge = 0;
+    self.manager.minimumFetchInterval = 0;
+    
+    // A config has already been fetched, that forbids further fetching via the WP_REMOTE_CONFIG_DISABLE_FETCH_KEY
+    self.storage.storedConfig = [WPRemoteConfig withJSON:@{
+        @"version": @"1.0",
+        @"maxAge": @123456,
+        WP_REMOTE_CONFIG_DISABLE_FETCH_KEY: @YES,
+    } error:nil];
+    
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        XCTAssertEqualObjects(config.version, @"1.0");
+        XCTAssertNil(self.fetcher.lastRequestedDate);
+    }];
+    
+    // Declare new version
+    [self.manager declareVersion:@"1.1"];
+
+    // No fetch should have happened
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        XCTAssertEqualObjects(config.version, @"1.0");
+        XCTAssertNil(self.fetcher.lastRequestedDate);
+    }];
+}
 @end

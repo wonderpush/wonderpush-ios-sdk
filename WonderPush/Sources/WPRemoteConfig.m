@@ -422,6 +422,13 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         }
         return;
     }
+
+    // Is fetch disabled?
+    if (currentConfig && [[currentConfig.data objectForKey:WP_REMOTE_CONFIG_DISABLE_FETCH_KEY] boolValue]) {
+        if (completion) completion(currentConfig, nil);
+        return;
+    }
+
     self.lastFetchDate = [NSDate date];
     self.isFetching = YES;
     [self.remoteConfigFetcher fetchConfigWithVersion:version completion:^(WPRemoteConfig *newConfig, NSError *fetchError) {
