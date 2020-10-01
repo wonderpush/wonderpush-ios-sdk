@@ -1828,4 +1828,24 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     }
     return remoteConfigManager;
 }
+
++ (WPMeasurementsApiClient *)measurementsApiClient {
+    static NSMutableDictionary *clients;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        clients = [NSMutableDictionary new];
+    });
+    
+    NSString *clientId = WPConfiguration.sharedConfiguration.clientId;
+    NSString *clientSecret = WPConfiguration.sharedConfiguration.clientSecret;
+    if (!clientId || !clientSecret) return nil;
+    
+    WPMeasurementsApiClient *client = clients[clientId];
+    if (!client) {
+        client = [[WPMeasurementsApiClient alloc]
+                  initWithClientId:clientId secret:clientSecret deviceId:[WPUtil deviceIdentifier]];
+        [clients setObject:client forKey:clientId];
+    }
+    return client;
+}
 @end

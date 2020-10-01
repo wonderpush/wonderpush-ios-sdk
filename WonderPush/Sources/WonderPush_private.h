@@ -23,6 +23,7 @@
 #import "WPInAppMessagingRenderingPrivate.h"
 #import "WPURLConstants.h"
 #import "WPRemoteConfig.h"
+#import "WPMeasurementsApiClient.h"
 
 #define SDK_VERSION @"iOS-3.3.3"
 #define PRODUCTION_API_DOMAIN @"api.wonderpush.com"
@@ -235,6 +236,7 @@ Called when receiving the full state of the installation
 
 + (WPRemoteConfigManager *) remoteConfigManager;
 
++ (WPMeasurementsApiClient *) measurementsApiClient;
 @end
 
 
