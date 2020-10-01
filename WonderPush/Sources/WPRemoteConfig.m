@@ -343,21 +343,21 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         return;
     }
 
-    [self readConfigAndHighestDeclaredVersionFromStorageWithCompletion:^(WPRemoteConfig *config, NSString *highestVersion, NSError *storageError) {
+    [self readConfigAndHighestDeclaredVersionFromStorageWithCompletion:^(WPRemoteConfig *storedConfig, NSString *highestVersion, NSError *storageError) {
         if (storageError) {
             completion(nil, storageError);
             return;
         }
         NSTimeInterval lastFetchInterval = -[self.lastFetchDate timeIntervalSinceNow];
 
-        if (!config) {
+        if (!storedConfig) {
             // Do not update too frequently
             if (self.lastFetchDate && lastFetchInterval < self.minimumFetchInterval) {
                 completion(nil, nil);
                 return;
             };
 
-            [self fetchAndStoreConfigWithVersion:nil currentConfig:config completion:^(WPRemoteConfig *config, NSError *fetchError) {
+            [self fetchAndStoreConfigWithVersion:nil currentConfig:storedConfig completion:^(WPRemoteConfig *config, NSError *fetchError) {
                 if (fetchError) {
                     completion(nil, fetchError);
                     return;
@@ -366,22 +366,22 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
             }];
             return;
         }
-        BOOL higherVersionExists = NSOrderedAscending == [WPRemoteConfig compareVersion:config.version withVersion:highestVersion];
+        BOOL higherVersionExists = NSOrderedAscending == [WPRemoteConfig compareVersion:storedConfig.version withVersion:highestVersion];
         BOOL shouldFetch = higherVersionExists;
         NSString *versionToFetch = highestVersion;
         
         // Do not fetch too often
-        NSTimeInterval configAge = -[config.fetchDate timeIntervalSinceNow];
-        if (shouldFetch && (configAge < self.minimumConfigAge || !config.hasReachedMinAge)) {
+        NSTimeInterval configAge = -[storedConfig.fetchDate timeIntervalSinceNow];
+        if (shouldFetch && (configAge < self.minimumConfigAge || !storedConfig.hasReachedMinAge)) {
             shouldFetch = NO;
         }
         
         // Force fetch if expired
         BOOL isExpired = configAge > self.maximumConfigAge
-            || config.isExpired;
+            || storedConfig.isExpired;
         if (!shouldFetch && isExpired) {
             shouldFetch = YES;
-            if (!higherVersionExists) versionToFetch = config.version;
+            if (!higherVersionExists) versionToFetch = storedConfig.version;
         }
 
         // Do not fetch too often
@@ -390,12 +390,12 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         }
 
         if (!shouldFetch) {
-            completion(config, nil);
+            completion(storedConfig, nil);
             return;
         }
         
-        [self fetchAndStoreConfigWithVersion:versionToFetch currentConfig:config completion:^(WPRemoteConfig *config, NSError *error) {
-            completion(config, error);
+        [self fetchAndStoreConfigWithVersion:versionToFetch currentConfig:storedConfig completion:^(WPRemoteConfig *configFetchedAndStored, NSError *error) {
+            completion(configFetchedAndStored ?: storedConfig, error);
         }];
     }];    
 }

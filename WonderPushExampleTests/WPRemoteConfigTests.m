@@ -793,4 +793,33 @@
     XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
     [waiter waitForExpectations:@[expectation] timeout:2];
 }
+
+/**
+ Verifies that when a fetch error occurs, we serve a previously fetched config.
+ */
+- (void) testFetchError {
+    
+    // Fetch as often as we like
+    self.manager.minimumConfigAge = 0;
+    self.manager.minimumFetchInterval = 0;
+    
+    // Configure a previously fetched config
+    self.storage.storedConfig = [WPRemoteConfig withJSON:@{
+        @"version": @"1.0",
+    } error:nil];
+    
+    // Configure fetch error
+    self.fetcher.error = [NSError errorWithDomain:@"some" code:1 userInfo:nil];
+    
+    // Declare a higher version
+    [self.manager declareVersion:@"1.1"];
+    
+    // Read
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        // We're serving the previous config
+        XCTAssertEqualObjects(config.version, @"1.0");
+        // We're also reporting the error
+        XCTAssertEqualObjects(error.domain, @"some");
+    }];
+}
 @end
