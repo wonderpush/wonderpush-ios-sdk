@@ -13,4 +13,7 @@
 + (void) flush;
 - (void) flush;
 
++ (void) setDisabled:(BOOL)disabled;
++ (BOOL) disabled;
+
 @end

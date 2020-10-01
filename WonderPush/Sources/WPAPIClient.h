@@ -24,6 +24,7 @@ FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
  */
 @interface WPAPIClient : NSObject
 
+@property (nonatomic, assign) BOOL disabled;
 
 ///---------------
 ///@name Singleton

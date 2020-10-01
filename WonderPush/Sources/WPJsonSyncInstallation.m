@@ -13,7 +13,7 @@
 
 static NSMutableDictionary *instancePerUserId = nil;
 
-static BOOL patchCallDisabledByConfig = YES; // Disable patch calls when config not present yet.
+static BOOL patchCallDisabled = NO;
 
 @interface WPJsonSyncInstallation ()
 
@@ -67,29 +67,6 @@ static BOOL patchCallDisabledByConfig = YES; // Disable patch calls when config 
                 [self flush];
             }
         }];
-        [center addObserverForName:WPRemoteConfigUpdatedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
-            WPRemoteConfig *config = notification.object;
-            if ([config isKindOfClass:WPRemoteConfig.class]) {
-                BOOL previousPatchCallDisabledByConfig = patchCallDisabledByConfig;
-                patchCallDisabledByConfig = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
-                if (!patchCallDisabledByConfig && previousPatchCallDisabledByConfig) {
-                    [self flush];
-                }
-            }
-        }];
-        void(^__block readConfig)(void) = ^{
-            [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
-                if (!config) {
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                        readConfig();
-                    });
-                    return;
-                }
-                readConfig = nil;
-                patchCallDisabledByConfig = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
-            }];
-        };
-        readConfig();
     }
 }
 
@@ -122,6 +99,13 @@ static BOOL patchCallDisabledByConfig = YES; // Disable patch calls when config 
     }
 }
 
++ (void)setDisabled:(BOOL)disabled {
+    patchCallDisabled = disabled;
+}
+
++ (BOOL)disabled {
+    return patchCallDisabled;
+}
 
 - (void) init_commonWithUserId:(NSString *)userId {
     if (![userId length]) userId = nil;
@@ -253,8 +237,8 @@ static BOOL patchCallDisabledByConfig = YES; // Disable patch calls when config 
 }
 
 - (void) serverPatchCallbackWithDiff:(NSDictionary *)diff onSuccess:(WPJsonSyncCallback)onSuccess onFailure:(WPJsonSyncCallback)onFailure {
-    if (patchCallDisabledByConfig) {
-        WPLogDebug(@"Refusing to perform PATCH call since the configuration forbids it.");
+    if (patchCallDisabled) {
+        WPLogDebug(@"JsonSync PATCH calls disabled.");
         if (onFailure) onFailure();
         return;
     }

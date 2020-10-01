@@ -140,6 +140,20 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         [center addObserverForName:UIApplicationWillResignActiveNotification object:UIApplication.sharedApplication queue:nil usingBlock:^(NSNotification *notification) {
             [WonderPush applicationWillResignActive_private:notification.object];
         }];
+        
+        // Manage blocks by configuration: we're blocking JsonSyn and WPAPIClient right away, we'll unblock them when we have a configuration.
+        WPJsonSyncInstallation.disabled = YES;
+        WPAPIClient.sharedClient.disabled = YES;
+        [[NSNotificationCenter defaultCenter] addObserverForName:WPRemoteConfigUpdatedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                WPRemoteConfig *config = notification.object;
+                if ([config isKindOfClass:WPRemoteConfig.class]) {
+                    WPAPIClient.sharedClient.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
+                    WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
+                    if (!WPJsonSyncInstallation.disabled) [WPJsonSyncInstallation flush];
+                }
+            });
+        }];
     });
 }
 + (WPPresenceManager *)presenceManager {
@@ -322,6 +336,26 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [self setIsInitialized:YES];
     [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
     [self hasUserConsentChanged:[self hasUserConsent]];
+    
+    // Fetch configuration to unblock JsonSync and API client
+    void(^__block readConfig)(void) = ^{
+        [self.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (!config) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        readConfig();
+                    });
+                    return;
+                }
+                readConfig = nil;
+                WPAPIClient.sharedClient.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
+                WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
+                if (!WPJsonSyncInstallation.disabled) [WPJsonSyncInstallation flush];
+            });
+        }];
+    };
+    readConfig();
+
 }
 
 + (void) initForNewUser:(NSString *)userId

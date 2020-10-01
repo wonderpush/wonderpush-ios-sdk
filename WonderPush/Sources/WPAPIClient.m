@@ -30,8 +30,6 @@
 typedef void (^SuccessBlock) (NSURLSessionTask *, id);
 typedef void (^FailureBlock) (NSURLSessionTask *, NSError *);
 
-static BOOL clientDisabledByConfig = YES;
-
 #pragma mark - WPJSONRequestOperation
 
 static NSArray *allowedMethods = nil;
@@ -81,28 +79,6 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     dispatch_once(&onceToken, ^{
         // Initialize some constants
         allowedMethods = @[@"GET", @"POST", @"PUT", @"PATCH", @"DELETE"];
-        
-        [[NSNotificationCenter defaultCenter] addObserverForName:WPRemoteConfigUpdatedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
-            WPRemoteConfig *config = notification.object;
-            if ([config isKindOfClass:WPRemoteConfig.class]) {
-                clientDisabledByConfig = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
-            }
-        }];
-
-        void(^__block readConfig)(void) = ^{
-            [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
-                if (!config) {
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                        readConfig();
-                    });
-                    return;
-                }
-                readConfig = nil;
-                clientDisabledByConfig = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
-            }];
-        };
-        readConfig();
-        
     });
 }
 
@@ -174,8 +150,8 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 - (void) requestWithMethod:(NSString *)method resource:(NSString *)resource parameters:(NSDictionary *)parameters success:(SuccessBlock)successBlock failure:(FailureBlock)failureBlock
 {
-    if (clientDisabledByConfig) {
-        if (failureBlock) failureBlock(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorForbidden userInfo:@{NSLocalizedDescriptionKey: @"API calls forbidden by configuration"}]);
+    if (self.disabled) {
+        if (failureBlock) failureBlock(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorForbidden userInfo:@{NSLocalizedDescriptionKey: @"API calls disabled"}]);
         return;
     }
     SuccessBlock callSuccessBlock = ^(NSURLSessionTask *task, id result) {
