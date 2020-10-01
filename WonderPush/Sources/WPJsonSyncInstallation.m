@@ -4,7 +4,7 @@
 #import "WonderPush_private.h"
 #import "WPLog.h"
 #import "WPNSUtil.h"
-
+#import "WPRemoteConfig.h"
 
 #define UPGRADE_META_VERSION_KEY @"version"
 #define UPGRADE_META_VERSION_0_INITIAL @0
@@ -13,7 +13,7 @@
 
 static NSMutableDictionary *instancePerUserId = nil;
 
-
+static BOOL patchCallDisabledByConfig = YES; // Disable patch calls when config not present yet.
 
 @interface WPJsonSyncInstallation ()
 
@@ -57,14 +57,28 @@ static NSMutableDictionary *instancePerUserId = nil;
             }
         }
         [conf changeUserId:oldUserId];
+        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
         // Resume any stopped inflight or scheduled calls
         // Adding the listener here will catch the an initial call triggered after this function is called, all during SDK initialization.
         // It also flushes any scheduled call that was dropped when the user withdrew consent.
-        [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:nil queue:nil usingBlock:^(NSNotification *notification) {
+        [center addObserverForName:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:nil queue:nil usingBlock:^(NSNotification *notification) {
             BOOL hasUserConsent = [notification.userInfo[WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY] boolValue];
             if (hasUserConsent) {
                 [self flush];
             }
+        }];
+        [center addObserverForName:WPRemoteConfigUpdatedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
+            WPRemoteConfig *config = notification.object;
+            if ([config isKindOfClass:WPRemoteConfig.class]) {
+                BOOL previousPatchCallDisabledByConfig = patchCallDisabledByConfig;
+                patchCallDisabledByConfig = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
+                if (!patchCallDisabledByConfig && previousPatchCallDisabledByConfig) {
+                    [self flush];
+                }
+            }
+        }];
+        [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+            patchCallDisabledByConfig = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
         }];
     }
 }
@@ -229,6 +243,11 @@ static NSMutableDictionary *instancePerUserId = nil;
 }
 
 - (void) serverPatchCallbackWithDiff:(NSDictionary *)diff onSuccess:(WPJsonSyncCallback)onSuccess onFailure:(WPJsonSyncCallback)onFailure {
+    if (patchCallDisabledByConfig) {
+        WPLogDebug(@"Refusing to perform PATCH call since the configuration forbids it.");
+        if (onFailure) onFailure();
+        return;
+    }
     WPLogDebug(@"Sending installation diff: %@ for user %@", diff, _userId);
     [WonderPush requestForUser:_userId
                         method:@"PATCH"
