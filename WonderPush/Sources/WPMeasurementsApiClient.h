@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define MEASUREMENTS_API_URL @"https://" MEASUREMENTS_API_DOMAIN @"/v1/"
 
 @interface WPMeasurementsApiClient : NSObject
-
+@property (nonatomic, assign) BOOL disabled;
 - (instancetype) initWithClientId:(NSString *)clientId
                            secret:(NSString *)secret
                          deviceId:(NSString *)deviceId;

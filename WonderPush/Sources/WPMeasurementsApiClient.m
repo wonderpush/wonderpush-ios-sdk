@@ -33,6 +33,7 @@
         _clientSecret = secret;
         _clientId = clientId;
         _deviceId = deviceId;
+        _disabled = NO;
         // We don't need cache, persistence, etc.
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
         self.URLSession = [NSURLSession sessionWithConfiguration:configuration];
@@ -41,6 +42,11 @@
     return self;
 }
 - (void) POST:(NSString *)path bodyParam:(id)bodyParam userId:(NSString * _Nullable)userId completionHandler:(void (^ _Nullable)(NSData * _Nullable, NSURLResponse * _Nullable, NSError * _Nullable))completionHandler {
+    
+    if (self.disabled) {
+        if (completionHandler) completionHandler(nil, nil, [NSError errorWithDomain:@"WPErrorDomain" code:11015 userInfo:@{NSLocalizedDescriptionKey: @"Measurements API calls disabled"}]);
+        return;
+    }
     
     NSString *method = @"POST";
 

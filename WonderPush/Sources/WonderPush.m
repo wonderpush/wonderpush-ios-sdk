@@ -148,9 +148,13 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             dispatch_async(dispatch_get_main_queue(), ^{
                 WPRemoteConfig *config = notification.object;
                 if ([config isKindOfClass:WPRemoteConfig.class]) {
+                    // API client
                     WPAPIClient.sharedClient.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
+                    // JSONSync
                     WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
                     if (!WPJsonSyncInstallation.disabled) [WPJsonSyncInstallation flush];
+                    // Measurements API
+                    [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENT_API_CLIENT_KEY] boolValue];
                 }
             });
         }];
@@ -337,6 +341,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
     [self hasUserConsentChanged:[self hasUserConsent]];
     
+    // Block measurements API client right away
+    [self measurementsApiClient].disabled = YES;
+
     // Fetch configuration to unblock JsonSync and API client
     void(^__block readConfig)(void) = ^{
         [self.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
@@ -348,9 +355,13 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                     return;
                 }
                 readConfig = nil;
+                // API client
                 WPAPIClient.sharedClient.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
+                // JSONSync
                 WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
                 if (!WPJsonSyncInstallation.disabled) [WPJsonSyncInstallation flush];
+                // Measurements API
+                [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENT_API_CLIENT_KEY] boolValue];
             });
         }];
     };
