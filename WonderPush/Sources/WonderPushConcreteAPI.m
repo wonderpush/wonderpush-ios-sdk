@@ -112,7 +112,12 @@
             }];
         });
         if (useMeasurementsApi) {
-            [WonderPush.measurementsApiClient POST:eventEndPoint bodyParam:params userId:WPConfiguration.sharedConfiguration.userId completionHandler:nil];
+            WPRequest *request = [WPRequest new];
+            request.method = @"POST";
+            request.params = @{@"body": params};
+            request.userId = WPConfiguration.sharedConfiguration.userId;
+            request.resource = eventEndPoint;
+            [WonderPush requestEventuallyWithMeasurementApi:request];
         } else {
             [WonderPush postEventually:eventEndPoint params:@{@"body":params}];
         }

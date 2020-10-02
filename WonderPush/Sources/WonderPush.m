@@ -26,6 +26,7 @@
 #import "WPConfiguration.h"
 #import "WPDialogButtonHandler.h"
 #import "WPAPIClient.h"
+#import "WPMeasurementsApiClient.h"
 #import "WPJsonUtil.h"
 #import "WPLog.h"
 #import "WPJsonSyncInstallation.h"
@@ -37,6 +38,7 @@
 #import "WPNotificationCategoryHelper.h"
 #import "WPIAMRuntimeManager.h"
 #import "WPPresenceManager.h"
+#import "WPRequestVault.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -1841,6 +1843,29 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     return remoteConfigManager;
 }
 
++ (void)requestEventuallyWithMeasurementApi:(WPRequest *)request {
+    WPRequestVault *vault = [self measurementsApiRequestVault];
+    [vault add:request];
+}
+
++ (WPRequestVault *)measurementsApiRequestVault {
+    static NSMutableDictionary *vaults;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        vaults = [NSMutableDictionary new];
+    });
+    
+    NSString *clientId = WPConfiguration.sharedConfiguration.clientId;
+    NSString *clientSecret = WPConfiguration.sharedConfiguration.clientSecret;
+    if (!clientId || !clientSecret) return nil;
+    
+    WPRequestVault *vault = vaults[clientId];
+    if (!vault) {
+        vault = [[WPRequestVault alloc] initWithRequestExecutor:[self measurementsApiClient]];
+        [vaults setObject:vault forKey:clientId];
+    }
+    return vault;
+}
 + (WPMeasurementsApiClient *)measurementsApiClient {
     static NSMutableDictionary *clients;
     static dispatch_once_t onceToken;

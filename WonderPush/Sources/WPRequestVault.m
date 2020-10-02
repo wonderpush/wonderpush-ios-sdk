@@ -51,11 +51,10 @@
 
 
 @implementation WPRequestVault
-
-- (id) initWithClient:(WPAPIClient *)client
+- (id)initWithRequestExecutor:(id<WPRequestExecutor>)requestExecutor
 {
     if (self = [super init]) {
-        self.client = client;
+        self.requestExecutor = requestExecutor;
         self.operationQueue = [[NSOperationQueue alloc] init];
         self.operationQueue.name = @"WonderPush-RequestVault";
         self.operationQueue.maxConcurrentOperationCount = 1;
@@ -233,7 +232,7 @@
         [self.vault forget:self.request];
     };
 
-    [self.vault.client requestAuthenticated:requestCopy];
+    [self.vault.requestExecutor executeRequest:requestCopy];
 
 }
 

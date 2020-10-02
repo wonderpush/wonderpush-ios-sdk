@@ -27,6 +27,7 @@
 #import "WPNetworkReachabilityManager.h"
 #import "WPRequestSerializer.h"
 #import "WPRemoteConfig.h"
+#import "WPInstallationCoreProperties.h"
 
 typedef void (^SuccessBlock) (NSURLSessionTask *, id);
 typedef void (^FailureBlock) (NSURLSessionTask *, NSError *);
@@ -52,6 +53,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 #pragma mark - WPAPIClient
 
 @interface WPAPIClient ()
++ (NSDictionary *)addParameterIfNotPresent:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params;
++ (NSDictionary *)replaceParameter:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params;
+
 @property (strong, nonatomic) NSURL *baseURL;
 @property (strong, nonatomic) WPRequestSerializer *requestSerializer;
 @property (strong, nonatomic) NSMutableArray *tokenFetchedHandlers;
@@ -70,6 +74,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 - (void) checkMethod:(WPRequest *)request;
 
+- (NSDictionary *)decorateRequestParams:(WPRequest *)request;
 @end
 
 @implementation WPAPIClient
@@ -101,7 +106,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         self.isFetchingAccessToken = false;
         self.tokenFetchedHandlers = [[NSMutableArray alloc] init];
 
-        WPRequestVault *wpRequestVault = [[WPRequestVault alloc] initWithClient:self];
+        WPRequestVault *wpRequestVault = [[WPRequestVault alloc] initWithRequestExecutor:self];
         self.requestVault = wpRequestVault;
         self.reachabilityManager = [WPNetworkReachabilityManager managerForDomain:PRODUCTION_API_DOMAIN];
         [self.reachabilityManager setReachabilityStatusChangeBlock:^(WPNetworkReachabilityStatus status) {
@@ -120,6 +125,13 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         self.URLSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     }
     return self;
+}
+
+#pragma mark - WPRequestExecutor
+
+- (void)executeRequest:(WPRequest *)request
+{
+    [self requestAuthenticated:request];
 }
 
 #pragma mark - Networking
@@ -421,15 +433,18 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         WPLogDebug(@"accessToken: %@", accessToken);
     }
 
-    // We have an access token
+    // We have an access token if needed
 
     __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
         // Avoid being killed by saying we are done
         [[UIApplication sharedApplication] endBackgroundTask:bgTask];
     }];
 
-    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:request.params];
-    [params setObject:accessToken forKey:@"accessToken"];
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:[self decorateRequestParams:request]];
+    
+    // Add the access token if present
+    if (accessToken) [params setObject:accessToken forKey:@"accessToken"];
+
     // The success handler
     NSTimeInterval timeRequestStart = [[NSProcessInfo processInfo] systemUptime];
     void(^success)(NSURLSessionTask *, id) = ^(NSURLSessionTask *task, id response) {
@@ -568,5 +583,44 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
     [self.requestVault add:request];
 }
+
+- (NSDictionary *)decorateRequestParams:(WPRequest *)request
+{
+    NSDictionary *params = request.params;
+    // Add the language
+    params = [[self class] addParameterIfNotPresent:@"lang" value:[WonderPush languageCode] toParameters:params];
+
+    // Add the sdk version
+    params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WPInstallationCoreProperties getSDKVersionNumber] toParameters:params];
+
+    // Add the location
+    CLLocation *location = [WonderPush location];
+    if (location)
+        params = [[self class] addParameterIfNotPresent:@"location" value:[NSString stringWithFormat:@"%f,%f", location.coordinate.latitude, location.coordinate.longitude] toParameters:params];
+
+    // Add the sid for web resources
+    if ([request.resource hasPrefix:@"web/"])
+        params = [[self class] replaceParameter:@"sid" value:[WPConfiguration sharedConfiguration].sid toParameters:params];
+    return params;
+}
+
++ (NSDictionary *)addParameterIfNotPresent:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
+{
+    if (![params objectForKey:name]) {
+        NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
+        [mutable setObject:value forKey:name];
+        return [NSDictionary dictionaryWithDictionary:mutable];
+    }
+    return params;
+}
+
++ (NSDictionary *)replaceParameter:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
+{
+    NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
+    if (name && value)
+        [mutable setObject:value forKey:name];
+    return [NSDictionary dictionaryWithDictionary:mutable];
+}
+
 
 @end

@@ -237,6 +237,8 @@ Called when receiving the full state of the installation
 + (WPRemoteConfigManager *) remoteConfigManager;
 
 + (WPMeasurementsApiClient *) measurementsApiClient;
+
++ (void) requestEventuallyWithMeasurementApi:(WPRequest *)request;
 @end
 
 

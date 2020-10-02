@@ -21,12 +21,11 @@
 
 #define USER_DEFAULTS_REQUEST_VAULT_QUEUE @"__wonderpush_request_vault"
 
-
 @interface WPRequestVault : NSObject
 
-@property (nonatomic, weak) WPAPIClient *client;
+@property (nonatomic, weak) id<WPRequestExecutor> requestExecutor;
 
-- (id) initWithClient:(WPAPIClient *)client;
+- (id) initWithRequestExecutor:(id<WPRequestExecutor>)requestExecutor;
 
 - (void) reachabilityChanged:(WPNetworkReachabilityStatus)status;
 

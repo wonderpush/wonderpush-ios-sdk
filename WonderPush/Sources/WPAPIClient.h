@@ -17,12 +17,13 @@
 #import <Foundation/Foundation.h>
 #import "WPRequest.h"
 
+
 FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
 
 /**
  WPAPIClient is an implementation of AFHTTPClient that handles authentication to the API.
  */
-@interface WPAPIClient : NSObject
+@interface WPAPIClient : NSObject <WPRequestExecutor>
 
 @property (nonatomic, assign) BOOL disabled;
 
@@ -34,7 +35,6 @@ FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
  The default `WPAPIClient`, configured with the values you supplied to [WonderPush setClientId:secret:].
  */
 + (WPAPIClient *)sharedClient;
-
 
 ///-----------------------------
 ///@name Access Token Management

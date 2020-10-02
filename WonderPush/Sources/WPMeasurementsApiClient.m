@@ -9,25 +9,27 @@
 #import "WPMeasurementsApiClient.h"
 #import "WPRequestSerializer.h"
 #import "WPErrors.h"
+#import "WPLog.h"
+#import "WPRequestVault.h"
+#import "WPNetworkReachabilityManager.h"
+NS_ASSUME_NONNULL_BEGIN
 
+typedef void(^CompletionHandler)(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error);
 @interface WPMeasurementsApiClient ()
 @property (nonatomic, strong, nonnull) NSString *clientSecret;
 @property (nonatomic, strong, nonnull) NSString *clientId;
 @property (nonatomic, strong, nonnull) NSString *deviceId;
 @property (nonatomic, strong, nonnull) NSURLSession *URLSession;
 @property (nonatomic, strong, nonnull) NSURL *baseURL;
+
+
+- (void) POST:(NSString*)path bodyParam:(id)bodyParam userId:(NSString * _Nullable)userId completionHandler:(void(^ _Nullable)(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error))completionHandler;
+
 @end
 
-@implementation WPMeasurementsApiClient
+NS_ASSUME_NONNULL_END
 
-+ (instancetype) sharedClient {
-    static WPMeasurementsApiClient *sharedClient = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedClient = [WPMeasurementsApiClient new];
-    });
-    return sharedClient;
-}
+@implementation WPMeasurementsApiClient
 
 - (instancetype) initWithClientId:(NSString *)clientId secret:(nonnull NSString *)secret deviceId:(nonnull NSString *)deviceId {
     if (self = [super init]) {
@@ -37,10 +39,30 @@
         _disabled = NO;
         // We don't need cache, persistence, etc.
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        self.URLSession = [NSURLSession sessionWithConfiguration:configuration];
-        self.baseURL = [NSURL URLWithString:MEASUREMENTS_API_URL];
+        _URLSession = [NSURLSession sessionWithConfiguration:configuration];
+        _baseURL = [NSURL URLWithString:MEASUREMENTS_API_URL];
     }
     return self;
+}
+
+- (void)executeRequest:(WPRequest *)request {
+    if (![@"POST" isEqualToString:request.method]) {
+        WPLogDebug(@"ERROR: management API client only supports POST requests.");
+        return;
+    }
+    id bodyParam = [request.params objectForKey:@"body"];
+    if (!bodyParam) {
+        WPLogDebug(@"ERROR: management API client does not accept a nil body.");
+        return;
+    }
+    [self POST:request.resource bodyParam:bodyParam userId:request.userId completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (request.handler) {
+            WPResponse *response = [WPResponse new];
+            id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            response.object = json;
+            request.handler(response, error);
+        }
+    }];
 }
 - (void) POST:(NSString *)path bodyParam:(id)bodyParam userId:(NSString * _Nullable)userId completionHandler:(void (^ _Nullable)(NSData * _Nullable, NSURLResponse * _Nullable, NSError * _Nullable))completionHandler {
     

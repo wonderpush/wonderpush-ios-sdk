@@ -121,14 +121,21 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
             NSString *campaignId = [wpData objectForKey:@"c"];
             NSString *notificationId = [wpData objectForKey:@"n"];
             if (campaignId && notificationId) {
-                [[self measurementsApiClient] POST:@"/events" bodyParam:@{
-                    @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],
-                    @"campaignId" : campaignId,
-                    @"notificationId" : notificationId,
-                    @"type" : @"@NOTIFICATION_RECEIVED",
-                } userId:nil completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                WPRequest *request = [WPRequest new];
+                request.resource = @"events";
+                request.params = @{
+                    @"body" : @{
+                            @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],
+                            @"campaignId" : campaignId,
+                            @"notificationId" : notificationId,
+                            @"type" : @"@NOTIFICATION_RECEIVED",
+                    }};
+                request.userId = nil; // We don't have that here
+                request.handler = ^(WPResponse *response, NSError *error) {
                     dispatch_semaphore_signal(measurementsApiSemaphore);
-                }];
+                };
+                
+                [[self measurementsApiClient] executeRequest:request];
             }
         }
         NSArray *_Nullable buttons = [alertData valueForKey:@"buttons"];

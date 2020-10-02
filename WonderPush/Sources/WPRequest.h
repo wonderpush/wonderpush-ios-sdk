@@ -47,3 +47,7 @@ typedef void(^WPRequestHandler)(WPResponse *response, NSError *error);
 - (NSDictionary *) toJSON;
 
 @end
+
+@protocol WPRequestExecutor
+- (void) executeRequest:(WPRequest *)request;
+@end

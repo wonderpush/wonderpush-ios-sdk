@@ -15,20 +15,10 @@
  */
 
 #import "WPRequest.h"
-#import "WonderPush_private.h"
-#import "WPConfiguration.h"
-#import "WPUtil.h"
-#import "WPInstallationCoreProperties.h"
 
 @interface WPRequest ()
 
 @property (nonatomic, strong) NSString *requestId;
-
-@property (readonly) NSDictionary *decoratedParams;
-
-+ (NSDictionary *)addParameterIfNotPresent:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params;
-
-+ (NSDictionary *)replaceParameter:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params;
 
 @end
 
@@ -105,54 +95,6 @@
              };
 }
 
-
-
-#pragma mark - Parameters
-
-- (NSDictionary *)params
-{
-    return self.decoratedParams;
-}
-
-- (NSDictionary *)decoratedParams
-{
-    NSDictionary *params = _params;
-
-    // Add the language
-    params = [[self class] addParameterIfNotPresent:@"lang" value:[WonderPush languageCode] toParameters:params];
-
-    // Add the sdk version
-    params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WPInstallationCoreProperties getSDKVersionNumber] toParameters:params];
-
-    // Add the location
-    CLLocation *location = [WonderPush location];
-    if (location)
-        params = [[self class] addParameterIfNotPresent:@"location" value:[NSString stringWithFormat:@"%f,%f", location.coordinate.latitude, location.coordinate.longitude] toParameters:params];
-
-    // Add the sid for web resources
-    if ([self.resource hasPrefix:@"web/"])
-        params = [[self class] replaceParameter:@"sid" value:[WPConfiguration sharedConfiguration].sid toParameters:params];
-    return params;
-
-}
-
-+ (NSDictionary *)addParameterIfNotPresent:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
-{
-    if (![params objectForKey:name]) {
-        NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
-        [mutable setObject:value forKey:name];
-        return [NSDictionary dictionaryWithDictionary:mutable];
-    }
-    return params;
-}
-
-+ (NSDictionary *)replaceParameter:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
-{
-    NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
-    if (name && value)
-        [mutable setObject:value forKey:name];
-    return [NSDictionary dictionaryWithDictionary:mutable];
-}
 
 
 #pragma mark - Resource
