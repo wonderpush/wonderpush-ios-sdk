@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_END
         WPLogDebug(@"ERROR: management API client does not accept a nil body.");
         return;
     }
+    WPLogDebug(@"Performing request with measurement API: %@", request);
     [self POST:request.resource bodyParam:bodyParam userId:request.userId completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (request.handler) {
             WPResponse *response = [WPResponse new];
