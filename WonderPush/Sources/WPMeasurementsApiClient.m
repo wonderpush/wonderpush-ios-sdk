@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_END
     [self POST:request.resource bodyParam:bodyParam userId:request.userId completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (request.handler) {
             WPResponse *response = [WPResponse new];
-            id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            id json = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
             response.object = json;
             request.handler(response, error);
         }
