@@ -77,6 +77,9 @@
 		9942FD85246C23DD0002BEA0 /* WPSemver.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD83246C23DD0002BEA0 /* WPSemver.m */; };
 		9947AD6824FD0BA8007EF7AA /* WPIAMHitTestDelegateView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9947AD6624FD0BA8007EF7AA /* WPIAMHitTestDelegateView.h */; };
 		9947AD6924FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9947AD6724FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m */; };
+		995633F4252B0D0100F6CF3E /* WPBlackWhiteList.h in Headers */ = {isa = PBXBuildFile; fileRef = 995633F2252B0D0100F6CF3E /* WPBlackWhiteList.h */; };
+		995633F5252B0D0100F6CF3E /* WPBlackWhiteList.m in Sources */ = {isa = PBXBuildFile; fileRef = 995633F3252B0D0100F6CF3E /* WPBlackWhiteList.m */; };
+		99563402252B0E7C00F6CF3E /* WPBlackWhiteListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */; };
 		99575E662514A7CD00F7CC76 /* WPIAMCappingDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = 992994482510A26300DF5F92 /* WPIAMCappingDefinition.h */; };
 		995F14CB24A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 995F14C924A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.h */; };
 		995F14CC24A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 995F14CA24A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.m */; };
@@ -443,6 +446,9 @@
 		9942FD83246C23DD0002BEA0 /* WPSemver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSemver.m; sourceTree = "<group>"; };
 		9947AD6624FD0BA8007EF7AA /* WPIAMHitTestDelegateView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMHitTestDelegateView.h; sourceTree = "<group>"; };
 		9947AD6724FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMHitTestDelegateView.m; sourceTree = "<group>"; };
+		995633F2252B0D0100F6CF3E /* WPBlackWhiteList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPBlackWhiteList.h; sourceTree = "<group>"; };
+		995633F3252B0D0100F6CF3E /* WPBlackWhiteList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPBlackWhiteList.m; sourceTree = "<group>"; };
+		99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPBlackWhiteListTests.m; sourceTree = "<group>"; };
 		995E5E01240445E100367114 /* WPNotificationCategoryManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationCategoryManager.h; sourceTree = "<group>"; };
 		995E5E02240445E100367114 /* WPNotificationCategoryManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNotificationCategoryManager.m; sourceTree = "<group>"; };
 		995F14C924A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSPDefaultCriterionNodeParser.h; sourceTree = "<group>"; };
@@ -762,6 +768,7 @@
 				99ED541D24B466D100EECDE0 /* WPSPParserConfigTests.m */,
 				3DB7A41D24B486DC00204437 /* WPSPSegmenterTests.m */,
 				992F65A9251C8BA800526C90 /* WPPresenceManagerTests.m */,
+				99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */,
 			);
 			path = WonderPushExampleTests;
 			sourceTree = "<group>";
@@ -901,6 +908,8 @@
 				992F65A3251C8B7100526C90 /* WPPresenceManager.m */,
 				99764146252648B9001EFD96 /* WPErrors.h */,
 				99764147252648B9001EFD96 /* WPErrors.m */,
+				995633F2252B0D0100F6CF3E /* WPBlackWhiteList.h */,
+				995633F3252B0D0100F6CF3E /* WPBlackWhiteList.m */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -1343,6 +1352,7 @@
 				99EA16492487DDC000AA01BC /* WPNSUtil.h in Headers */,
 				995F14E724AA2A7D00CC499E /* WPSPISO8601Duration.h in Headers */,
 				99EF837723F4452C00B9B287 /* WPIAMBaseRenderingViewController.h in Headers */,
+				995633F4252B0D0100F6CF3E /* WPBlackWhiteList.h in Headers */,
 				9979E0E724A640EC002BC6EE /* WPSPASTValueNode.h in Headers */,
 				99D16F202463E68C00C14989 /* WPMeasurementsApiClient.h in Headers */,
 				99EF837123F4452C00B9B287 /* WPIAMRenderingWindowHelper.h in Headers */,
@@ -1673,6 +1683,7 @@
 				99ED541824B33A2700EECDE0 /* WPSPDataSourceTests.m in Sources */,
 				99ED541A24B33DFB00EECDE0 /* WPSPGeoBoxTests.m in Sources */,
 				995F14EA24AA493600CC499E /* WPSPISO8601DurationTests.m in Sources */,
+				99563402252B0E7C00F6CF3E /* WPBlackWhiteListTests.m in Sources */,
 				99EE9ACC24AF5BBB00EC2A28 /* WPSPGeohashTests.m in Sources */,
 				3DB7A41E24B486DC00204437 /* WPSPSegmenterTests.m in Sources */,
 				99ED541624B3308F00EECDE0 /* WPSPParsingContextTests.m in Sources */,
@@ -1735,6 +1746,7 @@
 				99EF838723F4452C00B9B287 /* WPIAMDisplayExecutor.m in Sources */,
 				99EF834C23F4452C00B9B287 /* WPIAMDisplayTriggerDefinition.m in Sources */,
 				99EF834123F4452C00B9B287 /* WPIAMElapsedTimeTracker.m in Sources */,
+				995633F5252B0D0100F6CF3E /* WPBlackWhiteList.m in Sources */,
 				995F150224AB7BB200CC499E /* WPSPGeohash.m in Sources */,
 				99EF837023F4452C00B9B287 /* WPIAMCardViewController.m in Sources */,
 				99EF837C23F4452C00B9B287 /* WPIAMModalViewController.m in Sources */,
