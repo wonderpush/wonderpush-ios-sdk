@@ -9,7 +9,7 @@
 #import <XCTest/XCTest.h>
 #import "WPRemoteConfig.h"
 #import "WPSemver.h"
-#import "WPUtil.h"
+#import "WPErrors.h"
 
 @interface WPRemoteConfig ()
 - (instancetype) initWithData:(NSDictionary *)data version:(NSString *)version;
