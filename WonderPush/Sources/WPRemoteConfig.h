@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY @"disableJsonSync"
 #define WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY @"disableApiClient"
 #define WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY @"disableMeasurementsApiClient"
+#define WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY @"eventsBlackWhiteList"
 
 extern NSString * const WPRemoteConfigUpdatedNotification;
 

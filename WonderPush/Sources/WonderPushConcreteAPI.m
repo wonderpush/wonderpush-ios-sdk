@@ -21,8 +21,43 @@
 #import "WPInAppMessaging+Bootstrap.h"
 #import "WPReportingData.h"
 #import "WPAction_private.h"
+#import "WPBlackWhiteList.h"
+
+@interface WonderPushConcreteAPI ()
+@property (nonatomic, strong, nullable) WPBlackWhiteList *eventsBlackWhiteList;
+@end
 
 @implementation WonderPushConcreteAPI
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.locationManager = [CLLocationManager new];
+        [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+            [self updateBlackWhiteList:config];
+        }];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(remoteConfigUpdated:) name:WPRemoteConfigUpdatedNotification object:nil];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (void)updateBlackWhiteList:(WPRemoteConfig *)config {
+    if (config
+        && [config.data objectForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY]
+        && [[config.data objectForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY] isKindOfClass:NSArray.class]) {
+        self.eventsBlackWhiteList = [[WPBlackWhiteList alloc] initWithRules:[config.data objectForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY]];
+    } else {
+        self.eventsBlackWhiteList = nil;
+    }
+}
+
+- (void)remoteConfigUpdated:(NSNotification *)note {
+    [self updateBlackWhiteList:note.object];
+}
+
 - (void) activate {
     WPIAMSDKSettings *settings = [[WPIAMSDKSettings alloc] init];
     settings.loggerMaxCountBeforeReduce = 100;
@@ -31,14 +66,8 @@
     settings.appFGRenderMinIntervalInMinutes = 1; // render at most one message from app-foreground trigger every minute;
     [WPInAppMessaging bootstrapIAMWithSettings:settings];
 }
+
 - (void) deactivate {}
-- (instancetype) init
-{
-    if (self = [super init]) {
-        self.locationManager = [CLLocationManager new];
-    }
-    return self;
-}
 
 /**
  Makes sure we have an up-to-date device token, and send it to WonderPush servers if necessary.
@@ -80,6 +109,10 @@
 {
     
     if (![type isKindOfClass:[NSString class]]) return;
+    if (self.eventsBlackWhiteList && ![self.eventsBlackWhiteList allow:type]) {
+        WPLogDebug(@"Event of type %@ forbidden by configuration", type);
+        return;
+    }
     @synchronized (self) {
         NSString *eventEndPoint = @"/events";
         long long date = [WPUtil getServerDate];
