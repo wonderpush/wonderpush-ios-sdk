@@ -117,7 +117,7 @@
             request.params = @{@"body": params};
             request.userId = WPConfiguration.sharedConfiguration.userId;
             request.resource = eventEndPoint;
-            [WonderPush requestEventuallyWithMeasurementApi:request];
+            [WonderPush requestEventuallyWithMeasurementsApi:request];
         } else {
             [WonderPush postEventually:eventEndPoint params:@{@"body":params}];
         }

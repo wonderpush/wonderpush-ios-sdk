@@ -157,7 +157,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                     WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
                     if (!WPJsonSyncInstallation.disabled) [WPJsonSyncInstallation flush];
                     // Measurements API
-                    [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENT_API_CLIENT_KEY] boolValue];
+                    [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY] boolValue];
                 }
             });
         }];
@@ -364,7 +364,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                 WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
                 if (!WPJsonSyncInstallation.disabled) [WPJsonSyncInstallation flush];
                 // Measurements API
-                [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENT_API_CLIENT_KEY] boolValue];
+                [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY] boolValue];
             });
         }];
     };
@@ -1843,7 +1843,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     return remoteConfigManager;
 }
 
-+ (void)requestEventuallyWithMeasurementApi:(WPRequest *)request {
++ (void)requestEventuallyWithMeasurementsApi:(WPRequest *)request {
     WPRequestVault *vault = [self measurementsApiRequestVault];
     [vault add:request];
 }

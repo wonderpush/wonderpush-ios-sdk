@@ -238,7 +238,7 @@ Called when receiving the full state of the installation
 
 + (WPMeasurementsApiClient *) measurementsApiClient;
 
-+ (void) requestEventuallyWithMeasurementApi:(WPRequest *)request;
++ (void) requestEventuallyWithMeasurementsApi:(WPRequest *)request;
 @end
 
 
