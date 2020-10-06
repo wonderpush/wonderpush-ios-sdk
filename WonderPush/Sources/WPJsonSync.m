@@ -5,9 +5,6 @@
 #import "WPNSUtil.h"
 
 
-#define SAVED_STATE_FIELD__SYNC_STATE_VERSION @"_syncStateVersion"
-#define SAVED_STATE_STATE_VERSION_1 @1
-#define SAVED_STATE_STATE_VERSION_2 @2
 #define SAVED_STATE_FIELD_UPGRADE_META @"upgradeMeta"
 #define SAVED_STATE_FIELD_SDK_STATE @"sdkState"
 #define SAVED_STATE_FIELD_SERVER_STATE @"serverState"
@@ -54,8 +51,6 @@
         _schedulePatchCallCallback = schedulePatchCallCallback;
 
         savedState = savedState ?: @{};
-        NSNumber *syncStateVersion;
-        syncStateVersion        = [WPNSUtil numberForKey:SAVED_STATE_FIELD__SYNC_STATE_VERSION inDictionary:savedState] ?: @0;
         _upgradeMeta            = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_UPGRADE_META inDictionary:savedState] ?: @{};
         _sdkState               = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_SDK_STATE inDictionary:savedState] ?: @{};
         _serverState            = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_SERVER_STATE inDictionary:savedState] ?: @{};
@@ -65,7 +60,7 @@
         _scheduledPatchCall     = [([WPNSUtil numberForKey:SAVED_STATE_FIELD_SCHEDULED_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
         _inflightPatchCall      = [([WPNSUtil numberForKey:SAVED_STATE_FIELD_INFLIGHT_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
         
-        // Handle state version upgrades (syncStateVersion)
+        // Handle state version upgrades
         // - 0 -> 1: No-op. 0 means no previous state.
         // - 1 -> 2: No-op. Only the "upgradeMeta" key has been added and it is read with proper default.
 
@@ -121,7 +116,6 @@
 - (void) save {
     @synchronized (self) {
         _saveCallback(@{
-                        SAVED_STATE_FIELD__SYNC_STATE_VERSION:      SAVED_STATE_STATE_VERSION_2,
                         SAVED_STATE_FIELD_UPGRADE_META:             _upgradeMeta,
                         SAVED_STATE_FIELD_SDK_STATE:                _sdkState,
                         SAVED_STATE_FIELD_SERVER_STATE:             _serverState,
