@@ -164,7 +164,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 - (void) requestWithMethod:(NSString *)method resource:(NSString *)resource parameters:(NSDictionary *)parameters success:(SuccessBlock)successBlock failure:(FailureBlock)failureBlock
 {
     if (self.disabled) {
-        if (failureBlock) failureBlock(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorForbidden userInfo:@{NSLocalizedDescriptionKey: @"API calls disabled"}]);
+        if (failureBlock) failureBlock(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorClientDisabled userInfo:@{NSLocalizedDescriptionKey: @"API calls disabled"}]);
         return;
     }
     SuccessBlock callSuccessBlock = ^(NSURLSessionTask *task, id result) {

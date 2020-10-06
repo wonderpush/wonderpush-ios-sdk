@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_END
 - (void) POST:(NSString *)path bodyParam:(id)bodyParam userId:(NSString * _Nullable)userId completionHandler:(void (^ _Nullable)(NSData * _Nullable, NSURLResponse * _Nullable, NSError * _Nullable))completionHandler {
     
     if (self.disabled) {
-        if (completionHandler) completionHandler(nil, nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorForbidden userInfo:@{NSLocalizedDescriptionKey: @"Measurements API calls disabled"}]);
+        if (completionHandler) completionHandler(nil, nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorClientDisabled userInfo:@{NSLocalizedDescriptionKey: @"Measurements API calls disabled"}]);
         return;
     }
     

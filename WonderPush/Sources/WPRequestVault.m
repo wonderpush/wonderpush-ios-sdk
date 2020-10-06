@@ -17,6 +17,7 @@
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
 #import "WPLog.h"
+#import "WPErrors.h"
 
 #pragma mark - RequestVaultOperation
 
@@ -217,8 +218,16 @@
             }
         }
 
+        BOOL handleError = NO;
         // Handle network errors
         if ([error isKindOfClass:[NSError class]] && [NSURLErrorDomain isEqualToString:error.domain] && error.code <= NSURLErrorBadURL) {
+            handleError = YES;
+        }
+        // Handle cliend disabled errors (they occur when the APIClient and MeasurementsApiClient are disabled)
+        if ([error isKindOfClass:NSError.class] && [WPErrorDomain isEqualToString:error.domain] && error.code == WPErrorClientDisabled) {
+            handleError = YES;
+        }
+        if (handleError) {
             // Make sure to stop the queue
             if (![WonderPush isReachable]) {
                 WPLogDebug(@"Declaring not reachable");
