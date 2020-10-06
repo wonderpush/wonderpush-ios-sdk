@@ -9,7 +9,7 @@
 #define UPGRADE_META_VERSION_KEY @"version"
 #define UPGRADE_META_VERSION_0_INITIAL @0
 #define UPGRADE_META_VERSION_1_IMPORTED_CUSTOM @1
-#define UPGRADE_META_VERSION_CURRENT UPGRADE_META_VERSION_1_IMPORTED_CUSTOM
+#define UPGRADE_META_VERSION_LATEST UPGRADE_META_VERSION_1_IMPORTED_CUSTOM
 
 static NSMutableDictionary *instancePerUserId = nil;
 
@@ -127,7 +127,7 @@ static BOOL patchCallDisabled = NO;
            }
                      upgradeCallback:^(NSMutableDictionary *upgradeMeta, NSMutableDictionary *sdkState, NSMutableDictionary *serverState, NSMutableDictionary *putAccumulator, NSMutableDictionary *inflightDiff, NSMutableDictionary *inflightPutAccumulator) {
                          NSNumber *currentVersion = [WPNSUtil numberForKey:UPGRADE_META_VERSION_KEY inDictionary:upgradeMeta] ?: UPGRADE_META_VERSION_0_INITIAL;
-                         if ([currentVersion compare:UPGRADE_META_VERSION_CURRENT] != NSOrderedAscending) {
+                         if ([currentVersion compare:UPGRADE_META_VERSION_LATEST] != NSOrderedAscending) {
                              // Do not alter current, or future versions we don't understand
                              return;
                          }
@@ -150,7 +150,7 @@ static BOOL patchCallDisabled = NO;
                                  moveInsideCustom(inflightPutAccumulator);
                              }
                          }
-                         upgradeMeta[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_CURRENT;
+                         upgradeMeta[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_LATEST;
                      }
             ];
     if (self) {
@@ -172,7 +172,7 @@ static BOOL patchCallDisabled = NO;
              [self scheduleServerPatchCallCallback];
          }
                    upgradeCallback:^(NSMutableDictionary *upgradeMeta, NSMutableDictionary *sdkState, NSMutableDictionary *serverState, NSMutableDictionary *putAccumulator, NSMutableDictionary *inflightDiff, NSMutableDictionary *inflightPutAccumulator) {
-                       upgradeMeta[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_CURRENT;
+                       upgradeMeta[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_LATEST;
                    }
             ];
     if (self) {
