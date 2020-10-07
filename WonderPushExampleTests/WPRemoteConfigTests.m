@@ -825,7 +825,7 @@
 /**
  Checks that when a particular config entry is present, no new configuration will ever be fetched
  */
-- (void) testDisableFetch {
+- (void) testDisableFetchNewVersion {
 
     // Fetch as often as we like
     self.manager.minimumConfigAge = 0;
@@ -852,4 +852,40 @@
         XCTAssertNil(self.fetcher.lastRequestedDate);
     }];
 }
+
+- (void) testDisableFetchExpired {
+
+    // Fetch as often as we like
+    self.manager.minimumConfigAge = 0;
+    self.manager.minimumFetchInterval = 0;
+    self.manager.maximumConfigAge = 0.1;
+    
+    // A config has already been fetched, that forbids further fetching via the WP_REMOTE_CONFIG_DISABLE_FETCH_KEY
+    self.storage.storedConfig = [WPRemoteConfig withJSON:@{
+        @"version": @"1.0",
+        @"maxAge": @100,
+        WP_REMOTE_CONFIG_DISABLE_FETCH_KEY: @YES,
+    } error:nil];
+
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        XCTAssertEqualObjects(config.version, @"1.0");
+        XCTAssertNil(self.fetcher.lastRequestedDate);
+    }];
+    
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        // No fetch should have happened
+        [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+            XCTAssertEqualObjects(config.version, @"1.0");
+            XCTAssertNil(self.fetcher.lastRequestedDate);
+            [expectation fulfill];
+        }];
+    });
+
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:2];
+}
+
 @end
