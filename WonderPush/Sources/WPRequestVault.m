@@ -40,6 +40,8 @@
 
 - (void) forget:(WPRequest *)request;
 
+- (void) addToQueue:(WPRequest *)request delay:(NSTimeInterval)delay;
+
 - (void) addToQueue:(WPRequest *)request;
 
 @property (readonly) NSArray *savedRequests;
@@ -160,12 +162,25 @@
 
 }
 
-- (void) addToQueue:(WPRequest *)request
-{
-    WPLogDebug(@"Adding request to queue: %@", request);
+- (void) addToQueue:(WPRequest *)request {
+    [self addToQueue:request delay:0];
+}
 
-    WPRequestVaultOperation *operation = [[WPRequestVaultOperation alloc] initWithRequest:request vault:self];
-    [self.operationQueue addOperation:operation];
+- (void) addToQueue:(WPRequest *)request delay:(NSTimeInterval)delay
+{
+    WPLogDebug(@"Adding request to queue: %@ with delay: %f", request, delay);
+    void(^addToQueue)(void) = ^{
+        WPRequestVaultOperation *operation = [[WPRequestVaultOperation alloc] initWithRequest:request vault:self];
+        [self.operationQueue addOperation:operation];
+    };
+    if (delay > 0) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            addToQueue();
+        });
+    } else {
+        addToQueue();
+    }
+
 }
 
 - (void) updateOperationQueueStatus;
@@ -233,7 +248,7 @@
                 WPLogDebug(@"Declaring not reachable");
                 [self.vault reachabilityChanged:WPNetworkReachabilityStatusNotReachable];
             }
-            [self.vault addToQueue:self.request];
+            [self.vault addToQueue:self.request delay:10];
 
             return;
         }
