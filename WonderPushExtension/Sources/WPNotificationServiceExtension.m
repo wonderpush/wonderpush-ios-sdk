@@ -123,6 +123,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
             if (campaignId && notificationId) {
                 WPRequest *request = [WPRequest new];
                 request.resource = @"events";
+                request.method = @"POST";
                 request.params = @{
                     @"body" : @{
                             @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],

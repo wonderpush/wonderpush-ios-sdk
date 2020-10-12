@@ -101,7 +101,7 @@
         return nil;
     
     // Step 1: add HTTP method uppercase
-    NSMutableString *buffer = [[NSMutableString alloc] initWithString:method];
+    NSMutableString *buffer = [[NSMutableString alloc] initWithString:method ?: @""];
     [buffer appendString:@"&"];
     
     // Step 2: add scheme://host/path

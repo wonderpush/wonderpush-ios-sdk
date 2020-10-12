@@ -77,6 +77,9 @@
 		9942FD85246C23DD0002BEA0 /* WPSemver.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD83246C23DD0002BEA0 /* WPSemver.m */; };
 		9947AD6824FD0BA8007EF7AA /* WPIAMHitTestDelegateView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9947AD6624FD0BA8007EF7AA /* WPIAMHitTestDelegateView.h */; };
 		9947AD6924FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9947AD6724FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m */; };
+		994E63E42534522100B9E367 /* WPBasicApiClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 994E63E22534522100B9E367 /* WPBasicApiClient.h */; };
+		994E63E52534522100B9E367 /* WPBasicApiClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 994E63E32534522100B9E367 /* WPBasicApiClient.m */; };
+		994E63E92534857E00B9E367 /* WPBasicApiClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 994E63E32534522100B9E367 /* WPBasicApiClient.m */; };
 		995633F4252B0D0100F6CF3E /* WPBlackWhiteList.h in Headers */ = {isa = PBXBuildFile; fileRef = 995633F2252B0D0100F6CF3E /* WPBlackWhiteList.h */; };
 		995633F5252B0D0100F6CF3E /* WPBlackWhiteList.m in Sources */ = {isa = PBXBuildFile; fileRef = 995633F3252B0D0100F6CF3E /* WPBlackWhiteList.m */; };
 		99563402252B0E7C00F6CF3E /* WPBlackWhiteListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */; };
@@ -446,6 +449,8 @@
 		9942FD83246C23DD0002BEA0 /* WPSemver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSemver.m; sourceTree = "<group>"; };
 		9947AD6624FD0BA8007EF7AA /* WPIAMHitTestDelegateView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMHitTestDelegateView.h; sourceTree = "<group>"; };
 		9947AD6724FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMHitTestDelegateView.m; sourceTree = "<group>"; };
+		994E63E22534522100B9E367 /* WPBasicApiClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPBasicApiClient.h; sourceTree = "<group>"; };
+		994E63E32534522100B9E367 /* WPBasicApiClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPBasicApiClient.m; sourceTree = "<group>"; };
 		995633F2252B0D0100F6CF3E /* WPBlackWhiteList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPBlackWhiteList.h; sourceTree = "<group>"; };
 		995633F3252B0D0100F6CF3E /* WPBlackWhiteList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPBlackWhiteList.m; sourceTree = "<group>"; };
 		99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPBlackWhiteListTests.m; sourceTree = "<group>"; };
@@ -910,6 +915,8 @@
 				99764147252648B9001EFD96 /* WPErrors.m */,
 				995633F2252B0D0100F6CF3E /* WPBlackWhiteList.h */,
 				995633F3252B0D0100F6CF3E /* WPBlackWhiteList.m */,
+				994E63E22534522100B9E367 /* WPBasicApiClient.h */,
+				994E63E32534522100B9E367 /* WPBasicApiClient.m */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -1328,6 +1335,7 @@
 				995F14D724A9F3F300CC499E /* WPSPDefaultValueNodeParser.h in Headers */,
 				99E40E1924F93CEE002DD7D2 /* WPIAMAnimationHelper.h in Headers */,
 				99EF835E23F4452C00B9B287 /* WPIAMMessageDefinition.h in Headers */,
+				994E63E42534522100B9E367 /* WPBasicApiClient.h in Headers */,
 				99EF836F23F4452C00B9B287 /* WPIAMCardViewController.h in Headers */,
 				9998CAAF221C75370028D955 /* WPJsonSync.h in Headers */,
 				9979E0D624A638E4002BC6EE /* WPSPASTCriterionNodeParser.h in Headers */,
@@ -1649,6 +1657,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				994E63E92534857E00B9E367 /* WPBasicApiClient.m in Sources */,
 				99EA16532487E2A700AA01BC /* WPJsonUtil.m in Sources */,
 				9976417A25274F01001EFD96 /* WPErrors.m in Sources */,
 				9909CE5C2221602500F73A0B /* WPNotificationServiceExtension.m in Sources */,
@@ -1768,6 +1777,7 @@
 				990F269B23FD4B0E0015F8DE /* WPAction.m in Sources */,
 				9942FD7C246BDAB20002BEA0 /* WPRemoteConfig.m in Sources */,
 				9998CAC3221C75480028D955 /* WPInstallationCoreProperties.m in Sources */,
+				994E63E52534522100B9E367 /* WPBasicApiClient.m in Sources */,
 				9979E0DF24A63B13002BC6EE /* WPSPParsingContext.m in Sources */,
 				9998CAC4221C75480028D955 /* WPJsonSync.m in Sources */,
 				99E95EC22407FA5000B8B062 /* WPNotificationCategoryHelper.m in Sources */,
