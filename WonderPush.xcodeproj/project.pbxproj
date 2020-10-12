@@ -451,6 +451,7 @@
 		9947AD6724FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMHitTestDelegateView.m; sourceTree = "<group>"; };
 		994E63E22534522100B9E367 /* WPBasicApiClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPBasicApiClient.h; sourceTree = "<group>"; };
 		994E63E32534522100B9E367 /* WPBasicApiClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPBasicApiClient.m; sourceTree = "<group>"; };
+		994E63F0253494C900B9E367 /* WonderPush_constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_constants.h; sourceTree = "<group>"; };
 		995633F2252B0D0100F6CF3E /* WPBlackWhiteList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPBlackWhiteList.h; sourceTree = "<group>"; };
 		995633F3252B0D0100F6CF3E /* WPBlackWhiteList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPBlackWhiteList.m; sourceTree = "<group>"; };
 		99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPBlackWhiteListTests.m; sourceTree = "<group>"; };
@@ -851,6 +852,7 @@
 			children = (
 				99630BDB242A04F000747604 /* WPURLConstants.h */,
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
+				994E63F0253494C900B9E367 /* WonderPush_constants.h */,
 				A1E3E0A319E425DB00A4EE09 /* WonderPush.h */,
 				A16E33AD19C886A700E4E158 /* WonderPush.m */,
 				99129C29220C8AE500111272 /* WonderPushAPI */,
