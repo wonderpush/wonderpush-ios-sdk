@@ -71,4 +71,7 @@
  */
 #define WP_PUSH_NOTIFICATION_DATA @"data"
 
+#define DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY 7 * 86400
+
+#define LAST_RECEIVED_NOTIFICATION_CHECK_DATE_KEY @"_wonderpush_lastReceivedNotificationCheckDate"
 #endif /* WonderPush_constants_h */

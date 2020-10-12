@@ -80,6 +80,7 @@
 		994E63E42534522100B9E367 /* WPBasicApiClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 994E63E22534522100B9E367 /* WPBasicApiClient.h */; };
 		994E63E52534522100B9E367 /* WPBasicApiClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 994E63E32534522100B9E367 /* WPBasicApiClient.m */; };
 		994E63E92534857E00B9E367 /* WPBasicApiClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 994E63E32534522100B9E367 /* WPBasicApiClient.m */; };
+		994E63F42534955C00B9E367 /* WonderPush_constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 994E63F0253494C900B9E367 /* WonderPush_constants.h */; };
 		995633F4252B0D0100F6CF3E /* WPBlackWhiteList.h in Headers */ = {isa = PBXBuildFile; fileRef = 995633F2252B0D0100F6CF3E /* WPBlackWhiteList.h */; };
 		995633F5252B0D0100F6CF3E /* WPBlackWhiteList.m in Sources */ = {isa = PBXBuildFile; fileRef = 995633F3252B0D0100F6CF3E /* WPBlackWhiteList.m */; };
 		99563402252B0E7C00F6CF3E /* WPBlackWhiteListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */; };
@@ -1278,6 +1279,7 @@
 				9909CE6D222162E900F73A0B /* WonderPushExtension.h in Headers */,
 				99764181252783B0001EFD96 /* WPRequest.h in Headers */,
 				99F384942225A5E400EA2ECD /* NotificationServiceExtension.h in Headers */,
+				994E63F42534955C00B9E367 /* WonderPush_constants.h in Headers */,
 				99EA164A2487DDC000AA01BC /* WPNSUtil.h in Headers */,
 				9909CE5B2221602200F73A0B /* WPNotificationServiceExtension.h in Headers */,
 				9909CE5E2221602F00F73A0B /* WPLog.h in Headers */,

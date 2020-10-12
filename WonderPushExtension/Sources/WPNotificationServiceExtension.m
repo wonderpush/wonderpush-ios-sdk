@@ -20,6 +20,7 @@
 
 #import "WPLog.h"
 #import "WPNotificationCategoryManager.h"
+#import "WonderPush_constants.h"
 
 #import <objc/runtime.h>
 
@@ -100,7 +101,8 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
 
 + (BOOL)serviceExtension:(UNNotificationServiceExtension *)extension didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
     @try {
-        dispatch_semaphore_t measurementsApiSemaphore = nil;
+        __block dispatch_semaphore_t measurementsApiSemaphore = nil;
+        __block dispatch_semaphore_t installationApiSemaphore = nil;
         WPLog(@"didReceiveNotificationRequest:%@", request);
         WPLog(@"                     userInfo:%@", request.content.userInfo);
         
@@ -116,27 +118,34 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         id _Nullable wpData = [content.userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY];
         id _Nullable alertData = [wpData valueForKey:@"alert"];
         BOOL receiptUsingMeasurements = [[wpData valueForKey:@"receiptUsingMeasurements"] boolValue];
-        if (receiptUsingMeasurements && [self measurementsApiClient]) {
-            measurementsApiSemaphore = dispatch_semaphore_create(0);
+        if (receiptUsingMeasurements) {
             NSString *campaignId = [wpData objectForKey:@"c"];
             NSString *notificationId = [wpData objectForKey:@"n"];
             if (campaignId && notificationId) {
-                WPRequest *request = [WPRequest new];
-                request.resource = @"events";
-                request.method = @"POST";
-                request.params = @{
-                    @"body" : @{
-                            @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],
-                            @"campaignId" : campaignId,
-                            @"notificationId" : notificationId,
-                            @"type" : @"@NOTIFICATION_RECEIVED",
-                    }};
-                request.userId = nil; // We don't have that here
-                request.handler = ^(WPResponse *response, NSError *error) {
+                WPRequest *request = [self reportNotificationReceivedWithId:notificationId campaignId:campaignId completion:^(NSError *error) {
                     dispatch_semaphore_signal(measurementsApiSemaphore);
-                };
-                
-                [[self measurementsApiClient] executeRequest:request];
+                }];
+                if (request) {
+                    measurementsApiSemaphore = dispatch_semaphore_create(0);
+                }
+            }
+        }
+        
+        NSTimeInterval lastReceivedNotificationCheckDelay = [wpData valueForKey:@"lastReceivedNotificationCheckDelay"] ? [[wpData valueForKey:@"lastReceivedNotificationCheckDelay"] doubleValue] / 1000: DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY;
+        NSString *accessToken = [wpData valueForKey:@"accessToken"];
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSDate *lastReceivedNotificationCheckDate = [defaults objectForKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_KEY];
+        NSDate *now = [NSDate date];
+        BOOL reportLastReceivedNotificationCheckDate = !lastReceivedNotificationCheckDate || ([now timeIntervalSinceDate:lastReceivedNotificationCheckDate] > lastReceivedNotificationCheckDelay);
+        if (accessToken && reportLastReceivedNotificationCheckDate) {
+            WPRequest *request = [self reportLastReceivedNotificationCheckDateInInstallation:now accessToken:accessToken completion:^(NSError *error) {
+                dispatch_semaphore_signal(installationApiSemaphore);
+            }];
+            if (request) {
+                // Write to user defaults right now, we can't afford waiting for the response because the OS might kill us.
+                [defaults setObject:now forKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_KEY];
+                [defaults synchronize];
+                installationApiSemaphore = dispatch_semaphore_create(0);
             }
         }
         NSArray *_Nullable buttons = [alertData valueForKey:@"buttons"];
@@ -217,12 +226,59 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         if (measurementsApiSemaphore) {
             dispatch_semaphore_wait(measurementsApiSemaphore, DISPATCH_TIME_FOREVER);
         }
+        if (installationApiSemaphore) {
+            dispatch_semaphore_wait(installationApiSemaphore, DISPATCH_TIME_FOREVER);
+        }
         contentHandler(content);
         return YES;
     } @catch (NSException *exception) {
         WPLog(@"WonderPush/NotificationServiceExtension didReceiveNotificationRequest:withContentHandler: exception: %@", exception);
         return NO;
     }
+}
+
++ (WPRequest * _Nullable)reportNotificationReceivedWithId:(NSString *)notificationId campaignId:(NSString *)campaignId completion:(void(^ _Nullable)(NSError * _Nullable))completion {
+    WPRequest *request = [WPRequest new];
+    request.resource = @"events";
+    request.method = @"POST";
+    request.params = @{
+        @"body" : @{
+                @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],
+                @"campaignId" : campaignId,
+                @"notificationId" : notificationId,
+                @"type" : @"@NOTIFICATION_RECEIVED",
+        }};
+    request.userId = nil; // We don't have that here
+    request.handler = ^(WPResponse *response, NSError *error) {
+        if (completion) completion(error);
+    };
+    
+    WPMeasurementsApiClient *client = [self measurementsApiClient];
+    if (!client) return nil;
+
+    [client executeRequest:request];
+    return request;
+}
+
++ (WPRequest * _Nullable)reportLastReceivedNotificationCheckDateInInstallation:(NSDate *)date accessToken:(NSString *)accessToken completion:(void(^ _Nullable)(NSError * _Nullable))completion {
+    WPRequest *request = [WPRequest new];
+    request.resource = [NSString stringWithFormat:@"installation?accessToken=%@", [accessToken stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet]];
+    request.method = @"PATCH";
+    request.params = @{
+        @"body" : @{
+                @"lastReceivedNotificationCheckDate" : [NSNumber numberWithLongLong:((long long) [date timeIntervalSince1970] * 1000)],
+        }};
+    request.userId = nil; // We don't have that here
+    request.handler = ^(WPResponse *response, NSError *error) {
+        if (completion) completion(error);
+    };
+
+    NSString *secret = [self clientSecret];
+    if (!secret) return nil;
+
+    WPBasicApiClient *client = [[WPBasicApiClient alloc] initWithBaseURL:[NSURL URLWithString:PRODUCTION_API_URL] clientSecret:secret];
+    [client executeRequest:request];
+    return request;
 }
 
 + (BOOL)serviceExtensionTimeWillExpire:(UNNotificationServiceExtension *)extension {
