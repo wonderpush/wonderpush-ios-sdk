@@ -116,6 +116,65 @@ static NSArray *backgroundModes = nil;
     return backgroundModes;
 }
 
+static NSDictionary *notificationServiceExtensionDict = nil;
+
++ (NSDictionary *) getNotificationServiceExtensionDict {
+    if (!notificationServiceExtensionDict) {
+        NSBundle *bundle = NSBundle.mainBundle;
+        NSFileManager *fileManager = NSFileManager.defaultManager;
+        NSString *plugInsPath = [bundle.bundlePath stringByAppendingPathComponent:@"PlugIns"];
+        
+        BOOL hasPlist = NO, hasFramework = NO;
+        
+        BOOL isDir = NO;
+        if ([fileManager fileExistsAtPath:plugInsPath isDirectory:&isDir] && isDir) {
+            NSError *error = nil;
+            NSArray *contents = [fileManager contentsOfDirectoryAtPath:plugInsPath error:&error];
+            if (!error) {
+                // List contents of the bundle's  PlugIns directory, searching for an appex with the right kind of Info.plist file
+                for (NSString *plugInsEntry in contents) {
+                    // Only consider .appex directories
+                    if (![plugInsEntry hasSuffix:@".appex"]) continue;
+                    NSString *plugInsEntryPath = [plugInsPath stringByAppendingPathComponent:plugInsEntry];
+                    NSString *plistPath = [plugInsEntryPath stringByAppendingPathComponent:@"Info.plist"];
+                    if ([fileManager fileExistsAtPath:plistPath isDirectory:&isDir] && !isDir) {
+                        // Read plist file
+                        @try {
+                            NSDictionary *plistContents = [NSDictionary dictionaryWithContentsOfFile:plistPath];
+                            NSDictionary *NSExtension = [plistContents objectForKey:@"NSExtension"];
+                            NSString *NSExtensionPointIdentifier = [NSExtension objectForKey:@"NSExtensionPointIdentifier"];
+                            if ([NSExtensionPointIdentifier isEqualToString:@"com.apple.usernotifications.service"]) {
+                                hasPlist = YES;
+                            } else {
+                                continue;
+                            }
+                            // Does it have the framework?
+                            NSString *frameworkPlistPath = [plugInsEntryPath stringByAppendingPathComponent:@"Frameworks/WonderPushExtension.framework/Info.plist"];
+                            if ([fileManager fileExistsAtPath:frameworkPlistPath isDirectory:&isDir] && !isDir) {
+                                NSDictionary *frameworkPlistContents = [NSDictionary dictionaryWithContentsOfFile:frameworkPlistPath];
+                                NSString *CFBundleIdentifier = [frameworkPlistContents objectForKey:@"CFBundleIdentifier"];
+                                if ([CFBundleIdentifier isEqualToString:@"com.wonderpush.WonderPushExtension"]) {
+                                    hasFramework = YES;
+                                }
+                            }
+                            break;
+                        } @catch (NSException *exception) {
+                            hasPlist = NO;
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+        notificationServiceExtensionDict = @{
+            @"plist" : hasPlist ? @YES : @NO,
+            @"framework": hasFramework ? @YES : @NO,
+        };
+    }
+
+    return notificationServiceExtensionDict;
+}
+
 static NSNumber *hasBackgroundMode = nil;
 + (BOOL) hasBackgroundModeRemoteNotification
 {

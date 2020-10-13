@@ -384,7 +384,8 @@
         NSNull *null = [NSNull null];
         NSDictionary *apple = @{@"apsEnvironment": [WPUtil getEntitlement:@"aps-environment"] ?: null,
                                 @"appId": [WPUtil getEntitlement:@"application-identifier"] ?: null,
-                                @"backgroundModes": [WPUtil getBackgroundModes] ?: null
+                                @"backgroundModes": [WPUtil getBackgroundModes] ?: null,
+                                @"notificationServiceExtension": [WPUtil getNotificationServiceExtensionDict],
                                 };
         NSDictionary *application = @{@"version" : [WPInstallationCoreProperties getVersionString] ?: null,
                                       @"sdkVersion": [WPInstallationCoreProperties getSDKVersionNumber] ?: null,

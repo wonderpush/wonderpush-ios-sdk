@@ -64,6 +64,8 @@
 
 + (void) askUserPermission;
 
++ (NSDictionary *)getNotificationServiceExtensionDict;
+
 @end
 
 
