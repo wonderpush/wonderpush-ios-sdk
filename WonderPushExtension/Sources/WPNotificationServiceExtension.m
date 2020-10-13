@@ -134,7 +134,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         NSTimeInterval lastReceivedNotificationCheckDelay = [wpData valueForKey:@"lastReceivedNotificationCheckDelay"] ? [[wpData valueForKey:@"lastReceivedNotificationCheckDelay"] doubleValue] / 1000: DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY;
         NSString *accessToken = [wpData valueForKey:@"accessToken"];
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        NSDate *lastReceivedNotificationCheckDate = [defaults objectForKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_KEY];
+        NSDate *lastReceivedNotificationCheckDate = [defaults objectForKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_USER_DEFAULTS_KEY];
         NSDate *now = [NSDate date];
         BOOL reportLastReceivedNotificationCheckDate = !lastReceivedNotificationCheckDate || ([now timeIntervalSinceDate:lastReceivedNotificationCheckDate] > lastReceivedNotificationCheckDelay);
         if (accessToken && reportLastReceivedNotificationCheckDate) {
@@ -143,7 +143,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
             }];
             if (request) {
                 // Write to user defaults right now, we can't afford waiting for the response because the OS might kill us.
-                [defaults setObject:now forKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_KEY];
+                [defaults setObject:now forKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_USER_DEFAULTS_KEY];
                 [defaults synchronize];
                 installationApiSemaphore = dispatch_semaphore_create(0);
             }
@@ -266,7 +266,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
     request.method = @"PATCH";
     request.params = @{
         @"body" : @{
-                @"lastReceivedNotificationCheckDate" : [NSNumber numberWithLongLong:((long long) [date timeIntervalSince1970] * 1000)],
+                LAST_RECEIVED_NOTIFICATION_CHECK_DATE_PROPERTY : [NSNumber numberWithLongLong:((long long) [date timeIntervalSince1970] * 1000)],
         }};
     request.userId = nil; // We don't have that here
     request.handler = ^(WPResponse *response, NSError *error) {

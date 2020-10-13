@@ -73,5 +73,6 @@
 
 #define DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY 7 * 86400
 
-#define LAST_RECEIVED_NOTIFICATION_CHECK_DATE_KEY @"_wonderpush_lastReceivedNotificationCheckDate"
+#define LAST_RECEIVED_NOTIFICATION_CHECK_DATE_USER_DEFAULTS_KEY @"_wonderpush_lastReceivedNotificationCheckDate"
+#define LAST_RECEIVED_NOTIFICATION_CHECK_DATE_PROPERTY @"lastReceivedNotificationCheckDate"
 #endif /* WonderPush_constants_h */

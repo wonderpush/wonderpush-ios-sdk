@@ -790,7 +790,17 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if ([receipt boolValue] && ![receiptUsingMeasurements boolValue]) {
         [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
     }
-        
+    
+    // Track lastReceivedNotificationCheckDate
+    NSTimeInterval lastReceivedNotificationCheckDelay = [wpData valueForKey:@"lastReceivedNotificationCheckDelay"] ? [[wpData valueForKey:@"lastReceivedNotificationCheckDelay"] doubleValue] / 1000: DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY;
+    WPJsonSyncInstallation *installation = [WPJsonSyncInstallation forCurrentUser];
+    NSNumber *lastReceivedNotificationCheckDateMs = [installation.sdkState objectForKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_PROPERTY];
+    NSDate *lastReceivedNotificationCheckDate = [NSDate dateWithTimeIntervalSince1970:lastReceivedNotificationCheckDateMs.doubleValue / 1000];
+    NSDate *now = [NSDate date];
+    BOOL reportLastReceivedNotificationCheckDate = !lastReceivedNotificationCheckDate || ([now timeIntervalSinceDate:lastReceivedNotificationCheckDate] > lastReceivedNotificationCheckDelay);
+    if (reportLastReceivedNotificationCheckDate) {
+        [installation put:@{ LAST_RECEIVED_NOTIFICATION_CHECK_DATE_PROPERTY : [NSNumber numberWithLong:(long)(now.timeIntervalSince1970 * 1000)]  }];
+    }
 }
 
 + (void) trackEvent:(NSString*)type
