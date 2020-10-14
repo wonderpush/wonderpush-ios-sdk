@@ -113,8 +113,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                     [safeDeferWithConsentIdentifiers removeAllObjects];
                     [safeDeferWithConsentIdToBlock removeAllObjects];
                 }
-                // Ensure we have an @APP_OPEN
-                [self onInteractionLeaving:NO];
             }
         }];
         NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;
@@ -343,6 +341,16 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [self setIsInitialized:YES];
     [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
     [self hasUserConsentChanged:[self hasUserConsent]];
+    
+    if (![self hasUserConsent]) {
+        [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:self queue:nil usingBlock:^(NSNotification *notification) {
+            BOOL hasUserConsent = [notification.userInfo[WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY] boolValue];
+            if (hasUserConsent) {
+                // Ensure we have an @APP_OPEN
+                [self onInteractionLeaving:NO];
+            }
+        }];
+    }
     
     // Block measurements API client right away
     [self measurementsApiClient].disabled = YES;
