@@ -376,8 +376,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             });
         }];
     };
-    readConfig();
-
+    [self safeDeferWithConsent:^(){
+        readConfig();
+    }];
 }
 
 + (void) initForNewUser:(NSString *)userId
