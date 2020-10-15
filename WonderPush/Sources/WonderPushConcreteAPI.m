@@ -136,6 +136,11 @@
                                     @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
         }
 
+        WPReportingData *reportinData = WonderPush.lastClickedNotificationReportingData;
+        if (reportinData.campaignId && !params[@"campaignId"]) params[@"campaignId"] = reportinData.campaignId;
+        if (reportinData.notificationId && !params[@"notificationId"]) params[@"notificationId"] = reportinData.notificationId;
+        if (reportinData.viewId && !params[@"viewId"]) params[@"viewId"] = reportinData.viewId;
+
         [WPConfiguration.sharedConfiguration rememberTrackedEvent:params];
 
         dispatch_async(dispatch_get_main_queue(), ^{

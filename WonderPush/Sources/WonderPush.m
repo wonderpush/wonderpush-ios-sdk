@@ -56,6 +56,7 @@ __weak static id<WonderPushDelegate> _delegate = nil;
 static WPPresenceManager *presenceManager = nil;
 @class WPPresenceManagerEventSender;
 static WPPresenceManagerEventSender *presenceManagerDelegate = nil;
+static WPReportingData *lastClickedNotificationReportingData = nil;
 
 @interface WPPresenceManagerEventSender : NSObject<WPPresenceManagerAutoRenewDelegate>
 @end
@@ -779,6 +780,8 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
 + (void) trackNotificationOpened:(NSDictionary *)notificationInformation
 {
+    WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:notificationInformation];
+    lastClickedNotificationReportingData = reportingData;
     [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:notificationInformation customData:nil];
 }
 
@@ -1278,6 +1281,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         if (shouldInjectAppOpen) {
             // We will track a new app open event
 
+            // Clear the lastClickedNotificationReportingData
+            lastClickedNotificationReportingData = nil;
+
             // We must first close the possibly still-open previous session
             if (lastAppCloseTs < lastAppOpenTs) {
                 NSDictionary *openInfo = conf.lastAppOpenInfo;
@@ -1303,6 +1309,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             }
             WPPresencePayload *presence = [[WonderPush presenceManager] presenceDidStart];
             if (presence) openInfo[@"presence"] = presence.toJSON;
+            lastClickedNotificationReportingData = [[WPReportingData alloc] initWithDictionary:openInfo];
             [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil];
             conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
             conf.lastAppOpenInfo = openInfo;
@@ -1904,4 +1911,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     }
     return client;
 }
+
++ (WPReportingData *)lastClickedNotificationReportingData {
+    return lastClickedNotificationReportingData;
+}
+
 @end

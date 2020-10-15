@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nullable) NSString *notificationId;
 @property (readonly, nullable) NSString *viewId;
 
-- (instancetype) initWithDictionary:(NSDictionary *)dict;
+- (instancetype) initWithDictionary:(NSDictionary *)dict NS_DESIGNATED_INITIALIZER;
+- (instancetype) init NS_UNAVAILABLE;
 - (NSDictionary *) dictValue;
 
 @end

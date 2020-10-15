@@ -178,6 +178,9 @@ Called when receiving the full state of the installation
 + (WPMeasurementsApiClient *) measurementsApiClient;
 
 + (void) requestEventuallyWithMeasurementsApi:(WPRequest *)request;
+
++ (WPReportingData *) lastClickedNotificationReportingData;
+
 @end
 
 
