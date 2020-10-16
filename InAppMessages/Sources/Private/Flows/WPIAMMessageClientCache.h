@@ -57,8 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
     WPIAMDisplayCheckOnAnalyticEventsFlow *analycisEventDislayCheckFlow;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithBookkeeper:(id<WPIAMBookKeeper>)bookKeeper
-               usingResponseParser:(WPIAMFetchResponseParser *)responseParser;
+- (instancetype)initWithBookkeeper:(id<WPIAMBookKeeper>)bookKeeper;
 
 // Returns YES if there are any test messages in the cache.
 - (BOOL)hasTestMessage;

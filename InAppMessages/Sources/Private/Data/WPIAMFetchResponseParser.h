@@ -17,6 +17,7 @@
 #import <Foundation/Foundation.h>
 
 @class WPIAMMessageDefinition;
+@class WPIAMMessageRenderData;
 @protocol WPIAMTimeFetcher;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -30,10 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 // @param discardCount if not nil, it would contain, on return, the number of invalid messages
 // detected uring parsing.
 // @param fetchWaitTime would be non nil if fetch wait time data is found in the api response.
-- (NSArray<WPIAMMessageDefinition *> *)parseAPIResponseDictionary:(NSDictionary *)responseDict
++ (NSArray<WPIAMMessageDefinition *> *)parseAPIResponseDictionary:(NSDictionary *)responseDict
                                                 discardedMsgCount:(NSInteger *)discardCount;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithTimeFetcher:(id<WPIAMTimeFetcher>)timeFetcher;
++ (WPIAMMessageDefinition *)convertToMessageDefinitionWithCampaignDict:(NSDictionary *)campaignDict;
++ (WPIAMMessageRenderData * _Nullable) renderDataFromNotificationDict:(NSDictionary *)notificationDict isTestMessage:(BOOL)isTestMessage;
 @end
 NS_ASSUME_NONNULL_END

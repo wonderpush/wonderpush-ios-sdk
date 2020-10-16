@@ -30,18 +30,15 @@
 @property(nonatomic) NSMutableArray<WPIAMMessageDefinition *> *testMessages;
 @property(nonatomic) NSMutableSet<NSString *> *wonderpushEventsToWatch;
 @property(nonatomic) id<WPIAMBookKeeper> bookKeeper;
-@property(readonly, nonatomic) WPIAMFetchResponseParser *responseParser;
 
 @end
 
 // Methods doing read and write operations on messages field is synchronized to avoid
 // race conditions like change the array while iterating through it
 @implementation WPIAMMessageClientCache
-- (instancetype)initWithBookkeeper:(id<WPIAMBookKeeper>)bookKeeper
-               usingResponseParser:(WPIAMFetchResponseParser *)responseParser {
+- (instancetype)initWithBookkeeper:(id<WPIAMBookKeeper>)bookKeeper {
     if (self = [super init]) {
         _bookKeeper = bookKeeper;
-        _responseParser = responseParser;
     }
     return self;
 }
@@ -238,8 +235,8 @@
         if (![inAppConfig isKindOfClass:NSDictionary.class]) inAppConfig = @{};
         NSInteger discardCount;
         NSArray<WPIAMMessageDefinition *> *messagesFromStorage =
-        [self.responseParser parseAPIResponseDictionary:inAppConfig
-                                      discardedMsgCount:&discardCount];
+        [WPIAMFetchResponseParser parseAPIResponseDictionary:inAppConfig
+                                           discardedMsgCount:&discardCount];
         [self setMessageData:messagesFromStorage];
         if (completion) completion(YES);
 

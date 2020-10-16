@@ -20,25 +20,13 @@
 #import "WPIAMMessageContentData.h"
 #import "WPIAMMessageContentDataWithImageURL.h"
 #import "WPIAMMessageDefinition.h"
-#import "WPIAMTimeFetcher.h"
 #import "UIColor+WPIAMHexString.h"
 #import "WPReportingData.h"
 #import "WPAction_private.h"
 
-@interface WPIAMFetchResponseParser ()
-@property(nonatomic) id<WPIAMTimeFetcher> timeFetcher;
-@end
-
 @implementation WPIAMFetchResponseParser
 
-- (instancetype)initWithTimeFetcher:(id<WPIAMTimeFetcher>)timeFetcher {
-    if (self = [super init]) {
-        _timeFetcher = timeFetcher;
-    }
-    return self;
-}
-
-- (NSArray<WPIAMMessageDefinition *> *)parseAPIResponseDictionary:(NSDictionary *)responseDict
++ (NSArray<WPIAMMessageDefinition *> *)parseAPIResponseDictionary:(NSDictionary *)responseDict
                                                 discardedMsgCount:(NSInteger *)discardCount {
     NSArray<NSDictionary *> *messageArray = responseDict[@"campaigns"];
     if (!messageArray) return @[];
@@ -47,7 +35,7 @@
     NSMutableArray<WPIAMMessageDefinition *> *definitions = [[NSMutableArray alloc] init];
     for (NSDictionary *nextMsg in messageArray) {
         WPIAMMessageDefinition *nextDefinition =
-        [self convertToMessageDefinitionWithMessageDict:nextMsg];
+        [self convertToMessageDefinitionWithCampaignDict:nextMsg];
         if (nextDefinition) {
             [definitions addObject:nextDefinition];
         } else {
@@ -66,7 +54,7 @@
 }
 
 // Always returns a valid WPIAMCappingDefinition
-- (WPIAMCappingDefinition *)parseCapping:(id)capping {
++ (WPIAMCappingDefinition *)parseCapping:(id)capping {
     if (![capping isKindOfClass:NSDictionary.class]) return [WPIAMCappingDefinition defaultCapping];
     NSInteger maxImpressions = [capping[@"maxImpressions"] isKindOfClass:NSNumber.class] ? [capping[@"maxImpressions"] integerValue] : 1;
     NSTimeInterval snoozeTime = [capping[@"snoozeTime"] isKindOfClass:NSNumber.class] ? [capping[@"snoozeTime"] doubleValue] / 1000 : 0;
@@ -74,7 +62,7 @@
 }
 
 // Return nil if no valid triggering condition can be detected
-- (NSArray<WPIAMDisplayTriggerDefinition *> *)parseTriggeringCondition:
++ (NSArray<WPIAMDisplayTriggerDefinition *> *)parseTriggeringCondition:
     (NSArray<NSDictionary *> *)triggerConditions {
     if (triggerConditions == nil || triggerConditions.count == 0) {
         return nil;
@@ -110,35 +98,35 @@
 
 // For one element in the restful API response's messages array, convert into
 // a WPIAMMessageDefinition object. If the conversion fails, a nil is returned.
-- (WPIAMMessageDefinition *)convertToMessageDefinitionWithMessageDict:(NSDictionary *)campaignNode {
++ (WPIAMMessageDefinition *)convertToMessageDefinitionWithCampaignDict:(NSDictionary *)campaignDict {
     @try {
         BOOL isTestMessage = NO;
         
-        id isTestCampaignNode = campaignNode[@"isTestCampaign"];
+        id isTestCampaignNode = campaignDict[@"isTestCampaign"];
         if ([isTestCampaignNode isKindOfClass:[NSNumber class]]) {
             isTestMessage = [isTestCampaignNode boolValue];
         }
         
-        id schedulingNode = campaignNode[@"scheduling"];
+        id schedulingNode = campaignDict[@"scheduling"];
         if (![schedulingNode isKindOfClass:[NSDictionary class]]) {
             WPLog(
                   @"scheduling does not exist or does not represent a dictionary in "
                   "message node %@",
-                  campaignNode);
+                  campaignDict);
             return nil;
         }
-        id segmentNode = campaignNode[@"segment"];
+        id segmentNode = campaignDict[@"segment"];
         if (segmentNode && ![segmentNode isKindOfClass:NSDictionary.class]) {
             WPLog(@"Invalid segment %@", segmentNode);
             return nil;
         }
         
-        id notificationsNode = campaignNode[@"notifications"];
+        id notificationsNode = campaignDict[@"notifications"];
         if (![notificationsNode isKindOfClass:[NSArray class]] || [notificationsNode count] <= 0) {
             WPLog(
                   @"notifications does not exist or is empty or does not represent an array in "
                   "message node %@",
-                  campaignNode);
+                  campaignDict);
             return nil;
         }
         // For now we take the first notification. Later we'll do A/B tests.
@@ -147,16 +135,16 @@
             WPLog(
                   @"notification does not exist or does not represent a dictionary in "
                   "campaign node %@",
-                  campaignNode);
+                  campaignDict);
             return nil;
         }
         WPIAMMessageRenderData *renderData = [self renderDataFromNotificationDict:notificationNode isTestMessage:isTestMessage];
         if (!renderData) return nil;
 
         NSArray<WPIAMDisplayTriggerDefinition *> *triggersDefinition =
-        [self parseTriggeringCondition:campaignNode[@"triggers"]];
+        [self parseTriggeringCondition:campaignDict[@"triggers"]];
 
-        WPIAMCappingDefinition *capping = [self parseCapping:campaignNode[@"capping"]];
+        WPIAMCappingDefinition *capping = [self parseCapping:campaignDict[@"capping"]];
 
         if (!isTestMessage) {
             // Triggering definitions should always be present for a non-test message.
@@ -202,11 +190,11 @@
         WPLog(
               @"Error in parsing message node %@ "
               "with error %@",
-              campaignNode, e);
+              campaignDict, e);
         return nil;
     }
 }
-- (WPIAMMessageRenderData * _Nullable) renderDataFromNotificationDict:(NSDictionary *)notificationDict isTestMessage:(BOOL)isTestMessage {
++ (WPIAMMessageRenderData * _Nullable) renderDataFromNotificationDict:(NSDictionary *)notificationDict isTestMessage:(BOOL)isTestMessage {
     @try {
         id reportingNode = notificationDict[@"reporting"];
         if (![reportingNode isKindOfClass:[NSDictionary class]]) {

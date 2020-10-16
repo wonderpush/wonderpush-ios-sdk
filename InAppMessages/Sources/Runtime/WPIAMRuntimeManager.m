@@ -20,7 +20,6 @@
 #import "WPIAMDisplayCheckOnAppForegroundFlow.h"
 #import "WPIAMDisplayCheckOnFetchDoneNotificationFlow.h"
 #import "WPIAMDisplayExecutor.h"
-#import "WPIAMFetchResponseParser.h"
 #import "WPIAMMessageClientCache.h"
 #import "WPIAMRuntimeManager.h"
 #import "WPIAMSDKModeManager.h"
@@ -46,8 +45,6 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAppForegroundFlow *displayOnAppForegroundFlow;
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnFetchDoneNotificationFlow *displayOnFetchDoneFlow;
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAnalyticEventsFlow *displayOnWonderPushEventsFlow;
-
-@property(nonatomic, nonnull) WPIAMFetchResponseParser *responseParser;
 @end
 
 static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSetting = @"wonderpush-iam-sdk-auto-data-collection";
@@ -139,13 +136,10 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     WPIAMTimerWithNSDate *timeFetcher = [[WPIAMTimerWithNSDate alloc] init];
     NSTimeInterval start = [timeFetcher currentTimestampInSeconds];
     
-    self.responseParser = [[WPIAMFetchResponseParser alloc] initWithTimeFetcher:timeFetcher];
-    
     self.bookKeeper = [[WPIAMBookKeeperViaUserDefaults alloc]
                        initWithUserDefaults:[NSUserDefaults standardUserDefaults]];
     
-    self.messageCache = [[WPIAMMessageClientCache alloc] initWithBookkeeper:self.bookKeeper
-                                                         usingResponseParser:self.responseParser];
+    self.messageCache = [[WPIAMMessageClientCache alloc] initWithBookkeeper:self.bookKeeper];
     
     // start render on app foreground flow
     WPIAMDisplaySetting *appForegroundDisplaysetting = [[WPIAMDisplaySetting alloc] init];
