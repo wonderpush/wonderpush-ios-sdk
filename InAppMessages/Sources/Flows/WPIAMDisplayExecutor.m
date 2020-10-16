@@ -298,7 +298,7 @@
         [self.messageCache nextOnEventDisplayMsg:eventName];
         
         if (nextAnalyticsBasedMessage) {
-            [self displayForMessage:nextAnalyticsBasedMessage
+            [self displayMessage:nextAnalyticsBasedMessage
                         triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent
                               delay:[nextAnalyticsBasedMessage delayForTrigger:WPIAMRenderTriggerOnWonderPushEvent]];
         }
@@ -519,7 +519,7 @@
     }
 }
 
-- (void)displayForMessage:(WPIAMMessageDefinition *)message
+- (void)displayMessage:(WPIAMMessageDefinition *)message
               triggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                     delay:(NSTimeInterval)delay {
     _currentMsgBeingDisplayed = message;
@@ -625,7 +625,7 @@
             WPIAMMessageDefinition *nextAppLaunchMessage = [self.messageCache nextOnAppLaunchDisplayMsg];
             
             if (nextAppLaunchMessage) {
-                [self displayForMessage:nextAppLaunchMessage
+                [self displayMessage:nextAppLaunchMessage
                             triggerType:WPInAppMessagingDisplayTriggerTypeOnAppForeground
                                   delay:[nextAppLaunchMessage delayForTrigger:WPIAMRenderTriggerOnAppLaunch]];
                 self.lastDisplayTime = [self.timeFetcher currentTimestampInSeconds];
@@ -670,7 +670,7 @@
             WPIAMMessageDefinition *nextForegroundMessage = [self.messageCache nextOnAppOpenDisplayMsg];
             
             if (nextForegroundMessage) {
-                [self displayForMessage:nextForegroundMessage
+                [self displayMessage:nextForegroundMessage
                             triggerType:WPInAppMessagingDisplayTriggerTypeOnAppForeground
                                   delay:[nextForegroundMessage delayForTrigger:WPIAMRenderTriggerOnAppForeground]];
                 self.lastDisplayTime = [self.timeFetcher currentTimestampInSeconds];

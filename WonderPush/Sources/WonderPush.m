@@ -1197,7 +1197,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         if (renderData) {
             WPIAMCappingDefinition *capping = [[WPIAMCappingDefinition alloc] initWithMaxImpressions:1 snoozeTime:0];
             WPIAMMessageDefinition *messageDefinition = [[WPIAMMessageDefinition alloc] initWithRenderData:renderData payload:@{} startTime:0 endTime:DBL_MAX triggerDefinition:@[] capping:capping segmentDefinition:nil];
-            [WPIAMRuntimeManager.getSDKRuntimeInstance.displayExecutor displayForMessage:messageDefinition triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent delay:0];
+            [WPIAMRuntimeManager.getSDKRuntimeInstance.displayExecutor displayMessage:messageDefinition triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent delay:0];
         }
     }
     [self trackNotificationOpened:notificationInformation];

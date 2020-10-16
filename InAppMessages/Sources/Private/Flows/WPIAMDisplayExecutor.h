@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Check and display next in-app message eligible for analytics event trigger with given event name.
 - (void)checkAndDisplayNextContextualMessageForWonderPushEvent:(NSString *)eventName;
 // Force display a message now
-- (void)displayForMessage:(WPIAMMessageDefinition *)message
+- (void)displayMessage:(WPIAMMessageDefinition *)message
               triggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                     delay:(NSTimeInterval)delay;
 // a boolean flag that can be used to suppress/resume displaying messages.
