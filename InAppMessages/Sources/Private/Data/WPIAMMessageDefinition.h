@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
                            endTime:(NSTimeInterval)endTime
                  triggerDefinition:(NSArray<WPIAMDisplayTriggerDefinition *> *)renderTriggers
                            capping:(WPIAMCappingDefinition *)capping
-                 segmentDefinition:(NSDictionary *)segmentDefinition;
+                 segmentDefinition:(NSDictionary * _Nullable)segmentDefinition;
 
 /**
  * Create a test message definition.
