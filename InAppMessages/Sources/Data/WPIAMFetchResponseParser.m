@@ -142,33 +142,34 @@
             return nil;
         }
         // For now we take the first notification. Later we'll do A/B tests.
-        id messageNode = [notificationsNode objectAtIndex:0];
-        if (![messageNode isKindOfClass:[NSDictionary class]]) {
+        id notificationNode = [notificationsNode objectAtIndex:0];
+        if (![notificationNode isKindOfClass:[NSDictionary class]]) {
             WPLog(
                   @"notification does not exist or does not represent a dictionary in "
                   "campaign node %@",
                   campaignNode);
             return nil;
         }
+        WPIAMMessageRenderData *renderData = [self renderDataFromNotificationDict:notificationNode isTestMessage:isTestMessage];
+        if (!renderData) return nil;
 
-        id payload = messageNode[@"payload"];
-        id reportingNode = messageNode[@"reporting"];
-        if (![reportingNode isKindOfClass:[NSDictionary class]]) {
-            WPLog(
-                  @"reporting does not exist or does not represent a dictionary in "
-                  "message node %@",
-                  messageNode);
-            return nil;
+        NSArray<WPIAMDisplayTriggerDefinition *> *triggersDefinition =
+        [self parseTriggeringCondition:campaignNode[@"triggers"]];
+
+        WPIAMCappingDefinition *capping = [self parseCapping:campaignNode[@"capping"]];
+
+        if (!isTestMessage) {
+            // Triggering definitions should always be present for a non-test message.
+            if (!triggersDefinition || triggersDefinition.count == 0) {
+                WPLog(
+                      @"No valid triggering condition is detected in message definition"
+                      " with campaign id %@, notification id %@",
+                      renderData.reportingData.campaignId, renderData.reportingData.notificationId);
+                return nil;
+            }
         }
-        NSString *campaignId = reportingNode[@"campaignId"];
-        NSString *notificationId = reportingNode[@"notificationId"];
-        if (!campaignId || !notificationId || ![campaignId isKindOfClass:[NSString class]] || ![notificationId isKindOfClass:[NSString class]]) {
-            WPLog(
-                  @"campaign or notification id is missing in message node %@", messageNode);
-            return nil;
-        }
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:reportingNode];
         
+        id payload = notificationNode[@"payload"];
         NSTimeInterval startTimeInSeconds = 0;
         NSTimeInterval endTimeInSeconds = 0;
         if (!isTestMessage) {
@@ -185,12 +186,51 @@
             }
         }
         
-        id contentNode = messageNode[@"content"];
+
+        if (isTestMessage) {
+            return [[WPIAMMessageDefinition alloc] initTestMessageWithRenderData:renderData];
+        } else {
+            return [[WPIAMMessageDefinition alloc] initWithRenderData:renderData
+                                                              payload:([payload isKindOfClass:NSDictionary.class] ? payload : [NSDictionary new])
+                                                            startTime:startTimeInSeconds
+                                                              endTime:endTimeInSeconds
+                                                    triggerDefinition:triggersDefinition
+                                                              capping:capping
+                                                    segmentDefinition:segmentNode];
+        }
+    } @catch (NSException *e) {
+        WPLog(
+              @"Error in parsing message node %@ "
+              "with error %@",
+              campaignNode, e);
+        return nil;
+    }
+}
+- (WPIAMMessageRenderData * _Nullable) renderDataFromNotificationDict:(NSDictionary *)notificationDict isTestMessage:(BOOL)isTestMessage {
+    @try {
+        id reportingNode = notificationDict[@"reporting"];
+        if (![reportingNode isKindOfClass:[NSDictionary class]]) {
+            WPLog(
+                  @"reporting does not exist or does not represent a dictionary in "
+                  "message node %@",
+                  notificationDict);
+            return nil;
+        }
+        NSString *campaignId = reportingNode[@"campaignId"];
+        NSString *notificationId = reportingNode[@"notificationId"];
+        if (!campaignId || !notificationId || ![campaignId isKindOfClass:[NSString class]] || ![notificationId isKindOfClass:[NSString class]]) {
+            WPLog(
+                  @"campaign or notification id is missing in message node %@", notificationDict);
+            return nil;
+        }
+        WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:reportingNode];
+
+        id contentNode = notificationDict[@"content"];
         if (![contentNode isKindOfClass:[NSDictionary class]]) {
             WPLog(
                   @"content node does not exist or does not represent a dictionary in "
                   "message node %@",
-                  messageNode);
+                  notificationDict);
             return nil;
         }
         
@@ -244,7 +284,7 @@
             [UIColor firiam_colorWithHexString:bannerNode[@"backgroundHexColor"]];
             if ([bannerNode[@"bannerPosition"] isEqualToString:@"bottom"]) {
                 bannerPosition = WPIAMBannerPositionBottom;
-            }            
+            }
         } else if ([content[@"modal"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsModalView;
             NSDictionary *modalNode = (NSDictionary *)contentNode[@"modal"];
@@ -283,7 +323,7 @@
             
             if (!imageURLStr) {
                 WPLog(
-                      @"Image url is missing for image-only message %@", messageNode);
+                      @"Image url is missing for image-only message %@", notificationDict);
                 return nil;
             }
             action = [WPAction actionWithDictionaries:imageOnlyNode[@"actions"]];
@@ -331,13 +371,13 @@
         } else {
             // Unknown message type
             WPLog(
-                  @"Unknown message type in message node %@", messageNode);
+                  @"Unknown message type in message node %@", notificationDict);
             return nil;
         }
         
         if (title == nil && mode != WPIAMRenderAsImageOnlyView) {
             WPLog(
-                  @"Title text is missing in message node %@", messageNode);
+                  @"Title text is missing in message node %@", notificationDict);
             return nil;
         }
         
@@ -372,24 +412,10 @@
             renderEffect.textColor = titleTextColor;
         }
         
-        NSArray<WPIAMDisplayTriggerDefinition *> *triggersDefinition =
-        [self parseTriggeringCondition:campaignNode[@"triggers"]];
-        
-        WPIAMCappingDefinition *capping = [self parseCapping:campaignNode[@"capping"]];
-        
         if (isTestMessage) {
             WPLog(
                   @"A test message with campaign id %@, notification id %@ was parsed successfully.", reportingData.campaignId, reportingData.notificationId);
             renderEffect.isTestMessage = YES;
-        } else {
-            // Triggering definitions should always be present for a non-test message.
-            if (!triggersDefinition || triggersDefinition.count == 0) {
-                WPLog(
-                      @"No valid triggering condition is detected in message definition"
-                      " with campaign id %@, notification id %@",
-                      reportingData.campaignId, reportingData.notificationId);
-                return nil;
-            }
         }
         
         WPIAMMessageContentDataWithImageURL *msgData =
@@ -411,23 +437,13 @@
         [[WPIAMMessageRenderData alloc] initWithReportingData:reportingData
                                                   contentData:msgData
                                               renderingEffect:renderEffect];
-        
-        if (isTestMessage) {
-            return [[WPIAMMessageDefinition alloc] initTestMessageWithRenderData:renderData];
-        } else {
-            return [[WPIAMMessageDefinition alloc] initWithRenderData:renderData
-                                                              payload:([payload isKindOfClass:NSDictionary.class] ? payload : [NSDictionary new])
-                                                            startTime:startTimeInSeconds
-                                                              endTime:endTimeInSeconds
-                                                    triggerDefinition:triggersDefinition
-                                                              capping:capping
-                                                    segmentDefinition:segmentNode];
-        }
-    } @catch (NSException *e) {
+
+        return renderData;
+    } @catch (NSException *exception) {
         WPLog(
               @"Error in parsing message node %@ "
               "with error %@",
-              campaignNode, e);
+              notificationDict, exception);
         return nil;
     }
 }
