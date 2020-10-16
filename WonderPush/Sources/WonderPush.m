@@ -39,6 +39,7 @@
 #import "WPIAMRuntimeManager.h"
 #import "WPPresenceManager.h"
 #import "WPRequestVault.h"
+#import "WPIAMMessageDefinition.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 
@@ -1190,6 +1191,15 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
     }
 
+    if (wonderpushData[@"inApp"] && [wonderpushData[@"inApp"] isKindOfClass:NSDictionary.class]) {
+        NSDictionary *inAppData = wonderpushData[@"inApp"];
+        WPIAMMessageRenderData *renderData = [WPIAMFetchResponseParser renderDataFromNotificationDict:inAppData isTestMessage:YES];
+        if (renderData) {
+            WPIAMCappingDefinition *capping = [[WPIAMCappingDefinition alloc] initWithMaxImpressions:1 snoozeTime:0];
+            WPIAMMessageDefinition *messageDefinition = [[WPIAMMessageDefinition alloc] initWithRenderData:renderData payload:@{} startTime:0 endTime:DBL_MAX triggerDefinition:@[] capping:capping segmentDefinition:nil];
+            [WPIAMRuntimeManager.getSDKRuntimeInstance.displayExecutor displayForMessage:messageDefinition triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent delay:0];
+        }
+    }
     [self trackNotificationOpened:notificationInformation];
 
     if ([actionsToExecute isKindOfClass:NSArray.class]) {
