@@ -1197,9 +1197,18 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         if (renderData) {
             WPIAMCappingDefinition *capping = [[WPIAMCappingDefinition alloc] initWithMaxImpressions:1 snoozeTime:0];
             WPIAMMessageDefinition *messageDefinition = [[WPIAMMessageDefinition alloc] initWithRenderData:renderData payload:@{} startTime:0 endTime:DBL_MAX triggerDefinition:@[] capping:capping segmentDefinition:nil];
-            // We introduce a delay to let the application become active if it was in the background
-            NSTimeInterval delay = 0.5;
-            [WPIAMRuntimeManager.getSDKRuntimeInstance.displayExecutor displayMessage:messageDefinition triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent delay:delay];
+            void(^showInApp)(void) = ^() {
+                [WPIAMRuntimeManager.getSDKRuntimeInstance.displayExecutor displayMessage:messageDefinition triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent delay:0];
+            };
+            if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
+                showInApp();
+            } else {
+                __block id observer;
+                observer = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+                    showInApp();
+                    [NSNotificationCenter.defaultCenter removeObserver:observer];
+                }];
+            }
         }
     }
     [self trackNotificationOpened:notificationInformation];
