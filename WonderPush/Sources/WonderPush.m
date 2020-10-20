@@ -1191,26 +1191,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
     }
 
-    if (wonderpushData[@"inApp"] && [wonderpushData[@"inApp"] isKindOfClass:NSDictionary.class]) {
-        NSDictionary *inAppData = wonderpushData[@"inApp"];
-        WPIAMMessageRenderData *renderData = [WPIAMFetchResponseParser renderDataFromNotificationDict:inAppData isTestMessage:YES];
-        if (renderData) {
-            WPIAMCappingDefinition *capping = [[WPIAMCappingDefinition alloc] initWithMaxImpressions:1 snoozeTime:0];
-            WPIAMMessageDefinition *messageDefinition = [[WPIAMMessageDefinition alloc] initWithRenderData:renderData payload:@{} startTime:0 endTime:DBL_MAX triggerDefinition:@[] capping:capping segmentDefinition:nil];
-            void(^showInApp)(void) = ^() {
-                [WPIAMRuntimeManager.getSDKRuntimeInstance.displayExecutor displayMessage:messageDefinition triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent delay:0];
-            };
-            if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
-                showInApp();
-            } else {
-                __block id observer;
-                observer = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-                    showInApp();
-                    [NSNotificationCenter.defaultCenter removeObserver:observer];
-                }];
-            }
-        }
-    }
     [self trackNotificationOpened:notificationInformation];
 
     if ([actionsToExecute isKindOfClass:NSArray.class]) {
@@ -1242,20 +1222,43 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if ([self isDataNotification:notificationDictionary]) {
         WPLogDebug(@"handleNotificationOpened: data notification stopping");
         return NO;
+    } else if ([targetUrl isEqualToString:WP_TARGET_URL_NOOP]) {
+        return NO;
     }
-    NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:wonderpushData];
-    if ([WP_PUSH_NOTIFICATION_SHOW_TEXT isEqualToString:type]) {
-        WPLogDebug(@"handleNotificationOpened: showing text in-app");
-        [self handleTextNotification:wonderpushData];
-        return YES;
-    } else if ([WP_PUSH_NOTIFICATION_SHOW_HTML isEqualToString:type]) {
-        WPLogDebug(@"handleNotificationOpened: showing HTML in-app");
-        [self handleHtmlNotification:wonderpushData];
-        return YES;
-    } else if ([WP_PUSH_NOTIFICATION_SHOW_URL isEqualToString:type]) {
-        WPLogDebug(@"handleNotificationOpened: showing URL in-app");
-        [self handleHtmlNotification:wonderpushData];
-        return YES;
+    if (wonderpushData[@"inApp"] && [wonderpushData[@"inApp"] isKindOfClass:NSDictionary.class]) {
+        NSDictionary *inAppData = wonderpushData[@"inApp"];
+        WPIAMMessageRenderData *renderData = [WPIAMFetchResponseParser renderDataFromNotificationDict:inAppData isTestMessage:YES];
+        if (renderData) {
+            WPIAMCappingDefinition *capping = [[WPIAMCappingDefinition alloc] initWithMaxImpressions:1 snoozeTime:0];
+            WPIAMMessageDefinition *messageDefinition = [[WPIAMMessageDefinition alloc] initWithRenderData:renderData payload:@{} startTime:0 endTime:DBL_MAX triggerDefinition:@[] capping:capping segmentDefinition:nil];
+            void(^showInApp)(void) = ^() {
+                [WPIAMRuntimeManager.getSDKRuntimeInstance.displayExecutor displayMessage:messageDefinition triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent delay:0];
+            };
+            if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
+                showInApp();
+            } else {
+                __block id observer;
+                observer = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+                    showInApp();
+                    [NSNotificationCenter.defaultCenter removeObserver:observer];
+                }];
+            }
+        }
+    } else {
+        NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:wonderpushData];
+        if ([WP_PUSH_NOTIFICATION_SHOW_TEXT isEqualToString:type]) {
+            WPLogDebug(@"handleNotificationOpened: showing text in-app");
+            [self handleTextNotification:wonderpushData];
+            return YES;
+        } else if ([WP_PUSH_NOTIFICATION_SHOW_HTML isEqualToString:type]) {
+            WPLogDebug(@"handleNotificationOpened: showing HTML in-app");
+            [self handleHtmlNotification:wonderpushData];
+            return YES;
+        } else if ([WP_PUSH_NOTIFICATION_SHOW_URL isEqualToString:type]) {
+            WPLogDebug(@"handleNotificationOpened: showing URL in-app");
+            [self handleHtmlNotification:wonderpushData];
+            return YES;
+        }
     }
 
     return NO;
