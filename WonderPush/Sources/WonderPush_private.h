@@ -17,7 +17,7 @@
 #ifndef WonderPush_WonderPush_private_h
 #define WonderPush_WonderPush_private_h
 
-#import "WonderPush.h"
+#import <WonderPush/WonderPush.h>
 #import "WPResponse.h"
 #import "WPReportingData.h"
 #import "WPInAppMessagingRenderingPrivate.h"
