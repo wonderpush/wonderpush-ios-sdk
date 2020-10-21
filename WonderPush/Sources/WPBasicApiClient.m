@@ -11,6 +11,11 @@
 #import "WPErrors.h"
 #import "WPRequestSerializer.h"
 
+NSString * const WPBasicApiClientResponseNotification = @"WPBasicApiClientResponseNotification";
+NSString * const WPBasicApiClientResponseNotificationRequestKey = @"request";
+NSString * const WPBasicApiClientResponseNotificationClientKey = @"client";
+NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
+
 @interface WPBasicApiClient ()
 @property (nonatomic, strong, nonnull) NSURLSession *URLSession;
 @property (nonatomic, strong, nonnull) NSURL *baseURL;
@@ -34,13 +39,22 @@
 }
 
 - (void)executeRequest:(WPRequest *)request {
-    [self request:request.resource method:request.method ?: @"POST" params:request.params userId:request.userId completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [self request:request.resource method:request.method ?: @"POST" params:request.params userId:request.userId completionHandler:^(NSData *data, NSURLResponse *URLResponse, NSError *error) {
+        WPResponse *response = [WPResponse new];
+        id json = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
+        response.object = json;
         if (request.handler) {
-            WPResponse *response = [WPResponse new];
-            id json = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
-            response.object = json;
             request.handler(response, error);
         }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:@{
+                WPBasicApiClientResponseNotificationClientKey : self,
+                WPBasicApiClientResponseNotificationRequestKey : request,
+            }];
+            if (error) userInfo[WPBasicApiClientResponseNotificationErrorKey] = error;
+            
+            [NSNotificationCenter.defaultCenter postNotificationName:WPBasicApiClientResponseNotification object:response userInfo:[NSDictionary dictionaryWithDictionary:userInfo]];
+        });
     }];
 }
 

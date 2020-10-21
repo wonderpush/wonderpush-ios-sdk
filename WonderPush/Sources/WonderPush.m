@@ -161,6 +161,21 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                 }
             });
         }];
+        
+        // Listen to measurements API client responses and look for _configVersion
+        [center addObserverForName:WPBasicApiClientResponseNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
+            id response = notification.object; // WPResponse
+            id result = [response object];
+            if ([result isKindOfClass:NSDictionary.class]) {
+                id configVersion = [result objectForKey:@"_configVersion"];
+                if ([configVersion isKindOfClass:NSString.class]) {
+                    [WonderPush.remoteConfigManager declareVersion:configVersion];
+                } else if ([configVersion isKindOfClass:NSNumber.class]) {
+                    [WonderPush.remoteConfigManager declareVersion:[configVersion stringValue]];
+                }
+            }
+
+        }];
     });
 }
 + (WPPresenceManager *)presenceManager {
