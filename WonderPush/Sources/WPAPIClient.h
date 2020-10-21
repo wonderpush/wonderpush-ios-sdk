@@ -43,8 +43,6 @@ FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
 - (void) fetchAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger)nbRetry forUserId:(NSString *)userId;
 
 
-- (BOOL) fetchAccessTokenIfNeededAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure forUserId:(NSString *)userId;
-
 /**
  Fetch an access token if the user isn't authenticated and none is found in the `NSUserDefaults`.
  */

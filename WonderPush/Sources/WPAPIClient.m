@@ -249,15 +249,6 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     return NO;
 }
 
-- (BOOL)fetchAccessTokenIfNeededAndCall:(void (^)(NSURLSessionTask *task, id responseObject))success failure:(void (^)(NSURLSessionTask *task, NSError *error))failure forUserId:(NSString *)userId
-{
-    if (![WPConfiguration sharedConfiguration].accessToken) {
-        [self fetchAccessTokenAndCall:success failure:failure nbRetry:0 forUserId:userId];
-        return YES;
-    }
-    return NO;
-}
-
 - (void) fetchAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger)nbRetry forUserId:(NSString *)userId
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
