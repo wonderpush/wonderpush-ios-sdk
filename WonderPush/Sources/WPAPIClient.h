@@ -44,12 +44,6 @@ FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
 
 
 /**
- Fetch an access token if the user isn't authenticated and none is found in the `NSUserDefaults`.
- */
-
-- (BOOL) fetchAccessTokenIfNeededForUserId:(NSString *)userId;
-
-/**
  Fetches an anonymous access token and runs the given request.
  @param request The request to run once the access token is fetched.
  */

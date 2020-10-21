@@ -240,15 +240,6 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 #pragma mark - Access Token
 
-- (BOOL)fetchAccessTokenIfNeededForUserId:(NSString *)userId
-{
-    if (![WPConfiguration sharedConfiguration].accessToken) {
-        [self fetchAccessTokenAndCall:nil failure:nil nbRetry:0 forUserId:userId];
-        return YES;
-    }
-    return NO;
-}
-
 - (void) fetchAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger)nbRetry forUserId:(NSString *)userId
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
