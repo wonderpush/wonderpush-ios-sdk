@@ -14,9 +14,7 @@
  limitations under the License.
  */
 
-#import <CoreGraphics/CGGeometry.h>
 #import <UIKit/UIKit.h>
-#import <UserNotifications/UserNotifications.h>
 #import "WPNSUtil.h"
 #import "WPUtil.h"
 #import "WPErrors.h"
