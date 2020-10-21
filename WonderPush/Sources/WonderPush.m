@@ -40,7 +40,10 @@
 #import "WPIAMMessageDefinition.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
-
+NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
+NSString * const WPSubscriptionStatusChangedNotificationPreviousStatusInfoKey = @"previousSubscriptionStatus";
+NSString * const WPSubscriptionStatusOptIn = @"optIn";
+NSString * const WPSubscriptionStatusOptOut = @"optOut";
 static BOOL _isInitialized = NO;
 static BOOL _isReachable = NO;
 
@@ -1951,6 +1954,19 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
 + (WPReportingData *)lastClickedNotificationReportingData {
     return lastClickedNotificationReportingData;
+}
+
++ (NSString *)subscriptionStatus {
+    WPJsonSyncInstallation *installation = [WPJsonSyncInstallation forCurrentUser];
+    NSString *subscriptionStatus = installation.sdkState[@"preferences"][@"subscriptionStatus"];
+    if (!subscriptionStatus) return nil;
+    if ([WPSubscriptionStatusOptIn isEqualToString:subscriptionStatus]) {
+        return WPSubscriptionStatusOptIn;
+    }
+    if ([WPSubscriptionStatusOptOut isEqualToString:subscriptionStatus]) {
+        return WPSubscriptionStatusOptOut;
+    }
+    return nil;
 }
 
 @end

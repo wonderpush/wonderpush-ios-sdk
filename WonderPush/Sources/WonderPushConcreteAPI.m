@@ -444,16 +444,26 @@
     [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL osNotificationsEnabled) {
         WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
         BOOL enabled = sharedConfiguration.notificationEnabled;
-        NSString *value = enabled && osNotificationsEnabled ? @"optIn" : @"optOut";
+        NSString *subscriptionStatus = enabled && osNotificationsEnabled ? WPSubscriptionStatusOptIn : WPSubscriptionStatusOptOut;
 
         sharedConfiguration.cachedOsNotificationEnabled = osNotificationsEnabled;
         sharedConfiguration.cachedOsNotificationEnabledDate = [NSDate date];
 
-        [[WPJsonSyncInstallation forCurrentUser] put:@{@"preferences": @{
-                                                               @"subscriptionStatus": value,
-                                                               @"subscribedToNotifications": enabled ? @YES : @NO,
-                                                               @"osNotificationsVisible": osNotificationsEnabled ? @YES : @NO,
-                                                               }}];
+        WPJsonSyncInstallation *installation = [WPJsonSyncInstallation forCurrentUser];
+        NSString *oldSubscriptionStatus = [WonderPush subscriptionStatus];
+        if (![subscriptionStatus isEqualToString:oldSubscriptionStatus]) {
+            [NSNotificationCenter.defaultCenter
+             postNotificationName:WPSubscriptionStatusChangedNotification
+             object:subscriptionStatus
+             userInfo:oldSubscriptionStatus ? @{
+                WPSubscriptionStatusChangedNotificationPreviousStatusInfoKey : oldSubscriptionStatus,
+            } : nil];
+        }
+        [installation put:@{@"preferences": @{
+                                    @"subscriptionStatus": subscriptionStatus,
+                                    @"subscribedToNotifications": enabled ? @YES : @NO,
+                                    @"osNotificationsVisible": osNotificationsEnabled ? @YES : @NO,
+        }}];
     }];
 }
 

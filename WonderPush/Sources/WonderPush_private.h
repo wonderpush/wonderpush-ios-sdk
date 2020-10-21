@@ -47,6 +47,27 @@ extern NSString * const WPEventFiredNotificationEventTypeKey;
 */
 extern NSString * const WPEventFiredNotificationEventDataKey;
 
+/**
+ * Name of the NSNotificationCenter notification fired when subscription status changes.
+ */
+extern NSString * const WPSubscriptionStatusChangedNotification;
+
+/**
+ Name of the NSNotificationCenter notification userInfo key that contains the previous subscription status if not nil
+ */
+
+extern NSString * const WPSubscriptionStatusChangedNotificationPreviousStatusInfoKey;
+
+/**
+ Opt-in subscription status
+ */
+extern NSString * const WPSubscriptionStatusOptIn;
+
+/**
+ Opt-out subscription status
+ */
+extern NSString * const WPSubscriptionStatusOptOut;
+
 @interface WonderPush (private)
 
 + (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData;
@@ -181,6 +202,7 @@ Called when receiving the full state of the installation
 
 + (WPReportingData *) lastClickedNotificationReportingData;
 
++ (NSString *) subscriptionStatus;
 @end
 
 
