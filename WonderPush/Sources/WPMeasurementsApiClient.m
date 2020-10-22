@@ -12,6 +12,8 @@
 #import "WPLog.h"
 #import "WPRequestVault.h"
 #import "WPNetworkReachabilityManager.h"
+#import "WonderPush_constants.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^CompletionHandler)(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error);
@@ -43,7 +45,11 @@ NS_ASSUME_NONNULL_END
     
     // Device platform
     [requestBodyString appendString:@"&devicePlatform=iOS"];
-    
+
+    // Add the sdk version
+    [requestBodyString appendFormat:@"&sdkVersion=%@",[SDK_VERSION stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet]];
+
+
     // Device ID
     if (self.deviceId && self.deviceId.length) {
         [requestBodyString appendFormat:@"&deviceId=%@", [self.deviceId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
