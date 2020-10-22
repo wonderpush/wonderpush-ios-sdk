@@ -126,7 +126,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         self.requestSerializer = [WPRequestSerializer new];
         self.URLSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
         self.hasBeenOptinDuringApplicationLifetime = [WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn] ? YES : NO;
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(subscriptionStatusChanged:) name:WPSubscriptionStatusChangedNotification object:nil];
+        if (!self.hasBeenOptinDuringApplicationLifetime) {
+            [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(subscriptionStatusChanged:) name:WPSubscriptionStatusChangedNotification object:nil];
+        }
     }
     return self;
 }
