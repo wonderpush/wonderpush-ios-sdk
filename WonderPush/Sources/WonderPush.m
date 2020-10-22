@@ -1320,7 +1320,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
         if (shouldInjectAppOpen) {
             // We will track a new app open event
-
             // Clear the lastClickedNotificationReportingData
             lastClickedNotificationReportingData = nil;
 
@@ -1349,6 +1348,16 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             }
             WPPresencePayload *presence = [[WonderPush presenceManager] presenceDidStart];
             if (presence) openInfo[@"presence"] = presence.toJSON;
+            
+            // When user is not optIn, the SDK API client is disabled.
+            // This @APP_OPEN will be sent at a later date or never, so we send an @VISIT right away and we tell the server not to synthetize @VISIT from this @APP_OPEN.
+            // If user is optIn, we do NOT send @VISIT at all and rely on the server's behavior of synthetizing this event from @APP_OPEN events.
+
+            if (![WPSubscriptionStatusOptIn isEqualToString:[self subscriptionStatus]]) {
+                [WonderPush trackInternalEventWithMeasurementsApi:@"@VISIT" eventData:[NSDictionary dictionaryWithDictionary:openInfo] customData:nil];
+                openInfo[@"doNotSynthetizeVisit"] = @YES;
+            }
+
             lastClickedNotificationReportingData = [[WPReportingData alloc] initWithDictionary:openInfo];
             [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil];
             conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
