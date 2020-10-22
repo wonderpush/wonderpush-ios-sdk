@@ -116,7 +116,6 @@ static const NSTimeInterval kMinValidImpressionTime = 3.0;
 }
 
 - (void)dealloc {
-    WPLogDebug(@"[FIDBaseRenderingViewController dealloc] triggered");
     [self.minImpressionTimer invalidate];
     [NSNotificationCenter.defaultCenter removeObserver:self];
 }
