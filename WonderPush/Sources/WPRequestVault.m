@@ -225,7 +225,16 @@
     WPLogDebug(@"in main of request operation");
     requestCopy.handler = ^(WPResponse *response, NSError *error) {
 
-        WPLogDebug(@"WPRequestVaultOperation complete with response:%@ error:%@", response, error);
+        // Error
+        if (error
+            && [error.domain isEqualToString:WPErrorDomain]
+            && error.code == WPErrorClientDisabled) {
+#if DEBUG
+        WPLogDebug(@"WPRequestVaultOperation error because client is disabled");
+#endif
+        } else {
+            WPLogDebug(@"WPRequestVaultOperation complete with response:%@ error:%@", response, error);
+        }
         if ([error isKindOfClass:[NSError class]]) {
             NSData *errorBody = error.userInfo[WPOperationFailingURLResponseDataErrorKey];
             if ([errorBody isKindOfClass:[NSData class]]) {

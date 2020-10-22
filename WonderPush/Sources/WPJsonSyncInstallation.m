@@ -3,6 +3,7 @@
 #import "WPConfiguration.h"
 #import "WonderPush_private.h"
 #import "WPLog.h"
+#import "WPErrors.h"
 #import "WPNSUtil.h"
 #import "WPRemoteConfig.h"
 
@@ -253,7 +254,16 @@ static BOOL patchCallDisabled = NO;
                                WPLogDebug(@"Succeded to send diff for user %@: %@", self->_userId, responseJson);
                                onSuccess();
                            } else {
-                               WPLogDebug(@"Failed to send diff for user %@: error %@, response %@", self->_userId, error, response);
+                               if ([error.domain isEqualToString:WPErrorDomain]
+                                   && error.code == WPErrorClientDisabled) {
+                                   // Hide this error on released SDKs (it's just for us).
+#if DEBUG
+                                   WPLogDebug(@"Failed to send diff for user %@ because client is disabled, response %@", self->_userId, response);
+#endif
+
+                               } else {
+                                   WPLogDebug(@"Failed to send diff for user %@: error %@, response %@", self->_userId, error, response);
+                               }
                                onFailure();
                            }
                        }];

@@ -349,7 +349,15 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
             
         } failure:^(NSURLSessionTask *task, NSError *error) {
             // Error
-            WPLogDebug(@"Could not fetch access token: %@", error);
+            if ([error.domain isEqualToString:WPErrorDomain]
+                && error.code == WPErrorClientDisabled) {
+#if DEBUG
+                // Hide this error on released SDKs (it's just for us).
+                WPLogDebug(@"Could not fetch access token because client is disabled");
+#endif
+            } else {
+                WPLogDebug(@"Could not fetch access token: %@", error);
+            }
             id jsonError = nil;
             NSData *errorBody = error.userInfo[WPOperationFailingURLResponseDataErrorKey];
             if ([errorBody isKindOfClass:[NSData class]]) {
