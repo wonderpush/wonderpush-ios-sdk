@@ -452,12 +452,14 @@
         WPJsonSyncInstallation *installation = [WPJsonSyncInstallation forCurrentUser];
         NSString *oldSubscriptionStatus = [WonderPush subscriptionStatus];
         if (![subscriptionStatus isEqualToString:oldSubscriptionStatus]) {
-            [NSNotificationCenter.defaultCenter
-             postNotificationName:WPSubscriptionStatusChangedNotification
-             object:subscriptionStatus
-             userInfo:oldSubscriptionStatus ? @{
-                WPSubscriptionStatusChangedNotificationPreviousStatusInfoKey : oldSubscriptionStatus,
-            } : nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [NSNotificationCenter.defaultCenter
+                 postNotificationName:WPSubscriptionStatusChangedNotification
+                 object:subscriptionStatus
+                 userInfo:oldSubscriptionStatus ? @{
+                    WPSubscriptionStatusChangedNotificationPreviousStatusInfoKey : oldSubscriptionStatus,
+                } : nil];
+            });
         }
         [installation put:@{@"preferences": @{
                                     @"subscriptionStatus": subscriptionStatus,
