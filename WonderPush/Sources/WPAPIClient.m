@@ -60,7 +60,6 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 @property (strong, nonatomic) WPRequestSerializer *requestSerializer;
 @property (strong, nonatomic) NSMutableArray *tokenFetchedHandlers;
 @property (strong, nonatomic) WPNetworkReachabilityManager *reachabilityManager;
-@property (readwrite) BOOL hasBeenOptinDuringApplicationLifetime;
 
 /**
  The designated initializer
@@ -125,22 +124,8 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         self.baseURL = url;
         self.requestSerializer = [WPRequestSerializer new];
         self.URLSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-        self.hasBeenOptinDuringApplicationLifetime = [WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn] ? YES : NO;
-        if (!self.hasBeenOptinDuringApplicationLifetime) {
-            [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(subscriptionStatusChanged:) name:WPSubscriptionStatusChangedNotification object:nil];
-        }
     }
     return self;
-}
-
-#pragma mark - NSNotificationCenter
-
-- (void) subscriptionStatusChanged:(NSNotification *)notification {
-    NSString *subscriptionStatus = notification.object;
-    if ([WPSubscriptionStatusOptIn isEqualToString:subscriptionStatus]) {
-        self.hasBeenOptinDuringApplicationLifetime = YES;
-        [NSNotificationCenter.defaultCenter removeObserver:self];
-    }
 }
 
 #pragma mark - WPRequestExecutor
@@ -181,10 +166,6 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 {
     if (self.disabled) {
         if (failureBlock) failureBlock(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorClientDisabled userInfo:@{NSLocalizedDescriptionKey: @"API calls disabled"}]);
-        return;
-    }
-    if (!self.hasBeenOptinDuringApplicationLifetime) {
-        if (failureBlock) failureBlock(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorClientDisabled userInfo:@{NSLocalizedDescriptionKey: @"Not opt-in"}]);
         return;
     }
     SuccessBlock callSuccessBlock = ^(NSURLSessionTask *task, id result) {
@@ -262,6 +243,15 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 - (void) fetchAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger)nbRetry forUserId:(NSString *)userId
 {
+    
+    // Refuse to get an access token for non-subscribers
+    if (![WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn]) {
+        if (failure) {
+            failure(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorClientDisabled userInfo:@{NSLocalizedDescriptionKey: @"Not opt-in"}]);
+        }
+        return;
+    }
+
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     NSString *clientId = configuration.clientId;
     NSString *deviceModel = [WPUtil deviceModel];
@@ -630,10 +620,5 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     if (name && value)
         [mutable setObject:value forKey:name];
     return [NSDictionary dictionaryWithDictionary:mutable];
-}
-
-- (void)dealloc
-{
-    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 @end
