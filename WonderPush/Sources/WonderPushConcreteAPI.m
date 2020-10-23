@@ -136,10 +136,10 @@
                                     @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
         }
 
-        WPReportingData *reportinData = WonderPush.lastClickedNotificationReportingData;
-        if (reportinData.campaignId && !params[@"campaignId"]) params[@"campaignId"] = reportinData.campaignId;
-        if (reportinData.notificationId && !params[@"notificationId"]) params[@"notificationId"] = reportinData.notificationId;
-        if (reportinData.viewId && !params[@"viewId"]) params[@"viewId"] = reportinData.viewId;
+        WPReportingData *reportingData = WonderPush.lastClickedNotificationReportingData;
+        if (reportingData.campaignId && !params[@"campaignId"]) params[@"campaignId"] = reportingData.campaignId;
+        if (reportingData.notificationId && !params[@"notificationId"]) params[@"notificationId"] = reportingData.notificationId;
+        if (reportingData.viewId && !params[@"viewId"]) params[@"viewId"] = reportingData.viewId;
 
         [WPConfiguration.sharedConfiguration rememberTrackedEvent:params];
 
