@@ -238,6 +238,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
 }
 
 + (WPRequest * _Nullable)reportNotificationReceivedWithId:(NSString *)notificationId campaignId:(NSString *)campaignId completion:(void(^ _Nullable)(NSError * _Nullable))completion {
+    if (!campaignId || !notificationId) return nil;
     WPRequest *request = [WPRequest new];
     request.resource = @"events";
     request.method = @"POST";
