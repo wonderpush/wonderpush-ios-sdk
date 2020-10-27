@@ -25,17 +25,20 @@
 
 @interface WonderPushConcreteAPI ()
 @property (nonatomic, strong, nullable) WPBlackWhiteList *eventsBlackWhiteList;
+@property (nonatomic, strong, nonnull) NSMutableArray <void(^)(void)> *optInHandlers;
 @end
 
 @implementation WonderPushConcreteAPI
 - (instancetype)init {
     self = [super init];
     if (self) {
+        self.optInHandlers = [NSMutableArray new];
         self.locationManager = [CLLocationManager new];
         [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
             [self updateBlackWhiteList:config];
         }];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(remoteConfigUpdated:) name:WPRemoteConfigUpdatedNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(subscriptionStatusChanged:) name:WPSubscriptionStatusChangedNotification object:nil];
     }
     return self;
 }
@@ -51,6 +54,18 @@
         self.eventsBlackWhiteList = [[WPBlackWhiteList alloc] initWithRules:[config.data objectForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY]];
     } else {
         self.eventsBlackWhiteList = nil;
+    }
+}
+
+- (void)subscriptionStatusChanged:(NSNotification *)note {
+    NSString *subscriptionStatus = note.object;
+    if ([subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn]) {
+        @synchronized (self) {
+            for (void(^optinHandler)(void) in self.optInHandlers) {
+                optinHandler();
+            }
+            [self.optInHandlers removeAllObjects];
+        }
     }
 }
 
@@ -90,23 +105,86 @@
     [self trackEvent:type eventData:data customData:customData];
 }
 
-- (void) trackInternalEventWithMeasurementsApi:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+- (void) countInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
     if ([type characterAtIndex:0] != '@') {
         @throw [NSException exceptionWithName:@"illegal argument"
                                        reason:@"This method must only be called for internal events, starting with an '@'"
                                      userInfo:nil];
     }
+    [self countEvent:type eventData:data customData:customData];
+}
+
+- (void) countEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+{
+    if (![type isKindOfClass:[NSString class]]) return;
+    if (self.eventsBlackWhiteList && ![self.eventsBlackWhiteList allow:type]) {
+        WPLogDebug(@"Event of type %@ forbidden by configuration", type);
+        return;
+    }
     
-    [self trackEvent:type eventData:data customData:customData useMeasurementsApi:YES];
+    // Installations that have both an accessToken and the overrideNotificationReceipt are not just counted, they are tracked.
+    if (WPConfiguration.sharedConfiguration.accessToken
+        && WPConfiguration.sharedConfiguration.overrideNotificationReceipt) {
+        [self trackEvent:type eventData:data customData:customData];
+        return;
+    }
+    
+    NSDictionary *params = [self paramsForEvent:type eventData:data customData:customData];
+    if (!params) return;
+    NSDictionary *body = params[@"body"];
+    if (!body) return;
+
+    // Store locally
+    [WPConfiguration.sharedConfiguration rememberTrackedEvent:body];
+    
+    // Notify locally
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:WPEventFiredNotification object:nil userInfo:@{
+            WPEventFiredNotificationEventTypeKey : type,
+            WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:body],
+        }];
+    });
+
+    NSString *eventEndPoint = @"/events";
+    WPRequest *request = [WPRequest new];
+    request.method = @"POST";
+    request.params = params;
+    request.userId = WPConfiguration.sharedConfiguration.userId;
+    request.resource = eventEndPoint;
+    [WonderPush requestEventuallyWithMeasurementsApi:request];
+}
+
+- (NSDictionary *)paramsForEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData {
+    long long date = [WPUtil getServerDate];
+    NSMutableDictionary *body = [[NSMutableDictionary alloc]
+                                   initWithDictionary:@{@"type": type,
+                                                        @"actionDate": [NSNumber numberWithLongLong:date]}];
+    
+    if ([data isKindOfClass:[NSDictionary class]]) {
+        for (NSString *key in data) {
+            [body setValue:[data objectForKey:key] forKey:key];
+        }
+    }
+    
+    if ([customData isKindOfClass:[NSDictionary class]]) {
+        [body setValue:customData forKey:@"custom"];
+    }
+    
+    CLLocation *location = [WonderPush location];
+    if (location != nil) {
+        body[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
+                                @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
+    }
+
+    WPReportingData *reportingData = WonderPush.lastClickedNotificationReportingData;
+    if (reportingData.campaignId && !body[@"campaignId"]) body[@"campaignId"] = reportingData.campaignId;
+    if (reportingData.notificationId && !body[@"notificationId"]) body[@"notificationId"] = reportingData.notificationId;
+    if (reportingData.viewId && !body[@"viewId"]) body[@"viewId"] = reportingData.viewId;
+    return @{@"body":body};
 }
 
 - (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData {
-    return [self trackEvent:type eventData:data customData:customData useMeasurementsApi:NO];
-}
-
-- (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData useMeasurementsApi:(BOOL)useMeasurementsApi
-{
     
     if (![type isKindOfClass:[NSString class]]) return;
     if (self.eventsBlackWhiteList && ![self.eventsBlackWhiteList allow:type]) {
@@ -115,49 +193,34 @@
     }
     @synchronized (self) {
         NSString *eventEndPoint = @"/events";
-        long long date = [WPUtil getServerDate];
-        NSMutableDictionary *params = [[NSMutableDictionary alloc]
-                                       initWithDictionary:@{@"type": type,
-                                                            @"actionDate": [NSNumber numberWithLongLong:date]}];
+        NSDictionary *params = [self paramsForEvent:type eventData:data customData:customData];
+        if (!params) return;
+        NSDictionary *body  = params[@"body"];
+        if (!body) return;
         
-        if ([data isKindOfClass:[NSDictionary class]]) {
-            for (NSString *key in data) {
-                [params setValue:[data objectForKey:key] forKey:key];
-            }
-        }
-        
-        if ([customData isKindOfClass:[NSDictionary class]]) {
-            [params setValue:customData forKey:@"custom"];
-        }
-        
-        CLLocation *location = [WonderPush location];
-        if (location != nil) {
-            params[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
-                                    @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
-        }
+        // Store locally
+        [WPConfiguration.sharedConfiguration rememberTrackedEvent:body];
 
-        WPReportingData *reportingData = WonderPush.lastClickedNotificationReportingData;
-        if (reportingData.campaignId && !params[@"campaignId"]) params[@"campaignId"] = reportingData.campaignId;
-        if (reportingData.notificationId && !params[@"notificationId"]) params[@"notificationId"] = reportingData.notificationId;
-        if (reportingData.viewId && !params[@"viewId"]) params[@"viewId"] = reportingData.viewId;
-
-        [WPConfiguration.sharedConfiguration rememberTrackedEvent:params];
-
+        // Notify locally
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:WPEventFiredNotification object:nil userInfo:@{
                 WPEventFiredNotificationEventTypeKey : type,
-                WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:params],
+                WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:body],
             }];
         });
-        if (useMeasurementsApi) {
-            WPRequest *request = [WPRequest new];
-            request.method = @"POST";
-            request.params = @{@"body": params};
-            request.userId = WPConfiguration.sharedConfiguration.userId;
-            request.resource = eventEndPoint;
-            [WonderPush requestEventuallyWithMeasurementsApi:request];
-        } else {
-            [WonderPush postEventually:eventEndPoint params:@{@"body":params}];
+
+        BOOL isSubscribed = [WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn];
+        if (isSubscribed) {
+            // Save in request vault
+            [WonderPush postEventually:eventEndPoint params:params];
+            return;
+        }
+        
+        @synchronized (self) {
+            // Save later in the request vault, if user becomes optIn before the app gets killed
+            [self.optInHandlers addObject:^{
+                [WonderPush postEventually:eventEndPoint params:params];
+            }];
         }
     }
 }

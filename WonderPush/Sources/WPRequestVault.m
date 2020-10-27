@@ -168,7 +168,7 @@
 
 - (void) addToQueue:(WPRequest *)request delay:(NSTimeInterval)delay
 {
-    WPLogDebug(@"Adding request to queue: %@ with delay: %f", request, delay);
+    WPLogDebug(@"Adding request to queue: %@ with delay: %f client: %@", request, delay, self.requestExecutor);
     void(^addToQueue)(void) = ^{
         WPRequestVaultOperation *operation = [[WPRequestVaultOperation alloc] initWithRequest:request vault:self];
         [self.operationQueue addOperation:operation];
@@ -222,7 +222,6 @@
 - (void) main
 {
     WPRequest *requestCopy = [self.request copy];
-    WPLogDebug(@"in main of request operation");
     requestCopy.handler = ^(WPResponse *response, NSError *error) {
 
         // Error

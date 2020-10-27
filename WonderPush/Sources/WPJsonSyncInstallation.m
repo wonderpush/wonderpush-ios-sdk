@@ -258,7 +258,7 @@ static BOOL patchCallDisabled = NO;
                                    && error.code == WPErrorClientDisabled) {
                                    // Hide this error on released SDKs (it's just for us).
 #if DEBUG
-                                   WPLogDebug(@"Failed to send diff for user %@ because client is disabled, response %@", self->_userId, response);
+                                   WPLogDebug(@"Failed to send diff for user %@ because client is disabled: %@", self->_userId, error.localizedDescription);
 #endif
 
                                } else {

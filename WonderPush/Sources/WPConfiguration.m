@@ -905,6 +905,7 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 - (void)rememberTrackedEvent:(NSDictionary *)eventParams {
+    if (!eventParams) return;
     NSString *type = eventParams[@"type"];
     if (!type) return;
 

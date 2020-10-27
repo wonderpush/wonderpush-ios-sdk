@@ -108,7 +108,11 @@
             buttonLabel = [inAppMessage performSelector:@selector(secondaryAction)] == (id)action ? @"secondary" : nil;
         }
         if (buttonLabel) eventData[@"buttonLabel"] = buttonLabel;
-        [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        if ([[WonderPush subscriptionStatus] isEqualToString:WPSubscriptionStatusOptIn]) {
+            [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        } else {
+            [WonderPush countInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        }
     }
     [WonderPush executeAction:action withReportingData:_currentMsgBeingDisplayed.renderData.reportingData];
 

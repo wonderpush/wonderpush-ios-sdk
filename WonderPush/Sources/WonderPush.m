@@ -463,9 +463,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [wonderPushAPI trackInternalEvent:type eventData:data customData:customData];
 }
 
-+ (void) trackInternalEventWithMeasurementsApi:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
++ (void) countInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
-    [wonderPushAPI trackInternalEventWithMeasurementsApi:type eventData:data customData:customData];
+    [wonderPushAPI countInternalEvent:type eventData:data customData:customData];
 }
 
 + (void) refreshDeviceTokenIfPossible
@@ -1354,7 +1354,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             // If user is optIn, we do NOT send @VISIT at all and rely on the server's behavior of synthesizing this event from @APP_OPEN events.
 
             if (![WPSubscriptionStatusOptIn isEqualToString:[self subscriptionStatus]]) {
-                [WonderPush trackInternalEventWithMeasurementsApi:@"@VISIT" eventData:[NSDictionary dictionaryWithDictionary:openInfo] customData:nil];
+                [WonderPush countInternalEvent:@"@VISIT" eventData:[NSDictionary dictionaryWithDictionary:openInfo] customData:nil];
                 openInfo[@"doNotSynthesizeVisit"] = @YES;
             }
 

@@ -160,12 +160,9 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         [eventData addEntriesFromDictionary:reportingData.dictValue];
         eventData[@"actionDate"] = [NSNumber numberWithLong:(long)(timestamp * 1000)];
         
-        WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-        if (configuration.overrideNotificationReceipt.boolValue && configuration.accessToken) {
-            [WonderPush trackInternalEvent:@"@INAPP_VIEWED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
-        } else {
-            [WonderPush trackInternalEventWithMeasurementsApi:@"@INAPP_VIEWED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
-        }
+        [WonderPush countInternalEvent:@"@INAPP_VIEWED"
+                             eventData:[NSDictionary dictionaryWithDictionary:eventData]
+                            customData:nil];
     }
 }
 

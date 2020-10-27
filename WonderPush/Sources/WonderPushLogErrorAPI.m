@@ -104,9 +104,9 @@
     [self log:@"trackInternalEvent:eventData:customData:"];
 }
 
-- (void) trackInternalEventWithMeasurementsApi:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+- (void) countInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
-    [self log:@"trackInternalEventWithMeasurementsApi:eventData:customData:"];
+    [self log:@"countInternalEvent:eventData:customData:"];
 }
 
 - (void)updateInstallationCoreProperties
