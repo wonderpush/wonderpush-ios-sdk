@@ -208,20 +208,23 @@
                 WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:body],
             }];
         });
-
-        BOOL isSubscribed = [WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn];
-        if (isSubscribed) {
-            // Save in request vault
-            [WonderPush postEventually:eventEndPoint params:params];
-            return;
-        }
         
-        @synchronized (self) {
-            // Save later in the request vault, if user becomes optIn before the app gets killed
-            [self.optInHandlers addObject:^{
+        [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+            BOOL isSubscribed = [WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn];
+            if (isSubscribed
+                || [config.data[WP_REMOTE_CONFIG_TRACK_EVENTS_FOR_NON_SUBSCRIBERS] boolValue]) {
+                // Save in request vault
                 [WonderPush postEventually:eventEndPoint params:params];
-            }];
-        }
+                return;
+            }
+            
+            @synchronized (self) {
+                // Save later in the request vault, if user becomes optIn before the app gets killed
+                [self.optInHandlers addObject:^{
+                    [WonderPush postEventually:eventEndPoint params:params];
+                }];
+            }
+        }];
     }
 }
 

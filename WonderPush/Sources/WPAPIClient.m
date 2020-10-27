@@ -244,161 +244,165 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 - (void) fetchAccessTokenAndCall:(void (^)(NSURLSessionTask *task, id responseObject))handler failure:(void (^)(NSURLSessionTask *task, NSError *error))failure nbRetry:(NSInteger)nbRetry forUserId:(NSString *)userId
 {
     
-    // Refuse to get an access token for non-subscribers
-    if (![WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn]) {
-        if (failure) {
-            failure(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorClientDisabled userInfo:@{NSLocalizedDescriptionKey: @"Not opt-in"}]);
-        }
-        return;
-    }
+    [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
 
-    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    NSString *clientId = configuration.clientId;
-    NSString *deviceModel = [WPUtil deviceModel];
-    NSString *deviceId = [WPUtil deviceIdentifier];
+        // Refuse to get an access token for non-subscribers
+        if (![WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn]
+            && ![config.data[WP_REMOTE_CONFIG_ALLOW_ACCESS_TOKEN_FOR_NON_SUBSCRIBERS] boolValue]) {
+            if (failure) {
+                failure(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorClientDisabled userInfo:@{NSLocalizedDescriptionKey: @"Not opt-in"}]);
+            }
+            return;
+        }
 
-    if (!clientId || !deviceId || YES == self.isFetchingAccessToken) {
-        HandlerPair *pair = [[HandlerPair alloc] init];
-        pair.success = handler;
-        pair.error = failure;
-        @synchronized(self.tokenFetchedHandlers) {
-            [self.tokenFetchedHandlers addObject:pair];
+        WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+        NSString *clientId = configuration.clientId;
+        NSString *deviceModel = [WPUtil deviceModel];
+        NSString *deviceId = [WPUtil deviceIdentifier];
+
+        if (!clientId || !deviceId || YES == self.isFetchingAccessToken) {
+            HandlerPair *pair = [[HandlerPair alloc] init];
+            pair.success = handler;
+            pair.error = failure;
+            @synchronized(self.tokenFetchedHandlers) {
+                [self.tokenFetchedHandlers addObject:pair];
+            }
+            return;
         }
-        return;
-    }
-    self.isFetchingAccessToken = YES;
-    [WonderPush safeDeferWithConsent:^{
-        NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:@{@"clientId":        clientId,
-                                                                                        @"devicePlatform":  @"iOS",
-                                                                                        @"deviceModel":     deviceModel ?: [NSNull null],
-                                                                                        @"deviceId":        deviceId}];
-        if (userId != nil) {
-            [params setValue:userId forKeyPath:@"userId"];
-        }
-        
-        NSString *resource = @"authentication/accessToken";
-        
-        WPLogDebug(@"Fetching access token");
-        WPLogDebug(@"POST %@ with params %@", resource, params);
-        
-        __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"WP-FetchAccessToken" expirationHandler:^{
-            // Avoid being killed by saying we are done
-            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-        }];
-        
-        [self POST:resource parameters:params success:^(NSURLSessionTask *task, id response) {
-            // Success
-            WPLogDebug(@"Got access token response: %@", response);
+        self.isFetchingAccessToken = YES;
+        [WonderPush safeDeferWithConsent:^{
+            NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:@{@"clientId":        clientId,
+                                                                                            @"devicePlatform":  @"iOS",
+                                                                                            @"deviceModel":     deviceModel ?: [NSNull null],
+                                                                                            @"deviceId":        deviceId}];
+            if (userId != nil) {
+                [params setValue:userId forKeyPath:@"userId"];
+            }
             
-            NSDictionary *responseJson = (NSDictionary *)response;
-            NSString *accessToken = [WPNSUtil stringForKey:@"token" inDictionary:responseJson];
-            NSDictionary *data = [WPNSUtil dictionaryForKey:@"data" inDictionary:responseJson];
-            NSString *sid = data ? [WPNSUtil stringForKey:@"sid" inDictionary:data] : nil;
+            NSString *resource = @"authentication/accessToken";
             
-            // Do we have an accessToken and an SID ?
-            if (sid && accessToken && sid.length && accessToken.length) {
-                WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-                NSString *prevUserId = configuration.userId;
-                [configuration changeUserId:userId];
-                configuration.accessToken = accessToken;
-                configuration.sid = sid;
-                configuration.installationId = [WPNSUtil stringForKey:@"installationId" inDictionary:data];
+            WPLogDebug(@"Fetching access token");
+            WPLogDebug(@"POST %@ with params %@", resource, params);
+            
+            __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"WP-FetchAccessToken" expirationHandler:^{
+                // Avoid being killed by saying we are done
+                [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            }];
+            
+            [self POST:resource parameters:params success:^(NSURLSessionTask *task, id response) {
+                // Success
+                WPLogDebug(@"Got access token response: %@", response);
                 
-                NSDictionary *installation = [WPNSUtil dictionaryForKey:@"_installation" inDictionary:responseJson];
-                if (installation) {
-                    NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:[[WPNSUtil numberForKey:@"updateDate" inDictionary:installation] longValue] / 1000. ];
-                    [WonderPush receivedFullInstallationFromServer:installation updateDate:installationUpdateDate];
-                }
+                NSDictionary *responseJson = (NSDictionary *)response;
+                NSString *accessToken = [WPNSUtil stringForKey:@"token" inDictionary:responseJson];
+                NSDictionary *data = [WPNSUtil dictionaryForKey:@"data" inDictionary:responseJson];
+                NSString *sid = data ? [WPNSUtil stringForKey:@"sid" inDictionary:data] : nil;
                 
-                [configuration changeUserId:prevUserId];
-                
-                self.isFetchingAccessToken = NO;
-                NSDictionary *userInfo = @{WP_NOTIFICATION_USER_LOGED_IN_SID_KEY: sid,
-                                           WP_NOTIFICATION_USER_LOGED_IN_ACCESS_TOKEN_KEY:accessToken};
-                
-                [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_USER_LOGED_IN
-                                                                    object:self
-                                                                  userInfo:userInfo];
-                
-                [WonderPush refreshPreferencesAndConfiguration];
-                
-                if (nil != handler) {
-                    handler(task, response);
-                }
-                @synchronized(self.tokenFetchedHandlers) {
-                    NSArray *handlers = [NSArray arrayWithArray:self.tokenFetchedHandlers];
-                    for (HandlerPair *pair in handlers) {
-                        if (nil != pair.success)
-                            pair.success(task, response);
+                // Do we have an accessToken and an SID ?
+                if (sid && accessToken && sid.length && accessToken.length) {
+                    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+                    NSString *prevUserId = configuration.userId;
+                    [configuration changeUserId:userId];
+                    configuration.accessToken = accessToken;
+                    configuration.sid = sid;
+                    configuration.installationId = [WPNSUtil stringForKey:@"installationId" inDictionary:data];
+                    
+                    NSDictionary *installation = [WPNSUtil dictionaryForKey:@"_installation" inDictionary:responseJson];
+                    if (installation) {
+                        NSDate *installationUpdateDate = [[NSDate alloc] initWithTimeIntervalSince1970:[[WPNSUtil numberForKey:@"updateDate" inDictionary:installation] longValue] / 1000. ];
+                        [WonderPush receivedFullInstallationFromServer:installation updateDate:installationUpdateDate];
                     }
-                    [self.tokenFetchedHandlers removeAllObjects];
+                    
+                    [configuration changeUserId:prevUserId];
+                    
+                    self.isFetchingAccessToken = NO;
+                    NSDictionary *userInfo = @{WP_NOTIFICATION_USER_LOGED_IN_SID_KEY: sid,
+                                               WP_NOTIFICATION_USER_LOGED_IN_ACCESS_TOKEN_KEY:accessToken};
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_USER_LOGED_IN
+                                                                        object:self
+                                                                      userInfo:userInfo];
+                    
+                    [WonderPush refreshPreferencesAndConfiguration];
+                    
+                    if (nil != handler) {
+                        handler(task, response);
+                    }
+                    @synchronized(self.tokenFetchedHandlers) {
+                        NSArray *handlers = [NSArray arrayWithArray:self.tokenFetchedHandlers];
+                        for (HandlerPair *pair in handlers) {
+                            if (nil != pair.success)
+                                pair.success(task, response);
+                        }
+                        [self.tokenFetchedHandlers removeAllObjects];
+                    }
+                } else {
+                    WPLog(@"Malformed access token response: %@", response);
                 }
-            } else {
-                WPLog(@"Malformed access token response: %@", response);
-            }
-            
-            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-            
-        } failure:^(NSURLSessionTask *task, NSError *error) {
-            // Error
-            if ([error.domain isEqualToString:WPErrorDomain]
-                && error.code == WPErrorClientDisabled) {
-#if DEBUG
-                // Hide this error on released SDKs (it's just for us).
-                WPLogDebug(@"Could not fetch access token because client is disabled");
-#endif
-            } else {
-                WPLogDebug(@"Could not fetch access token: %@", error);
-            }
-            id jsonError = nil;
-            NSData *errorBody = error.userInfo[WPOperationFailingURLResponseDataErrorKey];
-            if ([errorBody isKindOfClass:[NSData class]]) {
-                WPLogDebug(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
-                NSError *decodeError = nil;
-                jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
-                if (decodeError) WPLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
-            }
-            
-            BOOL abort = NO;
-            NSError *wpError = [WPUtil errorFromJSON:jsonError];
-            if (wpError) {
-                // Handle invalid credentials
-                if (wpError.code == WPErrorInvalidCredentials) {
-                    WPLogDebug(@"Invalid client credentials: %@", jsonError);
-                    WPLog(@"Please check your WonderPush clientId and clientSecret!");
+                
+                [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+                
+            } failure:^(NSURLSessionTask *task, NSError *error) {
+                // Error
+                if ([error.domain isEqualToString:WPErrorDomain]
+                    && error.code == WPErrorClientDisabled) {
+    #if DEBUG
+                    // Hide this error on released SDKs (it's just for us).
+                    WPLogDebug(@"Could not fetch access token because client is disabled");
+    #endif
+                } else {
+                    WPLogDebug(@"Could not fetch access token: %@", error);
+                }
+                id jsonError = nil;
+                NSData *errorBody = error.userInfo[WPOperationFailingURLResponseDataErrorKey];
+                if ([errorBody isKindOfClass:[NSData class]]) {
+                    WPLogDebug(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+                    NSError *decodeError = nil;
+                    jsonError = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
+                    if (decodeError) WPLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
+                }
+                
+                BOOL abort = NO;
+                NSError *wpError = [WPUtil errorFromJSON:jsonError];
+                if (wpError) {
+                    // Handle invalid credentials
+                    if (wpError.code == WPErrorInvalidCredentials) {
+                        WPLogDebug(@"Invalid client credentials: %@", jsonError);
+                        WPLog(@"Please check your WonderPush clientId and clientSecret!");
+                        abort = YES;
+                    }
+                }
+                
+                if (abort || nbRetry <= 0) {
+                    self.isFetchingAccessToken = NO;
+                    if (failure) {
+                        failure(task, error);
+                    }
+                    @synchronized(self.tokenFetchedHandlers) {
+                        NSArray *handlers = [NSArray arrayWithArray:self.tokenFetchedHandlers];
+                        for (HandlerPair *pair in handlers) {
+                            if (nil != pair.error)
+                                pair.error(task, error);
+                        }
+                        [self.tokenFetchedHandlers removeAllObjects];
+                    }
                     abort = YES;
                 }
-            }
-            
-            if (abort || nbRetry <= 0) {
-                self.isFetchingAccessToken = NO;
-                if (failure) {
-                    failure(task, error);
+                
+                [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+                
+                if (abort) {
+                    return;
                 }
-                @synchronized(self.tokenFetchedHandlers) {
-                    NSArray *handlers = [NSArray arrayWithArray:self.tokenFetchedHandlers];
-                    for (HandlerPair *pair in handlers) {
-                        if (nil != pair.error)
-                            pair.error(task, error);
-                    }
-                    [self.tokenFetchedHandlers removeAllObjects];
-                }
-                abort = YES;
-            }
-            
-            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-            
-            if (abort) {
-                return;
-            }
-            
-            // Retry later
-            double delayInSeconds = RETRY_INTERVAL;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                self.isFetchingAccessToken = NO;
-                [self fetchAccessTokenAndCall:handler failure:failure nbRetry:nbRetry - 1 forUserId:userId];
-            });
+                
+                // Retry later
+                double delayInSeconds = RETRY_INTERVAL;
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                    self.isFetchingAccessToken = NO;
+                    [self fetchAccessTokenAndCall:handler failure:failure nbRetry:nbRetry - 1 forUserId:userId];
+                });
+            }];
         }];
     }];
 }
