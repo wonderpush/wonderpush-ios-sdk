@@ -247,7 +247,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
 
         // Refuse to get an access token for non-subscribers
-        if (![WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn]
+        if (![WonderPush subscriptionStatusIsOptIn]
             && ![config.data[WP_REMOTE_CONFIG_ALLOW_ACCESS_TOKEN_FOR_NON_SUBSCRIBERS] boolValue]) {
             if (failure) {
                 failure(nil, [NSError errorWithDomain:WPErrorDomain code:WPErrorClientDisabled userInfo:@{NSLocalizedDescriptionKey: @"Not opt-in"}]);

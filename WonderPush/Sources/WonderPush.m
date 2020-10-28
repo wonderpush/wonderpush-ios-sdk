@@ -1353,7 +1353,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             // This @APP_OPEN will be sent at a later date or never, so we send an @VISIT right away and we tell the server not to synthesize @VISIT from this @APP_OPEN.
             // If user is optIn, we do NOT send @VISIT at all and rely on the server's behavior of synthesizing this event from @APP_OPEN events.
 
-            if (![WPSubscriptionStatusOptIn isEqualToString:[self subscriptionStatus]]) {
+            if (![self subscriptionStatusIsOptIn]) {
                 [WonderPush countInternalEvent:@"@VISIT" eventData:[NSDictionary dictionaryWithDictionary:openInfo] customData:nil];
                 openInfo[@"doNotSynthesizeVisit"] = @YES;
             }
@@ -1976,6 +1976,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         return WPSubscriptionStatusOptOut;
     }
     return nil;
+}
+
++ (BOOL) subscriptionStatusIsOptIn {
+    return [[self subscriptionStatus] isEqualToString:WPSubscriptionStatusOptIn];
 }
 
 @end

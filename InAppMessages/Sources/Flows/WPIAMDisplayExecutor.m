@@ -107,7 +107,7 @@
             buttonLabel = [inAppMessage performSelector:@selector(secondaryAction)] == (id)action ? @"secondary" : nil;
         }
         if (buttonLabel) eventData[@"buttonLabel"] = buttonLabel;
-        if ([[WonderPush subscriptionStatus] isEqualToString:WPSubscriptionStatusOptIn]) {
+        if ([WonderPush subscriptionStatusIsOptIn]) {
             [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
         } else {
             [WonderPush countInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];

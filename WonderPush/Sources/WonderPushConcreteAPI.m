@@ -210,7 +210,7 @@
         });
         
         [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
-            BOOL isSubscribed = [WonderPush.subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn];
+            BOOL isSubscribed = [WonderPush subscriptionStatusIsOptIn];
             if (isSubscribed
                 || [config.data[WP_REMOTE_CONFIG_TRACK_EVENTS_FOR_NON_SUBSCRIBERS] boolValue]) {
                 // Save in request vault

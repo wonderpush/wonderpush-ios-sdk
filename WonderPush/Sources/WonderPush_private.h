@@ -203,6 +203,7 @@ Called when receiving the full state of the installation
 + (WPReportingData *) lastClickedNotificationReportingData;
 
 + (NSString *) subscriptionStatus;
++ (BOOL) subscriptionStatusIsOptIn;
 @end
 
 
