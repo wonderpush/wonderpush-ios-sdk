@@ -25,20 +25,17 @@
 
 @interface WonderPushConcreteAPI ()
 @property (nonatomic, strong, nullable) WPBlackWhiteList *eventsBlackWhiteList;
-@property (nonatomic, strong, nonnull) NSMutableArray <void(^)(void)> *optInHandlers;
 @end
 
 @implementation WonderPushConcreteAPI
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.optInHandlers = [NSMutableArray new];
         self.locationManager = [CLLocationManager new];
         [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
             [self updateBlackWhiteList:config];
         }];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(remoteConfigUpdated:) name:WPRemoteConfigUpdatedNotification object:nil];
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(subscriptionStatusChanged:) name:WPSubscriptionStatusChangedNotification object:nil];
     }
     return self;
 }
@@ -54,18 +51,6 @@
         self.eventsBlackWhiteList = [[WPBlackWhiteList alloc] initWithRules:[config.data objectForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY]];
     } else {
         self.eventsBlackWhiteList = nil;
-    }
-}
-
-- (void)subscriptionStatusChanged:(NSNotification *)note {
-    NSString *subscriptionStatus = note.object;
-    if ([subscriptionStatus isEqualToString:WPSubscriptionStatusOptIn]) {
-        @synchronized (self) {
-            for (void(^optinHandler)(void) in self.optInHandlers) {
-                optinHandler();
-            }
-            [self.optInHandlers removeAllObjects];
-        }
     }
 }
 
@@ -217,17 +202,12 @@
         });
         
         [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
-            BOOL isSubscribed = [WonderPush subscriptionStatusIsOptIn];
-            if (isSubscribed
-                || [config.data[WP_REMOTE_CONFIG_TRACK_EVENTS_FOR_NON_SUBSCRIBERS] boolValue]) {
+            if ([config.data[WP_REMOTE_CONFIG_TRACK_EVENTS_FOR_NON_SUBSCRIBERS] boolValue]) {
                 // Save in request vault
                 [WonderPush postEventually:eventEndPoint params:params];
-                return;
-            }
-            
-            @synchronized (self) {
-                // Save later in the request vault, if user becomes optIn before the app gets killed
-                [self.optInHandlers addObject:^{
+                if (sentCallback) sentCallback();
+            } else {
+                [WonderPush safeDeferWithSubscription:^{
                     [WonderPush postEventually:eventEndPoint params:params];
                     if (sentCallback) sentCallback();
                 }];
