@@ -79,6 +79,7 @@ static BOOL _requiresUserConsent = NO;
 static id<WonderPushAPI> wonderPushAPI = nil;
 static NSMutableDictionary *safeDeferWithConsentIdToBlock = nil;
 static NSMutableOrderedSet *safeDeferWithConsentIdentifiers = nil;
+static NSMutableArray *safeDeferWithSubscriptionBlocks = nil;
 static BOOL _locationOverridden = NO;
 static CLLocation *_locationOverride = nil;
 static UIStoryboard *storyboard = nil;
@@ -91,6 +92,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        safeDeferWithSubscriptionBlocks = [NSMutableArray new];
         NSBundle *resourceBundle = [self resourceBundle];
         if (!resourceBundle) {
             WPLog(@"Couldn't find WonderPush.bundle. Please follow the installation instructions at https://docs.wonderpush.com/docs/ios-quickstart.");
@@ -116,6 +118,17 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                     [safeDeferWithConsentIdentifiers removeAllObjects];
                     [safeDeferWithConsentIdToBlock removeAllObjects];
                 }
+            }
+        }];
+        [NSNotificationCenter.defaultCenter addObserverForName:WPSubscriptionStatusChangedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
+            @synchronized (safeDeferWithSubscriptionBlocks) {
+                if (![notification.object isEqualToString:WPSubscriptionStatusOptIn]) {
+                    return;
+                }
+                for (void(^block)(void) in safeDeferWithSubscriptionBlocks) {
+                    dispatch_async(dispatch_get_main_queue(), block);
+                }
+                [safeDeferWithSubscriptionBlocks removeAllObjects];
             }
         }];
         NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;
@@ -273,6 +286,20 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
     });
 }
+
++ (void) safeDeferWithSubscription:(void (^)(void))block
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self subscriptionStatusIsOptIn]) {
+            block();
+        } else {
+            @synchronized(safeDeferWithSubscriptionBlocks) {
+                [safeDeferWithSubscriptionBlocks addObject:block];
+            }
+        }
+    });
+}
+
 + (void) setLogging:(BOOL)enable
 {
     NSNumber *overrideSetLogging = [WPConfiguration sharedConfiguration].overrideSetLogging;

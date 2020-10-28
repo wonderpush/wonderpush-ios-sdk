@@ -193,6 +193,7 @@ Called when receiving the full state of the installation
 + (CLLocation *) location;
 
 + (void) safeDeferWithConsent:(void(^)(void))block;
++ (void) safeDeferWithSubscription:(void(^)(void))block;
 
 + (WPRemoteConfigManager *) remoteConfigManager;
 
