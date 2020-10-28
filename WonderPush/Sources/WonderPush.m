@@ -485,6 +485,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     return [WP_PUSH_NOTIFICATION_DATA isEqualToString:[WPNSUtil stringForKey:WP_PUSH_NOTIFICATION_TYPE_KEY inDictionary:([WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo] ?: @{})]];
 }
 
++ (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void (^)(void))sentCallback {
+    [wonderPushAPI trackInternalEvent:type eventData:data customData:customData sentCallback:sentCallback];
+}
+
 + (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
     [wonderPushAPI trackInternalEvent:type eventData:data customData:customData];

@@ -94,15 +94,18 @@
     });
 }
 
-- (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
-{
+- (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void (^)(void))sentCallback {
     if ([type characterAtIndex:0] != '@') {
         @throw [NSException exceptionWithName:@"illegal argument"
                                        reason:@"This method must only be called for internal events, starting with an '@'"
                                      userInfo:nil];
     }
     
-    [self trackEvent:type eventData:data customData:customData];
+    [self trackEvent:type eventData:data customData:customData sentCallback:sentCallback];
+}
+- (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+{
+    [self trackInternalEvent:type eventData:data customData:customData sentCallback:nil];
 }
 
 - (void) countInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
@@ -185,7 +188,11 @@
 }
 
 - (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData {
-    
+    [self trackEvent:type eventData:data customData:customData sentCallback:nil];
+}
+
+- (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void(^)(void))sentCallback {
+
     if (![type isKindOfClass:[NSString class]]) return;
     if (self.eventsBlackWhiteList && ![self.eventsBlackWhiteList allow:type]) {
         WPLogDebug(@"Event of type %@ forbidden by configuration", type);
@@ -222,6 +229,7 @@
                 // Save later in the request vault, if user becomes optIn before the app gets killed
                 [self.optInHandlers addObject:^{
                     [WonderPush postEventually:eventEndPoint params:params];
+                    if (sentCallback) sentCallback();
                 }];
             }
         }];

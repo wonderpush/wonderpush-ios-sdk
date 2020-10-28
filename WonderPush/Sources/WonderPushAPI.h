@@ -52,6 +52,7 @@
 - (void) putInstallationCustomProperties:(NSDictionary *)customProperties;
 - (void) trackEvent:(NSString*)type withData:(NSDictionary *)data;
 - (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData;
+- (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void(^)(void))sentCallback;
 - (void) countInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData;
 - (void) refreshDeviceTokenIfPossible;
 - (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData;

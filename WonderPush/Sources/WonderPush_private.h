@@ -111,6 +111,14 @@ Called when receiving the full state of the installation
 + (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData;
 
 /**
+ Tracks an internal event, starting with a @ sign.
+ @param data A collection of properties to add directly to the event body.
+ @param customData A collection of custom properties to add to the `custom` field of the event.
+ @param sentCallback A block executed once a request is in the request vault.
+ */
++ (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void(^)(void))sentCallback;
+
+/**
  Counts an internal event with measurements API, starting with a @ sign.
  @param data A collection of properties to add directly to the event body.
  @param customData A collection of custom properties to add to the `custom` field of the event.
