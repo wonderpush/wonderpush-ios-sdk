@@ -384,8 +384,10 @@ static WPConfiguration *sharedConfiguration = nil;
 
 - (void) setDeviceToken:(NSString *)deviceToken
 {
+    if (![deviceToken isEqual:_deviceToken]) {
+        WPLogDebug(@"Setting device token: %@", deviceToken);
+    }
     _deviceToken = deviceToken;
-    WPLogDebug(@"Setting device token: %@", deviceToken);
     [self _setNSString:deviceToken forKey:USER_DEFAULTS_DEVICE_TOKEN_KEY];
 }
 

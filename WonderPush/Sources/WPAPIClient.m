@@ -434,7 +434,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         [self fetchAccessTokenAndRunRequest:request];
         return;
     } else {
-        WPLogDebug(@"accessToken: %@", accessToken);
+        WPLogDebug(@"Using accessToken: %@", accessToken);
     }
 
     // We have an access token if needed

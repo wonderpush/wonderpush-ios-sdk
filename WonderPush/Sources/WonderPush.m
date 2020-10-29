@@ -615,7 +615,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
 + (void) applicationDidBecomeActive_private:(UIApplication *)application
 {
-    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
+//    WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     if (![self isInitialized]) return;
     if ([WPAppDelegate isAlreadyRunning]) return;
     BOOL comesBackFromTemporaryInactive = _previousApplicationState == UIApplicationStateActive;
