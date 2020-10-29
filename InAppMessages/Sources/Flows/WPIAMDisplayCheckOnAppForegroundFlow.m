@@ -21,8 +21,7 @@
 @implementation WPIAMDisplayCheckOnAppForegroundFlow
 
 - (void)start {
-    WPLogDebug(
-                @"Start observing app foreground notifications for rendering messages.");
+//    WPLogDebug(@"Start observing app foreground notifications for rendering messages.");
     [[NSNotificationCenter defaultCenter]
      addObserver:self
      selector:@selector(checkAndDisplayNextAppForegroundMessageFromForeground:)

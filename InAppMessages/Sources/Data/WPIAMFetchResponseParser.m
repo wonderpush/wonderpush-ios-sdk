@@ -44,7 +44,7 @@
             discarded++;
         }
     }
-    WPLogDebug(@"%lu message definitions were parsed out successfully and %lu messages are discarded",
+    WPLogDebug(@"%lu in-app message definitions were parsed out successfully, %lu were discarded",
                (unsigned long)definitions.count, (unsigned long)discarded);
     
     if (discardCount) {

@@ -289,10 +289,7 @@
         }
         
         if (self.isMsgBeingDisplayed) {
-            WPLogDebug(
-                        @"An in-app message display is in progress, do not check analytics event "
-                        "based message for now.");
-            
+//            WPLogDebug(@"An in-app message display is in progress, do not check analytics event based message for now.");
             return;
         }
         

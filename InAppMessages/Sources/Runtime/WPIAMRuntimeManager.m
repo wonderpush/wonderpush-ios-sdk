@@ -134,7 +134,7 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
     self.currentSetting = settings;
     
     WPIAMTimerWithNSDate *timeFetcher = [[WPIAMTimerWithNSDate alloc] init];
-    NSTimeInterval start = [timeFetcher currentTimestampInSeconds];
+//    NSTimeInterval start = [timeFetcher currentTimestampInSeconds];
     
     self.bookKeeper = [[WPIAMBookKeeperViaUserDefaults alloc]
                        initWithUserDefaults:[NSUserDefaults standardUserDefaults]];
@@ -180,16 +180,13 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
                     @"Message loading from fetch storage was done.");
         
         if ([self shouldRunSDKFlowsOnStartup]) {
-            WPLogDebug(
-                        @"Start SDK runtime components.");
+//            WPLogDebug(@"Start SDK runtime components.");
             
             [self.displayOnWonderPushEventsFlow start];
             
             self->_running = YES;
             
-            WPLogDebug(
-                        @"Start regular display flow for non-testing "
-                        "instance mode");
+//            WPLogDebug(@"Start regular display flow for non-testing instance mode");
             [self.displayOnAppForegroundFlow start];
             [self.displayOnFetchDoneFlow start];
 
@@ -215,10 +212,8 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
         }
     }];
     
-    WPLogDebug(
-                @"WonderPush In-App Messaging SDK finished startup in %lf seconds "
-                "with these settings: %@",
-                (double)([timeFetcher currentTimestampInSeconds] - start), settings);
+//    WPLogDebug(@"WonderPush In-App Messaging SDK finished startup in %lf seconds with these settings: %@",
+//                (double)([timeFetcher currentTimestampInSeconds] - start), settings);
 }
 
 - (void) forceFetchInApps {

@@ -78,12 +78,12 @@
         [self setupWonderPushEventListening];
     }
     
-    WPLogDebug(
-                @"There are %lu test messages and %lu regular messages and "
-                "%lu events to watch after "
-                "resetting the message cache",
-                (unsigned long)self.testMessages.count, (unsigned long)self.regularMessages.count,
-                (unsigned long)self.wonderpushEventsToWatch.count);
+//    WPLogDebug(
+//                @"There are %lu test messages and %lu regular messages and "
+//                "%lu events to watch after "
+//                "resetting the message cache",
+//                (unsigned long)self.testMessages.count, (unsigned long)self.regularMessages.count,
+//                (unsigned long)self.wonderpushEventsToWatch.count);
 }
 
 // triggered after self.messages are updated so that we can correctly enable/disable listening
@@ -105,8 +105,7 @@
                         @"There are analytics event trigger based messages, enable listening");
             [self.analycisEventDislayCheckFlow start];
         } else {
-            WPLogDebug(
-                        @"No analytics event trigger based messages, disable listening");
+//            WPLogDebug(@"No analytics event trigger based messages, disable listening");
             [self.analycisEventDislayCheckFlow stop];
         }
     }

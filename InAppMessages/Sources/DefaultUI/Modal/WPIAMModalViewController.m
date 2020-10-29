@@ -282,11 +282,10 @@ struct TitleBodyButtonHeightInfo {
         }
     }
     
-    WPLogDebug(
-                @"In heights calculation (max-height = %lf, width = %lf), title heights is %lf, "
-                "body height is %lf, button height is %lf, total column heights are %lf",
-                maxHeight, displayWidth, resultHeightInfo.titleHeight, resultHeightInfo.bodyHeight,
-                buttonHeight, resultHeightInfo.totaColumnlHeight);
+//    WPLogDebug(@"In heights calculation (max-height = %lf, width = %lf), title heights is %lf, "
+//                "body height is %lf, button height is %lf, total column heights are %lf",
+//                maxHeight, displayWidth, resultHeightInfo.titleHeight, resultHeightInfo.bodyHeight,
+//                buttonHeight, resultHeightInfo.totaColumnlHeight);
     
     return resultHeightInfo;
 }
@@ -314,10 +313,8 @@ struct TitleBodyButtonHeightInfo {
 #endif  // defined(__IPHONE_11_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
     }
     
-    WPLogDebug(
-                @"The height calc reference is %lf "
-                "with frame height as %lf",
-                heightCalcReference, self.view.window.frame.size.height);
+//    WPLogDebug(@"The height calc reference is %lf with frame height as %lf",
+//                heightCalcReference, self.view.window.frame.size.height);
     
     // this makes sure titleLable gets correct width to be ready for later's height estimate for the
     // text & button column
@@ -458,12 +455,10 @@ struct TitleBodyButtonHeightInfo {
     
     if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular ||
         self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact) {
-        WPLogDebug(
-                    @"Modal view rendered in landscape mode");
+        WPLogDebug(@"Modal view rendered in landscape mode");
         [self layoutFineTuneInLandscapeMode];
     } else {
-        WPLogDebug(
-                    @"Modal view rendered in portrait mode");
+        WPLogDebug(@"Modal view rendered in portrait mode");
         [self layoutFineTuneInPortraitMode];
     }
     

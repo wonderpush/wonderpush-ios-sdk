@@ -198,7 +198,7 @@ static BOOL patchCallDisabled = NO;
 }
 
 - (void) scheduleServerPatchCallCallback {
-    WPLogDebug(@"Scheduling a delayed update of installation");
+//    WPLogDebug(@"Scheduling a delayed update of installation");
     if (![WonderPush hasUserConsent]) {
         [WonderPush safeDeferWithConsent:^{
             WPLogDebug(@"Now scheduling user consent delayed patch call for installation state for userId %@", self.userId);
@@ -222,7 +222,7 @@ static BOOL patchCallDisabled = NO;
                 }
                 self->_firstDelayedWriteDate = nil;
             }
-            WPLogDebug(@"Performing delayed update of installation");
+//            WPLogDebug(@"Performing delayed update of installation");
             [self performScheduledPatchCall];
         });
     }
@@ -243,7 +243,9 @@ static BOOL patchCallDisabled = NO;
         if (onFailure) onFailure();
         return;
     }
-    WPLogDebug(@"Sending installation diff: %@ for user %@", diff, _userId);
+    if ([WonderPush subscriptionStatusIsOptIn]) {
+        WPLogDebug(@"Sending installation diff: %@ for user %@", diff, _userId);
+    }
     [WonderPush requestForUser:_userId
                         method:@"PATCH"
                       resource:@"/installation"
@@ -257,9 +259,7 @@ static BOOL patchCallDisabled = NO;
                                if ([error.domain isEqualToString:WPErrorDomain]
                                    && error.code == WPErrorClientDisabled) {
                                    // Hide this error on released SDKs (it's just for us).
-#if DEBUG
-                                   WPLogDebug(@"Failed to send diff for user %@ because client is disabled: %@", self->_userId, error.localizedDescription);
-#endif
+//                                   WPLogDebug(@"Failed to send diff for user %@ because client is disabled: %@", self->_userId, error.localizedDescription);
 
                                } else {
                                    WPLogDebug(@"Failed to send diff for user %@: error %@, response %@", self->_userId, error, response);

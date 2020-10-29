@@ -29,7 +29,7 @@
 
 - (void)start {
     @synchronized(self) {
-        WPLogDebug(@"Start observing events for rendering messages.");
+//        WPLogDebug(@"Start observing events for rendering messages.");
         if (eventListenerQueue == nil) {
           eventListenerQueue =
               dispatch_queue_create("com.wonderpush.inappmessage.wpevent_listener", NULL);
@@ -49,7 +49,7 @@
 
 - (void)stop {
     @synchronized(self) {
-        WPLogDebug(@"Stop observing events for display check.");
+//        WPLogDebug(@"Stop observing events for display check.");
     }
 }
 

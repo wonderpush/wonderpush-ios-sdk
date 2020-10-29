@@ -428,7 +428,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
 + (void) initForNewUser:(NSString *)userId
 {
-    WPLogDebug(@"initForNewUser:%@", userId);
+//    WPLogDebug(@"initForNewUser:%@", userId);
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     [configuration changeUserId:userId];
     [WPJsonSyncInstallation forCurrentUser]; // ensures static initialization is done

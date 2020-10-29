@@ -186,7 +186,7 @@
 - (void) updateOperationQueueStatus;
 {
     BOOL suspend = !([WonderPush isReachable] && [WonderPush hasUserConsent]);
-    WPLogDebug(@"%@ request vault operation queue.", suspend ? @"Stopping" : @"Starting");
+    WPLogDebug(@"%@ request vault operation queue. %@", suspend ? @"Stopping" : @"Starting", self.requestExecutor);
     [self.operationQueue setSuspended:suspend];
 }
 
