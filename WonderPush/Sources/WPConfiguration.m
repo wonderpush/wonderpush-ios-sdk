@@ -306,7 +306,7 @@ static WPConfiguration *sharedConfiguration = nil;
                                          USER_DEFAULTS_LAST_INTERACTION_DATE: [self _NSDateToJSON:self.lastInteractionDate],
                                          USER_DEFAULTS_LAST_APP_OPEN_DATE: [self _NSDateToJSON:self.lastAppOpenDate],
                                          USER_DEFAULTS_LAST_APP_OPEN_INFO: [self _NSDictionaryToJSON:self.lastAppOpenInfo],
-                                         USER_DEFAULTS_LAST_APP_CLOSE_DATE: [self _NSDateToJSON:self.lastAppCloseDate],
+                                         USER_DEFAULTS_LAST_APP_OPEN_SENT_DATE: [self _NSDateToJSON:self.lastAppOpenSentDate],
                                          USER_DEFAULTS_COUNTRY: [self _NSStringToJSON:self.country],
                                          USER_DEFAULTS_CURRENCY: [self _NSStringToJSON:self.currency],
                                          USER_DEFAULTS_LOCALE: [self _NSStringToJSON:self.locale],
@@ -337,7 +337,7 @@ static WPConfiguration *sharedConfiguration = nil;
     self.lastInteractionDate = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_INTERACTION_DATE]];
     self.lastAppOpenDate     = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_APP_OPEN_DATE]];
     self.lastAppOpenInfo     = [self _JSONToNSDictionary:newUserArchive[USER_DEFAULTS_LAST_APP_OPEN_INFO]];
-    self.lastAppCloseDate    = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_APP_CLOSE_DATE]];
+    self.lastAppOpenSentDate    = [self _JSONToNSDate:      newUserArchive[USER_DEFAULTS_LAST_APP_OPEN_SENT_DATE]];
     self.country             = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_COUNTRY]];
     self.currency            = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_CURRENCY]];
     self.locale              = [self _JSONToNSString:    newUserArchive[USER_DEFAULTS_LOCALE]];
@@ -805,14 +805,14 @@ static WPConfiguration *sharedConfiguration = nil;
     [self _setNSDate:lastAppOpenDate forKey:USER_DEFAULTS_LAST_APP_OPEN_DATE];
 }
 
-- (NSDate *) lastAppCloseDate
+- (NSDate *) lastAppOpenSentDate
 {
-    return [self _getNSDateForKey:USER_DEFAULTS_LAST_APP_CLOSE_DATE];
+    return [self _getNSDateForKey:USER_DEFAULTS_LAST_APP_OPEN_SENT_DATE];
 }
 
-- (void) setLastAppCloseDate:(NSDate *)lastAppCloseDate
+- (void) setLastAppOpenSentDate:(NSDate *)lastAppOpenSentDate
 {
-    [self _setNSDate:lastAppCloseDate forKey:USER_DEFAULTS_LAST_APP_CLOSE_DATE];
+    [self _setNSDate:lastAppOpenSentDate forKey:USER_DEFAULTS_LAST_APP_OPEN_SENT_DATE];
 }
 
 - (NSString *) country

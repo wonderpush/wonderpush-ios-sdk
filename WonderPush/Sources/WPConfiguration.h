@@ -55,7 +55,7 @@
 #define USER_DEFAULTS_LAST_INTERACTION_DATE @"_wonderpush_lastInteractionDate"
 #define USER_DEFAULTS_LAST_APP_OPEN_INFO @"_wonderpush_lastAppOpenInfo"
 #define USER_DEFAULTS_LAST_APP_OPEN_DATE @"_wonderpush_lastAppOpenDate"
-#define USER_DEFAULTS_LAST_APP_CLOSE_DATE @"_wonderpush_lastAppCloseDate"
+#define USER_DEFAULTS_LAST_APP_OPEN_SENT_DATE @"_wonderpush_lastAppOpenSentDate"
 #define USER_DEFAULTS_COUNTRY @"_wonderpush_country"
 #define USER_DEFAULTS_CURRENCY @"_wonderpush_currency"
 #define USER_DEFAULTS_LOCALE @"_wonderpush_locale"
@@ -131,7 +131,7 @@
 @property (nonatomic, strong) NSDate *lastInteractionDate;
 @property (nonatomic, strong) NSDictionary *lastAppOpenInfo;
 @property (nonatomic, strong) NSDate *lastAppOpenDate;
-@property (nonatomic, strong) NSDate *lastAppCloseDate;
+@property (nonatomic, strong) NSDate *lastAppOpenSentDate;
 
 @property (nonatomic, strong) NSString *country;
 @property (nonatomic, strong) NSString *currency;

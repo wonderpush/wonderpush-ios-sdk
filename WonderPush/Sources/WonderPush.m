@@ -1322,15 +1322,20 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         return;
     }
 
+    if (!leaving) {
+        WPPresenceManager *presenceManager = [WonderPush presenceManager];
+        WPPresencePayload *presence = presenceManager.isCurrentlyPresent ? nil : [presenceManager presenceDidStart];
+        [self sendPresenceAndAppOpenIfNecessary:presence];
+    }
+
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-    NSDate *lastInteractionDate = conf.lastInteractionDate;
-    long long lastInteractionTs = lastInteractionDate ? (long long)([lastInteractionDate timeIntervalSince1970] * 1000) : 0;
-    NSDate *lastAppOpenDate = conf.lastAppOpenDate;
-    long long lastAppOpenTs = lastAppOpenDate ? (long long)([lastAppOpenDate timeIntervalSince1970] * 1000) : 0;
-    NSDate *lastAppCloseDate = conf.lastAppCloseDate;
-    long long lastAppCloseTs = lastAppCloseDate ? (long long)([lastAppCloseDate timeIntervalSince1970] * 1000) : 0;
-    NSDate *lastReceivedNotificationDate = conf.lastReceivedNotificationDate;
-    long long lastReceivedNotificationTs = lastReceivedNotificationDate ? (long long)([lastReceivedNotificationDate timeIntervalSince1970] * 1000) : LONG_LONG_MAX;
+    conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:[[NSDate date] timeIntervalSince1970]];
+}
+
++ (void) sendPresenceAndAppOpenIfNecessary:(WPPresencePayload * _Nullable)presence {
+    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+    long long lastInteractionTs = (long long)([conf.lastInteractionDate timeIntervalSince1970] * 1000);
+    long long lastReceivedNotificationTs = conf.lastReceivedNotificationDate ? (long long)([conf.lastReceivedNotificationDate timeIntervalSince1970] * 1000) : LONG_LONG_MAX;
     NSDate *date = [NSDate date];
     long long now = [date timeIntervalSince1970] * 1000;
 
@@ -1342,67 +1347,54 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             && now - lastInteractionTs >= DIFFERENT_SESSION_NOTIFICATION_MIN_TIME_GAP
         )
     ;
+    static BOOL appOpenQueued = NO;
 
-    if (leaving) {
+    // Non-subscribers will have an up-to-date lastInteraction time.
+    // Queue an @APP_OPEN event if we've never sent one to the server and haven't already queued one.
+    // This will ensure newly subscribed users have at least one @APP_OPEN event in their timeline.
+    if (!conf.lastAppOpenSentDate && !appOpenQueued) {
+        shouldInjectAppOpen = YES;
+    }
 
-        // Note the current time as the most accurate hint of last interaction
-        conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
-    } else {
+    if (shouldInjectAppOpen) {
 
-        if (shouldInjectAppOpen) {
-            // We will track a new app open event
-            // Clear the lastClickedNotificationReportingData
-            lastClickedNotificationReportingData = nil;
+        // We will track a new app open event
+        // Clear the lastClickedNotificationReportingData
+        lastClickedNotificationReportingData = nil;
 
-            // We must first close the possibly still-open previous session
-            if (lastAppCloseTs < lastAppOpenTs) {
-                NSDictionary *openInfo = conf.lastAppOpenInfo;
-                NSMutableDictionary *closeInfo = [[NSMutableDictionary alloc] initWithDictionary:openInfo];
-                long long appCloseDate = lastInteractionTs;
-                closeInfo[@"actionDate"] = [[NSNumber alloc] initWithLongLong:appCloseDate];
-                closeInfo[@"openedTime"] = [[NSNumber alloc] initWithLongLong:appCloseDate - lastAppOpenTs];
-                // [WonderPush trackInternalEvent:@"@APP_CLOSE" eventData:closeInfo customData:nil];
-                conf.lastAppCloseDate = [[NSDate alloc] initWithTimeIntervalSince1970:appCloseDate / 1000.];
-            }
+        // Track the new app open event
+        NSMutableDictionary *openInfo = [NSMutableDictionary new];
 
-            // Track the new app open event
-            NSMutableDictionary *openInfo = [NSMutableDictionary new];
-            // Add the elapsed time between the last received notification
-            if ([WPUtil hasBackgroundModeRemoteNotification] && lastReceivedNotificationTs <= now) {
-                openInfo[@"lastReceivedNotificationTime"] = [[NSNumber alloc] initWithLongLong:now - lastReceivedNotificationTs];
-            }
-            // Add the information of the clicked notification
-            if (conf.justOpenedNotification && [conf.justOpenedNotification[@"_wp"] isKindOfClass:[NSDictionary class]]) {
-                openInfo[@"campaignId"]     = conf.justOpenedNotification[@"_wp"][@"c"] ?: [NSNull null];
-                openInfo[@"notificationId"] = conf.justOpenedNotification[@"_wp"][@"n"] ?: [NSNull null];
-                conf.justOpenedNotification = nil;
-            }
-            WPPresencePayload *presence = [[WonderPush presenceManager] presenceDidStart];
-            if (presence) openInfo[@"presence"] = presence.toJSON;
-            
-            // When user is not optIn, the SDK API client is disabled.
-            // This @APP_OPEN will be sent at a later date or never, so we send an @VISIT right away and we tell the server not to synthesize @VISIT from this @APP_OPEN.
-            // If user is optIn, we do NOT send @VISIT at all and rely on the server's behavior of synthesizing this event from @APP_OPEN events.
+        // Add the elapsed time between the last received notification
+        if ([WPUtil hasBackgroundModeRemoteNotification] && lastReceivedNotificationTs <= now) {
+            openInfo[@"lastReceivedNotificationTime"] = [[NSNumber alloc] initWithLongLong:now - lastReceivedNotificationTs];
+        }
+        // Add the information of the clicked notification
+        if (conf.justOpenedNotification && [conf.justOpenedNotification[@"_wp"] isKindOfClass:[NSDictionary class]]) {
+            openInfo[@"campaignId"]     = conf.justOpenedNotification[@"_wp"][@"c"] ?: [NSNull null];
+            openInfo[@"notificationId"] = conf.justOpenedNotification[@"_wp"][@"n"] ?: [NSNull null];
+            conf.justOpenedNotification = nil;
+        }
+        if (presence) openInfo[@"presence"] = presence.toJSON;
+        
+        // When user is not optIn, the SDK API client is disabled.
+        // This @APP_OPEN will be sent at a later date or never, so we send an @VISIT right away and we tell the server not to synthesize @VISIT from this @APP_OPEN.
+        // If user is optIn, we do NOT send @VISIT at all and rely on the server's behavior of synthesizing this event from @APP_OPEN events.
 
-            if (![self subscriptionStatusIsOptIn]) {
-                [WonderPush countInternalEvent:@"@VISIT" eventData:[NSDictionary dictionaryWithDictionary:openInfo] customData:nil];
-                openInfo[@"doNotSynthesizeVisit"] = @YES;
-            }
-
-            lastClickedNotificationReportingData = [[WPReportingData alloc] initWithDictionary:openInfo];
-            [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil];
-            conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
-            conf.lastAppOpenInfo = openInfo;
-        } else {
-            if (![WonderPush presenceManager].isCurrentlyPresent) {
-                WPPresencePayload *presence = [[WonderPush presenceManager] presenceDidStart];
-                [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
-            }
-
+        if (![self subscriptionStatusIsOptIn]) {
+            [WonderPush countInternalEvent:@"@VISIT" eventData:[NSDictionary dictionaryWithDictionary:openInfo] customData:nil];
+            openInfo[@"doNotSynthesizeVisit"] = @YES;
         }
 
-        conf.lastInteractionDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
-
+        lastClickedNotificationReportingData = [[WPReportingData alloc] initWithDictionary:openInfo];
+        conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
+        conf.lastAppOpenInfo = openInfo;
+        [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil sentCallback:^{
+            conf.lastAppOpenSentDate = [NSDate date];
+        }];
+        appOpenQueued = YES;
+    } else if (presence && conf.lastAppOpenSentDate) {
+        [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
     }
 }
 
