@@ -505,6 +505,11 @@
 
         WPJsonSyncInstallation *installation = [WPJsonSyncInstallation forCurrentUser];
         NSString *oldSubscriptionStatus = [WonderPush subscriptionStatus];
+        [installation put:@{@"preferences": @{
+                                    @"subscriptionStatus": subscriptionStatus,
+                                    @"subscribedToNotifications": enabled ? @YES : @NO,
+                                    @"osNotificationsVisible": osNotificationsEnabled ? @YES : @NO,
+        }}];
         if (![subscriptionStatus isEqualToString:oldSubscriptionStatus]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [NSNotificationCenter.defaultCenter
@@ -515,11 +520,6 @@
                 } : nil];
             });
         }
-        [installation put:@{@"preferences": @{
-                                    @"subscriptionStatus": subscriptionStatus,
-                                    @"subscribedToNotifications": enabled ? @YES : @NO,
-                                    @"osNotificationsVisible": osNotificationsEnabled ? @YES : @NO,
-        }}];
     }];
 }
 
