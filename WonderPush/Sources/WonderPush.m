@@ -656,7 +656,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if ([WPAppDelegate isAlreadyRunning]) return;
     _previousApplicationState = UIApplicationStateBackground;
 
-    WPPresencePayload *presence = [[WonderPush presenceManager] presenceWillStop];
+    WPPresencePayload *presence = [WonderPush presenceManager].isCurrentlyPresent ? [[WonderPush presenceManager] presenceWillStop] : nil;
     if (presence) {
         [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
     }
@@ -1326,6 +1326,16 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         WPPresenceManager *presenceManager = [WonderPush presenceManager];
         WPPresencePayload *presence = presenceManager.isCurrentlyPresent ? nil : [presenceManager presenceDidStart];
         [self sendPresenceAndAppOpenIfNecessary:presence];
+    } else {
+        [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+            if ([config.data[WP_REMOTE_CONFIG_DO_NOT_SEND_PRESENCE_ON_APPLICATION_WILL_RESIGN_ACTIVE] boolValue]) {
+                return;
+            }
+            WPPresencePayload *presence = [WonderPush presenceManager].isCurrentlyPresent ? [[WonderPush presenceManager] presenceWillStop] : nil;
+            if (presence) {
+                [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
+            }
+        }];
     }
 
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];

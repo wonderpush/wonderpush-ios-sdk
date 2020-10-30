@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY @"eventsBlackWhiteList"
 #define WP_REMOTE_CONFIG_TRACK_EVENTS_FOR_NON_SUBSCRIBERS @"trackEventsForNonSubscribers"
 #define WP_REMOTE_CONFIG_ALLOW_ACCESS_TOKEN_FOR_NON_SUBSCRIBERS @"allowAccessTokenForNonSubscribers"
+#define WP_REMOTE_CONFIG_DO_NOT_SEND_PRESENCE_ON_APPLICATION_WILL_RESIGN_ACTIVE @"doNotSendPresenceOnApplicationWillResignActive"
 extern NSString * const WPRemoteConfigUpdatedNotification;
 
 @interface WPRemoteConfig : NSObject<NSCoding, NSSecureCoding>
