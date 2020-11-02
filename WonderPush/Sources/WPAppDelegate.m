@@ -60,6 +60,13 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
     return [super respondsToSelector:aSelector] || [self.nextDelegate respondsToSelector:aSelector];
 }
 
+- (void)printSwizzlingWarning
+{
+    BOOL ourselves = self.class == WPAppDelegate.class;
+    if (!ourselves) {
+        WPLog(@"WARNING: method swizzling detected! It's potentially incompatible with WonderPush.setupDelegate(for:) and you might experience some AppDelegate methods not being called. Please read: https://docs.wonderpush.com/docs/ios-sdk#setupdelegateforapplication");
+    }
+}
 
 #pragma mark - Overriding useful methods
 
@@ -154,6 +161,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
+    [self printSwizzlingWarning];
     [WonderPush applicationDidBecomeActive:application];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         _WPAppDelegateAlreadyRunning = YES;
