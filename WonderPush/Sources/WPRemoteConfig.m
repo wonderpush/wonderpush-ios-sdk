@@ -267,7 +267,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 #pragma mark - Manager
 
 @interface WPRemoteConfigManager ()
-@property (nonatomic) BOOL isFetching;
+@property (atomic) BOOL isFetching;
 @property (nonatomic, strong) NSMutableArray<WPRemoteConfigReadCompletionHandler> *queuedHandlers;
 @property (nonatomic, nullable, strong) NSDate *lastFetchDate;
 @property (nonatomic, nullable, strong) WPRemoteConfig *storedConfig;
@@ -337,7 +337,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 
 - (void) read:(WPRemoteConfigReadCompletionHandler)completion {
     if (self.isFetching) {
-        @synchronized (self.queuedHandlers) {
+        @synchronized (self) {
             [self.queuedHandlers addObject:completion];
         }
         return;
@@ -414,14 +414,6 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 }
 
 - (void) fetchAndStoreConfigWithVersion:(NSString * _Nullable)version currentConfig:(WPRemoteConfig * _Nullable)currentConfig completion:(WPRemoteConfigReadCompletionHandler _Nullable)completion {
-    if (self.isFetching) {
-        if (completion) {
-            @synchronized (self.queuedHandlers) {
-                [self.queuedHandlers addObject:completion];
-            }
-        }
-        return;
-    }
 
     // Is fetch disabled?
     if (currentConfig && [[currentConfig.data objectForKey:WP_REMOTE_CONFIG_DISABLE_FETCH_KEY] boolValue]) {
@@ -429,11 +421,20 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         return;
     }
 
+    @synchronized (self) {
+        if (self.isFetching) {
+            if (completion) {
+                [self.queuedHandlers addObject:completion];
+            }
+            return;
+        }
+        self.isFetching = YES;
+    }
+
     self.lastFetchDate = [NSDate date];
-    self.isFetching = YES;
     [self.remoteConfigFetcher fetchConfigWithVersion:version completion:^(WPRemoteConfig *newConfig, NSError *fetchError) {
         WPRemoteConfigReadCompletionHandler handler = ^(WPRemoteConfig *config, NSError *error) {
-            @synchronized (self.queuedHandlers) {
+            @synchronized (self) {
                 for (WPRemoteConfigReadCompletionHandler queuedHandler in self.queuedHandlers) {
                     // Avoid deadlocks on self.queuedHandlers
                     // The handler might himself read the config and wait for this @synchronized block to finish
@@ -442,8 +443,8 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
                     });
                 }
                 [self.queuedHandlers removeAllObjects];
+                self.isFetching = NO;
             }
-            self.isFetching = NO;
             if (completion) completion(config, error);
         };
         if (newConfig && !fetchError) {
