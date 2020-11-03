@@ -38,9 +38,6 @@
 #define USER_DEFAULTS_CACHED_OS_NOTIFICATION_ENABLED_DATE_KEY @"__wonderpush_cachedOsNotificationEnabledDate"
 #define USER_DEFAULTS_OVERRIDE_SET_LOGGING_KEY @"__wonderpush_overrideSetLogging"
 #define USER_DEFAULTS_OVERRIDE_NOTIFICATION_RECEIPT_KEY @"__wonderpush_overrideNotificationReceipt"
-#define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES @"_wonderpush_cachedInstallationCoreProperties"
-#define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_DATE @"_wonderpush_cachedInstallationCorePropertiesDate"
-#define USER_DEFAULTS_CACHED_INSTALLATION_CORE_PROPERTIES_ACCESS_TOKEN @"_wonderpush_cachedInstallationCorePropertiesAccessToken"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN @"_wonderpush_cachedInstallationCustomPropertiesWritten"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_WRITTEN_DATE @"_wonderpush_cachedInstallationCustomPropertiesWrittenDate"
 #define USER_DEFAULTS_CACHED_INSTALLATION_CUSTOM_PROPERTIES_UPDATED @"_wonderpush_cachedInstallationCustomPropertiesUpdated"
@@ -110,10 +107,6 @@
 
 @property (nonatomic, strong) NSNumber *overrideSetLogging;
 @property (nonatomic, strong) NSNumber *overrideNotificationReceipt;
-
-@property (nonatomic, strong) NSDictionary *cachedInstallationCoreProperties;
-@property (nonatomic, strong) NSDate *cachedInstallationCorePropertiesDate;
-@property (nonatomic, strong) NSString *cachedInstallationCorePropertiesAccessToken;
 
 @property (nonatomic, strong) NSDictionary *cachedInstallationCustomPropertiesWritten;
 @property (nonatomic, strong) NSDate *cachedInstallationCustomPropertiesWrittenDate;

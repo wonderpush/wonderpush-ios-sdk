@@ -474,10 +474,6 @@
                                      @"device": device
                                      };
         
-        WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
-        [sharedConfiguration setCachedInstallationCoreProperties:properties];
-        [sharedConfiguration setCachedInstallationCorePropertiesDate: [NSDate date]];
-        [sharedConfiguration setCachedInstallationCorePropertiesAccessToken:sharedConfiguration.accessToken];
         [[WPJsonSyncInstallation forCurrentUser] put:properties];
     }
 }
@@ -785,6 +781,5 @@
         return [[self getTags] containsObject:tag];
     }
 }
-
 
 @end
