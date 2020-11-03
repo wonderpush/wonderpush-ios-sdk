@@ -63,8 +63,8 @@
         
         // while resetting the whole message set, we do prefiltering based on the impressions
         // data to get rid of messages we don't care so that the future searches are more efficient
-        NSPredicate *notOverImpressedPredicate =
-        [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        NSPredicate *notOverImpressedPredicate = [NSPredicate
+                                                  predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
             WPIAMMessageDefinition *message = (WPIAMMessageDefinition *)evaluatedObject;
             NSString *campaignId = message.renderData.reportingData.campaignId;
             if (!campaignId) return NO;
@@ -73,8 +73,7 @@
             return impressionCount < message.capping.maxImpressions;
         }];
         
-        self.regularMessages =
-        [[regularMessages filteredArrayUsingPredicate:notOverImpressedPredicate] mutableCopy];
+        self.regularMessages = [[regularMessages filteredArrayUsingPredicate:notOverImpressedPredicate] mutableCopy];
         [self setupWonderPushEventListening];
     }
     
@@ -233,9 +232,9 @@
         id inAppConfig = config.data[@"inAppConfig"];
         if (![inAppConfig isKindOfClass:NSDictionary.class]) inAppConfig = @{};
         NSInteger discardCount;
-        NSArray<WPIAMMessageDefinition *> *messagesFromStorage =
-        [WPIAMFetchResponseParser parseAPIResponseDictionary:inAppConfig
-                                           discardedMsgCount:&discardCount];
+        NSArray<WPIAMMessageDefinition *> *messagesFromStorage = [WPIAMFetchResponseParser
+                                                                  parseAPIResponseDictionary:inAppConfig
+                                                                  discardedMsgCount:&discardCount];
         [self setMessageData:messagesFromStorage];
         if (completion) completion(YES);
 

@@ -34,8 +34,7 @@
     
     NSMutableArray<WPIAMMessageDefinition *> *definitions = [[NSMutableArray alloc] init];
     for (NSDictionary *nextMsg in messageArray) {
-        WPIAMMessageDefinition *nextDefinition =
-        [self convertToMessageDefinitionWithCampaignDict:nextMsg];
+        WPIAMMessageDefinition *nextDefinition = [self convertToMessageDefinitionWithCampaignDict:nextMsg];
         if (nextDefinition) {
             [definitions addObject:nextDefinition];
         } else {
