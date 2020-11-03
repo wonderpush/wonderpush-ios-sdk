@@ -436,8 +436,7 @@ NS_SWIFT_NAME(InAppMessagingDisplay)
  * Method for rendering a specified message on client side. It's called from main thread.
  * @param messageForDisplay the message object. It would be of one of the three message
  *   types at runtime.
- * @param displayDelegate the callback object used to trigger notifications about certain
- *        conditions related to message rendering.
+ * @param displayDelegate the callback object you *must* use to report impressions, clicks and dismisses
  * @return NO when the message should be handled by the default, buit-in WPInAppMessagingDisplay instance. This instance will take care of reporting impressions and clicks to the display delegate. YES if the message was handled.
  */
 - (BOOL)displayMessage:(WPInAppMessagingDisplayMessage *)messageForDisplay
