@@ -21,36 +21,44 @@
 #import "WonderPush_private.h"
 
 @interface WPIAMDisplayCheckOnAnalyticEventsFlow ()
+@property (atomic) BOOL started;
 @end
 
-@implementation WPIAMDisplayCheckOnAnalyticEventsFlow {
-    dispatch_queue_t eventListenerQueue;
+static dispatch_queue_t eventListenerQueue;
+
+@implementation WPIAMDisplayCheckOnAnalyticEventsFlow
+
++ (void) initialize {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        eventListenerQueue = dispatch_queue_create("com.wonderpush.inappmessage.wpevent_listener", NULL);
+    });
+}
+
+- (instancetype)initWithDisplayFlow:(WPIAMDisplayExecutor *)displayExecutor {
+    self = [super initWithDisplayFlow:displayExecutor];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventFired:) name:WPEventFiredNotification object:nil];
+    }
+    return self;
 }
 
 - (void)start {
-    @synchronized(self) {
-//        WPLogDebug(@"Start observing events for rendering messages.");
-        if (eventListenerQueue == nil) {
-          eventListenerQueue =
-              dispatch_queue_create("com.wonderpush.inappmessage.wpevent_listener", NULL);
-        }
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(eventFired:) name:WPEventFiredNotification object:nil];
-        
-    }
+    self.started = YES;
 }
 
 - (void)eventFired:(NSNotification *)notification {
+    if (!self.started) {
+        return;
+    }
     NSString *eventType = [notification.userInfo objectForKey:WPEventFiredNotificationEventTypeKey];
-    dispatch_async(self->eventListenerQueue, ^{
+    dispatch_async(eventListenerQueue, ^{
       [self.displayExecutor checkAndDisplayNextContextualMessageForWonderPushEvent:eventType];
     });
 }
 
 - (void)stop {
-    @synchronized(self) {
-//        WPLogDebug(@"Stop observing events for display check.");
-    }
+    self.started = NO;
 }
 
 @end
