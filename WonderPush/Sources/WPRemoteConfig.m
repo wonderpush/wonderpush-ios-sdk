@@ -372,7 +372,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         
         // Do not fetch too often
         NSTimeInterval configAge = -[storedConfig.fetchDate timeIntervalSinceNow];
-        if (shouldFetch && (configAge < self.minimumConfigAge || !storedConfig.hasReachedMinAge)) {
+        if (shouldFetch && (configAge < self.minimumConfigAge || configAge < storedConfig.minAge)) {
             shouldFetch = NO;
         }
         
