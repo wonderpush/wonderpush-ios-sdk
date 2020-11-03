@@ -474,7 +474,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         if (fetchError) {
             WPLog(@"Could not fetch RemoteConfig from server: %@", fetchError.description);
         }
-        handler(nil, fetchError);
+        handler(currentConfig, fetchError);
     }];
 }
 
