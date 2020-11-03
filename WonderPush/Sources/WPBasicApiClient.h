@@ -23,7 +23,7 @@ extern NSString * const WPBasicApiClientResponseNotificationClientKey;
 
 - (instancetype) init NS_UNAVAILABLE;
 - (instancetype) initWithBaseURL:(NSURL *)baseURL clientSecret:(NSString *)clientSecret NS_DESIGNATED_INITIALIZER;
-- (NSString * _Nullable) decorateRequestBody:(NSString * _Nullable)body;
+- (NSString * _Nullable) decorateRequestBody:(NSString * _Nullable)body userId:(NSString *)userId;
 
 @end
 

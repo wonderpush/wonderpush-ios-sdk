@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
-- (NSString *)decorateRequestBody:(NSString *)body {
+- (NSString *)decorateRequestBody:(NSString *)body userId:(NSString *)userId {
     if (!body) return nil;
     NSMutableString *requestBodyString = [NSMutableString stringWithString:body];
 
@@ -43,6 +43,11 @@ NS_ASSUME_NONNULL_END
         [requestBodyString appendFormat:@"&clientId=%@", [self.clientId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
     }
     
+    // User ID
+    if (userId && userId.length) {
+        [requestBodyString appendFormat:@"&userId=%@", [userId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+    }
+
     // Device platform
     [requestBodyString appendString:@"&devicePlatform=iOS"];
 

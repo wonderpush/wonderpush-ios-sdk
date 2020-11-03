@@ -78,11 +78,6 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
     // Build the request body
     NSString * _Nullable requestBodyString = bodyParamData ? [NSMutableString stringWithFormat:@"body=%@", [[[NSString alloc] initWithData:bodyParamData encoding:NSUTF8StringEncoding] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]] : @"";
     
-    // User ID
-    if (userId && userId.length) {
-        requestBodyString = [requestBodyString stringByAppendingFormat:@"&userId=%@", [userId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
-    }
-    
     // Other params
     for (NSString *param in self.additionalAllowedParams) {
         NSString *value = [params[param] isKindOfClass:NSString.class] ? params[param] : nil;
@@ -92,7 +87,7 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
     }
     
     // Let subclasses decorate
-    requestBodyString = [self decorateRequestBody:requestBodyString];
+    requestBodyString = [self decorateRequestBody:requestBodyString userId:userId];
 
     // Resource is computed from the path by removing any leading slash
     NSString *resource = [path hasPrefix:@"/"] ? [path substringFromIndex:1] : path;
@@ -114,7 +109,7 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
     [task resume];
 }
 
-- (NSString *)decorateRequestBody:(NSString *)body {
+- (NSString *)decorateRequestBody:(NSString *)body userId:(NSString *)userId {
     return body;
 }
 
