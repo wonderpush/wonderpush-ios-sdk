@@ -58,7 +58,7 @@ typedef void(^WPRemoteConfigReadCompletionHandler)(WPRemoteConfig * _Nullable, N
 - (instancetype) initWithClientId:(NSString *)clientId;
 @end
 
-@interface WPRemoteConfigStorateWithUserDefaults : NSObject<WPRemoteConfigStorage>
+@interface WPRemoteConfigStorageWithUserDefaults : NSObject<WPRemoteConfigStorage>
 @property (nonatomic, nonnull, readonly) NSString *clientId;
 - (instancetype) initWithClientId:(NSString *)clientId;
 + (NSString *) remoteConfigKeyWithClientId:(NSString *)clientId;

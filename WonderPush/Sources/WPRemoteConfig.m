@@ -181,7 +181,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 
 #pragma mark - Storage
 
-@implementation WPRemoteConfigStorateWithUserDefaults
+@implementation WPRemoteConfigStorageWithUserDefaults
 
 - (instancetype) initWithClientId:(NSString *)clientId {
     if (self = [super init]) {

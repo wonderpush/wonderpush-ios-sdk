@@ -1944,7 +1944,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     WPRemoteConfigManager *remoteConfigManager = managers[clientId];
     if (!remoteConfigManager) {
         WPRemoteConfigFetcherWithURLSession *fetcher = [[WPRemoteConfigFetcherWithURLSession alloc] initWithClientId:clientId];
-        WPRemoteConfigStorateWithUserDefaults *storage = [[WPRemoteConfigStorateWithUserDefaults alloc] initWithClientId:clientId];
+        WPRemoteConfigStorageWithUserDefaults *storage = [[WPRemoteConfigStorageWithUserDefaults alloc] initWithClientId:clientId];
         remoteConfigManager = [[WPRemoteConfigManager alloc] initWithRemoteConfigFetcher:fetcher storage:storage];
         [managers setObject:remoteConfigManager forKey:clientId];
     }
