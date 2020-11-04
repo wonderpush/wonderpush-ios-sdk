@@ -25,11 +25,6 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
 
 /**
- Name of the notification that is sent using `NSNotificationCenter` when the SDK is initialized.
- */
-#define WP_NOTIFICATION_INITIALIZED @"_wonderpushInitialized"
-
-/**
  Name of the notification that is sent using `NSNotificationCenter` when the user consent changes.
  */
 #define WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED @"_wonderpushHasUserConsentChanged"
