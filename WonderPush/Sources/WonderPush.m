@@ -419,6 +419,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
     [configuration changeUserId:userId];
     [WPJsonSyncInstallation forCurrentUser]; // ensures static initialization is done
+    [self safeDeferWithConsent: ^{
+        [WonderPush refreshPreferencesAndConfiguration];
+    }];
 }
 
 + (BOOL) getNotificationEnabled
