@@ -559,6 +559,9 @@
 }
 
 
+/**
+ Tests remote configuration (de)serialization
+ */
 - (void) testSerialize {
     NSBundle *bundle = [NSBundle bundleForClass:self.class];
     NSURL *configURL = [bundle URLForResource:@"remote-config-example" withExtension:@"json"];
@@ -592,14 +595,17 @@
     XCTAssertEqualObjects(remoteConfig.data[@"version"], decoded.data[@"version"]);
 }
 
+/**
+ Tests the concrete NSUserDefaults storage
+ */
 - (void) testUserDefaultsStorage {
     NSString *clientId = @"unittestsclientid";
-    WPRemoteConfigStorateWithUserDefaults *storage = [[WPRemoteConfigStorateWithUserDefaults alloc] initWithClientId:clientId];
+    WPRemoteConfigStorageWithUserDefaults *storage = [[WPRemoteConfigStorageWithUserDefaults alloc] initWithClientId:clientId];
     
     // Clean defaults
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults removeObjectForKey:[WPRemoteConfigStorateWithUserDefaults remoteConfigKeyWithClientId:clientId]];
-    [defaults removeObjectForKey:[WPRemoteConfigStorateWithUserDefaults versionsKeyWithClientId:clientId]];
+    [defaults removeObjectForKey:[WPRemoteConfigStorageWithUserDefaults remoteConfigKeyWithClientId:clientId]];
+    [defaults removeObjectForKey:[WPRemoteConfigStorageWithUserDefaults versionsKeyWithClientId:clientId]];
     [defaults synchronize];
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
@@ -669,6 +675,9 @@
 
 }
 
+/**
+ Test JSON parsing of remote configuration
+ */
 - (void)testWithJSON {
     NSError *error = nil;
     WPRemoteConfig *config;
@@ -852,7 +861,9 @@
         XCTAssertNil(self.fetcher.lastRequestedDate);
     }];
 }
-
+/**
+ Checks that the WP_REMOTE_CONFIG_DISABLE_FETCH_KEY supersedes the configuration expiration mechanism.
+ */
 - (void) testDisableFetchExpired {
 
     // Fetch as often as we like
