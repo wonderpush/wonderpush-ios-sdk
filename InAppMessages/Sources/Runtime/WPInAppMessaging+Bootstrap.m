@@ -24,14 +24,6 @@
 
 static WPIAMSDKSettings *_sdkSetting = nil;
 
-+ (NSString *)getServer {
-    // Override to change to test server.
-    NSString *serverHostNameFirstComponent = @"pa.ogepscm";
-    NSString *serverHostNameSecondComponent = @"lygolai.o";
-    return [NSString fir_interlaceString:serverHostNameFirstComponent
-                              withString:serverHostNameSecondComponent];
-}
-
 + (void)bootstrapIAMWithSettings:(WPIAMSDKSettings *)settings {
     _sdkSetting = settings;
     [[WPIAMRuntimeManager getSDKRuntimeInstance] startRuntimeWithSDKSettings:_sdkSetting];

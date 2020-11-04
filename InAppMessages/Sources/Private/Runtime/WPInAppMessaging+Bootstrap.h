@@ -22,8 +22,6 @@
  */
 @interface WPInAppMessaging (Bootstrap)
 
-+ (NSString *)getServer;
-
 + (void)bootstrapIAMWithSettings:(WPIAMSDKSettings *)settings;
 
 //+ (void)bootstrapIAMFromFIRApp:(WPApp *)app;
