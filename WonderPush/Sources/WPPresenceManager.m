@@ -52,12 +52,12 @@
 - (WPPresencePayload *)presenceDidStart {
     [self.autoRenewTimer invalidate];
     if (self.autoRenew) {
-        self.autoRenewTimer =[NSTimer
-                              scheduledTimerWithTimeInterval:self.safetyMarginTime / 10
-                              target:self
-                              selector:@selector(extendPresence)
-                              userInfo:nil
-                              repeats:YES];
+        self.autoRenewTimer = [NSTimer
+                               scheduledTimerWithTimeInterval:self.safetyMarginTime / 10
+                               target:self
+                               selector:@selector(extendPresence)
+                               userInfo:nil
+                               repeats:YES];
     }
     NSDate *startDate = [NSDate date];
     NSDate *untilDate = [startDate dateByAddingTimeInterval:self.anticipatedTime];
