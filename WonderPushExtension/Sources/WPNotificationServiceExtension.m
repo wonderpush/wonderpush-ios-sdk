@@ -142,10 +142,10 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                 dispatch_semaphore_signal(installationApiSemaphore);
             }];
             if (request) {
+                installationApiSemaphore = dispatch_semaphore_create(0);
                 // Write to user defaults right now, we can't afford waiting for the response because the OS might kill us.
                 [defaults setObject:now forKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_USER_DEFAULTS_KEY];
                 [defaults synchronize];
-                installationApiSemaphore = dispatch_semaphore_create(0);
             }
         }
         NSArray *_Nullable buttons = [alertData valueForKey:@"buttons"];
@@ -222,7 +222,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         }
         
         WPLog(@"Final content: %@", content);
-        // Wait for the measurement API for 15 secs
+        // Wait for the measurement API forever
         if (measurementsApiSemaphore) {
             dispatch_semaphore_wait(measurementsApiSemaphore, DISPATCH_TIME_FOREVER);
         }
