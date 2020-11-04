@@ -161,19 +161,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         // Manage blocks by configuration: we're blocking JsonSyn and WPAPIClient right away, we'll unblock them when we have a configuration.
         WPJsonSyncInstallation.disabled = YES;
         WPAPIClient.sharedClient.disabled = YES;
+
         [[NSNotificationCenter defaultCenter] addObserverForName:WPRemoteConfigUpdatedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                WPRemoteConfig *config = notification.object;
-                if ([config isKindOfClass:WPRemoteConfig.class]) {
-                    // API client
-                    WPAPIClient.sharedClient.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
-                    // JSONSync
-                    WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
-                    if (!WPJsonSyncInstallation.disabled) [WPJsonSyncInstallation flush];
-                    // Measurements API
-                    [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY] boolValue];
-                }
-            });
+            [self readConfigAndUpdateDisabledComponents];
         }];
         
         // Listen to measurements API client responses and look for _configVersion
@@ -400,29 +390,26 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     // Block measurements API client right away
     [self measurementsApiClient].disabled = YES;
 
-    // Fetch configuration to unblock JsonSync and API client
-    void(^__block readConfig)(void) = ^{
-        [self.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (!config) {
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                        readConfig();
-                    });
-                    return;
-                }
-                readConfig = nil;
-                // API client
-                WPAPIClient.sharedClient.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
-                // JSONSync
-                WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
-                if (!WPJsonSyncInstallation.disabled) [WPJsonSyncInstallation flush];
-                // Measurements API
-                [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY] boolValue];
+    [self readConfigAndUpdateDisabledComponents];
+}
+
++ (void) readConfigAndUpdateDisabledComponents {
+    [self.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+        if (!config) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self readConfigAndUpdateDisabledComponents];
             });
-        }];
-    };
-    [self safeDeferWithConsent:^(){
-        readConfig();
+            return;
+        }
+        // API client
+        WPAPIClient.sharedClient.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
+        // JSONSync
+        WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
+        if (!WPJsonSyncInstallation.disabled) {
+            [WPJsonSyncInstallation flush];
+        }
+        // Measurements API
+        [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY] boolValue];
     }];
 }
 
