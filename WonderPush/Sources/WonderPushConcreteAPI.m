@@ -59,15 +59,22 @@
 }
 
 - (void) activate {
-    WPIAMSDKSettings *settings = [[WPIAMSDKSettings alloc] init];
-    settings.loggerMaxCountBeforeReduce = 100;
-    settings.loggerSizeAfterReduce = 50;
-    settings.loggerInVerboseMode = WPLogEnabled();
-    settings.appFGRenderMinIntervalInMinutes = 1; // render at most one message from app-foreground trigger every minute;
-    [WPInAppMessaging bootstrapIAMWithSettings:settings];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        WPIAMSDKSettings *settings = [[WPIAMSDKSettings alloc] init];
+        settings.loggerMaxCountBeforeReduce = 100;
+        settings.loggerSizeAfterReduce = 50;
+        settings.loggerInVerboseMode = WPLogEnabled();
+        settings.appFGRenderMinIntervalInMinutes = 0;//1; // render at most one message from app-foreground trigger every minute;
+        [WPInAppMessaging bootstrapIAMWithSettings:settings];
+    });
+    [WPInAppMessaging resume];
+
 }
 
-- (void) deactivate {}
+- (void) deactivate {
+    [WPInAppMessaging pause];
+}
 
 /**
  Makes sure we have an up-to-date device token, and send it to WonderPush servers if necessary.

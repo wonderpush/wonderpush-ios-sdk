@@ -29,6 +29,14 @@ static WPIAMSDKSettings *_sdkSetting = nil;
     [[WPIAMRuntimeManager getSDKRuntimeInstance] startRuntimeWithSDKSettings:_sdkSetting];
 }
 
++ (void)pause {
+    [[WPIAMRuntimeManager getSDKRuntimeInstance] pause];
+}
+
++ (void)resume {
+    [[WPIAMRuntimeManager getSDKRuntimeInstance] resume];
+}
+
 + (void)exitAppWithFatalError:(NSError *)error {
     [NSException raise:kWonderPushInAppMessagingErrorDomain
                 format:@"Error happened %@", error.localizedDescription];

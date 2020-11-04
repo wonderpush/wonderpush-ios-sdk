@@ -24,5 +24,8 @@
 
 + (void)bootstrapIAMWithSettings:(WPIAMSDKSettings *)settings;
 
++ (void)pause;
++ (void)resume;
+
 //+ (void)bootstrapIAMFromFIRApp:(WPApp *)app;
 @end
