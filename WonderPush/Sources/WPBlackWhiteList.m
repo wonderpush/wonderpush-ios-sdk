@@ -19,9 +19,14 @@
     if (self = [super init]) {
         NSMutableArray *blackList = [NSMutableArray new];
         NSMutableArray *whiteList = [NSMutableArray new];
-        for (NSString *rule in rules) {
-            if ([rule hasPrefix:@"-"]) [blackList addObject:[rule substringFromIndex:1]];
-            else [whiteList addObject:rule];
+        if ([rules isKindOfClass:NSArray.class]) {
+            for (NSString *rule in rules) {
+                if (![rule isKindOfClass:NSString.class]) {
+                    continue;
+                }
+                if ([rule hasPrefix:@"-"]) [blackList addObject:[rule substringFromIndex:1]];
+                else [whiteList addObject:rule];
+            }
         }
         _blackList = [NSArray arrayWithArray:blackList];
         _whiteList = [NSArray arrayWithArray:whiteList];
