@@ -1393,7 +1393,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             conf.lastAppOpenSentDate = [NSDate date];
         }];
         appOpenQueued = YES;
-    } else if (presence && conf.lastAppOpenSentDate) {
+    } else if (presence) {
         [WonderPush trackInternalEvent:@"@PRESENCE" eventData:@{@"presence" : presence.toJSON} customData:nil];
     }
 }
