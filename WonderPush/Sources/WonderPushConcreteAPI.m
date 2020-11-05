@@ -45,10 +45,10 @@
 }
 
 - (void)updateBlackWhiteList:(WPRemoteConfig *)config {
-    if (config
-        && [config.data objectForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY]
-        && [[config.data objectForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY] isKindOfClass:NSArray.class]) {
-        self.eventsBlackWhiteList = [[WPBlackWhiteList alloc] initWithRules:[config.data objectForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY]];
+    
+    NSArray<NSString *> *rules = [WPNSUtil arrayForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY inDictionary:config.data ?: @{}];
+    if (rules) {
+        self.eventsBlackWhiteList = [[WPBlackWhiteList alloc] initWithRules:rules];
     } else {
         self.eventsBlackWhiteList = nil;
     }
