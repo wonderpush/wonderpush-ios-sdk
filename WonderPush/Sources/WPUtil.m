@@ -127,7 +127,7 @@ static NSDictionary *notificationServiceExtensionDict = nil;
         BOOL hasPlist = NO, hasFramework = NO;
         
         BOOL isDir = NO;
-        if ([fileManager fileExistsAtPath:plugInsPath isDirectory:&isDir] && isDir) {
+        if (plugInsPath && [fileManager fileExistsAtPath:plugInsPath isDirectory:&isDir] && isDir) {
             NSError *error = nil;
             NSArray *contents = [fileManager contentsOfDirectoryAtPath:plugInsPath error:&error];
             if (!error) {
