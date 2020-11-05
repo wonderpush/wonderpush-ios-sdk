@@ -139,6 +139,10 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         BOOL reportLastReceivedNotificationCheckDate = !lastReceivedNotificationCheckDate || ([now timeIntervalSinceDate:lastReceivedNotificationCheckDate] > lastReceivedNotificationCheckDelay);
         if (accessToken && reportLastReceivedNotificationCheckDate) {
             WPRequest *request = [self reportLastReceivedNotificationCheckDateInInstallation:now accessToken:accessToken completion:^(NSError *error) {
+                if (error) {
+                    [defaults setObject:lastReceivedNotificationCheckDate forKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_USER_DEFAULTS_KEY];
+                    [defaults synchronize];
+                }
                 dispatch_semaphore_signal(installationApiSemaphore);
             }];
             if (request) {
