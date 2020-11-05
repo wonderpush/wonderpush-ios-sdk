@@ -8,15 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface WPNSUtil : NSObject
 
 ///-----------------------
 /// @name Percent encoding
 ///-----------------------
 
-+ (NSString *) percentEncodedString:(NSString *)s;
++ (NSString * _Nullable) percentEncodedString:(NSString * _Nullable)s;
 
-+ (NSDictionary *)dictionaryWithFormEncodedString:(NSString *)encodedString;
++ (NSDictionary * _Nullable)dictionaryWithFormEncodedString:(NSString * _Nullable)encodedString;
 
 
 ///--------------
@@ -31,13 +33,13 @@
 ///-----------------------
 + (NSDictionary *)dictionaryByFilteringNulls:(NSDictionary *)dictionary;
 + (NSArray *)arrayByFilteringNulls:(NSArray *)array;
-+ (id) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary *)dictionary;
-+ (id) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (id _Nullable) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary *)dictionary;
++ (id _Nullable) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary *)dictionary;
 
-+ (NSDictionary *) dictionaryForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-+ (NSArray *) arrayForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-+ (NSString *) stringForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-+ (NSNumber *) numberForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (NSDictionary * _Nullable) dictionaryForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (NSArray * _Nullable) arrayForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (NSString * _Nullable) stringForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (NSNumber * _Nullable) numberForKey:(id)key inDictionary:(NSDictionary *)dictionary;
 
 ///-----------------------
 /// @name NSData utils
@@ -46,3 +48,5 @@
 
 
 @end
+
+NS_ASSUME_NONNULL_END
