@@ -47,8 +47,6 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAnalyticEventsFlow *displayOnWonderPushEventsFlow;
 @end
 
-static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSetting = @"wonderpush-iam-sdk-auto-data-collection";
-
 @implementation WPIAMRuntimeManager {
     // since we allow the SDK feature to be disabled/enabled at runtime, we need a field to track
     // its state on this
@@ -70,11 +68,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
 }
 
 - (void)resume {
-    // persist the setting
-    [[NSUserDefaults standardUserDefaults]
-     setObject:@(YES)
-     forKey:_userDefaultsKeyForIAMProgammaticAutoDataCollectionSetting];
-    
     @synchronized(self) {
         if (!_running) {
             [self.displayOnAppForegroundFlow start];
@@ -91,11 +84,6 @@ static NSString *const _userDefaultsKeyForIAMProgammaticAutoDataCollectionSettin
 }
 
 - (void)pause {
-    // persist the setting
-    [[NSUserDefaults standardUserDefaults]
-     setObject:@(NO)
-     forKey:_userDefaultsKeyForIAMProgammaticAutoDataCollectionSetting];
-    
     @synchronized(self) {
         if (_running) {
             [self.displayOnAppForegroundFlow stop];
