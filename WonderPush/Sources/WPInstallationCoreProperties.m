@@ -213,6 +213,11 @@ static NSDictionary* gpsCapabilityByCode = nil;
     return [WonderPush timeZone];
 }
 
++ (NSNumber *) getTimeOffset
+{
+    return [NSNumber numberWithInteger:[[NSTimeZone timeZoneWithName:[WonderPush timeZone]] secondsFromGMT] * 1000];
+}
+
 + (NSString *) getCarrierName
 {
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];

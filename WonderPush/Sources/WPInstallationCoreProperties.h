@@ -14,6 +14,7 @@
 + (CGRect) getScreenSize;
 + (NSInteger) getScreenDensity;
 + (NSString *) getTimezone;
++ (NSNumber *) getTimeOffset;
 + (NSString *) getCarrierName;
 + (NSString *) getVersionString;
 + (NSString *) getLocale;

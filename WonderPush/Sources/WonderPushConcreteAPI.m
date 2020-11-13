@@ -460,6 +460,7 @@
                                       };
         
         NSDictionary *configuration = @{@"timeZone": [WPInstallationCoreProperties getTimezone] ?: null,
+                                        @"timeOffset": [WPInstallationCoreProperties getTimeOffset] ?: null,
                                         @"carrier": [WPInstallationCoreProperties getCarrierName] ?: null,
                                         @"country": [WPInstallationCoreProperties getCountry] ?: null,
                                         @"currency": [WPInstallationCoreProperties getCurrency] ?: null,
