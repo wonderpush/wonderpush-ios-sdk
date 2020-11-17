@@ -27,6 +27,7 @@
 @property(weak, nonatomic) IBOutlet UIButton *secondaryActionButton;
 @property(weak, nonatomic) IBOutlet UITextView *bodyTextView;
 @property(weak, nonatomic) IBOutlet UIScrollView *textAreaScrollView;
+@property (weak, nonatomic) IBOutlet UIButton *backgroundCloseButton;
 
 @end
 
@@ -71,6 +72,9 @@
         [self dismissView:WPInAppMessagingDismissTypeUserTapClose];
     }
 }
+- (IBAction)closeButtonClicked:(id)sender {
+    [self dismissView:WPInAppMessagingDismissTypeUserTapClose];
+}
 
 - (WPInAppMessagingDisplayMessage *)inAppMessage {
     return self.cardDisplayMessage;
@@ -78,7 +82,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.backgroundCloseButton.backgroundColor = UIColor.clearColor;
+
     self.cardView.backgroundColor = self.cardDisplayMessage.displayBackgroundColor;
     self.cardView.layer.cornerRadius = 4;
     self.cardView.clipsToBounds = YES;

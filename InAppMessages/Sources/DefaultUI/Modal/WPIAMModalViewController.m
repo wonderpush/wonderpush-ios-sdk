@@ -23,6 +23,7 @@
 
 @property(nonatomic, readwrite) WPInAppMessagingModalDisplay *modalDisplayMessage;
 
+@property (weak, nonatomic) IBOutlet UIButton *backgroundCloseButton;
 @property(weak, nonatomic) IBOutlet UIImageView *imageView;
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property(weak, nonatomic) IBOutlet UIButton *actionButton;
@@ -112,6 +113,7 @@ static CGFloat LandScapePaddingBetweenImageAndTextColumn = 24;
     self.messageCardView.layer.cornerRadius = 4;
     self.messageCardView.clipsToBounds = NO;
     self.messageCardView.pointInsideDelegate = self;
+    self.backgroundCloseButton.backgroundColor = UIColor.clearColor;
     
     if (self.modalDisplayMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone) {
         UITapGestureRecognizer *closeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeButtonClicked:)];

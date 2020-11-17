@@ -21,6 +21,7 @@
 @interface WPIAMImageOnlyViewController () <WPIAMHitTestDelegate>
 
 @property(nonatomic, readwrite) WPInAppMessagingImageOnlyDisplay *imageOnlyMessage;
+@property (weak, nonatomic) IBOutlet UIButton *backgroundCloseButton;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonPositionInsideHorizontalConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonPositionInsideVerticalConstraint;
 @property (weak, nonatomic) IBOutlet WPIAMHitTestDelegateView *containerView;
@@ -90,7 +91,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view setBackgroundColor:UIColor.clearColor];
-    
+    self.backgroundCloseButton.backgroundColor = UIColor.clearColor;
+
     if (self.imageOnlyMessage.imageData) {
         UIImage *image = [UIImage imageWithData:self.imageOnlyMessage.imageData.imageRawData];
         self.imageOriginalSize = image.size;
