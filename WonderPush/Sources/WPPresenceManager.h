@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<WPPresenceManagerAutoRenewDelegate> autoRenewDelegate;
 @property (readonly) NSTimeInterval anticipatedTime;
 @property (readonly) NSTimeInterval safetyMarginTime;
+@property (readonly, nullable) WPPresencePayload *lastPresencePayload;
 
 - (instancetype) init NS_UNAVAILABLE;
 /**
