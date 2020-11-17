@@ -24,7 +24,7 @@
 #import "WPURLConstants.h"
 #import "WPRemoteConfig.h"
 #import "WPMeasurementsApiClient.h"
-
+#import "WPPresenceManager.h"
 #import "WonderPush_constants.h"
 
 /**
@@ -213,6 +213,7 @@ Called when receiving the full state of the installation
 
 + (NSString *) subscriptionStatus;
 + (BOOL) subscriptionStatusIsOptIn;
++ (WPPresenceManager *)presenceManager;
 @end
 
 
