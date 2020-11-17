@@ -15,6 +15,7 @@
 #import "WPJsonUtil.h"
 #import "WPJsonSyncInstallation.h"
 #import "WPConfiguration.h"
+#import "WonderPush_private.h"
 
 @implementation WPSPSegmenterPresenceInfo
 
@@ -35,11 +36,15 @@
     NSDictionary *installationData = [WPJsonSyncInstallation forCurrentUser].sdkState;
     NSArray <NSDictionary *> *events = WPConfiguration.sharedConfiguration.trackedEvents;
     WPConfiguration *configuration = WPConfiguration.sharedConfiguration;
+    
+    WPPresencePayload *presence = [[WonderPush presenceManager] lastPresencePayload];
+    WPSPSegmenterPresenceInfo *presenceInfo = presence ? [[WPSPSegmenterPresenceInfo alloc] initWithFromDate:(long long)(presence.fromDate.timeIntervalSince1970 * 1000) untilDate:(long long)(presence.untilDate.timeIntervalSince1970 * 1000) elapsedTime:(long long)(presence.elapsedTime * 1000)] : nil;
+    
     NSDate *lastAppOpenDate = configuration.lastAppOpenDate;
     WPSPSegmenterData *data = [[WPSPSegmenterData alloc]
                                initWithInstallation:installationData
                                allEvents:events
-                               presenceInfo:nil // Presence not available on iOS
+                               presenceInfo:presenceInfo
                                lastAppOpenDate:(long long)(lastAppOpenDate.timeIntervalSince1970 * 1000)];
     return data;
 }

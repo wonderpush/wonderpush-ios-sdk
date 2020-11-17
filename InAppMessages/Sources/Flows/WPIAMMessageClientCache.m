@@ -187,7 +187,9 @@
                 if (next.segmentDefinition) {
                     @try {
                         WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:next.segmentDefinition];
-                        if (![segmenter parsedSegmentMatchesInstallation:parsedSegment]) continue; // Segmentation check
+                        if (![segmenter parsedSegmentMatchesInstallation:parsedSegment]) {
+                            continue; // Segmentation check
+                        }
                     } @catch (NSException *exception) {
                         WPLog(@"Invalid segment: %@", next.segmentDefinition);
                         // Let's not use this in-app with a buggy segment
