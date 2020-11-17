@@ -23,39 +23,17 @@
 #import "WPAction_private.h"
 #import "WPBlackWhiteList.h"
 
-@interface WonderPushConcreteAPI ()
-@property (nonatomic, strong, nullable) WPBlackWhiteList *eventsBlackWhiteList;
-@end
-
 @implementation WonderPushConcreteAPI
 - (instancetype)init {
     self = [super init];
     if (self) {
         self.locationManager = [CLLocationManager new];
-        [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
-            [self updateBlackWhiteList:config];
-        }];
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(remoteConfigUpdated:) name:WPRemoteConfigUpdatedNotification object:nil];
     }
     return self;
 }
 
 - (void)dealloc {
     [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
-- (void)updateBlackWhiteList:(WPRemoteConfig *)config {
-    
-    NSArray<NSString *> *rules = [WPNSUtil arrayForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY inDictionary:config.data ?: @{}];
-    if (rules) {
-        self.eventsBlackWhiteList = [[WPBlackWhiteList alloc] initWithRules:rules];
-    } else {
-        self.eventsBlackWhiteList = nil;
-    }
-}
-
-- (void)remoteConfigUpdated:(NSNotification *)note {
-    [self updateBlackWhiteList:note.object];
 }
 
 - (void) activate {
@@ -113,11 +91,7 @@
 - (void) countEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
     if (![type isKindOfClass:[NSString class]]) return;
-    if (self.eventsBlackWhiteList && ![self.eventsBlackWhiteList allow:type]) {
-        WPLogDebug(@"Event of type %@ forbidden by configuration", type);
-        return;
-    }
-    
+
     // Installations that have both an accessToken and the overrideNotificationReceipt are not just counted, they are tracked.
     if (WPConfiguration.sharedConfiguration.accessToken
         && WPConfiguration.sharedConfiguration.overrideNotificationReceipt) {
@@ -141,13 +115,22 @@
         }];
     });
 
-    NSString *eventEndPoint = @"/events";
-    WPRequest *request = [WPRequest new];
-    request.method = @"POST";
-    request.params = params;
-    request.userId = WPConfiguration.sharedConfiguration.userId;
-    request.resource = eventEndPoint;
-    [WonderPush requestEventuallyWithMeasurementsApi:request];
+    // Do not send to the server if blacklisted
+    [self eventsBlackWhiteList:^(WPBlackWhiteList *eventsBlackWhiteList, NSError *error) {
+        if (eventsBlackWhiteList && ![eventsBlackWhiteList allow:type]) {
+            WPLogDebug(@"Event of type %@ forbidden by configuration", type);
+            return;
+        }
+
+        NSString *eventEndPoint = @"/events";
+        WPRequest *request = [WPRequest new];
+        request.method = @"POST";
+        request.params = params;
+        request.userId = WPConfiguration.sharedConfiguration.userId;
+        request.resource = eventEndPoint;
+        [WonderPush requestEventuallyWithMeasurementsApi:request];
+    }];
+
 }
 
 - (NSDictionary *)paramsForEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData {
@@ -186,10 +169,6 @@
 - (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void(^)(void))sentCallback {
 
     if (![type isKindOfClass:[NSString class]]) return;
-    if (self.eventsBlackWhiteList && ![self.eventsBlackWhiteList allow:type]) {
-        WPLogDebug(@"Event of type %@ forbidden by configuration", type);
-        return;
-    }
     @synchronized (self) {
         NSString *eventEndPoint = @"/events";
         NSDictionary *params = [self paramsForEvent:type eventData:data customData:customData];
@@ -208,19 +187,41 @@
             }];
         });
         
-        [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
-            if ([config.data[WP_REMOTE_CONFIG_TRACK_EVENTS_FOR_NON_SUBSCRIBERS] boolValue]) {
-                // Save in request vault
-                [WonderPush postEventually:eventEndPoint params:params];
-                if (sentCallback) sentCallback();
-            } else {
-                [WonderPush safeDeferWithSubscription:^{
+        // Do not send to the server if blacklisted
+        [self eventsBlackWhiteList:^(WPBlackWhiteList *eventsBlackWhiteList, NSError *error) {
+            if (eventsBlackWhiteList && ![eventsBlackWhiteList allow:type]) {
+                WPLogDebug(@"Event of type %@ forbidden by configuration", type);
+                return;
+            }
+
+            [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+                if ([config.data[WP_REMOTE_CONFIG_TRACK_EVENTS_FOR_NON_SUBSCRIBERS] boolValue]) {
+                    // Save in request vault
                     [WonderPush postEventually:eventEndPoint params:params];
                     if (sentCallback) sentCallback();
-                }];
-            }
+                } else {
+                    [WonderPush safeDeferWithSubscription:^{
+                        [WonderPush postEventually:eventEndPoint params:params];
+                        if (sentCallback) sentCallback();
+                    }];
+                }
+            }];
         }];
     }
+}
+
+- (void) eventsBlackWhiteList:(void(^)(WPBlackWhiteList * _Nullable, NSError * _Nullable))completion {
+    [WonderPush.remoteConfigManager read:^(WPRemoteConfig *config, NSError *error) {
+        WPBlackWhiteList *list = nil;
+        if (config) {
+            NSArray<NSString *> *rules = [WPNSUtil arrayForKey:WP_REMOTE_CONFIG_EVENTS_BLACK_WHITE_LIST_KEY inDictionary:config.data ?: @{}];
+            if (rules) {
+                list = [[WPBlackWhiteList alloc] initWithRules:rules];
+            }
+
+        }
+        completion(list, error);
+    }];
 }
 
 - (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData {
