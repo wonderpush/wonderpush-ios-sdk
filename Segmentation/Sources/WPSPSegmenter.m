@@ -46,7 +46,9 @@
 }
 
 + (instancetype)forCurrentUser {
-    NSDictionary *installationData = [WPJsonSyncInstallation forCurrentUser].sdkState;
+    NSString *userId = [WonderPush userId];
+    NSMutableDictionary *installationData = [NSMutableDictionary dictionaryWithDictionary:[WPJsonSyncInstallation forCurrentUser].sdkState];
+    if (userId) installationData[@"userId"] = userId;
     NSArray <NSDictionary *> *events = [self getEvents];
     WPConfiguration *configuration = WPConfiguration.sharedConfiguration;
     
