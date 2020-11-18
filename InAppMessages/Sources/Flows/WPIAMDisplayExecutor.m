@@ -35,7 +35,8 @@
 
 // YES if a message is being rendered at this time
 @property(nonatomic) BOOL isMsgBeingDisplayed;
-@property(nonatomic) NSTimeInterval lastDisplayTime;
+@property(nonatomic) NSTimeInterval lastRateLimitedInAppDisplayTime;
+@property(nonatomic) NSTimeInterval lastInAppDisplayTime;
 @property(nonatomic, nonnull, readonly) WPInAppMessaging *inAppMessaging;
 @property(nonatomic, nonnull, readonly) WPIAMDisplaySetting *setting;
 @property(nonatomic, nonnull, readonly) WPIAMMessageClientCache *messageCache;
@@ -203,8 +204,9 @@
 
 - (void)recordValidImpression:(WPReportingData *)reportingData {
     if (!self.impressionRecorded) {
+        self.displayBookKeeper.lastRateLimitedInAppDisplayTime = self.lastRateLimitedInAppDisplayTime;
         [self.displayBookKeeper recordNewImpressionForReportingData:reportingData
-                                        withStartTimestampInSeconds:self.lastDisplayTime];
+                                        withStartTimestampInSeconds:self.lastInAppDisplayTime];
         self.impressionRecorded = YES;
     }
 }
@@ -261,7 +263,8 @@
     if (self = [super init]) {
         _inAppMessaging = inAppMessaging;
         _timeFetcher = timeFetcher;
-        _lastDisplayTime = displayBookKeeper.lastDisplayTime;
+        _lastRateLimitedInAppDisplayTime = displayBookKeeper.lastRateLimitedInAppDisplayTime;
+        _lastInAppDisplayTime = 0;
         _setting = setting;
         _messageCache = cache;
         _displayBookKeeper = displayBookKeeper;
@@ -298,6 +301,8 @@
         [self.messageCache nextOnEventDisplayMsg:eventName];
         
         if (nextAnalyticsBasedMessage) {
+            NSTimeInterval now = [self.timeFetcher currentTimestampInSeconds];
+            self.lastInAppDisplayTime = now;
             [self displayMessage:nextAnalyticsBasedMessage
                         triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent
                               delay:[nextAnalyticsBasedMessage delayForTrigger:WPIAMRenderTriggerOnWonderPushEvent]];
@@ -589,7 +594,7 @@
 
 - (BOOL)enoughIntervalFromLastDisplay {
     NSTimeInterval intervalFromLastDisplayInSeconds =
-    [self.timeFetcher currentTimestampInSeconds] - self.lastDisplayTime;
+    [self.timeFetcher currentTimestampInSeconds] - self.lastRateLimitedInAppDisplayTime;
     
     WPLogDebug(
                 @"Interval time from last display is %lf seconds", intervalFromLastDisplayInSeconds);
@@ -625,10 +630,12 @@
             WPIAMMessageDefinition *nextAppLaunchMessage = [self.messageCache nextOnAppLaunchDisplayMsg];
             
             if (nextAppLaunchMessage) {
+                NSTimeInterval now = [self.timeFetcher currentTimestampInSeconds];
+                self.lastInAppDisplayTime = now;
+                self.lastRateLimitedInAppDisplayTime = now;
                 [self displayMessage:nextAppLaunchMessage
                             triggerType:WPInAppMessagingDisplayTriggerTypeOnAppForeground
                                   delay:[nextAppLaunchMessage delayForTrigger:WPIAMRenderTriggerOnAppLaunch]];
-                self.lastDisplayTime = [self.timeFetcher currentTimestampInSeconds];
             } else {
                 WPLogDebug(
                             @"No appropriate in-app message detected for display.");
@@ -670,10 +677,12 @@
             WPIAMMessageDefinition *nextForegroundMessage = [self.messageCache nextOnAppOpenDisplayMsg];
             
             if (nextForegroundMessage) {
+                NSTimeInterval now = [self.timeFetcher currentTimestampInSeconds];
+                self.lastInAppDisplayTime = now;
+                self.lastRateLimitedInAppDisplayTime = now;
                 [self displayMessage:nextForegroundMessage
                             triggerType:WPInAppMessagingDisplayTriggerTypeOnAppForeground
                                   delay:[nextForegroundMessage delayForTrigger:WPIAMRenderTriggerOnAppForeground]];
-                self.lastDisplayTime = [self.timeFetcher currentTimestampInSeconds];
             } else {
                 WPLogDebug(
                             @"No appropriate in-app message detected for display.");

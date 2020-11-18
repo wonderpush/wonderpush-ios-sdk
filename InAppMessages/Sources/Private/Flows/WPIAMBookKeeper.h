@@ -20,7 +20,6 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface WPIAMImpressionRecord : NSObject
 @property(nonatomic, readonly) WPReportingData *reportingData;
-@property(nonatomic, readonly) long impressionTimeInSeconds;
 @property(nonatomic, readonly) NSTimeInterval lastImpressionTimestamp;
 @property(nonatomic, readonly) NSInteger impressionCount;
 
@@ -28,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithReportingData:(WPReportingData *)reportingData
-              impressionTimeInSeconds:(long)impressionTime
               lastImpressionTimestamp:(NSTimeInterval)lastImpressionTimestamp
                       impressionCount:(NSInteger)impressionCount NS_DESIGNATED_INITIALIZER;
 @end
@@ -37,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 // display of iam messages. The info tracked here can be used to decide if it's due for
 // next display of iam messages.
 @protocol WPIAMBookKeeper
-@property(nonatomic, readonly) double lastDisplayTime;
+@property(nonatomic, readwrite) NSTimeInterval lastRateLimitedInAppDisplayTime;
 
 // only call this when it's considered to be a valid impression (for example, meeting the minimum
 // display time requirement).

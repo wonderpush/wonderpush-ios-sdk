@@ -24,13 +24,11 @@ NSString *const WPIAM_UserDefaultsKeyForLastImpressionTimestamp = @"wonderpush-i
 
 // The keys used to map WPIAMImpressionRecord object to a NSDictionary object for
 // persistence.
-NSString *const WPIAM_ImpressionDictKeyForDurationMilliseconds = @"impressionTime";
 NSString *const WPIAM_ImpressionDictKeyForCount = @"impressionCount";
 NSString *const WPIAM_ImpressionDictKeyForLastImpressionDateTimestamp = @"lastImpressionDate";
 NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
 
 @interface WPIAMBookKeeperViaUserDefaults ()
-@property(nonatomic) double lastDisplayTime;
 @property(nonatomic, nonnull) NSUserDefaults *defaults;
 @end
 
@@ -40,10 +38,9 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
 
 @implementation WPIAMImpressionRecord
 
-- (instancetype)initWithReportingData:(WPReportingData *)reportingData impressionTimeInSeconds:(long)impressionTime lastImpressionTimestamp:(NSTimeInterval)lastImpressionTimestamp impressionCount:(NSInteger)impressionCount {
+- (instancetype)initWithReportingData:(WPReportingData *)reportingData lastImpressionTimestamp:(NSTimeInterval)lastImpressionTimestamp impressionCount:(NSInteger)impressionCount {
     if (self = [super init]) {
         _reportingData = reportingData;
-        _impressionTimeInSeconds = impressionTime;
         _impressionCount = impressionCount;
         _lastImpressionTimestamp = lastImpressionTimestamp;
     }
@@ -51,12 +48,11 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
 }
 
 - (instancetype)initWithStorageDictionary:(NSDictionary *)dict {
-    id timestamp = dict[WPIAM_ImpressionDictKeyForDurationMilliseconds];
     id reportingDataDict = dict[WPIAM_ImpressionDictKeyForReportingData];
     id lastImpressionTimestamp = dict[WPIAM_ImpressionDictKeyForLastImpressionDateTimestamp];
     id impressionCount = dict[WPIAM_ImpressionDictKeyForCount];
 
-    if (![timestamp isKindOfClass:[NSNumber class]] || ![reportingDataDict isKindOfClass:[NSDictionary class]]) {
+    if (![reportingDataDict isKindOfClass:[NSDictionary class]]) {
         WPLogDebug(
                     @"Incorrect data in the dictionary object for creating a WPIAMImpressionRecord"
                     " object");
@@ -64,15 +60,14 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
     } else {
         WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:reportingDataDict];
         return [self initWithReportingData:reportingData
-                   impressionTimeInSeconds:((NSNumber *)timestamp).longValue / 1000l
                    lastImpressionTimestamp:lastImpressionTimestamp ? [lastImpressionTimestamp doubleValue] : 0
                            impressionCount:impressionCount ? [impressionCount integerValue] : 1];
     }
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"%@ impressed at %ld in seconds", self.reportingData,
-            self.impressionTimeInSeconds];
+    return [NSString stringWithFormat:@"%@ impressed at %f in seconds", self.reportingData,
+            self.lastImpressionTimestamp];
 }
 @end
 
@@ -81,11 +76,18 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
 - (instancetype)initWithUserDefaults:(NSUserDefaults *)userDefaults {
     if (self = [super init]) {
         _defaults = userDefaults;
-        
-        // ok if it returns 0 due to the entry being absent
-        _lastDisplayTime = [_defaults doubleForKey:WPIAM_UserDefaultsKeyForLastImpressionTimestamp];
     }
     return self;
+}
+
+- (NSTimeInterval)lastRateLimitedInAppDisplayTime {
+    // ok if it returns 0 due to the entry being absent
+    return [_defaults doubleForKey:WPIAM_UserDefaultsKeyForLastImpressionTimestamp];
+}
+
+- (void)setLastRateLimitedInAppDisplayTime:(NSTimeInterval)lastRateLimitedInAppDisplayTime {
+    [_defaults setDouble:lastRateLimitedInAppDisplayTime forKey:WPIAM_UserDefaultsKeyForLastImpressionTimestamp];
+    [_defaults synchronize];
 }
 
 // A helper function for reading and verifying the stored array data for impressions
@@ -119,7 +121,6 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         NSNumber *dateTimestamp = [NSNumber numberWithDouble:[NSDate date].timeIntervalSince1970];
         NSMutableDictionary *newImpressionEntry = [NSMutableDictionary dictionaryWithDictionary:@{
             WPIAM_ImpressionDictKeyForReportingData : reportingData.dictValue,
-            WPIAM_ImpressionDictKeyForDurationMilliseconds : [NSNumber numberWithLong:(long)(timestamp * 1000)],
             WPIAM_ImpressionDictKeyForCount: @1,
             WPIAM_ImpressionDictKeyForLastImpressionDateTimestamp: dateTimestamp,
         }];
@@ -153,9 +154,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         }
         
         [self.defaults setObject:newImpressions forKey:WPIAM_UserDefaultsKeyForImpressions];
-        [self.defaults setDouble:timestamp forKey:WPIAM_UserDefaultsKeyForLastImpressionTimestamp];
         [self.defaults synchronize];
-        self.lastDisplayTime = timestamp;
         NSMutableDictionary *eventData = [NSMutableDictionary new];
         [eventData addEntriesFromDictionary:reportingData.dictValue];
         eventData[@"actionDate"] = [NSNumber numberWithLong:(long)(timestamp * 1000)];
