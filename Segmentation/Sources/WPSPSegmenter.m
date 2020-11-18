@@ -56,6 +56,7 @@
     WPSPSegmenterPresenceInfo *presenceInfo = presence ? [[WPSPSegmenterPresenceInfo alloc] initWithFromDate:(long long)(presence.fromDate.timeIntervalSince1970 * 1000) untilDate:(long long)(presence.untilDate.timeIntervalSince1970 * 1000) elapsedTime:(long long)(presence.elapsedTime * 1000)] : nil;
     
     NSDate *lastAppOpenDate = configuration.lastAppOpenDate;
+    WPLogDebug(@"Creating segmenter with installation data %@", installationData);
     WPSPSegmenterData *data = [[WPSPSegmenterData alloc]
                                initWithInstallation:installationData
                                allEvents:events
@@ -352,28 +353,29 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
         WPLog(@"[%@] Unexpected dataSourceValues: %@", NSStringFromSelector(_cmd), dataSourceValues);
     }
     id actualValue = [node.value accept:self];
-    if (actualValue == nil || [[NSNull null] isEqual:actualValue]) {
-        return dataSourceValues.count == 0 ? @YES : @NO;
-    }
     BOOL result = NO;
-    for (id dataSourceValue in dataSourceValues) {
-        if (!dataSourceValue || [dataSourceValue isKindOfClass:NSNull.class]) continue;
-        if (([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue]) || ([dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue])) {
-            if ([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue] && [dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue]) {
-                result = ((NSNumber *)actualValue).boolValue == ((NSNumber *)dataSourceValue).boolValue;
+    if (actualValue == nil || [[NSNull null] isEqual:actualValue]) {
+        result = dataSourceValues.count == 0 ? YES : NO;
+    } else {
+        for (id dataSourceValue in dataSourceValues) {
+            if (!dataSourceValue || [dataSourceValue isKindOfClass:NSNull.class]) continue;
+            if (([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue]) || ([dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue])) {
+                if ([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue] && [dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue]) {
+                    result = ((NSNumber *)actualValue).boolValue == ((NSNumber *)dataSourceValue).boolValue;
+                } else {
+                    result = NO;
+                }
+            } else if ([actualValue isKindOfClass:NSNumber.class]) {
+                if ([dataSourceValue isKindOfClass:NSNumber.class]) {
+                    result = [actualValue isEqual:dataSourceValue];
+                } else {
+                    result = NO;
+                }
             } else {
-                result = NO;
-            }
-        } else if ([actualValue isKindOfClass:NSNumber.class]) {
-            if ([dataSourceValue isKindOfClass:NSNumber.class]) {
                 result = [actualValue isEqual:dataSourceValue];
-            } else {
-                result = NO;
             }
-        } else {
-            result = [actualValue isEqual:dataSourceValue];
+            if (result) break;
         }
-        if (result) break;
     }
     if (_debug) WPLog(@"[%@] return %@ because %@ %@ %@", NSStringFromSelector(_cmd), result ? @"true" : @"false", dataSourceValues, result ? @"==" : @"!=", actualValue);
     return result ? @YES : @NO;
@@ -394,24 +396,32 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
         for (NSDictionary *event in self.data.allEvents) {
             WPSPEventVisitor *eventVisitor = [[WPSPEventVisitor alloc] initWithData:self.data event:event];
             if (((NSNumber *)[node.child accept:eventVisitor]).boolValue) {
+                if (_debug) WPLog(@"[%@] return true for event %@", NSStringFromSelector(_cmd), event);
                 return @YES;
             }
         }
+        if (_debug) WPLog(@"[%@] return false for all events", NSStringFromSelector(_cmd));
         return @NO;
     }
     if ([node.context.dataSource isKindOfClass:WPSPInstallationSource.class]) {
         WPSPInstallationVisitor *installationVisitor = [[WPSPInstallationVisitor alloc] initWithData:self.data];
-        return [node.child accept:installationVisitor];
+        id result = [node.child accept:installationVisitor];
+        if (_debug) WPLog(@"[%@] return %@ for installation", NSStringFromSelector(_cmd), [result boolValue] ? @"true" : @"false");
+        return result;
     }
     WPLog(@"[%@] return false for unsupported %@", NSStringFromSelector(_cmd), NSStringFromClass(node.context.dataSource.class));
     return @NO;
 }
 
 - (nonnull id)visitLastActivityDateCriterionNode:(nonnull WPSPLastActivityDateCriterionNode *)node {
+    id result = nil;
     if (node.dateComparison == nil) {
-        return self.data.lastAppOpenDate > 0 ? @YES : @NO;
+        result = self.data.lastAppOpenDate > 0 ? @YES : @NO;
+    } else {
+        result = [node.dateComparison accept:self];
     }
-    return [node.dateComparison accept:self];
+    if (_debug) WPLog(@"[%@] return %@", NSStringFromSelector(_cmd), result);
+    return result;
 }
 
 - (nonnull id)visitPrefixCriterionNode:(nonnull WPSPPrefixCriterionNode *)node {
@@ -469,7 +479,18 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
     } else {
         actualStatus = WPSPSubscriptionStatusOptIn;
     }
-    return node.subscriptionStatus == actualStatus ? @YES : @NO;
+    id result = node.subscriptionStatus == actualStatus ? @YES : @NO;
+    NSString *statusString = nil;
+    switch (actualStatus) {
+        case WPSPSubscriptionStatusOptIn:
+            statusString = @"optIn";
+        case WPSPSubscriptionStatusOptOut:
+            statusString = @"optOut";
+        case WPSPSubscriptionStatusSoftOptOut:
+            statusString = @"softOptOut";
+    }
+    WPLog(@"[%@] return %@ because we are %@", NSStringFromSelector(_cmd), result ? @"true" : @"false", statusString ?: @"unknown");
+    return result;
 }
 
 ///
