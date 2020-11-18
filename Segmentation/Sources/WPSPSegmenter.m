@@ -32,9 +32,22 @@
 
 @implementation WPSPSegmenterData
 
++ (NSArray<NSDictionary *> *)getEvents {
+    NSArray<NSDictionary *> *trackedEvents = WPConfiguration.sharedConfiguration.trackedEvents;
+    NSMutableArray<NSDictionary *> *rtn = [[NSMutableArray alloc] initWithCapacity:trackedEvents.count];
+    for (NSDictionary *event in trackedEvents) {
+        NSMutableDictionary *evt = [[NSMutableDictionary alloc] initWithDictionary:event];
+        if (evt[@"creationDate"] == nil && evt[@"actionDate"] != nil) {
+            evt[@"creationDate"] = evt[@"actionDate"];
+        }
+        [rtn addObject:evt];
+    }
+    return [[NSArray alloc] initWithArray:rtn];
+}
+
 + (instancetype)forCurrentUser {
     NSDictionary *installationData = [WPJsonSyncInstallation forCurrentUser].sdkState;
-    NSArray <NSDictionary *> *events = WPConfiguration.sharedConfiguration.trackedEvents;
+    NSArray <NSDictionary *> *events = [self getEvents];
     WPConfiguration *configuration = WPConfiguration.sharedConfiguration;
     
     WPPresencePayload *presence = [[WonderPush presenceManager] lastPresencePayload];
