@@ -489,7 +489,7 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
         case WPSPSubscriptionStatusSoftOptOut:
             statusString = @"softOptOut";
     }
-    WPLog(@"[%@] return %@ because we are %@", NSStringFromSelector(_cmd), result ? @"true" : @"false", statusString ?: @"unknown");
+    if (_debug) WPLog(@"[%@] return %@ because we are %@", NSStringFromSelector(_cmd), result ? @"true" : @"false", statusString ?: @"unknown");
     return result;
 }
 
