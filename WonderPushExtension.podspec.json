@@ -27,6 +27,7 @@
       "name": "Extension",
       "source_files": [
         "WonderPushExtension/Sources/*.{m,h}",
+        "WonderPush/Sources/WonderPush_constants.h",
         "WonderPush/Sources/WPURLConstants.h",
         "WonderPush/Sources/WPNSUtil.{h,m}",
         "WonderPush/Sources/WPRequestSerializer.{h,m}",

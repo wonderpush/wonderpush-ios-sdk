@@ -7,7 +7,6 @@
 //
 
 #import "WPBasicApiClient.h"
-#import "WPLog.h"
 #import "WPErrors.h"
 #import "WPRequestSerializer.h"
 
