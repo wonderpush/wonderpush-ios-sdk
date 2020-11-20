@@ -164,7 +164,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         NSError *JSONError = nil;
         id JSONObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&JSONError];
         if (JSONError) {
-            completion(nil, error);
+            completion(nil, JSONError);
             return;
         }
         NSDictionary *configurationDict = [JSONObject isKindOfClass:NSDictionary.class] ? JSONObject : [NSDictionary new];
