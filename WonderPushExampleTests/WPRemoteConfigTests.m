@@ -129,6 +129,9 @@
     XCTAssertEqualObjects(self.storage.storedHighestVersion, @"1.0.0");
 }
 
+/**
+ Checking that fetching without prior declareVersion call fetches the config.
+ */
 - (void)testInitialRead {
     XCTAssertNil(self.fetcher.fetchedConfig);
     XCTAssertNil(self.storage.storedConfig);
