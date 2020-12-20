@@ -148,13 +148,18 @@ static NSDictionary *notificationServiceExtensionDict = nil;
                             } else {
                                 continue;
                             }
-                            // Does it have the framework?
-                            NSString *frameworkPlistPath = [plugInsEntryPath stringByAppendingPathComponent:@"Frameworks/WonderPushExtension.framework/Info.plist"];
-                            if ([fileManager fileExistsAtPath:frameworkPlistPath isDirectory:&isDir] && !isDir) {
-                                NSDictionary *frameworkPlistContents = [NSDictionary dictionaryWithContentsOfFile:frameworkPlistPath];
-                                NSString *CFBundleIdentifier = [frameworkPlistContents objectForKey:@"CFBundleIdentifier"];
-                                if ([CFBundleIdentifier isEqualToString:@"com.wonderpush.WonderPushExtension"]) {
-                                    hasFramework = YES;
+                            // Search for WonderPushExtension.framework in 2 places:
+                            // - /Frameworks
+                            // - /PlugIns/WonderPushNotificationServiceExtension.appex/Frameworks
+                            for (NSString *root in @[bundle.bundlePath, plugInsEntryPath]) {
+                                if (hasFramework) continue;
+                                NSString *frameworkPlistPath = [root stringByAppendingPathComponent:@"Frameworks/WonderPushExtension.framework/Info.plist"];
+                                if ([fileManager fileExistsAtPath:frameworkPlistPath isDirectory:&isDir] && !isDir) {
+                                    NSDictionary *frameworkPlistContents = [NSDictionary dictionaryWithContentsOfFile:frameworkPlistPath];
+                                    NSString *CFBundleIdentifier = [frameworkPlistContents objectForKey:@"CFBundleIdentifier"];
+                                    if ([CFBundleIdentifier isEqualToString:@"com.wonderpush.WonderPushExtension"]) {
+                                        hasFramework = YES;
+                                    }
                                 }
                             }
                             break;
