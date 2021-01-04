@@ -45,13 +45,11 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAppForegroundFlow *displayOnAppForegroundFlow;
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnFetchDoneNotificationFlow *displayOnFetchDoneFlow;
 @property(nonatomic, nonnull) WPIAMDisplayCheckOnAnalyticEventsFlow *displayOnWonderPushEventsFlow;
+@property(atomic, readwrite) BOOL running;
 @end
 
-@implementation WPIAMRuntimeManager {
-    // since we allow the SDK feature to be disabled/enabled at runtime, we need a field to track
-    // its state on this
-    BOOL _running;
-}
+@implementation WPIAMRuntimeManager
+
 + (WPIAMRuntimeManager *)getSDKRuntimeInstance {
     static WPIAMRuntimeManager *managerInstance = nil;
     static dispatch_once_t onceToken;
@@ -69,13 +67,13 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
 
 - (void)resume {
     @synchronized(self) {
-        if (!_running) {
+        if (!self.running) {
             [self.displayOnAppForegroundFlow start];
             [self.displayOnFetchDoneFlow start];
             [self.displayOnWonderPushEventsFlow start];
             WPLogDebug(
                         @"Start WonderPush In-App Messaging flows from inactive.");
-            _running = YES;
+            self.running = YES;
         } else {
             WPLog(
                           @"Runtime is already active, resume is just a no-op");
@@ -85,13 +83,13 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
 
 - (void)pause {
     @synchronized(self) {
-        if (_running) {
+        if (self.running) {
             [self.displayOnAppForegroundFlow stop];
             [self.displayOnFetchDoneFlow stop];
             [self.displayOnWonderPushEventsFlow stop];
             WPLogDebug(
                         @"Shutdown WonderPush In-App Messaging flows.");
-            _running = NO;
+            self.running = NO;
         } else {
             WPLog(
                           @"No runtime active yet, pause is just a no-op");
@@ -112,7 +110,7 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
 }
 
 - (void)internalStartRuntimeWithSDKSettings:(WPIAMSDKSettings *)settings {
-    if (_running) {
+    if (self.running) {
         // Runtime has been started previously. Stop all the flows first.
         [self.displayOnAppForegroundFlow stop];
         [self.displayOnFetchDoneFlow stop];
@@ -172,7 +170,7 @@ typedef NS_ENUM(NSInteger, WPIAMAutoDataCollectionSetting) {
             
             [self.displayOnWonderPushEventsFlow start];
             
-            self->_running = YES;
+            self.running = YES;
             
 //            WPLogDebug(@"Start regular display flow for non-testing instance mode");
             [self.displayOnAppForegroundFlow start];
