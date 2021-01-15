@@ -290,6 +290,8 @@
                 [UIColor firiam_colorWithHexString:modalNode[@"actionButton"][@"buttonHexColor"]];
                 if (modalNode[@"actionButton"][@"text"] && modalNode[@"actionButton"][@"text"] != NSNull.null) {
                     actionButtonText = modalNode[@"actionButton"][@"text"][@"text"];
+                    btnTxtColor = [UIColor
+                                   firiam_colorWithHexString:modalNode[@"actionButton"][@"text"][@"hexColor"]];
                 }
             }
             
