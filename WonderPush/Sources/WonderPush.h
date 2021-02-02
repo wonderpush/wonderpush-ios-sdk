@@ -208,25 +208,25 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /**
  Returns the userId currently in use, `nil` by default.
  */
-+ (NSString *) userId;
++ (nullable NSString *) userId;
 
 /**
  Returns the installationId identifying your application on a device, bond to a specific userId.
  If you want to store this information on your servers, keep the corresponding userId with it.
  Will return `nil` until the SDK is properly initialized.
  */
-+ (NSString *) installationId;
++ (nullable NSString *) installationId;
 
 /**
  Returns the unique device identifier.
  */
-+ (NSString *) deviceId;
++ (nullable NSString *) deviceId;
 
 /**
  Returns the push token, or device token in Apple lingo.
  Returns `nil` if the user is not opt-in.
  */
-+ (NSString *) pushToken;
++ (nullable NSString *) pushToken;
 
 /**
  Returns the currently used access token.
@@ -234,7 +234,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  This together with your client secret gives entire control to the current installation and associated user,
  you should not disclose it unnecessarily.
  */
-+ (NSString *) accessToken;
++ (nullable NSString *) accessToken;
 
 /**
  Sets the framework, library or wrapper used for integration.
@@ -243,7 +243,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  only by components that facilitates the native SDK integration.
  @param integrator Expected format is `"some-component-1.2.3"`
  */
-+ (void) setIntegrator:(NSString *)integrator;
++ (void) setIntegrator:(NSString * _Nullable)integrator;
 
 /**
  Enables the collection of the user's geolocation.
@@ -264,7 +264,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param location The location to use as the user's current geolocation.
                  Using `nil` has the same effect as calling `disableGeolocation()`.
  */
-+ (void) setGeolocation:(CLLocation *)location;
++ (void) setGeolocation:(CLLocation * _Nullable)location;
 
 /**
  Gets the user's country, either as previously stored, or as guessed from the system.
@@ -272,7 +272,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @return The user's country.
  @see [WonderPush setCountry:]
  */
-+ (NSString *) country;
++ (nonnull NSString *) country;
 
 /**
  Overrides the user's country.
@@ -284,7 +284,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param country The country to use as the user's country.
                 Use `nil` to disable the override.
  */
-+ (void) setCountry:(NSString *)country;
++ (void) setCountry:(NSString * _Nullable)country;
 
 /**
  Gets the user's currency, either as previously stored, or as guessed from the system.
@@ -292,7 +292,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @return The user's currency.
  @see [WonderPush setCurrency:]
  */
-+ (NSString *) currency;
++ (nonnull NSString *) currency;
 
 /**
  Overrides the user's currency.
@@ -304,7 +304,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param currency The currency to use as the user's currency.
                  Use `nil` to disable the override.
  */
-+ (void) setCurrency:(NSString *)currency;
++ (void) setCurrency:(NSString * _Nullable)currency;
 
 /**
  Gets the user's locale, either as previously stored, or as guessed from the system.
@@ -312,7 +312,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @return The user's locale.
  @see [WonderPush setLocale:]
  */
-+ (NSString *) locale;
++ (nonnull NSString *) locale;
 
 /**
  Overrides the user's locale.
@@ -325,7 +325,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param locale The locale to use as the user's locale.
                Use `nil` to disable the override.
  */
-+ (void) setLocale:(NSString *)locale;
++ (void) setLocale:(NSString * _Nullable)locale;
 
 /**
  Gets the user's time zone, either as previously stored, or as guessed from the system.
@@ -333,7 +333,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @return The user's time zone.
  @see [WonderPush setTimeZone:]
  */
-+ (NSString *) timeZone;
++ (nonnull NSString *) timeZone;
 
 /**
  Overrides the user's timeZone.
@@ -346,7 +346,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param timeZone The time zone to use as the user's time zone.
                  Use `nil` to disable the override.
  */
-+ (void) setTimeZone:(NSString *)timeZone;
++ (void) setTimeZone:(NSString * _Nullable)timeZone;
 
 ///---------------------------------
 /// @name Push Notification handling
