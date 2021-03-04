@@ -17,7 +17,7 @@
 #import "WPNotificationServiceExtension.h"
 #import "WPURLConstants.h"
 #import "WPMeasurementsApiClient.h"
-
+#import "WPNSUtil.h"
 #import "WPLog.h"
 #import "WPNotificationCategoryManager.h"
 #import "WonderPush_constants.h"
@@ -115,19 +115,17 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
             return NO;
         }
         
-        id _Nullable wpData = [content.userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY];
-        id _Nullable alertData = [wpData valueForKey:@"alert"];
-        BOOL receiptUsingMeasurements = [[wpData valueForKey:@"receiptUsingMeasurements"] boolValue];
+        NSDictionary * _Nullable wpData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:content.userInfo];
+        NSDictionary * _Nullable alertData = [WPNSUtil dictionaryForKey:@"alert" inDictionary:wpData];
+        BOOL receiptUsingMeasurements = [[WPNSUtil numberForKey:@"receiptUsingMeasurements" inDictionary:wpData] boolValue];
         if (receiptUsingMeasurements) {
-            NSString *campaignId = [wpData objectForKey:@"c"];
-            NSString *notificationId = [wpData objectForKey:@"n"];
-            if (campaignId && notificationId) {
-                WPRequest *request = [self reportNotificationReceivedWithId:notificationId campaignId:campaignId completion:^(NSError *error) {
-                    dispatch_semaphore_signal(measurementsApiSemaphore);
-                }];
-                if (request) {
-                    measurementsApiSemaphore = dispatch_semaphore_create(0);
-                }
+            NSString * _Nullable campaignId = [WPNSUtil stringForKey:@"c" inDictionary:wpData];
+            NSString * _Nullable notificationId = [WPNSUtil stringForKey:@"n" inDictionary:wpData];
+            WPRequest *request = [self reportNotificationReceivedWithId:notificationId campaignId:campaignId completion:^(NSError *error) {
+                dispatch_semaphore_signal(measurementsApiSemaphore);
+            }];
+            if (request) {
+                measurementsApiSemaphore = dispatch_semaphore_create(0);
             }
         }
         
@@ -241,16 +239,15 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
     }
 }
 
-+ (WPRequest * _Nullable)reportNotificationReceivedWithId:(NSString *)notificationId campaignId:(NSString *)campaignId completion:(void(^ _Nullable)(NSError * _Nullable))completion {
-    if (!campaignId || !notificationId) return nil;
++ (WPRequest * _Nullable)reportNotificationReceivedWithId:(NSString * _Nullable)notificationId campaignId:(NSString * _Nullable)campaignId completion:(void(^ _Nullable)(NSError * _Nullable))completion {
     WPRequest *request = [WPRequest new];
     request.resource = @"events";
     request.method = @"POST";
     request.params = @{
         @"body" : @{
                 @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],
-                @"campaignId" : campaignId,
-                @"notificationId" : notificationId,
+                @"campaignId" : campaignId ? campaignId : [NSNull null],
+                @"notificationId" : notificationId ? notificationId : [NSNull null],
                 @"type" : @"@NOTIFICATION_RECEIVED",
         }};
     request.userId = nil; // We don't have that here
