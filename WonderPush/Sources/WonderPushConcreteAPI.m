@@ -140,9 +140,7 @@
                                                         @"actionDate": [NSNumber numberWithLongLong:date]}];
     
     if ([data isKindOfClass:[NSDictionary class]]) {
-        for (NSString *key in data) {
-            [body setValue:[data objectForKey:key] forKey:key];
-        }
+        [body addEntriesFromDictionary:data];
     }
     
     if ([customData isKindOfClass:[NSDictionary class]]) {
@@ -156,9 +154,7 @@
     }
 
     WPReportingData *reportingData = WonderPush.lastClickedNotificationReportingData;
-    if (reportingData.campaignId && !body[@"campaignId"]) body[@"campaignId"] = reportingData.campaignId;
-    if (reportingData.notificationId && !body[@"notificationId"]) body[@"notificationId"] = reportingData.notificationId;
-    if (reportingData.viewId && !body[@"viewId"]) body[@"viewId"] = reportingData.viewId;
+    [reportingData fillEventDataInto:body];
     return @{@"body":body};
 }
 

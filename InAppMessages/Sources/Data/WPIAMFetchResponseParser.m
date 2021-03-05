@@ -195,22 +195,7 @@
 }
 + (WPIAMMessageRenderData * _Nullable) renderDataFromNotificationDict:(NSDictionary *)notificationDict isTestMessage:(BOOL)isTestMessage {
     @try {
-        id reportingNode = notificationDict[@"reporting"];
-        if (![reportingNode isKindOfClass:[NSDictionary class]]) {
-            WPLog(
-                  @"reporting does not exist or does not represent a dictionary in "
-                  "message node %@",
-                  notificationDict);
-            return nil;
-        }
-        NSString *campaignId = reportingNode[@"campaignId"];
-        NSString *notificationId = reportingNode[@"notificationId"];
-        if (!campaignId || !notificationId || ![campaignId isKindOfClass:[NSString class]] || ![notificationId isKindOfClass:[NSString class]]) {
-            WPLog(
-                  @"campaign or notification id is missing in message node %@", notificationDict);
-            return nil;
-        }
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:reportingNode];
+        WPReportingData *reportingData = [[WPReportingData alloc] initWithNotificationDict:notificationDict];
 
         id contentNode = notificationDict[@"content"];
         if (![contentNode isKindOfClass:[NSDictionary class]]) {

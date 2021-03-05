@@ -20,6 +20,7 @@
 #import "WPNSUtil.h"
 #import "WPLog.h"
 #import "WPNotificationCategoryManager.h"
+#import "WPReportingData.h"
 #import "WonderPush_constants.h"
 
 #import <objc/runtime.h>
@@ -28,7 +29,6 @@
 /**
  Key of the WonderPush content in a push notification
  */
-#define WP_PUSH_NOTIFICATION_KEY @"_wp"
 #define USER_DEFAULTS_DEVICE_ID_KEY @"_wonderpush_deviceId"
 
 @interface WonderPushFileDownloader: NSObject
@@ -105,7 +105,8 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         __block dispatch_semaphore_t installationApiSemaphore = nil;
         WPLog(@"didReceiveNotificationRequest:%@", request);
         WPLog(@"                     userInfo:%@", request.content.userInfo);
-        
+        WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:request.content.userInfo];
+
         UNMutableNotificationContent *content = [request.content mutableCopy];
         [self setContentHandler:contentHandler forExtension:extension];
         [self setContent:content forExtension:extension];
@@ -119,9 +120,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         NSDictionary * _Nullable alertData = [WPNSUtil dictionaryForKey:@"alert" inDictionary:wpData];
         BOOL receiptUsingMeasurements = [[WPNSUtil numberForKey:@"receiptUsingMeasurements" inDictionary:wpData] boolValue];
         if (receiptUsingMeasurements) {
-            NSString * _Nullable campaignId = [WPNSUtil stringForKey:@"c" inDictionary:wpData];
-            NSString * _Nullable notificationId = [WPNSUtil stringForKey:@"n" inDictionary:wpData];
-            WPRequest *request = [self reportNotificationReceivedWithId:notificationId campaignId:campaignId completion:^(NSError *error) {
+            WPRequest *request = [self reportNotificationReceivedWithReportingData:reportingData completion:^(NSError *error) {
                 dispatch_semaphore_signal(measurementsApiSemaphore);
             }];
             if (request) {
@@ -164,7 +163,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                 [actions addObject:action];
                 buttonCounter++;
             }
-            UNNotificationCategory *category = [[WPNotificationCategoryManager sharedInstance] registerNotificationCategoryIdentifierWithNotificationId:[wpData valueForKey:@"n"] actions:actions];
+            UNNotificationCategory *category = [[WPNotificationCategoryManager sharedInstance] registerNotificationCategoryIdentifierWithNotificationId:reportingData.notificationId actions:actions];
             content.categoryIdentifier = category.identifier;
         }
         NSArray *attachments = [wpData valueForKey:@"attachments"];
@@ -239,17 +238,16 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
     }
 }
 
-+ (WPRequest * _Nullable)reportNotificationReceivedWithId:(NSString * _Nullable)notificationId campaignId:(NSString * _Nullable)campaignId completion:(void(^ _Nullable)(NSError * _Nullable))completion {
++ (WPRequest * _Nullable)reportNotificationReceivedWithReportingData:(WPReportingData *)reportingData completion:(void(^ _Nullable)(NSError * _Nullable))completion {
     WPRequest *request = [WPRequest new];
     request.resource = @"events";
     request.method = @"POST";
     request.params = @{
-        @"body" : @{
+        @"body" : [reportingData filledEventData:@{
                 @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],
-                @"campaignId" : campaignId ? campaignId : [NSNull null],
-                @"notificationId" : notificationId ? notificationId : [NSNull null],
                 @"type" : @"@NOTIFICATION_RECEIVED",
-        }};
+        }],
+    };
     request.userId = nil; // We don't have that here
     request.handler = ^(WPResponse *response, NSError *error) {
         if (completion) completion(error);

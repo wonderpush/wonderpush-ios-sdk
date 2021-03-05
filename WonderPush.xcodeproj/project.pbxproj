@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D80C83A25F14DED00D73A14 /* WPReportingData.m in Sources */ = {isa = PBXBuildFile; fileRef = 99C862C023F6F5AC00E37CE1 /* WPReportingData.m */; };
+		3D80C83E25F14DF300D73A14 /* WPReportingData.h in Headers */ = {isa = PBXBuildFile; fileRef = 99C862BF23F6F5AC00E37CE1 /* WPReportingData.h */; };
 		3DB7A41B24B3340600204437 /* WPSPSegmenter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB7A41924B3340600204437 /* WPSPSegmenter.h */; };
 		3DB7A41C24B3340600204437 /* WPSPSegmenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB7A41A24B3340600204437 /* WPSPSegmenter.m */; };
 		3DB7A41E24B486DC00204437 /* WPSPSegmenterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB7A41D24B486DC00204437 /* WPSPSegmenterTests.m */; };
@@ -1278,6 +1280,7 @@
 			files = (
 				9909CE6D222162E900F73A0B /* WonderPushExtension.h in Headers */,
 				99764181252783B0001EFD96 /* WPRequest.h in Headers */,
+				3D80C83E25F14DF300D73A14 /* WPReportingData.h in Headers */,
 				99F384942225A5E400EA2ECD /* NotificationServiceExtension.h in Headers */,
 				994E63F42534955C00B9E367 /* WonderPush_constants.h in Headers */,
 				99EA164A2487DDC000AA01BC /* WPNSUtil.h in Headers */,
@@ -1665,6 +1668,7 @@
 				99EA16532487E2A700AA01BC /* WPJsonUtil.m in Sources */,
 				9976417A25274F01001EFD96 /* WPErrors.m in Sources */,
 				9909CE5C2221602500F73A0B /* WPNotificationServiceExtension.m in Sources */,
+				3D80C83A25F14DED00D73A14 /* WPReportingData.m in Sources */,
 				99EA16562487E78B00AA01BC /* WPRequestSerializer.m in Sources */,
 				99EA164C2487DDC000AA01BC /* WPNSUtil.m in Sources */,
 				99E95EBE2407FA1100B8B062 /* WPNotificationCategoryManager.m in Sources */,

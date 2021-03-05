@@ -52,8 +52,6 @@ static NSString *_beforeInitializationUserId = nil;
 
 static BOOL _userNotificationCenterDelegateInstalled = NO;
 
-static NSString *_notificationFromAppLaunchCampaignId = nil;
-static NSString *_notificationFromAppLaunchNotificationId = nil;
 __weak static id<WonderPushDelegate> _delegate = nil;
 static WPPresenceManager *presenceManager = nil;
 @class WPPresenceManagerEventSender;
@@ -523,13 +521,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     ) {
         NSDictionary *notificationDictionary = [WPNSUtil dictionaryForKey:UIApplicationLaunchOptionsRemoteNotificationKey inDictionary:launchOptions];
         if ([notificationDictionary isKindOfClass:[NSDictionary class]]) {
-            _notificationFromAppLaunchCampaignId = nil;
-            _notificationFromAppLaunchNotificationId = nil;
-            if ([WonderPush isNotificationForWonderPush:notificationDictionary]) {
-                NSDictionary *wonderpushData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:notificationDictionary];
-                _notificationFromAppLaunchCampaignId = [WPNSUtil stringForKey:@"c" inDictionary:wonderpushData];
-                _notificationFromAppLaunchNotificationId = [WPNSUtil stringForKey:@"n" inDictionary:wonderpushData];
-            }
             return [self handleNotification:notificationDictionary];
         }
     }
@@ -816,31 +807,27 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [[WPJsonSyncInstallation forCurrentUser] receiveState:installation resetSdkState:false];
 }
 
-+ (void) trackNotificationOpened:(NSDictionary *)notificationInformation
++ (void) trackNotificationOpened:(NSDictionary *)eventData
 {
-    WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:notificationInformation];
+    WPReportingData *reportingData = [[WPReportingData alloc] initWithEventData:eventData];
     lastClickedNotificationReportingData = reportingData;
-    [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:notificationInformation customData:nil];
+    [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:eventData customData:nil];
 }
 
 + (void) trackNotificationReceived:(NSDictionary *)userInfo
 {
     if (![WonderPush isNotificationForWonderPush:userInfo]) return;
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+    WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:userInfo];
     NSDictionary *wpData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
     id receipt        = conf.overrideNotificationReceipt ?: [WPNSUtil nullsafeObjectForKey:@"receipt" inDictionary:wpData];
     id receiptUsingMeasurements = [WPNSUtil nullsafeObjectForKey:@"receiptUsingMeasurements" inDictionary:wpData];
-    id campagnId      = [WPNSUtil stringForKey:@"c" inDictionary:wpData];
-    id notificationId = [WPNSUtil stringForKey:@"n" inDictionary:wpData];
-    NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
-    if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
-    if (notificationId) notificationInformation[@"notificationId"] = notificationId;
     conf.lastReceivedNotificationDate = [NSDate date];
-    conf.lastReceivedNotification = notificationInformation;
+    conf.lastReceivedNotification = [reportingData eventDataValue];
     if ([receipt boolValue] && ![receiptUsingMeasurements boolValue]) {
-        [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:notificationInformation customData:nil];
+        [self trackInternalEvent:@"@NOTIFICATION_RECEIVED" eventData:[reportingData eventDataValue] customData:nil];
     }
-    
+
     // Track lastReceivedNotificationCheckDate
     NSTimeInterval lastReceivedNotificationCheckDelay = [wpData valueForKey:@"lastReceivedNotificationCheckDelay"] ? [[wpData valueForKey:@"lastReceivedNotificationCheckDelay"] doubleValue] / 1000: DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY;
     WPJsonSyncInstallation *installation = [WPJsonSyncInstallation forCurrentUser];
@@ -1007,7 +994,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             id atReceptionActions = [WPNSUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
             if ([atReceptionActions isKindOfClass:NSArray.class]) {
                 WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
-                WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
+                WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:notificationDictionary];
                 [self executeAction:action withReportingData:reportingData];
             }
 
@@ -1061,7 +1048,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         id atReceptionActions = [WPNSUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
         if ([atReceptionActions isKindOfClass:NSArray.class]) {
             WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
-            WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
+            WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:notificationDictionary];
             [self executeAction:action withReportingData:reportingData];
         }
     }
@@ -1202,11 +1189,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
     [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_OPENED object:nil userInfo:notificationDictionary];
 
-    id campagnId      = [WPNSUtil stringForKey:@"c" inDictionary:wonderpushData];
-    id notificationId = [WPNSUtil stringForKey:@"n" inDictionary:wonderpushData];
-    NSMutableDictionary *notificationInformation = [NSMutableDictionary new];
-    if (campagnId)      notificationInformation[@"campaignId"]     = campagnId;
-    if (notificationId) notificationInformation[@"notificationId"] = notificationId;
+    WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:notificationDictionary];
+    NSMutableDictionary *notificationOpenedEventData = [NSMutableDictionary new];
+    [reportingData fillEventDataInto:notificationOpenedEventData];
 
     NSString *targetUrl = [WPNSUtil stringForKey:WP_TARGET_URL_KEY inDictionary:wonderpushData];
     id actionsToExecute = [WPNSUtil arrayForKey:@"actions" inDictionary:wonderpushData];
@@ -1223,16 +1208,15 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                 actionsToExecute = [WPNSUtil arrayForKey:@"actions" inDictionary:button];
                 targetUrl = [WPNSUtil stringForKey:@"targetUrl" inDictionary:button];
                 NSString *buttonLabel = [WPNSUtil stringForKey:@"label" inDictionary:button];
-                if (buttonLabel) notificationInformation[@"buttonLabel"] = buttonLabel;
+                if (buttonLabel) notificationOpenedEventData[@"buttonLabel"] = buttonLabel;
             }
         }
     }
 
-    [self trackNotificationOpened:notificationInformation];
+    [self trackNotificationOpened:notificationOpenedEventData];
 
     if ([actionsToExecute isKindOfClass:NSArray.class]) {
         WPAction *action = [WPAction actionWithDictionaries:actionsToExecute];
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:wonderpushData];
         [self executeAction:action withReportingData:reportingData];
     }
 
@@ -1370,9 +1354,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             openInfo[@"lastReceivedNotificationTime"] = [[NSNumber alloc] initWithLongLong:now - lastReceivedNotificationTs];
         }
         // Add the information of the clicked notification
-        if (conf.justOpenedNotification && [conf.justOpenedNotification[@"_wp"] isKindOfClass:[NSDictionary class]]) {
-            openInfo[@"campaignId"]     = conf.justOpenedNotification[@"_wp"][@"c"] ?: [NSNull null];
-            openInfo[@"notificationId"] = conf.justOpenedNotification[@"_wp"][@"n"] ?: [NSNull null];
+        if (conf.justOpenedNotification) {
+            lastClickedNotificationReportingData = [[WPReportingData alloc] initWithPushPayload:conf.justOpenedNotification];
+            [lastClickedNotificationReportingData fillEventDataInto:openInfo];
             conf.justOpenedNotification = nil;
         }
         if (presence) openInfo[@"presence"] = presence.toJSON;
@@ -1386,7 +1370,6 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             openInfo[@"doNotSynthesizeVisit"] = @YES;
         }
 
-        lastClickedNotificationReportingData = [[WPReportingData alloc] initWithDictionary:openInfo];
         conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
         conf.lastAppOpenInfo = openInfo;
         [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil sentCallback:^{
@@ -1984,7 +1967,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     return client;
 }
 
-+ (WPReportingData *)lastClickedNotificationReportingData {
++ (WPReportingData * _Nullable)lastClickedNotificationReportingData {
     return lastClickedNotificationReportingData;
 }
 
