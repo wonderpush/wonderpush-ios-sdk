@@ -33,13 +33,13 @@ NS_ASSUME_NONNULL_BEGIN
 ///-----------------------
 + (NSDictionary *)dictionaryByFilteringNulls:(NSDictionary *)dictionary;
 + (NSArray *)arrayByFilteringNulls:(NSArray *)array;
-+ (id _Nullable) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary *)dictionary;
-+ (id _Nullable) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (id _Nullable) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary * _Nullable)dictionary;
++ (id _Nullable) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary;
 
-+ (NSDictionary * _Nullable) dictionaryForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-+ (NSArray * _Nullable) arrayForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-+ (NSString * _Nullable) stringForKey:(id)key inDictionary:(NSDictionary *)dictionary;
-+ (NSNumber * _Nullable) numberForKey:(id)key inDictionary:(NSDictionary *)dictionary;
++ (NSDictionary * _Nullable) dictionaryForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary;
++ (NSArray * _Nullable) arrayForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary;
++ (NSString * _Nullable) stringForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary;
++ (NSNumber * _Nullable) numberForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary;
 
 ///-----------------------
 /// @name NSData utils

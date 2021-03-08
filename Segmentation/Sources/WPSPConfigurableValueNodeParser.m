@@ -37,8 +37,7 @@
     [self.dynamicNameParsers addObject:parser];
 }
 
-- (WPSPASTValueNode *)parseValueWithContext:(WPSPParsingContext *)context key:(NSString *)key input:(id)input {
-
+- (WPSPASTValueNode * _Nullable)parseValueWithContext:(WPSPParsingContext *)context key:(NSString *)key input:(id)input {
     WPSPASTValueNodeParser exactNameParser = self.exactNameParsers[key];
 
     if (exactNameParser) {
@@ -49,6 +48,8 @@
         WPSPASTValueNode *parsed = parser(context, key, input);
         if (parsed) return parsed;
     }
+
     return nil;
 }
+
 @end

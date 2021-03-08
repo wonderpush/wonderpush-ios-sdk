@@ -420,11 +420,14 @@ static const NSString *UTTypeAVIMovie = @"public.avi";
     }];
     return self;
 }
-- (void) download:(NSError *__autoreleasing *)error {
+
+- (void) download:(NSError *__autoreleasing _Nullable * _Nullable)error {
     self.semaphore = dispatch_semaphore_create(0);
     [self.task resume];
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    *error = self.error;
+    if (error != nil) {
+        *error = self.error;
+    }
 }
 
 @end

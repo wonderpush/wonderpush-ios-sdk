@@ -36,7 +36,9 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     if ([version isKindOfClass:NSNumber.class]) version = [version stringValue];
 
     if (![version isKindOfClass:NSString.class]) {
-        *error = [NSError errorWithDomain:WPErrorDomain code:WPErrorInvalidFormat userInfo:nil];
+        if (error != nil) {
+            *error = [NSError errorWithDomain:WPErrorDomain code:WPErrorInvalidFormat userInfo:nil];
+        }
         return nil;
     }
 

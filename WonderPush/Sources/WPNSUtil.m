@@ -99,7 +99,7 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
     return [string stringByAddingPercentEncodingWithAllowedCharacters:PercentEncodedAllowedCharacterSet];
 }
 
-+ (id) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary *)dictionary
++ (id) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary * _Nullable)dictionary
 {
     id value = dictionary[key];
     if ([value isKindOfClass:expectedClass]) {
@@ -108,7 +108,7 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
     return nil;
 }
 
-+ (id) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (id) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     id value = dictionary[key];
     if (value != [NSNull null]) {
@@ -118,22 +118,22 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
 }
 
 
-+ (NSDictionary *) dictionaryForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (NSDictionary *) dictionaryForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     return [self typesafeObjectForKey:key expectClass:[NSDictionary class] inDictionary:dictionary];
 }
 
-+ (NSArray *) arrayForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (NSArray *) arrayForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     return [self typesafeObjectForKey:key expectClass:[NSArray class] inDictionary:dictionary];
 }
 
-+ (NSString *) stringForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (NSString *) stringForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     return [self typesafeObjectForKey:key expectClass:[NSString class] inDictionary:dictionary];
 }
 
-+ (NSNumber *) numberForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (NSNumber *) numberForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     return [self typesafeObjectForKey:key expectClass:[NSNumber class] inDictionary:dictionary];
 }

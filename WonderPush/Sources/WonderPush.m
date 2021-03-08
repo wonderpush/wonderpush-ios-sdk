@@ -656,8 +656,8 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
                 NSString *sound = [WPNSUtil stringForKey:@"sound" inDictionary:aps];
                 if (@available(iOS 10.0, *)) {
                     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-                    content.title = title;
-                    content.body = alert;
+                    if (title) content.title = title;
+                    if (alert) content.body = alert;
                     if (sound) content.sound = [UNNotificationSound soundNamed:sound];
                     content.userInfo = userInfo;
                     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString] content:content trigger:nil];
