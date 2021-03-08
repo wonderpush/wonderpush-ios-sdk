@@ -20,6 +20,7 @@
 #import "WPJsonUtil.h"
 #import "WPRequestVault.h"
 #import "WPUtil.h"
+#import "WPNSUtil.h"
 
 static WPConfiguration *sharedConfiguration = nil;
 
@@ -868,7 +869,7 @@ static WPConfiguration *sharedConfiguration = nil;
 
 - (void)rememberTrackedEvent:(NSDictionary *)eventParams {
     if (!eventParams) return;
-    NSString *type = eventParams[@"type"];
+    NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:eventParams];
     if (!type) return;
 
     NSArray *trackedEvents = [self trackedEvents];
@@ -876,7 +877,8 @@ static WPConfiguration *sharedConfiguration = nil;
     for (id event in trackedEvents) {
         // Filter out events of the given type
         // We only keep one copy per event type
-        if ([[event valueForKey:@"type"] isEqualToString:type]) continue;
+        NSString *eventType = [WPNSUtil stringForKey:@"type" inDictionary:event];
+        if (eventType == nil || [eventType isEqualToString:type]) continue;
         [newTrackedEvents addObject:event];
     }
     NSMutableDictionary *eventToStore = [NSMutableDictionary dictionaryWithDictionary:eventParams];

@@ -128,8 +128,8 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
             }
         }
         
-        NSTimeInterval lastReceivedNotificationCheckDelay = [wpData valueForKey:@"lastReceivedNotificationCheckDelay"] ? [[wpData valueForKey:@"lastReceivedNotificationCheckDelay"] doubleValue] / 1000: DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY;
-        NSString *accessToken = [wpData valueForKey:@"accessToken"];
+        NSTimeInterval lastReceivedNotificationCheckDelay = [([WPNSUtil numberForKey:@"lastReceivedNotificationCheckDelay" inDictionary:wpData] ?: [NSNumber numberWithDouble:DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY * 1000]) doubleValue] / 1000;
+        NSString *accessToken = [WPNSUtil stringForKey:@"accessToken" inDictionary:wpData];
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSDate *lastReceivedNotificationCheckDate = [defaults objectForKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_USER_DEFAULTS_KEY];
         NSDate *now = [NSDate date];
@@ -149,16 +149,16 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                 [defaults synchronize];
             }
         }
-        NSArray *_Nullable buttons = [alertData valueForKey:@"buttons"];
-        if ([buttons isKindOfClass:NSArray.class]) {
+        NSArray *_Nullable buttons = [WPNSUtil arrayForKey:@"buttons" inDictionary:alertData];
+        if (buttons) {
             NSUInteger buttonCounter = 0;
             NSMutableArray<UNNotificationAction *> *actions = [NSMutableArray new];
             for (NSDictionary *button in buttons) {
-                NSString *label = [button valueForKey:@"label"];
-                if (![label isKindOfClass:NSString.class] || ![(NSString *)label length]) continue;
+                NSString *label = [WPNSUtil stringForKey:@"label" inDictionary:button];
+                if (![label length]) continue;
                 NSString *actionIdentifier = [[WPNotificationCategoryManager sharedInstance] actionIdentifierForButtonAtIndex:buttonCounter];
-                NSString * _Nullable targetUrl = [button valueForKey:@"targetUrl"];
-                UNNotificationActionOptions options = [targetUrl isKindOfClass:NSString.class] && [targetUrl isEqualToString:WP_TARGET_URL_NOOP] ? UNNotificationActionOptionNone : UNNotificationActionOptionForeground;
+                NSString * _Nullable targetUrl = [WPNSUtil stringForKey:@"targetUrl" inDictionary:button];
+                UNNotificationActionOptions options = targetUrl && [targetUrl isEqualToString:WP_TARGET_URL_NOOP] ? UNNotificationActionOptionNone : UNNotificationActionOptionForeground;
                 UNNotificationAction *action = [UNNotificationAction actionWithIdentifier:actionIdentifier title:label options:options];
                 [actions addObject:action];
                 buttonCounter++;
@@ -166,8 +166,8 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
             UNNotificationCategory *category = [[WPNotificationCategoryManager sharedInstance] registerNotificationCategoryIdentifierWithNotificationId:reportingData.notificationId actions:actions];
             content.categoryIdentifier = category.identifier;
         }
-        NSArray *attachments = [wpData valueForKey:@"attachments"];
-        if (attachments && [attachments isKindOfClass:[NSArray class]] && attachments.count > 0) {
+        NSArray *attachments = [WPNSUtil arrayForKey:@"attachments" inDictionary:wpData];
+        if (attachments && attachments.count > 0) {
             NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
             NSURL *documentsDirectoryURL = [NSURL fileURLWithPath:documentsDirectory];
             NSMutableArray *contentAttachments = [[NSMutableArray alloc] initWithArray:content.attachments];
@@ -176,20 +176,20 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                 @try {
                     ++index;
                     if (![attachment isKindOfClass:[NSDictionary class]]) continue;
-                    NSString *attachmentUrl = [attachment valueForKey:@"url"];
-                    if (![attachmentUrl isKindOfClass:[NSString class]]) continue;
+                    NSString *attachmentUrl = [WPNSUtil stringForKey:@"url" inDictionary:attachment];
+                    if (!attachmentUrl) continue;
                     NSURL *attachmentURL = [NSURL URLWithString:attachmentUrl];
                     if (!attachmentURL) continue;
                     
-                    NSMutableDictionary *attachmentOptions = [[NSMutableDictionary alloc] initWithDictionary:([[attachment valueForKey:@"options"] isKindOfClass:[NSDictionary class]] ? [attachment valueForKey:@"options"] : @{})];
-                    NSString *type = [attachment valueForKey:@"type"];
-                    if ([type isKindOfClass:[NSString class]] && !attachmentOptions[UNNotificationAttachmentOptionsTypeHintKey]) {
+                    NSMutableDictionary *attachmentOptions = [[NSMutableDictionary alloc] initWithDictionary:([WPNSUtil dictionaryForKey:@"options" inDictionary:attachment] ?: @{})];
+                    NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:attachment];
+                    if (type && !attachmentOptions[UNNotificationAttachmentOptionsTypeHintKey]) {
                         NSString *utType = [self getAttachmentTypehintFrom:type];
                         if (utType) {
                             attachmentOptions[UNNotificationAttachmentOptionsTypeHintKey] = utType;
                         }
                     }
-                    NSString *attachmentId = [[attachment valueForKey:@"id"] isKindOfClass:[NSString class]] ? [attachment valueForKey:@"id"] : [NSString stringWithFormat:@"%d", index];
+                    NSString *attachmentId = [WPNSUtil stringForKey:@"id" inDictionary:attachment] ?: [NSString stringWithFormat:@"%d", index];
                     NSError *error = nil;
                     WPLog(@"downloading %@", attachmentURL);
                     NSURL *fileURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@.%@", attachmentId, attachmentURL.pathExtension ?: @""] relativeToURL:documentsDirectoryURL];
@@ -383,14 +383,14 @@ static const NSString *UTTypeAVIMovie = @"public.avi";
                               UTTypeMPEG4: UTTypeMPEG4,
                               UTTypeAVIMovie: UTTypeAVIMovie,
                               };
-    return [mapping objectForKey:extensionOrMimeTypeOrTypeUTType];
+    return mapping[extensionOrMimeTypeOrTypeUTType];
 }
 
 #pragma mark - WonderPush SDK stuff
 
 + (BOOL)isNotificationForWonderPush:(NSDictionary *)userInfo{
     if ([userInfo isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *wonderpushData = [[userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY] isKindOfClass:[NSDictionary class]] ? [userInfo valueForKey:WP_PUSH_NOTIFICATION_KEY] : nil;
+        NSDictionary *wonderpushData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
         return !!wonderpushData;
     }
     return NO;

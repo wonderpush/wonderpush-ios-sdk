@@ -226,7 +226,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
             return;
         }
         if ([result isKindOfClass:NSDictionary.class]) {
-            id configVersion = [result objectForKey:@"_configVersion"];
+            id configVersion = result[@"_configVersion"];
             if ([configVersion isKindOfClass:NSString.class]) {
                 [WonderPush.remoteConfigManager declareVersion:configVersion];
             } else if ([configVersion isKindOfClass:NSNumber.class]) {
@@ -447,7 +447,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:[self decorateRequestParams:request]];
     
     // Add the access token if present
-    if (accessToken) [params setObject:accessToken forKey:@"accessToken"];
+    if (accessToken) params[@"accessToken"] = accessToken;
 
     // The success handler
     NSTimeInterval timeRequestStart = [[NSProcessInfo processInfo] systemUptime];
@@ -610,9 +610,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 + (NSDictionary *)addParameterIfNotPresent:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
 {
-    if (![params objectForKey:name]) {
+    if (!params[name]) {
         NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
-        [mutable setObject:value forKey:name];
+        mutable[name] = value;
         return [NSDictionary dictionaryWithDictionary:mutable];
     }
     return params;
@@ -621,8 +621,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 + (NSDictionary *)replaceParameter:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
 {
     NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
-    if (name && value)
-        [mutable setObject:value forKey:name];
+    if (name && value) {
+        mutable[name] = value;
+    }
     return [NSDictionary dictionaryWithDictionary:mutable];
 }
 @end

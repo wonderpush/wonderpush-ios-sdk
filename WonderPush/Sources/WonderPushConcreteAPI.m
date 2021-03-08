@@ -101,7 +101,7 @@
     
     NSDictionary *params = [self paramsForEvent:type eventData:data customData:customData];
     if (!params) return;
-    NSDictionary *body = params[@"body"];
+    NSDictionary *body = [WPNSUtil dictionaryForKey:@"body" inDictionary:params];
     if (!body) return;
 
     // Store locally
@@ -169,7 +169,7 @@
         NSString *eventEndPoint = @"/events";
         NSDictionary *params = [self paramsForEvent:type eventData:data customData:customData];
         if (!params) return;
-        NSDictionary *body  = params[@"body"];
+        NSDictionary *body = [WPNSUtil dictionaryForKey:@"body" inDictionary:params];
         if (!body) return;
         
         // Store locally

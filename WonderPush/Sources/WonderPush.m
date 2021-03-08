@@ -169,7 +169,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             id response = notification.object; // WPResponse
             id result = [response object];
             if ([result isKindOfClass:NSDictionary.class]) {
-                id configVersion = [result objectForKey:@"_configVersion"];
+                id configVersion = result[@"_configVersion"];
                 if ([configVersion isKindOfClass:NSString.class]) {
                     [WonderPush.remoteConfigManager declareVersion:configVersion];
                 } else if ([configVersion isKindOfClass:NSNumber.class]) {
@@ -400,14 +400,14 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             return;
         }
         // API client
-        WPAPIClient.sharedClient.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY] boolValue];
+        WPAPIClient.sharedClient.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY inDictionary:config.data] boolValue];
         // JSONSync
-        WPJsonSyncInstallation.disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY] boolValue];
+        WPJsonSyncInstallation.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY inDictionary:config.data] boolValue];
         if (!WPJsonSyncInstallation.disabled) {
             [WPJsonSyncInstallation flush];
         }
         // Measurements API
-        [self measurementsApiClient].disabled = [[config.data objectForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY] boolValue];
+        [self measurementsApiClient].disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY inDictionary:config.data] boolValue];
     }];
 }
 
@@ -829,9 +829,9 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     }
 
     // Track lastReceivedNotificationCheckDate
-    NSTimeInterval lastReceivedNotificationCheckDelay = [wpData valueForKey:@"lastReceivedNotificationCheckDelay"] ? [[wpData valueForKey:@"lastReceivedNotificationCheckDelay"] doubleValue] / 1000: DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY;
+    NSTimeInterval lastReceivedNotificationCheckDelay = [([WPNSUtil numberForKey:@"lastReceivedNotificationCheckDelay" inDictionary:wpData] ?: [NSNumber numberWithDouble:DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY * 1000]) doubleValue] / 1000;
     WPJsonSyncInstallation *installation = [WPJsonSyncInstallation forCurrentUser];
-    NSNumber *lastReceivedNotificationCheckDateMs = [installation.sdkState objectForKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_PROPERTY];
+    NSNumber *lastReceivedNotificationCheckDateMs = installation.sdkState[LAST_RECEIVED_NOTIFICATION_CHECK_DATE_PROPERTY];
     NSDate *lastReceivedNotificationCheckDate = [NSDate dateWithTimeIntervalSince1970:lastReceivedNotificationCheckDateMs.doubleValue / 1000];
     NSDate *now = [NSDate date];
     BOOL reportLastReceivedNotificationCheckDate = !lastReceivedNotificationCheckDate || ([now timeIntervalSinceDate:lastReceivedNotificationCheckDate] > lastReceivedNotificationCheckDelay);
@@ -899,7 +899,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
 + (void) handleHtmlNotification:(NSDictionary*)wonderPushData
 {
-    NSArray *buttons = [wonderPushData objectForKey:@"buttons"];
+    NSArray *buttons = [WPNSUtil arrayForKey:@"buttons" inDictionary:wonderPushData];
     WPDialogButtonHandler *buttonHandler = [[WPDialogButtonHandler alloc] init];
     buttonHandler.buttonConfiguration = buttons;
     buttonHandler.notificationConfiguration = wonderPushData;
@@ -908,7 +908,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         int i = -1;
         for (NSDictionary *button in buttons) {
             ++i;
-            [alertButtons addObject:[WPHTMLInAppAction actionWithTitle:[button valueForKey:@"label"] block:^(WPHTMLInAppAction *action) {
+            [alertButtons addObject:[WPHTMLInAppAction actionWithTitle:[WPNSUtil stringForKey:@"label" inDictionary:button] block:^(WPHTMLInAppAction *action) {
                 [buttonHandler clickedButtonAtIndex:i];
             }]];
         }
@@ -919,13 +919,13 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     }
 
     WPHTMLInAppController *controller = [storyboard instantiateViewControllerWithIdentifier:@"HTMLInAppController"];
-    controller.title = wonderPushData[@"title"];
+    controller.title = [WPNSUtil stringForKey:@"title" inDictionary:wonderPushData];
     controller.actions = alertButtons;
     controller.modalPresentationStyle = UIModalPresentationOverFullScreen;
     controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     
     controller.HTMLString = [WPNSUtil stringForKey:@"message" inDictionary:wonderPushData];
-    NSString *URLString = [wonderPushData valueForKey:@"url"];
+    NSString *URLString = [WPNSUtil stringForKey:@"url" inDictionary:wonderPushData];
     if (URLString) {
         controller.URL = [NSURL URLWithString:URLString];
     }
@@ -1246,8 +1246,8 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     } else if ([targetUrl isEqualToString:WP_TARGET_URL_NOOP]) {
         return NO;
     }
-    if (wonderpushData[@"inApp"] && [wonderpushData[@"inApp"] isKindOfClass:NSDictionary.class]) {
-        NSDictionary *inAppData = wonderpushData[@"inApp"];
+    NSDictionary *inAppData = [WPNSUtil dictionaryForKey:@"inApp" inDictionary:wonderpushData];
+    if (inApp) {
         WPIAMMessageRenderData *renderData = [WPIAMFetchResponseParser renderDataFromNotificationDict:inAppData isTestMessage:YES];
         if (renderData) {
             WPIAMCappingDefinition *capping = [[WPIAMCappingDefinition alloc] initWithMaxImpressions:1 snoozeTime:0];
@@ -1919,7 +1919,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         WPRemoteConfigFetcherWithURLSession *fetcher = [[WPRemoteConfigFetcherWithURLSession alloc] initWithClientId:clientId];
         WPRemoteConfigStorageWithUserDefaults *storage = [[WPRemoteConfigStorageWithUserDefaults alloc] initWithClientId:clientId];
         remoteConfigManager = [[WPRemoteConfigManager alloc] initWithRemoteConfigFetcher:fetcher storage:storage];
-        [managers setObject:remoteConfigManager forKey:clientId];
+        managers[clientId] = remoteConfigManager;
     }
     return remoteConfigManager;
 }
@@ -1943,7 +1943,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     WPRequestVault *vault = vaults[clientId];
     if (!vault) {
         vault = [[WPRequestVault alloc] initWithRequestExecutor:[self measurementsApiClient]];
-        [vaults setObject:vault forKey:clientId];
+        vaults[clientId] = vault;
     }
     return vault;
 }
@@ -1962,7 +1962,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     if (!client) {
         client = [[WPMeasurementsApiClient alloc]
                   initWithClientId:clientId secret:clientSecret deviceId:[WPUtil deviceIdentifier]];
-        [clients setObject:client forKey:clientId];
+        clients[clientId] = client;
     }
     return client;
 }
