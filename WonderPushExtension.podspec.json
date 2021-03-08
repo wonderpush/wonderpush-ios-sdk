@@ -35,6 +35,7 @@
         "WonderPush/Sources/WPMeasurementsApiClient.{h,m}",
         "WonderPush/Sources/WPBasicApiClient.{h,m}",
         "WonderPush/Sources/WPErrors.{h,m}",
+        "WonderPush/Sources/WPReportingData.{h,m}",
         "WonderPush/Sources/WPRequest.{h,m}",
         "WonderPush/Sources/WPResponse.{h,m}",
         "WonderPush/Sources/WPLog.{m,h}"
