@@ -58,7 +58,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
                     " object");
         return nil;
     } else {
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithSerializationDict:reportingDataDict];
+        WPReportingData *reportingData = [[WPReportingData alloc] initFromSerialized:reportingDataDict];
         return [self initWithReportingData:reportingData
                    lastImpressionTimestamp:lastImpressionTimestamp ? [lastImpressionTimestamp doubleValue] : 0
                            impressionCount:impressionCount ? [impressionCount integerValue] : 1];
@@ -131,7 +131,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
                 NSDictionary *currentItem = (NSDictionary *)newImpressions[i];
                 id currentItemReportingDataDict = currentItem[WPIAM_ImpressionDictKeyForReportingData];
                 if ([currentItemReportingDataDict isKindOfClass:[NSDictionary class]]) {
-                    WPReportingData *currentItemReportingData = [[WPReportingData alloc] initWithSerializationDict:currentItemReportingDataDict];
+                    WPReportingData *currentItemReportingData = [[WPReportingData alloc] initFromSerialized:currentItemReportingDataDict];
                     if (
                         (reportingData.campaignId == currentItemReportingData.campaignId || [reportingData.campaignId isEqualToString:currentItemReportingData.campaignId])
                         && (reportingData.notificationId == currentItemReportingData.notificationId || [reportingData.notificationId isEqualToString:currentItemReportingData.notificationId])
@@ -187,7 +187,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
     NSMutableArray<NSString *> *resultArray = [[NSMutableArray alloc] init];
     
     for (NSDictionary *next in impressionsFromStorage) {
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithSerializationDict:next[WPIAM_ImpressionDictKeyForReportingData]];
+        WPReportingData *reportingData = [[WPReportingData alloc] initFromSerialized:next[WPIAM_ImpressionDictKeyForReportingData]];
         if (reportingData.campaignId) [resultArray addObject:reportingData.campaignId];
     }
     

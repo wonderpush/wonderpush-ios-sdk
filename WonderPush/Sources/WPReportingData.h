@@ -16,13 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nullable) NSString *notificationId;
 @property (readonly, nullable) NSString *viewId;
 
++ (WPReportingData * _Nonnull) extract:(NSDictionary * _Nullable)source;
+
 - (instancetype) initWithNotificationId:(NSString * _Nullable)notificationId campaignId:(NSString * _Nullable)campaignId viewId:(NSString * _Nullable)viewId reporting:(NSDictionary * _Nullable)reporting;
-- (instancetype) initWithSerializationDict:(NSDictionary *)notificationDict;
-- (instancetype) initWithReporting:(NSDictionary *)reporting;
-- (instancetype) initWithPushPayload:(NSDictionary *)userInfo;
-- (instancetype) initWithPushWpData:(NSDictionary *)wpData;
-- (instancetype) initWithEventData:(NSDictionary *)eventData;
-- (instancetype) initWithNotificationDict:(NSDictionary *)notificationDict;
+- (instancetype) initFromSerialized:(NSDictionary *)serializationDict;
 - (instancetype) init NS_UNAVAILABLE;
 
 - (NSDictionary *) serializationDictValue;

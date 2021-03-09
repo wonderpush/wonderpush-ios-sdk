@@ -105,7 +105,6 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         __block dispatch_semaphore_t installationApiSemaphore = nil;
         WPLog(@"didReceiveNotificationRequest:%@", request);
         WPLog(@"                     userInfo:%@", request.content.userInfo);
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:request.content.userInfo];
 
         UNMutableNotificationContent *content = [request.content mutableCopy];
         [self setContentHandler:contentHandler forExtension:extension];
@@ -118,6 +117,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         
         NSDictionary * _Nullable wpData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:content.userInfo];
         NSDictionary * _Nullable alertData = [WPNSUtil dictionaryForKey:@"alert" inDictionary:wpData];
+        WPReportingData *reportingData = [WPReportingData extract:wpData];
         BOOL receiptUsingMeasurements = [[WPNSUtil numberForKey:@"receiptUsingMeasurements" inDictionary:wpData] boolValue];
         if (receiptUsingMeasurements) {
             WPRequest *request = [self reportNotificationReceivedWithReportingData:reportingData completion:^(NSError *error) {

@@ -809,7 +809,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
 + (void) trackNotificationOpened:(NSDictionary *)eventData
 {
-    WPReportingData *reportingData = [[WPReportingData alloc] initWithEventData:eventData];
+    WPReportingData *reportingData = [WPReportingData extract:eventData];
     lastClickedNotificationReportingData = reportingData;
     [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:eventData customData:nil];
 }
@@ -818,8 +818,8 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 {
     if (![WonderPush isNotificationForWonderPush:userInfo]) return;
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-    WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:userInfo];
     NSDictionary *wpData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
+    WPReportingData *reportingData = [WPReportingData extract:wpData];
     id receipt        = conf.overrideNotificationReceipt ?: [WPNSUtil nullsafeObjectForKey:@"receipt" inDictionary:wpData];
     id receiptUsingMeasurements = [WPNSUtil nullsafeObjectForKey:@"receiptUsingMeasurements" inDictionary:wpData];
     conf.lastReceivedNotificationDate = [NSDate date];
@@ -994,7 +994,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             id atReceptionActions = [WPNSUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
             if ([atReceptionActions isKindOfClass:NSArray.class]) {
                 WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
-                WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:notificationDictionary];
+                WPReportingData *reportingData = [WPReportingData extract:wonderpushData];
                 [self executeAction:action withReportingData:reportingData];
             }
 
@@ -1048,7 +1048,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         id atReceptionActions = [WPNSUtil arrayForKey:@"receiveActions" inDictionary:wonderpushData];
         if ([atReceptionActions isKindOfClass:NSArray.class]) {
             WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
-            WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:notificationDictionary];
+            WPReportingData *reportingData = [WPReportingData extract:wonderpushData];
             [self executeAction:action withReportingData:reportingData];
         }
     }
@@ -1189,7 +1189,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
     [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_OPENED object:nil userInfo:notificationDictionary];
 
-    WPReportingData *reportingData = [[WPReportingData alloc] initWithPushPayload:notificationDictionary];
+    WPReportingData *reportingData = [WPReportingData extract:wonderpushData];
     NSMutableDictionary *notificationOpenedEventData = [NSMutableDictionary new];
     [reportingData fillEventDataInto:notificationOpenedEventData];
 
@@ -1247,7 +1247,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         return NO;
     }
     NSDictionary *inAppData = [WPNSUtil dictionaryForKey:@"inApp" inDictionary:wonderpushData];
-    if (inApp) {
+    if (inAppData) {
         WPIAMMessageRenderData *renderData = [WPIAMFetchResponseParser renderDataFromNotificationDict:inAppData isTestMessage:YES];
         if (renderData) {
             WPIAMCappingDefinition *capping = [[WPIAMCappingDefinition alloc] initWithMaxImpressions:1 snoozeTime:0];
@@ -1355,7 +1355,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
         // Add the information of the clicked notification
         if (conf.justOpenedNotification) {
-            lastClickedNotificationReportingData = [[WPReportingData alloc] initWithPushPayload:conf.justOpenedNotification];
+            lastClickedNotificationReportingData = [WPReportingData extract:[WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:conf.justOpenedNotification]];
             [lastClickedNotificationReportingData fillEventDataInto:openInfo];
             conf.justOpenedNotification = nil;
         }

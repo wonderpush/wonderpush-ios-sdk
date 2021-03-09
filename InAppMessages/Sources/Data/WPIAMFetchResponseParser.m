@@ -195,7 +195,7 @@
 }
 + (WPIAMMessageRenderData * _Nullable) renderDataFromNotificationDict:(NSDictionary *)notificationDict isTestMessage:(BOOL)isTestMessage {
     @try {
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithNotificationDict:notificationDict];
+        WPReportingData *reportingData = [WPReportingData extract:notificationDict];
 
         id contentNode = notificationDict[@"content"];
         if (![contentNode isKindOfClass:[NSDictionary class]]) {

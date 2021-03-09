@@ -22,53 +22,24 @@
     return self;
 }
 
-- (instancetype) initWithReporting:(NSDictionary *)reporting {
-    return [self initWithNotificationId:[WPNSUtil stringForKey:@"notificationId" inDictionary:reporting]
-                             campaignId:[WPNSUtil stringForKey:@"campaignId" inDictionary:reporting]
-                                 viewId:[WPNSUtil stringForKey:@"viewId" inDictionary:reporting]
-                              reporting:reporting];
++ (WPReportingData * _Nonnull) extract:(NSDictionary * _Nullable)source {
+    if (![source isKindOfClass:NSDictionary.class]) source = @{};
+    NSDictionary * _Nullable reporting = [WPNSUtil dictionaryForKey:@"reporting" inDictionary:source];
+    if (source[@"n"] != nil || source[@"c"] != nil || source[@"v"] != nil) {
+        return [[self alloc] initWithNotificationId:source[@"n"] campaignId:source[@"c"] viewId:source[@"v"] reporting:reporting];
+    } else if (source[@"notificationId"] != nil || source[@"campaignId"] != nil || source[@"viewId"] != nil) {
+        return [[self alloc] initWithNotificationId:source[@"notificationId"] campaignId:source[@"campaignId"] viewId:source[@"viewId"] reporting:reporting];
+    } else if (reporting != nil) {
+        return [[self alloc] initWithNotificationId:reporting[@"notificationId"] campaignId:reporting[@"campaignId"] viewId:reporting[@"viewId"] reporting:reporting];
+    }
+    return [[self alloc] initWithNotificationId:nil campaignId:nil viewId:nil reporting:nil];
 }
 
-- (instancetype)initWithPushPayload:(NSDictionary *)userInfo {
-    NSDictionary *wpData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:userInfo];
-    return [self initWithPushWpData:wpData];
-}
-
-- (instancetype)initWithPushWpData:(NSDictionary *)wpData {
-    NSString * _Nullable notificationId = [WPNSUtil stringForKey:@"n" inDictionary:wpData];
-    NSString * _Nullable campaignId = [WPNSUtil stringForKey:@"c" inDictionary:wpData];
-    NSString * _Nullable viewId = [WPNSUtil stringForKey:@"v" inDictionary:wpData];
-    NSDictionary *reporting = [WPNSUtil dictionaryForKey:@"reporting" inDictionary:wpData];
-    // Fallback on the reporting dictionary if the short fields are absent
-    if (!notificationId) {
-        notificationId = [WPNSUtil stringForKey:@"notificationId" inDictionary:reporting];
-    }
-    if (!campaignId) {
-        campaignId = [WPNSUtil stringForKey:@"campaignId" inDictionary:reporting];
-    }
-    if (!viewId) {
-        viewId = [WPNSUtil stringForKey:@"viewId" inDictionary:reporting];
-    }
-    return [self initWithNotificationId:notificationId
-                             campaignId:campaignId
-                                 viewId:viewId
-                              reporting:reporting];
-}
-
-// Note: Currently used by initWithEventData: and initWithNotificationDict: because it's identical as of now
-- (instancetype) initWithSerializationDict:(NSDictionary *)serializationDict {
+- (instancetype) initFromSerialized:(NSDictionary *)serializationDict {
     return [self initWithNotificationId:[WPNSUtil stringForKey:@"notificationId" inDictionary:serializationDict]
                              campaignId:[WPNSUtil stringForKey:@"campaignId" inDictionary:serializationDict]
                                  viewId:[WPNSUtil stringForKey:@"viewId" inDictionary:serializationDict]
                               reporting:[WPNSUtil dictionaryForKey:@"reporting" inDictionary:serializationDict]];
-}
-
-- (instancetype)initWithEventData:(NSDictionary *)eventData {
-    return [self initWithSerializationDict:eventData];
-}
-
-- (instancetype)initWithNotificationDict:(NSDictionary *)notificationDict {
-    return [self initWithSerializationDict:notificationDict];
 }
 
 - (NSString *) description {

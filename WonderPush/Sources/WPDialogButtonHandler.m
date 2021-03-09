@@ -33,7 +33,7 @@
 {
     if (![actions isKindOfClass:[NSArray class]]) return;
     WPAction *action = [WPAction actionWithDictionaries:actions];
-    WPReportingData *reportingData = [[WPReportingData alloc] initWithPushWpData:notificationConfiguration];
+    WPReportingData *reportingData = [WPReportingData extract:notificationConfiguration];
     [WonderPush executeAction:action withReportingData:reportingData];
 }
 
@@ -46,7 +46,7 @@
     }
 
     NSNumber *shownTime = [[NSNumber alloc] initWithLong:(long)(([[NSProcessInfo processInfo] systemUptime] - self.showTime) * 1000)];
-    WPReportingData *reportingData = [[WPReportingData alloc] initWithPushWpData:notificationConfiguration];
+    WPReportingData *reportingData = [WPReportingData extract:notificationConfiguration];
     [WonderPush trackInternalEvent:@"@NOTIFICATION_ACTION"
                          eventData:[reportingData filledEventData:@{
                              @"buttonLabel": [WPNSUtil stringForKey:@"label" inDictionary:clickedButton] ?: [NSNull null],
