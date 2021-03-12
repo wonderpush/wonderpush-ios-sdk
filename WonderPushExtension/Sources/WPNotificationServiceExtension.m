@@ -56,10 +56,12 @@ static NSString *deviceId = nil;
 }
 
 + (NSString *)clientId {
+    WPLog(@"WARNING: clientId not supplied, you will not get an accurate count of notifications received");
     return nil;
 }
 
 + (NSString *)clientSecret {
+    WPLog(@"WARNING: clientSecret not supplied, you will not get an accurate count of notifications received");
     return nil;
 }
 
@@ -77,6 +79,14 @@ static NSString *deviceId = nil;
 }
 
 - (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
+    // WARNING: overriding this method in swift is made like this:
+    /*
+     if (!Self.serviceExtension(self, didReceive: request, withContentHandler: contentHandler)) {
+         // handle notification here
+         contentHandler(request.content)
+     }
+     */
+
     // Forward the call to the WonderPush NotificationServiceExtension SDK
     if (![[self class] serviceExtension:self didReceiveNotificationRequest:request withContentHandler:contentHandler]) {
         // The notification was not for the WonderPush SDK consumption, handle it ourself
