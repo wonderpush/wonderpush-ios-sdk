@@ -1251,7 +1251,8 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         WPIAMMessageRenderData *renderData = [WPIAMFetchResponseParser renderDataFromNotificationDict:inAppData isTestMessage:YES];
         if (renderData) {
             WPIAMCappingDefinition *capping = [[WPIAMCappingDefinition alloc] initWithMaxImpressions:1 snoozeTime:0];
-            WPIAMMessageDefinition *messageDefinition = [[WPIAMMessageDefinition alloc] initWithRenderData:renderData payload:@{} startTime:0 endTime:DBL_MAX triggerDefinition:@[] capping:capping segmentDefinition:nil];
+            id payload = inAppData[@"payload"] ?: @{};
+            WPIAMMessageDefinition *messageDefinition = [[WPIAMMessageDefinition alloc] initWithRenderData:renderData payload:payload startTime:0 endTime:DBL_MAX triggerDefinition:@[] capping:capping segmentDefinition:nil];
             void(^showInApp)(void) = ^() {
                 [WPIAMRuntimeManager.getSDKRuntimeInstance.displayExecutor displayMessage:messageDefinition triggerType:WPInAppMessagingDisplayTriggerTypeOnWonderPushEvent delay:0];
             };
