@@ -101,7 +101,7 @@
     
     NSDictionary *params = [self paramsForEvent:type eventData:data customData:customData];
     if (!params) return;
-    NSDictionary *body = params[@"body"];
+    NSDictionary *body = [WPNSUtil dictionaryForKey:@"body" inDictionary:params];
     if (!body) return;
 
     // Store locally
@@ -140,9 +140,7 @@
                                                         @"actionDate": [NSNumber numberWithLongLong:date]}];
     
     if ([data isKindOfClass:[NSDictionary class]]) {
-        for (NSString *key in data) {
-            [body setValue:[data objectForKey:key] forKey:key];
-        }
+        [body addEntriesFromDictionary:data];
     }
     
     if ([customData isKindOfClass:[NSDictionary class]]) {
@@ -156,9 +154,7 @@
     }
 
     WPReportingData *reportingData = WonderPush.lastClickedNotificationReportingData;
-    if (reportingData.campaignId && !body[@"campaignId"]) body[@"campaignId"] = reportingData.campaignId;
-    if (reportingData.notificationId && !body[@"notificationId"]) body[@"notificationId"] = reportingData.notificationId;
-    if (reportingData.viewId && !body[@"viewId"]) body[@"viewId"] = reportingData.viewId;
+    [reportingData fillEventDataInto:body];
     return @{@"body":body};
 }
 
@@ -173,7 +169,7 @@
         NSString *eventEndPoint = @"/events";
         NSDictionary *params = [self paramsForEvent:type eventData:data customData:customData];
         if (!params) return;
-        NSDictionary *body  = params[@"body"];
+        NSDictionary *body = [WPNSUtil dictionaryForKey:@"body" inDictionary:params];
         if (!body) return;
         
         // Store locally

@@ -89,7 +89,7 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
             continue; // I'm sure this will bite my arse one day
         }
 
-        [result setObject:val forKey:key];
+        result[key] = val;
     }
     return result;
 }
@@ -99,7 +99,7 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
     return [string stringByAddingPercentEncodingWithAllowedCharacters:PercentEncodedAllowedCharacterSet];
 }
 
-+ (id) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary *)dictionary
++ (id _Nullable) typesafeObjectForKey:(id)key expectClass:(Class)expectedClass inDictionary:(NSDictionary * _Nullable)dictionary
 {
     id value = dictionary[key];
     if ([value isKindOfClass:expectedClass]) {
@@ -108,7 +108,7 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
     return nil;
 }
 
-+ (id) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (id _Nullable) nullsafeObjectForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     id value = dictionary[key];
     if (value != [NSNull null]) {
@@ -118,22 +118,22 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
 }
 
 
-+ (NSDictionary *) dictionaryForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (NSDictionary * _Nullable) dictionaryForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     return [self typesafeObjectForKey:key expectClass:[NSDictionary class] inDictionary:dictionary];
 }
 
-+ (NSArray *) arrayForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (NSArray * _Nullable) arrayForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     return [self typesafeObjectForKey:key expectClass:[NSArray class] inDictionary:dictionary];
 }
 
-+ (NSString *) stringForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (NSString * _Nullable) stringForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     return [self typesafeObjectForKey:key expectClass:[NSString class] inDictionary:dictionary];
 }
 
-+ (NSNumber *) numberForKey:(id)key inDictionary:(NSDictionary *)dictionary
++ (NSNumber * _Nullable) numberForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary
 {
     return [self typesafeObjectForKey:key expectClass:[NSNumber class] inDictionary:dictionary];
 }
@@ -142,14 +142,14 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
 {
     NSMutableDictionary *result = [NSMutableDictionary new];
     for (id key in [dictionary allKeys]) {
-        id value = [dictionary valueForKey:key];
+        id value = dictionary[key];
         if (value == [NSNull null]) continue;
         if ([value isKindOfClass:[NSDictionary class]]) {
-            [result setValue:[self dictionaryByFilteringNulls:value] forKey:key];
+            result[key] = [self dictionaryByFilteringNulls:value];
         } else if ([value isKindOfClass:[NSArray class]]) {
-            [result setValue:[self arrayByFilteringNulls:value] forKey:key];
+            result[key] = [self arrayByFilteringNulls:value];
         } else {
-            [result setValue:value forKey:key];
+            result[key] = value;
         }
     }
     return [NSDictionary dictionaryWithDictionary:result];

@@ -22,6 +22,7 @@ API_AVAILABLE(ios(10.0))
  
  Method to call in your `didReceiveNotificationRequest:withContentHandler:` method of your `NotificationService` extension.
  Pass `self` in the first argument.
+ Calling this method from Swift is done like this: `Self.serviceExtension(self, didReceive: request, withContentHandler: contentHandler)`.
  
  @param extension Simply pass `self` from your `NotificationService` class.
  @param request Same parameter as in the forwarded protocol method.

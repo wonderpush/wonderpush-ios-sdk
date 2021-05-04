@@ -10,6 +10,7 @@
 #import "WPConfiguration.h"
 #import "WPAPIClient.h"
 #import "WPJsonSyncInstallation.h"
+#import "WPNSUtil.h"
 
 static WPDataManager *instance = nil;
 static dispatch_queue_t dataManagerQueue;
@@ -103,7 +104,7 @@ static dispatch_queue_t dataManagerQueue;
                     appendString(responseError.description);
                     appendString(@"}\n");
                 } else if (response) {
-                    NSArray *events = [response.object valueForKey:@"data"];
+                    NSArray *events = [WPNSUtil arrayForKey:@"data" inDictionary:response.object];
                     if (events.count) {
                         NSData *responseData = [NSJSONSerialization dataWithJSONObject:events options:0 error:&error];
                         appendString(@"{\"eventsPage\":");
@@ -112,17 +113,17 @@ static dispatch_queue_t dataManagerQueue;
                     }
                 }
                 // Extract pagination info from response
-                NSDictionary *pagination = [response.object valueForKey:@"pagination"];
-                id next = [pagination valueForKey:@"next"];
+                NSDictionary *pagination = [WPNSUtil dictionaryForKey:@"pagination" inDictionary:response.object];
+                NSString *next = [WPNSUtil stringForKey:@"next" inDictionary:pagination];
                 // When a 'next' is specified, continue to next page
-                if (next && next != [NSNull null] && [next isKindOfClass:[NSString class]]) {
+                if (next) {
                     // Parse the next URL to extract its parameters
                     NSURL *URL = [NSURL URLWithString:next];
                     NSURLComponents *URLComponents = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:NO];
                     NSMutableDictionary *parameters = [NSMutableDictionary new];
                     for (NSURLQueryItem *queryItem in URLComponents.queryItems) {
                         if (queryItem.name && queryItem.value) {
-                            [parameters setObject:queryItem.value forKey:queryItem.name];
+                            parameters[queryItem.name] = queryItem.value;
                         }
                     }
                     // Loop as long as there's a next page

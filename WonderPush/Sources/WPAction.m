@@ -30,9 +30,12 @@
     if (self = [super init]) {
         NSMutableArray *followUps = [NSMutableArray new];
         for (NSDictionary *dict in dicts) {
-            if ([@"link" isEqualToString:[dict valueForKey:@"type"]]) {
-                NSString *URLString = [dict valueForKey:@"url"];
-                _targetUrl = [NSURL URLWithString:URLString];
+            NSString *dictType = [WPNSUtil stringForKey:@"type" inDictionary:dict];
+            if (dictType && [@"link" isEqualToString:dictType]) {
+                NSString *URLString = [WPNSUtil stringForKey:@"url" inDictionary:dict];
+                if (URLString) {
+                    _targetUrl = [NSURL URLWithString:URLString];
+                }
                 continue;
             }
             WPActionFollowUp *followUp = [WPActionFollowUp actionFollowUpWithDictionary:dict];
@@ -53,8 +56,8 @@
 @implementation WPActionFollowUp
 
 + (nullable instancetype) actionFollowUpWithDictionary:(NSDictionary *)dict {
-    NSString *typeStr = [dict valueForKey:@"type"];
-    if (![typeStr isKindOfClass:[NSString class]]) return nil;
+    NSString *typeStr = [WPNSUtil stringForKey:@"type" inDictionary:dict];
+    if (!typeStr) return nil;
     WPActionFollowUpType type;
     if ([typeStr isEqualToString:@"mapOpen"]) type = WPActionFollowUpTypeMapOpen;
     else if ([typeStr isEqualToString:@"method"]) type = WPActionFollowUpTypeMethod;

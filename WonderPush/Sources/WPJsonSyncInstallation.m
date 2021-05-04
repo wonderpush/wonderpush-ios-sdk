@@ -78,7 +78,7 @@ static BOOL patchCallDisabled = NO;
 + (WPJsonSyncInstallation *)forUser:(NSString *)userId {
     if ([userId length] == 0) userId = nil;
     @synchronized (instancePerUserId) {
-        id instance = [instancePerUserId objectForKey:(userId ?: @"")];
+        id instance = instancePerUserId[userId ?: @""];
         if (![instance isKindOfClass:[WPJsonSync class]]) {
             instance = [[WPJsonSyncInstallation alloc] initFromSavedState:@{} userId:userId];
             instancePerUserId[userId ?: @""] = instance;

@@ -21,6 +21,7 @@
 #import "WPIAMMessageClientCache.h"
 #import "WonderPush_private.h"
 #import "WPSPSegmenter.h"
+#import "WPNSUtil.h"
 
 @interface WPIAMMessageClientCache ()
 
@@ -231,8 +232,7 @@
             if (completion) completion(NO);
             return;
         }
-        id inAppConfig = config.data[@"inAppConfig"];
-        if (![inAppConfig isKindOfClass:NSDictionary.class]) inAppConfig = @{};
+        NSDictionary *inAppConfig = [WPNSUtil dictionaryForKey:@"inAppConfig" inDictionary:config.data] ?: @{};
         NSInteger discardCount;
         NSArray<WPIAMMessageDefinition *> *messagesFromStorage = [WPIAMFetchResponseParser
                                                                   parseAPIResponseDictionary:inAppConfig

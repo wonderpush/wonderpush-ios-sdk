@@ -33,7 +33,7 @@
 {
     if (![actions isKindOfClass:[NSArray class]]) return;
     WPAction *action = [WPAction actionWithDictionaries:actions];
-    WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:notificationConfiguration];
+    WPReportingData *reportingData = [WPReportingData extract:notificationConfiguration];
     [WonderPush executeAction:action withReportingData:reportingData];
 }
 
@@ -46,12 +46,12 @@
     }
 
     NSNumber *shownTime = [[NSNumber alloc] initWithLong:(long)(([[NSProcessInfo processInfo] systemUptime] - self.showTime) * 1000)];
+    WPReportingData *reportingData = [WPReportingData extract:notificationConfiguration];
     [WonderPush trackInternalEvent:@"@NOTIFICATION_ACTION"
-                         eventData:@{@"buttonLabel":[WPNSUtil stringForKey:@"label" inDictionary:clickedButton] ?: [NSNull null],
-                                     @"reactionTime":shownTime,
-                                     @"campaignId": [WPNSUtil stringForKey:@"c" inDictionary:notificationConfiguration] ?: [NSNull null],
-                                     @"notificationId": [WPNSUtil stringForKey:@"n" inDictionary:notificationConfiguration] ?: [NSNull null],
-                                     }
+                         eventData:[reportingData filledEventData:@{
+                             @"buttonLabel": [WPNSUtil stringForKey:@"label" inDictionary:clickedButton] ?: [NSNull null],
+                             @"reactionTime": shownTime,
+                         }]
                         customData:nil];
 
     NSArray *clickedButtonAction = [WPNSUtil arrayForKey:@"actions" inDictionary:clickedButton];

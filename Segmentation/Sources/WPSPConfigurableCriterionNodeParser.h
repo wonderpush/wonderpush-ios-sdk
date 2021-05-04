@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) registerExactNameParserWithKey:(NSString *)key parser:(WPSPASTCriterionNodeParser)parser;
 - (void) registerDynamicNameParser:(WPSPASTCriterionNodeParser)parser;
-- (WPSPASTCriterionNode *) parseCriterionWithContext:(WPSPParsingContext *)context key:(NSString *)key input:(id)input;
+- (WPSPASTCriterionNode * _Nullable) parseCriterionWithContext:(WPSPParsingContext *)context key:(NSString *)key input:(id)input;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -23,12 +23,13 @@
 #import "UIColor+WPIAMHexString.h"
 #import "WPReportingData.h"
 #import "WPAction_private.h"
+#import "WPNSUtil.h"
 
 @implementation WPIAMFetchResponseParser
 
 + (NSArray<WPIAMMessageDefinition *> *)parseAPIResponseDictionary:(NSDictionary *)responseDict
                                                 discardedMsgCount:(NSInteger *)discardCount {
-    NSArray<NSDictionary *> *messageArray = responseDict[@"campaigns"];
+    NSArray<NSDictionary *> *messageArray = [WPNSUtil arrayForKey:@"campaigns" inDictionary:responseDict];
     if (!messageArray) return @[];
     NSInteger discarded = 0;
     
@@ -55,8 +56,8 @@
 // Always returns a valid WPIAMCappingDefinition
 + (WPIAMCappingDefinition *)parseCapping:(id)capping {
     if (![capping isKindOfClass:NSDictionary.class]) return [WPIAMCappingDefinition defaultCapping];
-    NSInteger maxImpressions = [capping[@"maxImpressions"] isKindOfClass:NSNumber.class] ? [capping[@"maxImpressions"] integerValue] : 1;
-    NSTimeInterval snoozeTime = [capping[@"snoozeTime"] isKindOfClass:NSNumber.class] ? [capping[@"snoozeTime"] doubleValue] / 1000 : 0;
+    NSInteger maxImpressions = [([WPNSUtil numberForKey:@"maxImpressions" inDictionary:capping] ?: @1) integerValue];
+    NSTimeInterval snoozeTime = [([WPNSUtil numberForKey:@"snoozeTime" inDictionary:capping] ?: @0) doubleValue] / 1000;
     return [[WPIAMCappingDefinition alloc] initWithMaxImpressions:maxImpressions snoozeTime:snoozeTime];
 }
 
@@ -71,23 +72,22 @@
     
     for (NSDictionary *nextTriggerCondition in triggerConditions) {
         // Parse delay
-        NSTimeInterval delay = 0;
-        if ([nextTriggerCondition[@"delay"] isKindOfClass:NSNumber.class]) {
-            delay = [nextTriggerCondition[@"delay"] doubleValue] / 1000;
-        }
+        NSTimeInterval delay = [([WPNSUtil numberForKey:@"delay" inDictionary:nextTriggerCondition] ?: @0) doubleValue] / 1000;
 
+        NSString *systemEvent = [WPNSUtil stringForKey:@"systemEvent" inDictionary:nextTriggerCondition];
+        NSDictionary *triggeringEvent = [WPNSUtil dictionaryForKey:@"event" inDictionary:nextTriggerCondition];
         // Handle app_launch and on_foreground cases.
-        if (nextTriggerCondition[@"systemEvent"]) {
-            if ([nextTriggerCondition[@"systemEvent"] isEqualToString:@"ON_FOREGROUND"]) {
+        if (systemEvent) {
+            if ([systemEvent isEqualToString:@"ON_FOREGROUND"]) {
                 [triggers addObject:[[WPIAMDisplayTriggerDefinition alloc] initForAppForegroundTriggerDelay:delay]];
-            } else if ([nextTriggerCondition[@"systemEvent"] isEqualToString:@"APP_LAUNCH"]) {
+            } else if ([systemEvent isEqualToString:@"APP_LAUNCH"]) {
                 [triggers addObject:[[WPIAMDisplayTriggerDefinition alloc] initForAppLaunchTriggerDelay:delay]];
             }
-        } else if ([nextTriggerCondition[@"event"] isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *triggeringEvent = (NSDictionary *)nextTriggerCondition[@"event"];
-            if (triggeringEvent[@"type"]) {
+        } else if (nextTriggerCondition) {
+            NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:triggeringEvent];
+            if (type) {
                 [triggers addObject:[[WPIAMDisplayTriggerDefinition alloc]
-                                     initWithEvent:triggeringEvent[@"type"] delay:delay]];
+                                     initWithEvent:type delay:delay]];
             }
         }
     }
@@ -195,22 +195,7 @@
 }
 + (WPIAMMessageRenderData * _Nullable) renderDataFromNotificationDict:(NSDictionary *)notificationDict isTestMessage:(BOOL)isTestMessage {
     @try {
-        id reportingNode = notificationDict[@"reporting"];
-        if (![reportingNode isKindOfClass:[NSDictionary class]]) {
-            WPLog(
-                  @"reporting does not exist or does not represent a dictionary in "
-                  "message node %@",
-                  notificationDict);
-            return nil;
-        }
-        NSString *campaignId = reportingNode[@"campaignId"];
-        NSString *notificationId = reportingNode[@"notificationId"];
-        if (!campaignId || !notificationId || ![campaignId isKindOfClass:[NSString class]] || ![notificationId isKindOfClass:[NSString class]]) {
-            WPLog(
-                  @"campaign or notification id is missing in message node %@", notificationDict);
-            return nil;
-        }
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:reportingNode];
+        WPReportingData *reportingData = [WPReportingData extract:notificationDict];
 
         id contentNode = notificationDict[@"content"];
         if (![contentNode isKindOfClass:[NSDictionary class]]) {

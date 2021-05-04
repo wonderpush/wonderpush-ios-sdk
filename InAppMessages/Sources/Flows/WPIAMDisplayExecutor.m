@@ -96,7 +96,7 @@
     if (action.targetUrl || action.followUps.count) {
         // Send an event to log click
         NSMutableDictionary *eventData = [NSMutableDictionary new];
-        [eventData addEntriesFromDictionary:_currentMsgBeingDisplayed.renderData.reportingData.dictValue];
+        [_currentMsgBeingDisplayed.renderData.reportingData fillEventDataInto:eventData];
         eventData[@"actionDate"] = [NSNumber numberWithLongLong:(long long)([self.timeFetcher currentTimestampInSeconds] * 1000)];
         NSString *buttonLabel = nil;
         if ([inAppMessage respondsToSelector:@selector(action)]) {

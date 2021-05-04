@@ -141,8 +141,8 @@ static NSDictionary *notificationServiceExtensionDict = nil;
                         // Read plist file
                         @try {
                             NSDictionary *plistContents = [NSDictionary dictionaryWithContentsOfFile:plistPath];
-                            NSDictionary *NSExtension = [plistContents objectForKey:@"NSExtension"];
-                            NSString *NSExtensionPointIdentifier = [NSExtension objectForKey:@"NSExtensionPointIdentifier"];
+                            NSDictionary *NSExtension = [WPNSUtil dictionaryForKey:@"NSExtension" inDictionary:plistContents];
+                            NSString *NSExtensionPointIdentifier = [WPNSUtil stringForKey:@"NSExtensionPointIdentifier" inDictionary:NSExtension];
                             if ([NSExtensionPointIdentifier isEqualToString:@"com.apple.usernotifications.service"]) {
                                 hasPlist = YES;
                             } else {
@@ -156,7 +156,7 @@ static NSDictionary *notificationServiceExtensionDict = nil;
                                 NSString *frameworkPlistPath = [root stringByAppendingPathComponent:@"Frameworks/WonderPushExtension.framework/Info.plist"];
                                 if ([fileManager fileExistsAtPath:frameworkPlistPath isDirectory:&isDir] && !isDir) {
                                     NSDictionary *frameworkPlistContents = [NSDictionary dictionaryWithContentsOfFile:frameworkPlistPath];
-                                    NSString *CFBundleIdentifier = [frameworkPlistContents objectForKey:@"CFBundleIdentifier"];
+                                    NSString *CFBundleIdentifier = [WPNSUtil stringForKey:@"CFBundleIdentifier" inDictionary:frameworkPlistContents];
                                     if ([CFBundleIdentifier isEqualToString:@"com.wonderpush.WonderPushExtension"]) {
                                         hasFramework = YES;
                                     }

@@ -58,7 +58,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
                     " object");
         return nil;
     } else {
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:reportingDataDict];
+        WPReportingData *reportingData = [[WPReportingData alloc] initFromSerialized:reportingDataDict];
         return [self initWithReportingData:reportingData
                    lastImpressionTimestamp:lastImpressionTimestamp ? [lastImpressionTimestamp doubleValue] : 0
                            impressionCount:impressionCount ? [impressionCount integerValue] : 1];
@@ -120,7 +120,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         
         NSNumber *dateTimestamp = [NSNumber numberWithDouble:[NSDate date].timeIntervalSince1970];
         NSMutableDictionary *newImpressionEntry = [NSMutableDictionary dictionaryWithDictionary:@{
-            WPIAM_ImpressionDictKeyForReportingData : reportingData.dictValue,
+            WPIAM_ImpressionDictKeyForReportingData: reportingData.serializationDictValue,
             WPIAM_ImpressionDictKeyForCount: @1,
             WPIAM_ImpressionDictKeyForLastImpressionDateTimestamp: dateTimestamp,
         }];
@@ -131,9 +131,11 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
                 NSDictionary *currentItem = (NSDictionary *)newImpressions[i];
                 id currentItemReportingDataDict = currentItem[WPIAM_ImpressionDictKeyForReportingData];
                 if ([currentItemReportingDataDict isKindOfClass:[NSDictionary class]]) {
-                    WPReportingData *currentItemReportingData = [[WPReportingData alloc] initWithDictionary:currentItemReportingDataDict];
-                    if ([reportingData.campaignId isEqualToString:currentItemReportingData.campaignId]
-                        && [reportingData.notificationId isEqualToString:currentItemReportingData.notificationId]) {
+                    WPReportingData *currentItemReportingData = [[WPReportingData alloc] initFromSerialized:currentItemReportingDataDict];
+                    if (
+                        (reportingData.campaignId == currentItemReportingData.campaignId || [reportingData.campaignId isEqualToString:currentItemReportingData.campaignId])
+                        && (reportingData.notificationId == currentItemReportingData.notificationId || [reportingData.notificationId isEqualToString:currentItemReportingData.notificationId])
+                    ) {
                         WPLogDebug(
                                     @"Updating timestamp of existing impression record to be %f for "
                                     "campaign %@, notification %@",
@@ -156,7 +158,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         [self.defaults setObject:newImpressions forKey:WPIAM_UserDefaultsKeyForImpressions];
         [self.defaults synchronize];
         NSMutableDictionary *eventData = [NSMutableDictionary new];
-        [eventData addEntriesFromDictionary:reportingData.dictValue];
+        [reportingData fillEventDataInto:eventData];
         eventData[@"actionDate"] = [NSNumber numberWithLong:(long)(timestamp * 1000)];
         
         [WonderPush countInternalEvent:@"@INAPP_VIEWED"
@@ -185,7 +187,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
     NSMutableArray<NSString *> *resultArray = [[NSMutableArray alloc] init];
     
     for (NSDictionary *next in impressionsFromStorage) {
-        WPReportingData *reportingData = [[WPReportingData alloc] initWithDictionary:next[@"reportingData"]];
+        WPReportingData *reportingData = [[WPReportingData alloc] initFromSerialized:next[WPIAM_ImpressionDictKeyForReportingData]];
         if (reportingData.campaignId) [resultArray addObject:reportingData.campaignId];
     }
     

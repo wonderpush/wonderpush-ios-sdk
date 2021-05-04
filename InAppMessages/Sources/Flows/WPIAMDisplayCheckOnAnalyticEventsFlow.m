@@ -51,7 +51,7 @@ static dispatch_queue_t eventListenerQueue;
     if (!self.started) {
         return;
     }
-    NSString *eventType = [notification.userInfo objectForKey:WPEventFiredNotificationEventTypeKey];
+    NSString *eventType = notification.userInfo[WPEventFiredNotificationEventTypeKey];
     dispatch_async(eventListenerQueue, ^{
       [self.displayExecutor checkAndDisplayNextContextualMessageForWonderPushEvent:eventType];
     });

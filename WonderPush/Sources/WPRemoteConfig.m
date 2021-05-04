@@ -11,6 +11,7 @@
 #import "WPLog.h"
 #import "WonderPush_private.h"
 #import "WPErrors.h"
+#import "WPNSUtil.h"
 
 NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNotification";
 
@@ -30,26 +31,28 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     if (![configurationDict isKindOfClass:NSDictionary.class]) return nil;
     
     // Get the version
-    id version = [configurationDict objectForKey:@"version"];
+    id version = configurationDict[@"version"];
 
     // Version can be a number, turn into a string
     if ([version isKindOfClass:NSNumber.class]) version = [version stringValue];
 
     if (![version isKindOfClass:NSString.class]) {
-        *error = [NSError errorWithDomain:WPErrorDomain code:WPErrorInvalidFormat userInfo:nil];
+        if (error != nil) {
+            *error = [NSError errorWithDomain:WPErrorDomain code:WPErrorInvalidFormat userInfo:nil];
+        }
         return nil;
     }
 
-    NSNumber *maxAgeNumber = [configurationDict objectForKey:@"maxAge"]; // milliseconds
-    if (!maxAgeNumber) {
-        maxAgeNumber = [configurationDict objectForKey:@"cacheTtl"]; // fallback on cacheTtl
+    NSNumber *maxAgeNumber = [WPNSUtil numberForKey:@"maxAge" inDictionary:configurationDict]; // milliseconds
+    if (maxAgeNumber == nil) {
+        maxAgeNumber = [WPNSUtil numberForKey:@"cacheTtl" inDictionary:configurationDict]; // fallback on cacheTtl
     }
-    NSTimeInterval maxAge = [maxAgeNumber isKindOfClass:NSNumber.class] ? maxAgeNumber.doubleValue / 1000 : 0;
-    NSNumber *minAgeNumber = [configurationDict objectForKey:@"minAge"]; // milliseconds
-    if (!minAgeNumber) {
-        minAgeNumber = [configurationDict objectForKey:@"cacheMinAge"];
+    NSTimeInterval maxAge = maxAgeNumber != nil ? maxAgeNumber.doubleValue / 1000 : 0;
+    NSNumber *minAgeNumber = [WPNSUtil numberForKey:@"minAge" inDictionary:configurationDict]; // milliseconds
+    if (minAgeNumber == nil) {
+        minAgeNumber = [WPNSUtil numberForKey:@"cacheMinAge" inDictionary:configurationDict];
     }
-    NSTimeInterval minAge = [minAgeNumber isKindOfClass:NSNumber.class] ? minAgeNumber.doubleValue / 1000 : 0;
+    NSTimeInterval minAge = minAgeNumber != nil ? minAgeNumber.doubleValue / 1000 : 0;
     return [[WPRemoteConfig alloc] initWithData:configurationDict version:version fetchDate:[NSDate date] maxAge:maxAge minAge:minAge];
 }
 
@@ -416,7 +419,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 - (void) fetchAndStoreConfigWithVersion:(NSString * _Nullable)version currentConfig:(WPRemoteConfig * _Nullable)currentConfig completion:(WPRemoteConfigReadCompletionHandler _Nullable)completion {
 
     // Is fetch disabled?
-    if (currentConfig && [[currentConfig.data objectForKey:WP_REMOTE_CONFIG_DISABLE_FETCH_KEY] boolValue]) {
+    if (currentConfig && [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_FETCH_KEY inDictionary:currentConfig.data] boolValue]) {
         if (completion) completion(currentConfig, nil);
         return;
     }

@@ -9,6 +9,7 @@
 #import "WPBasicApiClient.h"
 #import "WPErrors.h"
 #import "WPRequestSerializer.h"
+#import "WPNSUtil.h"
 
 NSString * const WPBasicApiClientResponseNotification = @"WPBasicApiClientResponseNotification";
 NSString * const WPBasicApiClientResponseNotificationRequestKey = @"request";
@@ -64,7 +65,7 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
         return;
     }
     
-    id bodyParam = [params objectForKey:@"body"];
+    id bodyParam = params[@"body"];
 
     // Serialize bodyParam as JSON
     NSError *error = nil;
@@ -79,7 +80,7 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
     
     // Other params
     for (NSString *param in self.additionalAllowedParams) {
-        NSString *value = [params[param] isKindOfClass:NSString.class] ? params[param] : nil;
+        NSString *value = [WPNSUtil stringForKey:param inDictionary:params];
         if (value) {
             requestBodyString = [requestBodyString stringByAppendingFormat:@"&%@=%@", [param stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet],  [value stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet]];
         }

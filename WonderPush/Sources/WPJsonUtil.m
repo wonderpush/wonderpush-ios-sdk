@@ -40,22 +40,22 @@
     NSString *key;
 
     for (key in diff) {
-        id vDiff = [diff objectForKey:key];
-        id vBase = [rtn objectForKey:key];
+        id vDiff = diff[key];
+        id vBase = rtn[key];
         if (vBase == nil) {
             if (vDiff == [NSNull null] && nullFieldRemoves) {
                 // The field already does not exist
             } else {
-                [rtn setObject:vDiff forKey:key];
+                rtn[key] = vDiff;
             }
         } else if ([vDiff isKindOfClass:[NSDictionary class]] && [vBase isKindOfClass:[NSDictionary class]]) {
-            [rtn setObject:[self merge:vBase with:vDiff] forKey:key];
+            rtn[key] = [self merge:vBase with:vDiff];
         } else {
             if (vDiff == [NSNull null] && nullFieldRemoves) {
                 // We should remove the field
                 [rtn removeObjectForKey:key];
             } else {
-                [rtn setObject:vDiff forKey:key];
+                rtn[key] = vDiff;
             }
         }
     }
@@ -79,26 +79,26 @@
     NSString *key;
 
     for (key in from) {
-        id vTo = [to objectForKey:key];
+        id vTo = to[key];
         if (vTo == nil) {
-            [rtn setObject:[NSNull null] forKey:key];
+            rtn[key] = [NSNull null];
             continue;
         }
-        id vFrom = [from objectForKey:key];
+        id vFrom = from[key];
         if (![vTo isEqual:vFrom]) {
             if ([vFrom isKindOfClass:[NSDictionary class]] && [vTo isKindOfClass:[NSDictionary class]]) {
-                [rtn setObject:[self diff:(NSDictionary *)vFrom with:(NSDictionary *)vTo] forKey:key];
+                rtn[key] = [self diff:(NSDictionary *)vFrom with:(NSDictionary *)vTo];
             } else {
-                [rtn setObject:vTo forKey:key];
+                rtn[key] = vTo;
             }
         }
     }
 
     for (key in to) {
-        id vFrom = [from objectForKey:key];
+        id vFrom = from[key];
         if (vFrom != nil) continue;
-        id vTo = [to objectForKey:key];
-        [rtn setObject:vTo forKey:key];
+        id vTo = to[key];
+        rtn[key] = vTo;
     }
 
     return rtn;
