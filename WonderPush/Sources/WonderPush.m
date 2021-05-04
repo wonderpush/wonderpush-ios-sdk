@@ -1915,14 +1915,16 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     NSString *clientId = WPConfiguration.sharedConfiguration.clientId;
     if (!clientId) return nil;
     
-    WPRemoteConfigManager *remoteConfigManager = managers[clientId];
-    if (!remoteConfigManager) {
-        WPRemoteConfigFetcherWithURLSession *fetcher = [[WPRemoteConfigFetcherWithURLSession alloc] initWithClientId:clientId];
-        WPRemoteConfigStorageWithUserDefaults *storage = [[WPRemoteConfigStorageWithUserDefaults alloc] initWithClientId:clientId];
-        remoteConfigManager = [[WPRemoteConfigManager alloc] initWithRemoteConfigFetcher:fetcher storage:storage];
-        managers[clientId] = remoteConfigManager;
+    @synchronized (self) {
+        WPRemoteConfigManager *remoteConfigManager = managers[clientId];
+        if (!remoteConfigManager) {
+            WPRemoteConfigFetcherWithURLSession *fetcher = [[WPRemoteConfigFetcherWithURLSession alloc] initWithClientId:clientId];
+            WPRemoteConfigStorageWithUserDefaults *storage = [[WPRemoteConfigStorageWithUserDefaults alloc] initWithClientId:clientId];
+            remoteConfigManager = [[WPRemoteConfigManager alloc] initWithRemoteConfigFetcher:fetcher storage:storage];
+            managers[clientId] = remoteConfigManager;
+        }
+        return remoteConfigManager;
     }
-    return remoteConfigManager;
 }
 
 + (void)requestEventuallyWithMeasurementsApi:(WPRequest *)request {

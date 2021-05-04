@@ -364,7 +364,9 @@ static WPConfiguration *sharedConfiguration = nil;
     if (_accessToken)
         return _accessToken;
 
-    _accessToken = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_ACCESS_TOKEN_KEY];
+    @synchronized (self) {
+        _accessToken = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_ACCESS_TOKEN_KEY];
+    }
     return _accessToken;
 }
 
@@ -373,7 +375,9 @@ static WPConfiguration *sharedConfiguration = nil;
     if (_deviceToken)
         return _deviceToken;
 
-    _deviceToken = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_DEVICE_TOKEN_KEY];
+    @synchronized (self) {
+        _deviceToken = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_DEVICE_TOKEN_KEY];
+    }
     return _deviceToken;
 }
 
@@ -382,7 +386,9 @@ static WPConfiguration *sharedConfiguration = nil;
     if (![deviceToken isEqual:_deviceToken]) {
         WPLogDebug(@"Setting device token: %@", deviceToken);
     }
-    _deviceToken = deviceToken;
+    @synchronized (self) {
+        _deviceToken = deviceToken;
+    }
     [self _setNSString:deviceToken forKey:USER_DEFAULTS_DEVICE_TOKEN_KEY];
 }
 
@@ -469,13 +475,17 @@ static WPConfiguration *sharedConfiguration = nil;
     if (_installationId)
         return _installationId;
 
-    _installationId = [self _getNSStringForKey:USER_DEFAULTS_INSTALLATION_ID];
+    @synchronized (self) {
+        _installationId = [self _getNSStringForKey:USER_DEFAULTS_INSTALLATION_ID];
+    }
     return _installationId;
 }
 
 - (void) setInstallationId:(NSString *)installationId
 {
-    _installationId = installationId;
+    @synchronized (self) {
+        _installationId = installationId;
+    }
     WPLogDebug(@"Setting installationId: %@", installationId);
     [self _setNSString:installationId forKey:USER_DEFAULTS_INSTALLATION_ID];
 }
@@ -488,7 +498,9 @@ static WPConfiguration *sharedConfiguration = nil;
     if (_userId)
         return _userId;
 
-    _userId = [self _getNSStringForKey:USER_DEFAULTS_USER_ID_KEY];
+    @synchronized (self) {
+        _userId = [self _getNSStringForKey:USER_DEFAULTS_USER_ID_KEY];
+    }
     return _userId;
 }
 
@@ -497,8 +509,9 @@ static WPConfiguration *sharedConfiguration = nil;
     if ([@"" isEqualToString:userId]) {
         userId = nil;
     }
-    _userId = userId;
-
+    @synchronized (self) {
+        _userId = userId;
+    }
     WPLogDebug(@"Setting userId: %@", userId);
     [self _setNSString:userId forKey:USER_DEFAULTS_USER_ID_KEY];
 }
@@ -511,13 +524,17 @@ static WPConfiguration *sharedConfiguration = nil;
     if (_sid)
         return _sid;
 
-    _sid = [self _getNSStringForKey:USER_DEFAULTS_SID_KEY];
+    @synchronized (self) {
+        _sid = [self _getNSStringForKey:USER_DEFAULTS_SID_KEY];
+    }
     return _sid;
 }
 
 - (void) setSid:(NSString *)sid
 {
-    _sid = sid;
+    @synchronized (self) {
+        _sid = sid;
+    }
     WPLogDebug(@"Setting sid: %@", sid);
     [self _setNSString:sid forKey:USER_DEFAULTS_SID_KEY];
 }
@@ -533,7 +550,9 @@ static WPConfiguration *sharedConfiguration = nil;
 - (BOOL) notificationEnabled
 {
     if (!__notificationEnabled) {
-        __notificationEnabled = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY];
+        @synchronized (self) {
+            __notificationEnabled = [[NSUserDefaults standardUserDefaults] valueForKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY];
+        }
         if (__notificationEnabled == nil) {
             return YES;
         }
@@ -544,8 +563,9 @@ static WPConfiguration *sharedConfiguration = nil;
 
 - (void) setNotificationEnabled:(BOOL)notificationEnabled
 {
-    __notificationEnabled = [NSNumber numberWithBool:notificationEnabled];
-
+    @synchronized (self) {
+        __notificationEnabled = [NSNumber numberWithBool:notificationEnabled];
+    }
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setValue:__notificationEnabled forKey:USER_DEFAULTS_NOTIFICATION_ENABLED_KEY];
     [defaults synchronize];
@@ -856,15 +876,17 @@ static WPConfiguration *sharedConfiguration = nil;
     }];
     [defaults synchronize];
     
-    _accessToken = nil;
-    _deviceToken = nil;
-    _sid = nil;
-    _userId = nil;
-    _installationId = nil;
-    __notificationEnabled = nil;
-    _timeOffset = 0;
-    _timeOffsetPrecision = 0;
-    _justOpenedNotification = nil;
+    @synchronized (self) {
+        _accessToken = nil;
+        _deviceToken = nil;
+        _sid = nil;
+        _userId = nil;
+        _installationId = nil;
+        __notificationEnabled = nil;
+        _timeOffset = 0;
+        _timeOffsetPrecision = 0;
+        _justOpenedNotification = nil;
+    }
 }
 
 - (void)rememberTrackedEvent:(NSDictionary *)eventParams {
