@@ -15,8 +15,8 @@ typedef void (^WPJsonSyncUpgradeCallback)(NSMutableDictionary *upgradeMeta, NSMu
 @interface WPJsonSync : NSObject
 
 
-@property (readonly, copy) NSDictionary *sdkState;
-@property (readonly, copy) NSDictionary *serverState;
+@property (readonly, strong) NSDictionary *sdkState;
+@property (readonly, strong) NSDictionary *serverState;
 @property (readonly) bool scheduledPatchCall;
 @property (readonly) bool inflightPatchCall;
 
