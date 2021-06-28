@@ -430,6 +430,11 @@
 
 - (CLLocation *)location
 {
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    if (status != kCLAuthorizationStatusAuthorizedAlways
+        && status != kCLAuthorizationStatusAuthorizedWhenInUse) {
+        return nil;
+    }
     CLLocation *location = self.locationManager.location;
     if (   !location // skip if unavailable
         || [location.timestamp timeIntervalSinceNow] < -300 // skip if older than 5 minutes
