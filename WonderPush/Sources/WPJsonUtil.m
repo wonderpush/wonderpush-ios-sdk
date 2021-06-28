@@ -60,7 +60,7 @@
         }
     }
 
-    return rtn;
+    return [NSDictionary dictionaryWithDictionary:rtn];
 }
 
 + (NSDictionary *)diff:(NSDictionary *)from with:(NSDictionary *)to
@@ -101,7 +101,7 @@
         rtn[key] = vTo;
     }
 
-    return rtn;
+    return [NSDictionary dictionaryWithDictionary:rtn];
 }
 
 + (NSDictionary *)stripNulls:(NSDictionary *)base
