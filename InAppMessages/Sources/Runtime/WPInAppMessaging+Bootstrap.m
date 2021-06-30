@@ -18,7 +18,6 @@
 #import "WPCore+InAppMessaging.h"
 #import "WPIAMRuntimeManager.h"
 #import "WPIAMSDKSettings.h"
-#import "NSString+WPInterlaceStrings.h"
 
 @implementation WPInAppMessaging (Bootstrap)
 

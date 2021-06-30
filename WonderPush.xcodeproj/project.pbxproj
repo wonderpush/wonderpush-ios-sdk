@@ -214,7 +214,6 @@
 		99EF833C23F4452C00B9B287 /* WPIAMTimeFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF82C023F4452C00B9B287 /* WPIAMTimeFetcher.m */; };
 		99EF833D23F4452C00B9B287 /* UIColor+WPIAMHexString.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF82C123F4452C00B9B287 /* UIColor+WPIAMHexString.m */; };
 		99EF833E23F4452C00B9B287 /* WPIAMElapsedTimeTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82C223F4452C00B9B287 /* WPIAMElapsedTimeTracker.h */; };
-		99EF833F23F4452C00B9B287 /* NSString+WPInterlaceStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF82C323F4452C00B9B287 /* NSString+WPInterlaceStrings.m */; };
 		99EF834023F4452C00B9B287 /* UIColor+WPIAMHexString.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82C423F4452C00B9B287 /* UIColor+WPIAMHexString.h */; };
 		99EF834123F4452C00B9B287 /* WPIAMElapsedTimeTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF82C523F4452C00B9B287 /* WPIAMElapsedTimeTracker.m */; };
 		99EF834223F4452C00B9B287 /* WPInAppMessagingPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82C623F4452C00B9B287 /* WPInAppMessagingPrivate.h */; };
@@ -231,7 +230,6 @@
 		99EF834D23F4452C00B9B287 /* InAppMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82D523F4452C00B9B287 /* InAppMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		99EF834E23F4452C00B9B287 /* WPInAppMessagingRendering.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82D623F4452C00B9B287 /* WPInAppMessagingRendering.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		99EF834F23F4452C00B9B287 /* WPInAppMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82D723F4452C00B9B287 /* WPInAppMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		99EF835023F4452C00B9B287 /* NSString+WPInterlaceStrings.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82DA23F4452C00B9B287 /* NSString+WPInterlaceStrings.h */; };
 		99EF835123F4452C00B9B287 /* WPIAMTimeFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82DB23F4452C00B9B287 /* WPIAMTimeFetcher.h */; };
 		99EF835223F4452C00B9B287 /* WPIAMSDKSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82DD23F4452C00B9B287 /* WPIAMSDKSettings.h */; };
 		99EF835423F4452C00B9B287 /* WPInAppMessaging+Bootstrap.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82DF23F4452C00B9B287 /* WPInAppMessaging+Bootstrap.h */; };
@@ -540,7 +538,6 @@
 		99EF82C023F4452C00B9B287 /* WPIAMTimeFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMTimeFetcher.m; sourceTree = "<group>"; };
 		99EF82C123F4452C00B9B287 /* UIColor+WPIAMHexString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+WPIAMHexString.m"; sourceTree = "<group>"; };
 		99EF82C223F4452C00B9B287 /* WPIAMElapsedTimeTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMElapsedTimeTracker.h; sourceTree = "<group>"; };
-		99EF82C323F4452C00B9B287 /* NSString+WPInterlaceStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+WPInterlaceStrings.m"; sourceTree = "<group>"; };
 		99EF82C423F4452C00B9B287 /* UIColor+WPIAMHexString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+WPIAMHexString.h"; sourceTree = "<group>"; };
 		99EF82C523F4452C00B9B287 /* WPIAMElapsedTimeTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMElapsedTimeTracker.m; sourceTree = "<group>"; };
 		99EF82C623F4452C00B9B287 /* WPInAppMessagingPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPInAppMessagingPrivate.h; sourceTree = "<group>"; };
@@ -557,7 +554,6 @@
 		99EF82D523F4452C00B9B287 /* InAppMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppMessaging.h; sourceTree = "<group>"; };
 		99EF82D623F4452C00B9B287 /* WPInAppMessagingRendering.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPInAppMessagingRendering.h; sourceTree = "<group>"; };
 		99EF82D723F4452C00B9B287 /* WPInAppMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPInAppMessaging.h; sourceTree = "<group>"; };
-		99EF82DA23F4452C00B9B287 /* NSString+WPInterlaceStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+WPInterlaceStrings.h"; sourceTree = "<group>"; };
 		99EF82DB23F4452C00B9B287 /* WPIAMTimeFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMTimeFetcher.h; sourceTree = "<group>"; };
 		99EF82DD23F4452C00B9B287 /* WPIAMSDKSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMSDKSettings.h; sourceTree = "<group>"; };
 		99EF82DF23F4452C00B9B287 /* WPInAppMessaging+Bootstrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "WPInAppMessaging+Bootstrap.h"; sourceTree = "<group>"; };
@@ -1011,7 +1007,6 @@
 				99EF82C023F4452C00B9B287 /* WPIAMTimeFetcher.m */,
 				99EF82C123F4452C00B9B287 /* UIColor+WPIAMHexString.m */,
 				99EF82C223F4452C00B9B287 /* WPIAMElapsedTimeTracker.h */,
-				99EF82C323F4452C00B9B287 /* NSString+WPInterlaceStrings.m */,
 				99EF82C423F4452C00B9B287 /* UIColor+WPIAMHexString.h */,
 				99EF82C523F4452C00B9B287 /* WPIAMElapsedTimeTracker.m */,
 			);
@@ -1073,7 +1068,6 @@
 		99EF82D923F4452C00B9B287 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				99EF82DA23F4452C00B9B287 /* NSString+WPInterlaceStrings.h */,
 				99EF82DB23F4452C00B9B287 /* WPIAMTimeFetcher.h */,
 			);
 			path = Util;
@@ -1327,7 +1321,6 @@
 				9998CAAB221C75370028D955 /* WPDataManager.h in Headers */,
 				9942FD7B246BDAB20002BEA0 /* WPRemoteConfig.h in Headers */,
 				99764148252648B9001EFD96 /* WPErrors.h in Headers */,
-				99EF835023F4452C00B9B287 /* NSString+WPInterlaceStrings.h in Headers */,
 				99EF836323F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.h in Headers */,
 				9998CAAC221C75370028D955 /* WPDialogButtonHandler.h in Headers */,
 				99EF835A23F4452C00B9B287 /* WPIAMFetchResponseParser.h in Headers */,
@@ -1739,7 +1732,6 @@
 				9998CAD3221C75630028D955 /* WonderPushConcreteAPI.m in Sources */,
 				99EF838A23F4452C00B9B287 /* WPIAMDisplayCheckTriggerFlow.m in Sources */,
 				992F65A5251C8B7100526C90 /* WPPresenceManager.m in Sources */,
-				99EF833F23F4452C00B9B287 /* NSString+WPInterlaceStrings.m in Sources */,
 				99EF837A23F4452C00B9B287 /* WPIAMRenderingWindowHelper.m in Sources */,
 				995F14D824A9F3F300CC499E /* WPSPDefaultValueNodeParser.m in Sources */,
 				9979E0CF24A6374F002BC6EE /* WPSPParserConfig.m in Sources */,
