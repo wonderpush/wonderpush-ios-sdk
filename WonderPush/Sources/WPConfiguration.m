@@ -317,7 +317,7 @@ static WPConfiguration *sharedConfiguration = nil;
                                          };
     NSMutableDictionary *usersArchive = [([self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY] ?: @{}) mutableCopy];
     usersArchive[self.userId ?: @""] = currentUserArchive;
-    [self _setNSDictionaryAsJSON:usersArchive forKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY];
+    [self _setNSDictionaryAsJSON:[usersArchive copy] forKey:USER_DEFAULTS_PER_USER_ARCHIVE_KEY];
 
     // Load new user preferences
     NSDictionary *newUserArchive = usersArchive[newUserId ?: @""] ?: @{};
@@ -658,7 +658,7 @@ static WPConfiguration *sharedConfiguration = nil;
         NSMutableArray *queuedNotifications = [[self getQueuedNotifications] mutableCopy];
         [queuedNotifications addObject:notification];
         NSError *error = NULL;
-        NSData *queuedNotificationsData = [NSJSONSerialization dataWithJSONObject:queuedNotifications options:0 error:&error];
+        NSData *queuedNotificationsData = [NSJSONSerialization dataWithJSONObject:[queuedNotifications copy] options:0 error:&error];
         if (error) {
             WPLogDebug(@"Error while serializing queued notifications: %@", error);
             return;
@@ -1017,9 +1017,9 @@ static WPConfiguration *sharedConfiguration = nil;
     NSMutableDictionary *eventToStore = [NSMutableDictionary dictionaryWithDictionary:eventParams];
     // FIXME: remove me when the server sends a different DSL to clients and the database
     eventToStore[@"collapsing"] = @"last";
-    [newTrackedEvents addObject:eventToStore];
+    [newTrackedEvents addObject:[eventToStore copy]];
 
-    [self setTrackedEvents:newTrackedEvents];
+    [self setTrackedEvents:[newTrackedEvents copy]];
 }
 
 - (NSArray *)trackedEvents {

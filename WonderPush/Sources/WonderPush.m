@@ -920,7 +920,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
     WPHTMLInAppController *controller = [storyboard instantiateViewControllerWithIdentifier:@"HTMLInAppController"];
     controller.title = [WPNSUtil stringForKey:@"title" inDictionary:wonderPushData];
-    controller.actions = alertButtons;
+    controller.actions = [alertButtons copy];
     controller.modalPresentationStyle = UIModalPresentationOverFullScreen;
     controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     
@@ -1213,7 +1213,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
     }
 
-    [self trackNotificationOpened:notificationOpenedEventData];
+    [self trackNotificationOpened:[notificationOpenedEventData copy]];
 
     if ([actionsToExecute isKindOfClass:NSArray.class]) {
         WPAction *action = [WPAction actionWithDictionaries:actionsToExecute];
@@ -1371,9 +1371,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
             openInfo[@"doNotSynthesizeVisit"] = @YES;
         }
 
+        NSDictionary *openInfoCopy = [openInfo copy];
         conf.lastAppOpenDate = [[NSDate alloc] initWithTimeIntervalSince1970:now / 1000.];
-        conf.lastAppOpenInfo = openInfo;
-        [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfo customData:nil sentCallback:^{
+        conf.lastAppOpenInfo = openInfoCopy;
+        [WonderPush trackInternalEvent:@"@APP_OPEN" eventData:openInfoCopy customData:nil sentCallback:^{
             conf.lastAppOpenSentDate = [NSDate date];
         }];
         appOpenQueued = YES;
@@ -1411,7 +1412,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.method = method;
     request.resource = resource;
     request.handler = handler;
-    request.params = parameters;
+    request.params = [parameters copy];
 
     [client requestAuthenticated:request];
 }
@@ -1436,7 +1437,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.method = @"POST";
     request.resource = resource;
     request.handler = handler;
-    request.params = parameters;
+    request.params = [parameters copy];
 
     [client requestAuthenticated:request];
 }
@@ -1461,7 +1462,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.method = @"GET";
     request.resource = resource;
     request.handler = handler;
-    request.params = parameters;
+    request.params = [parameters copy];
     [client requestAuthenticated:request];
 }
 
@@ -1485,7 +1486,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.method = @"DELETE";
     request.resource = resource;
     request.handler = handler;
-    request.params = parameters;
+    request.params = [parameters copy];
     [client requestAuthenticated:request];
 }
 
@@ -1509,7 +1510,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.method = @"PUT";
     request.resource = resource;
     request.handler = handler;
-    request.params = parameters;
+    request.params = [parameters copy];
     [client requestAuthenticated:request];
 }
 
@@ -1527,7 +1528,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.userId = [WPConfiguration sharedConfiguration].userId;
     request.method = @"POST";
     request.resource = resource;
-    request.params = parameters;
+    request.params = [parameters copy];
     [client requestEventually:request];
 }
 

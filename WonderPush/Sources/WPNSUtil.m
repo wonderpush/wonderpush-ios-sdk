@@ -22,7 +22,7 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
         [allowed formUnionWithCharacterSet:[NSCharacterSet characterSetWithCharactersInString:@"-._~"]];
         // Escape :/?#[]@!$&'()*+,;=
         [allowed formIntersectionWithCharacterSet:[[NSCharacterSet characterSetWithCharactersInString:@":/?#[]@!$&'()*+,;="] invertedSet]];
-        PercentEncodedAllowedCharacterSet = allowed;
+        PercentEncodedAllowedCharacterSet = [allowed copy];
     });
 }
 
@@ -91,7 +91,7 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
 
         result[key] = val;
     }
-    return result;
+    return [result copy];
 }
 
 + (NSString *)percentEncodedString:(NSString *)string

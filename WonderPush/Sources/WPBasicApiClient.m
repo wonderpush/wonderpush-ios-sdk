@@ -76,7 +76,7 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
     }
     
     // Build the request body
-    NSString * _Nullable requestBodyString = bodyParamData ? [NSMutableString stringWithFormat:@"body=%@", [[[NSString alloc] initWithData:bodyParamData encoding:NSUTF8StringEncoding] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]] : @"";
+    NSString * _Nullable requestBodyString = bodyParamData ? [NSString stringWithFormat:@"body=%@", [[[NSString alloc] initWithData:bodyParamData encoding:NSUTF8StringEncoding] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]] : @"";
     
     // Other params
     for (NSString *param in self.additionalAllowedParams) {

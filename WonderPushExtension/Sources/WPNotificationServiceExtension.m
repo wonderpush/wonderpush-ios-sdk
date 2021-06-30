@@ -173,7 +173,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                 [actions addObject:action];
                 buttonCounter++;
             }
-            UNNotificationCategory *category = [[WPNotificationCategoryManager sharedInstance] registerNotificationCategoryIdentifierWithNotificationId:reportingData.notificationId actions:actions];
+            UNNotificationCategory *category = [[WPNotificationCategoryManager sharedInstance] registerNotificationCategoryIdentifierWithNotificationId:reportingData.notificationId actions:[actions copy]];
             content.categoryIdentifier = category.identifier;
         }
         NSArray *attachments = [WPNSUtil arrayForKey:@"attachments" inDictionary:wpData];
@@ -212,7 +212,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                     @try {
                         UNNotificationAttachment *attachment = [UNNotificationAttachment attachmentWithIdentifier:attachmentId
                                                                                                               URL:fileURL
-                                                                                                          options:attachmentOptions
+                                                                                                          options:[attachmentOptions copy]
                                                                                                             error:&error];
                         if (error != nil) {
                             WPLog(@"Failed to create attachment: %@", error);
@@ -221,7 +221,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
                         if (attachment) {
                             WPLog(@"Adding attachment: %@", attachment);
                             [contentAttachments addObject:attachment];
-                            content.attachments = contentAttachments;
+                            content.attachments = [contentAttachments copy];
                         }
                     } @catch (NSException *exception) {
                         WPLog(@"WonderPush/NotificationServiceExtension didReceiveNotificationRequest:withContentHandler: exception when adding attachment: %@", exception);

@@ -200,7 +200,7 @@
         [mutableQueryStringComponents addObject:[[WPQueryStringPair alloc] initWithField:key value:value]];
     }
     
-    return mutableQueryStringComponents;
+    return [mutableQueryStringComponents copy];
 }
 
 
@@ -256,7 +256,7 @@
         [mutableRequest addValue:authorizationHeader forHTTPHeaderField:@"X-WonderPush-Authorization"];
     }
     
-    return mutableRequest;
+    return [mutableRequest copy];
 }
 
 @end

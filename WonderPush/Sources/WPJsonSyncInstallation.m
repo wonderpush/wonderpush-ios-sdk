@@ -194,7 +194,7 @@ static BOOL patchCallDisabled = NO;
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     NSMutableDictionary *installationCustomSyncStatePerUserId = [(conf.installationCustomSyncStatePerUserId ?: @{}) mutableCopy];
     installationCustomSyncStatePerUserId[_userId ?: @""] = state ?: @{};
-    conf.installationCustomSyncStatePerUserId = installationCustomSyncStatePerUserId;
+    conf.installationCustomSyncStatePerUserId = [installationCustomSyncStatePerUserId copy];
 }
 
 - (void) scheduleServerPatchCallCallback {

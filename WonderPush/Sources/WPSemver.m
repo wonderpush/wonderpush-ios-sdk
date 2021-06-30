@@ -188,7 +188,7 @@ static NSString *const IGNORE_EQ                = @"=";
     [v addObject:prerelease];
     [v addObject:build];
 
-    return v;
+    return [v copy];
 }
 
 - (NSArray *)parse:(NSString *)aString strict:(BOOL)strict
@@ -198,7 +198,7 @@ static NSString *const IGNORE_EQ                = @"=";
         [v addObject:@"0"];
     }
 
-    return v;
+    return [v copy];
 }
 
 @end

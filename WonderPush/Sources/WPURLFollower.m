@@ -64,14 +64,14 @@
             // We can not dispatch sychronously to main queue if we are already in main queue. That
             // can cause deadlock.
             URLFollower = [[WPURLFollower alloc]
-                           initWithCustomURLSchemeArray:customSchemeURLs
+                           initWithCustomURLSchemeArray:[customSchemeURLs copy]
                            withApplication:UIApplication.sharedApplication];
         } else {
             // If we are not on main thread, dispatch it to main queue since it invovles calling UIKit
             // methods, which are required to be carried out on main queue.
             dispatch_sync(dispatch_get_main_queue(), ^{
                 URLFollower = [[WPURLFollower alloc]
-                               initWithCustomURLSchemeArray:customSchemeURLs
+                               initWithCustomURLSchemeArray:[customSchemeURLs copy]
                                withApplication:UIApplication.sharedApplication];
             });
         }

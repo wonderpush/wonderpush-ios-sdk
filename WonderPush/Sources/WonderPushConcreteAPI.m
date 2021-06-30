@@ -155,7 +155,7 @@
 
     WPReportingData *reportingData = WonderPush.lastClickedNotificationReportingData;
     [reportingData fillEventDataInto:body];
-    return @{@"body":body};
+    return @{@"body":[body copy]};
 }
 
 - (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData {
@@ -329,7 +329,7 @@
 
                             [ids addObject:notification.request.identifier];
                         }
-                        [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:ids];
+                        [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:[ids copy]];
                     }];
                 }
             }
@@ -593,7 +593,7 @@
                 WPLog(@"Dropping an installation property with no prefix: %@", key);
             }
         }
-        [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":diff}];
+        [[WPJsonSyncInstallation forCurrentUser] put:@{@"custom":[diff copy]}];
     }
 }
 
@@ -658,7 +658,7 @@
             [values addObject:input];
             [set addObject:input];
         }
-        [self setProperty:field value:values];
+        [self setProperty:field value:[values copy]];
     }
 }
 
@@ -670,7 +670,7 @@
         NSMutableArray *values = [NSMutableArray arrayWithArray:[self getPropertyValues:field]];
         NSArray *inputs = [value isKindOfClass:[NSArray class]] ? value : @[value];
         [values removeObjectsInArray:inputs];
-        [self setProperty:field value:values];
+        [self setProperty:field value:[values copy]];
     }
 }
 

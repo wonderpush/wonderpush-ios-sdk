@@ -215,7 +215,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
             if (data) {
                 mutableUserInfo[WPOperationFailingURLResponseDataErrorKey] = data;
             }
-            NSError *error = [NSError errorWithDomain:WPErrorDomain code:WPErrorHTTPFailure userInfo:mutableUserInfo];
+            NSError *error = [NSError errorWithDomain:WPErrorDomain code:WPErrorHTTPFailure userInfo:[mutableUserInfo copy]];
             callFailureBlock(task, error);
             return;
         }
@@ -289,7 +289,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
                 [[UIApplication sharedApplication] endBackgroundTask:bgTask];
             }];
             
-            [self POST:resource parameters:params success:^(NSURLSessionTask *task, id response) {
+            [self POST:resource parameters:[params copy] success:^(NSURLSessionTask *task, id response) {
                 // Success
                 WPLogDebug(@"Got access token response: %@", response);
                 
@@ -560,15 +560,15 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     WPLogDebug(@"Performing request: %@", request);
 
     if ([@"POST" isEqualToString:method]) {
-        [self POST:request.resource parameters:params success:success failure:failure];
+        [self POST:request.resource parameters:[params copy] success:success failure:failure];
     } else if ([@"GET" isEqualToString:method]) {
-        [self GET:request.resource parameters:params success:success failure:failure];
+        [self GET:request.resource parameters:[params copy] success:success failure:failure];
     } else if ([@"DELETE" isEqualToString:method]) {
-        [self DELETE:request.resource parameters:params success:success failure:failure];
+        [self DELETE:request.resource parameters:[params copy] success:success failure:failure];
     } else if ([@"PUT" isEqualToString:method]) {
-        [self PUT:request.resource parameters:params success:success failure:failure];
+        [self PUT:request.resource parameters:[params copy] success:success failure:failure];
     } else if ([@"PATCH" isEqualToString:method]) {
-        [self PATCH:request.resource parameters:params success:success failure:failure];
+        [self PATCH:request.resource parameters:[params copy] success:success failure:failure];
     }
 }
 

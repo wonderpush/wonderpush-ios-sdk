@@ -85,7 +85,7 @@ NSString * const kActionIdentifierPrefix = @"WonderPush_";
             [prunedNotificationCenterCategories addObject:existingCategory];
         }
         [prunedNotificationCenterCategories addObject:category];
-        [UNUserNotificationCenter.currentNotificationCenter setNotificationCategories:prunedNotificationCenterCategories];
+        [UNUserNotificationCenter.currentNotificationCenter setNotificationCategories:[prunedNotificationCenterCategories copy]];
         // List Categories again so iOS refreshes it's internal list.
         notificationCenterCategories = self.notificationCenterCategories.allObjects;
         return category;
@@ -102,6 +102,6 @@ NSString * const kActionIdentifierPrefix = @"WonderPush_";
         dispatch_semaphore_signal(sem);
     }];
     dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
-    return result;
+    return [result copy];
 }
 @end

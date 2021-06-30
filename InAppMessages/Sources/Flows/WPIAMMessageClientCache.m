@@ -215,7 +215,7 @@
         }
         
         if (messagesToRemove.count > 0) {
-            [self.regularMessages removeObjectsInArray:messagesToRemove];
+            [self.regularMessages removeObjectsInArray:[messagesToRemove copy]];
             [self setupWonderPushEventListening];
         }
     }

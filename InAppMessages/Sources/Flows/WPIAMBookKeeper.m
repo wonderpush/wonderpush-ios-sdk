@@ -152,10 +152,10 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         if (!oldImpressionRecordFound) {
             WPLogDebug(@"Insert the first impression record for campaign %@, notification %@ with timestamp in milliseconds as %f",
                        reportingData.campaignId, reportingData.notificationId, timestamp);
-            [newImpressions addObject:newImpressionEntry];
+            [newImpressions addObject:[NSDictionary dictionaryWithDictionary:newImpressionEntry]];
         }
         
-        [self.defaults setObject:newImpressions forKey:WPIAM_UserDefaultsKeyForImpressions];
+        [self.defaults setObject:[NSArray arrayWithArray:newImpressions] forKey:WPIAM_UserDefaultsKeyForImpressions];
         [self.defaults synchronize];
         NSMutableDictionary *eventData = [NSMutableDictionary new];
         [reportingData fillEventDataInto:eventData];
@@ -178,7 +178,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         [resultArray addObject:nextImpression];
     }
     
-    return resultArray;
+    return [resultArray copy];
 }
 
 - (NSArray<NSString *> *)getCampaignIdsFromImpressions {
@@ -191,7 +191,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         if (reportingData.campaignId) [resultArray addObject:reportingData.campaignId];
     }
     
-    return resultArray;
+    return [resultArray copy];
 }
 
 - (void)cleanupImpressions {

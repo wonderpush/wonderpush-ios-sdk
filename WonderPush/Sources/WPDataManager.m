@@ -77,7 +77,7 @@ static dispatch_queue_t dataManagerQueue;
             if (userId.length) [resources addObject:@"user"];
             [resources addObject:@"installation"];
             
-            for (NSString *resource in resources) {
+            for (NSString *resource in [resources copy]) {
                 WPRequest *request = [WPRequest new];
                 request.userId = userId;
                 request.resource = [NSString stringWithFormat:@"/%@", resource];
@@ -127,7 +127,7 @@ static dispatch_queue_t dataManagerQueue;
                         }
                     }
                     // Loop as long as there's a next page
-                    getNextEventPage(parameters);
+                    getNextEventPage([parameters copy]);
 
                 } else {
                     // Finish
@@ -147,7 +147,7 @@ static dispatch_queue_t dataManagerQueue;
             dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
         }
         
-        callCompletion(buffer, nil);
+        callCompletion([buffer copy], nil);
     });
 }
 - (void) clearEventsHistory
