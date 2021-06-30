@@ -145,7 +145,7 @@
 
 - (void) addToQueuedNotifications:(NSDictionary *)notification;
 
-- (NSMutableArray *) getQueuedNotifications;
+- (NSArray *) getQueuedNotifications;
 
 - (void) clearQueuedNotifications;
 
