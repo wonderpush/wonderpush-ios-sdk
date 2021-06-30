@@ -96,10 +96,14 @@ static WPConfiguration *sharedConfiguration = nil;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
     if (value) {
-        NSError *error = NULL;
-        NSData *data = [NSJSONSerialization dataWithJSONObject:value options:kNilOptions error:&error];
-        if (error) WPLog(@"WPConfiguration: Error while serializing %@: %@", key, error);
-        else [defaults setValue:data forKeyPath:key];
+        @try {
+            NSError *error = NULL;
+            NSData *data = [NSJSONSerialization dataWithJSONObject:value options:kNilOptions error:&error];
+            if (error) WPLog(@"WPConfiguration: Error while serializing %@: %@", key, error);
+            else [defaults setValue:data forKeyPath:key];
+        } @catch (id exception) {
+            WPLog(@"WPConfiguration: Error while serializing %@: %@", key, exception);
+        }
     } else {
         [defaults removeObjectForKey:key];
     }
