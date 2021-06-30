@@ -112,11 +112,16 @@
         NSArray *newRequestQueue = @[];
         for (NSData *archivedRequestData in requestQueue) {
             if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
-            WPRequest *archivedRequest = [NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData];
+            @try {
+                WPRequest *archivedRequest = [NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData];
 
-            // Skip the request to forget
-            if ([request.requestId isEqual:archivedRequest.requestId])
+                // Skip the request to forget
+                if ([request.requestId isEqual:archivedRequest.requestId])
+                    continue;
+            } @catch (id exception) {
+                WPLog(@"[forget] Error deserializing request in queue, skipping: %@", exception);
                 continue;
+            }
 
             // Add the archivedRequestData to the new queue
             newRequestQueue = [newRequestQueue arrayByAddingObject:archivedRequestData];
@@ -138,7 +143,11 @@
     if ([requestQueue isKindOfClass:[NSArray class]]) {
         for (NSData *archivedRequestData in requestQueue) {
             if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
-            result = [result arrayByAddingObject:[NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData]];
+            @try {
+                result = [result arrayByAddingObject:[NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData]];
+            } @catch (id exception) {
+                WPLog(@"[savedRequests] Error deserializing request in queue, skipping: %@", exception);
+            }
         }
     }
 
