@@ -163,7 +163,7 @@
         if (!campaignId) continue;
         result[campaignId] = record;
     }
-    return result;
+    return [NSDictionary dictionaryWithDictionary:result];
 }
 
 - (nullable WPIAMMessageDefinition *)nextMsgMatchingCondition:(BOOL(^)(WPIAMMessageDefinition *))condition {
