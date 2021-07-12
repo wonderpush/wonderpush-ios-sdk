@@ -272,7 +272,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @return The user's country.
  @see [WonderPush setCountry:]
  */
-+ (nonnull NSString *) country;
++ (nullable NSString *) country;
 
 /**
  Overrides the user's country.
@@ -292,7 +292,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @return The user's currency.
  @see [WonderPush setCurrency:]
  */
-+ (nonnull NSString *) currency;
++ (nullable NSString *) currency;
 
 /**
  Overrides the user's currency.
