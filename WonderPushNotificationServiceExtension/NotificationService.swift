@@ -10,11 +10,11 @@ import WonderPushExtension
 
 class NotificationService: WPNotificationServiceExtension {
     override class func clientId() -> String {
-        return "YOUR_CLIENT_ID"
+        return "ENTER_CLIENT_ID"
     }
     override class func clientSecret() -> String {
 
-        return "YOUR_CLIENT_SECRET"
+        return "ENTER_CLIENT_SECRET"
 
     }
 
