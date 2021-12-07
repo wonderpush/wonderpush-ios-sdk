@@ -22,23 +22,15 @@
   },
   "requires_arc": true,
   "default_subspecs": ["Extension"],
+  "xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/Sources/WonderPushCommon/include\""
+  },
   "subspecs": [
     {
       "name": "Extension",
       "source_files": [
-        "WonderPushExtension/Sources/*.{m,h}",
-        "WonderPush/Sources/WonderPush_constants.h",
-        "WonderPush/Sources/WPURLConstants.h",
-        "WonderPush/Sources/WPNSUtil.{h,m}",
-        "WonderPush/Sources/WPRequestSerializer.{h,m}",
-        "WonderPush/Sources/WPJsonUtil.{h,m}",
-        "WonderPush/Sources/WPMeasurementsApiClient.{h,m}",
-        "WonderPush/Sources/WPBasicApiClient.{h,m}",
-        "WonderPush/Sources/WPErrors.{h,m}",
-        "WonderPush/Sources/WPReportingData.{h,m}",
-        "WonderPush/Sources/WPRequest.{h,m}",
-        "WonderPush/Sources/WPResponse.{h,m}",
-        "WonderPush/Sources/WPLog.{m,h}"
+        "Sources/WonderPushExtension/*.{m,h}",
+        "Sources/WonderPushCommon/*.{m,h}"
       ]
     }
   ]
