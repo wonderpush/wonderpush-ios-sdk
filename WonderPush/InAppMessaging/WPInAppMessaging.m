@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#import "WPInAppMessaging.h"
+#import <WonderPush/WPInAppMessaging.h>
 
 #import <Foundation/Foundation.h>
 

@@ -16,7 +16,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "WPInAppMessagingRendering.h"
+#import <WonderPush/WPInAppMessagingRendering.h>
 #import "WPIAMTimeFetcher.h"
 
 @protocol WPInAppMessagingDisplayDelegate;

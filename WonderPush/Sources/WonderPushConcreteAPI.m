@@ -9,9 +9,9 @@
 #import "WPConfiguration.h"
 #import "WPJsonSyncInstallation.h"
 #import "WPLog.h"
-#import "WonderPush.h"
+#import <WonderPush/WonderPush.h>
 #import "WPAPIClient.h"
-#import "WPAction.h"
+#import <WonderPush/WPAction.h>
 #import "WonderPush_private.h"
 #import "WPUtil.h"
 #import "WPNSUtil.h"

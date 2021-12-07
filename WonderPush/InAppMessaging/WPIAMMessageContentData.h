@@ -15,7 +15,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "WPAction.h"
+#import <WonderPush/WPAction.h>
 
 typedef NS_ENUM(NSInteger, WPIAMCloseButtonPosition) {
     WPIAMCloseButtonPositionOutside,

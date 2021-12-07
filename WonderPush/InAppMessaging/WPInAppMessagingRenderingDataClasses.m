@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "WPInAppMessagingRendering.h"
+#import <WonderPush/WPInAppMessagingRendering.h>
 #import "WPInAppMessagingRenderingPrivate.h"
 
 @implementation WPInAppMessagingDisplayMessage

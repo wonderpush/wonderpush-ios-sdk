@@ -36,22 +36,16 @@
       "dependencies": {
       },
       "public_header_files": [
-        "WonderPush/Sources/WonderPush.h",
-        "WonderPush/Sources/WPAction.h",
-        "InAppMessages/Sources/Public/*.h"
+        "WonderPush/Public/WonderPush/*.h"
       ],
       "source_files": [
         "WonderPush/Sources/*.{m,h}",
-        "Segmentation/Sources/*.{m,h}",
-        "InAppMessages/Sources/*.{m,h}",
-        "InAppMessages/Sources/**/*.{m,h}"
+        "WonderPush/Segmentation/*.{m,h}",
+        "WonderPush/InAppMessaging/*.{m,h}"
       ],
       "resource_bundles": {
         "WonderPush": [
-          "InAppMessages/Resources/*.storyboard",
-          "InAppMessages/Resources/*.png",
-          "InAppMessages/Resources/*.json",
-          "WonderPush/Resources/*.{lproj,storyboard}"
+          "WonderPush/Resources/*.{lproj,storyboard,png,json}"
         ]
       }
     }

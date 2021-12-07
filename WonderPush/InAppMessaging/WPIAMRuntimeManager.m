@@ -23,7 +23,7 @@
 #import "WPIAMMessageClientCache.h"
 #import "WPIAMRuntimeManager.h"
 #import "WPIAMSDKModeManager.h"
-#import "WPInAppMessaging.h"
+#import <WonderPush/WPInAppMessaging.h>
 #import "WonderPush_private.h"
 
 @interface WPInAppMessaging ()

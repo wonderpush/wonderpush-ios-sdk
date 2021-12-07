@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#import "WPInAppMessagingRendering.h"
+#import <WonderPush/WPInAppMessagingRendering.h>
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPInAppMessagingCardDisplay (Private)

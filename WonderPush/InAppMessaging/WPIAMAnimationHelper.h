@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "WPInAppMessagingRendering.h"
+#import <WonderPush/WPInAppMessagingRendering.h>
 #import "WPIAMBaseRenderingViewController.h"
 NS_ASSUME_NONNULL_BEGIN
 

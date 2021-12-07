@@ -19,8 +19,8 @@
 #import "WPIAMBookKeeper.h"
 #import "WPIAMMessageClientCache.h"
 #import "WPIAMTimeFetcher.h"
-#import "WPInAppMessaging.h"
-#import "WPInAppMessagingRendering.h"
+#import <WonderPush/WPInAppMessaging.h>
+#import <WonderPush/WPInAppMessagingRendering.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @interface WPIAMDisplaySetting : NSObject

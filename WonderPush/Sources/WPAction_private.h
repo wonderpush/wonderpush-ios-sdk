@@ -6,7 +6,7 @@
 //  Copyright © 2020 WonderPush. All rights reserved.
 //
 
-#import "WPAction.h"
+#import <WonderPush/WPAction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -20,7 +20,7 @@
 #import "WPIAMMessageContentData.h"
 #import "WPIAMMessageDefinition.h"
 #import "WPIAMSDKRuntimeErrorCodes.h"
-#import "WPInAppMessaging.h"
+#import <WonderPush/WPInAppMessaging.h>
 #import "WPInAppMessagingRenderingPrivate.h"
 #import "WonderPush_private.h"
 #import "WPAction_private.h"

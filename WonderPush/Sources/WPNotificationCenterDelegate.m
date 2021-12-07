@@ -3,7 +3,7 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
-#import "WonderPush.h"
+#import <WonderPush/WonderPush.h>
 #import "WPLog.h"
 
 

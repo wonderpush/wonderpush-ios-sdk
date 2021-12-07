@@ -15,7 +15,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "WPInAppMessagingRendering.h"
+#import <WonderPush/WPInAppMessagingRendering.h>
 #import "WPIAMMessageContentData.h"
 
 NS_ASSUME_NONNULL_BEGIN

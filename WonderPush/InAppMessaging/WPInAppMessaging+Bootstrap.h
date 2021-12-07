@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google
+ * Copyright 2017 Google
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-#import "WPCore+InAppMessaging.h"
-#import "WPInAppMessaging.h"
+#import "WPIAMSDKSettings.h"
+#import <WonderPush/WPInAppMessaging.h>
 
-@protocol WPInAppMessagingInstanceProvider;
-@protocol WPLibrary;
+/**
+ *  This category extends WPInAppMessaging with the configurations from WPApp
+ */
+@interface WPInAppMessaging (Bootstrap)
 
-@interface WPInAppMessaging () <WPInAppMessagingInstanceProvider>
-//@property(nonatomic, readwrite, strong) id<WPAnalyticsInterop> _Nullable analytics;
++ (void)bootstrapIAMWithSettings:(WPIAMSDKSettings *)settings;
+
++ (void)pause;
++ (void)resume;
+
+//+ (void)bootstrapIAMFromFIRApp:(WPApp *)app;
 @end

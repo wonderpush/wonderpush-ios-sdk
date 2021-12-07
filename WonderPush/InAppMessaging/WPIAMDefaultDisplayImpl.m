@@ -16,8 +16,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "WPInAppMessaging.h"
-#import "WPInAppMessagingRendering.h"
+#import <WonderPush/WPInAppMessaging.h>
+#import <WonderPush/WPInAppMessagingRendering.h>
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WPIAMBannerViewController.h"
 #import "WPIAMCardViewController.h"
