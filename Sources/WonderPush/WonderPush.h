@@ -78,6 +78,8 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 #define WP_NOTIFICATION_OPENED @"_wonderpushNotificationOpened"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  The `WonderPushDelegate` protocol lets you customize various aspects of the WonderPush behavior at runtime.
  */
@@ -90,7 +92,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @deprecated If `wonderPushWillOpenURL:withCompletionHandler:` is implemented, it will be called instead of this one.
  */
 @optional
-- ( NSURL * ) wonderPushWillOpenURL:( NSURL * )URL __deprecated_msg("Implement wonderPushWillOpenURL:withCompletionHandler: instead");
+- (nullable NSURL *) wonderPushWillOpenURL:(NSURL *)URL __deprecated_msg("Implement wonderPushWillOpenURL:withCompletionHandler: instead");
 
 /**
  Lets you overwrite URLs that WonderPush will open using `UIApplication:openURL:`.
@@ -100,7 +102,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @return A URL to open, or nil to avoid opening anything. Just return the value of the URL parameter to use the default WonderPush behavior.
  */
 @optional
-- (void) wonderPushWillOpenURL:( NSURL * )url withCompletionHandler:(void (^)(NSURL *url))completionHandler;
+- (void) wonderPushWillOpenURL:(NSURL *)url withCompletionHandler:(void (^)(NSURL * _Nullable url))completionHandler;
 
 @end
 
@@ -175,14 +177,14 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param userId The user id, unique to your application. Use `nil` for anonymous users.
      You are strongly encouraged to use your own unique internal identifier.
  */
-+ (void) setUserId:(NSString *)userId;
++ (void) setUserId:(nullable NSString *)userId;
 
 /**
  Sets the delegate for the WonderPushSDK. Setting the delegate lets you control various behaviors of the WonderPushSDK at runtime.
  It is advised to set the delegate as early as possible, preferably in application:didFinishLaunchingWithOptions
  @param delegate The delegate.
  */
-+ (void) setDelegate:(__weak id<WonderPushDelegate>) delegate;
++ (void) setDelegate:(nullable __weak id<WonderPushDelegate>) delegate;
 
 /**
  Returns whether the WonderPush SDK has been given the clientId and clientSecret.
@@ -243,7 +245,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  only by components that facilitates the native SDK integration.
  @param integrator Expected format is `"some-component-1.2.3"`
  */
-+ (void) setIntegrator:(NSString * _Nullable)integrator;
++ (void) setIntegrator:(NSString *)integrator;
 
 /**
  Enables the collection of the user's geolocation.
@@ -532,7 +534,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 
  @param type The event type, or name. Event types starting with an `@` character are reserved.
  */
-+ (void) trackEvent:(NSString*)type;
++ (void) trackEvent:(NSString *)type;
 
 /**
  Send an event to be tracked to WonderPush.
@@ -557,7 +559,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @deprecated Use `trackEvent(_:attributes:)` instead.
  @see [WonderPush trackEvent:attributes:]
  */
-+ (void) trackEvent:(NSString*)type withData:(NSDictionary *)data __deprecated_msg("Use trackEvent(_:attributes:) instead");
++ (void) trackEvent:(NSString *)type withData:(nullable NSDictionary *)data __deprecated_msg("Use trackEvent(_:attributes:) instead");
 
 /**
  * Add a tag to the current installation object stored by WonderPush.
@@ -630,7 +632,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  Initiates the download of all the WonderPush data relative to the current installation, in JSON format.
  @param completion Completion block called upon success or error
  */
-+ (void) downloadAllData:(void(^)(NSData *data, NSError *error))completion;
++ (void) downloadAllData:(void(^)(NSData * _Nullable data, NSError * _Nullable error))completion;
 
 
 ///---------------------------------------
@@ -662,7 +664,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param application Same parameter as in the forwarded delegate method.
  @param launchOptions Same parameter as in the forwarded delegate method.
  */
-+ (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
++ (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions;
 
 /**
  Forwards an application delegate to the SDK.
@@ -804,3 +806,4 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 + (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0);
 
 @end
+NS_ASSUME_NONNULL_END
