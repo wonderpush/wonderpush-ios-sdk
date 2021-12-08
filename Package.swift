@@ -24,6 +24,11 @@ let package = Package(
             resources: [
               .process("Resources/close-with-transparency.png"),
               .process("Resources/close-with-transparency@2x.png")
+            ],
+            cSettings: [
+              .headerSearchPath("InAppMessaging"),
+              .headerSearchPath("Segmenter"),
+              .headerSearchPath(".")
             ]
         ),
         .target(

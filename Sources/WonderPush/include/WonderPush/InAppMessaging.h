@@ -1,1 +1,1 @@
-../../InAppMessaging.h
+../../InAppMessaging/InAppMessaging.h

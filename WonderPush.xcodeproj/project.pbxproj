@@ -846,11 +846,9 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		9998CA8C221C55D70028D955 /* WonderPush */ = {
+		9978C06927609EF000EDABB1 /* Segmenter */ = {
 			isa = PBXGroup;
 			children = (
-				99B39794275FC98B00C26D73 /* include */,
-				9998CA8D221C55E20028D955 /* Resources */,
 				9979E0D824A63AFF002BC6EE /* WPSPASTCriterionNode.h */,
 				9979E0D924A63AFF002BC6EE /* WPSPASTCriterionNode.m */,
 				9979E0D424A638E4002BC6EE /* WPSPASTCriterionNodeParser.h */,
@@ -894,6 +892,13 @@
 				9979E0C924A63711002BC6EE /* WPSPSegmentationDSLParser.m */,
 				3DB7A41924B3340600204437 /* WPSPSegmenter.h */,
 				3DB7A41A24B3340600204437 /* WPSPSegmenter.m */,
+			);
+			path = Segmenter;
+			sourceTree = "<group>";
+		};
+		9978C06A27609F0800EDABB1 /* InAppMessaging */ = {
+			isa = PBXGroup;
+			children = (
 				99EF82C423F4452C00B9B287 /* UIColor+WPIAMHexString.h */,
 				99EF82C123F4452C00B9B287 /* UIColor+WPIAMHexString.m */,
 				99EF82BE23F4452C00B9B287 /* WPCore+InAppMessaging.h */,
@@ -966,6 +971,19 @@
 				99EF82C823F4452C00B9B287 /* WPInAppMessagingRenderingDataClasses.m */,
 				99EF82C923F4452C00B9B287 /* WPInAppMessagingRenderingPrivate.h */,
 				99EF82D523F4452C00B9B287 /* InAppMessaging.h */,
+				99EF82D723F4452C00B9B287 /* WPInAppMessaging.h */,
+				99EF82D623F4452C00B9B287 /* WPInAppMessagingRendering.h */,
+			);
+			path = InAppMessaging;
+			sourceTree = "<group>";
+		};
+		9998CA8C221C55D70028D955 /* WonderPush */ = {
+			isa = PBXGroup;
+			children = (
+				9978C06A27609F0800EDABB1 /* InAppMessaging */,
+				9978C06927609EF000EDABB1 /* Segmenter */,
+				99B39794275FC98B00C26D73 /* include */,
+				9998CA8D221C55E20028D955 /* Resources */,
 				994E63F0253494C900B9E367 /* WonderPush_constants.h */,
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
 				A1E3E0A319E425DB00A4EE09 /* WonderPush.h */,
@@ -992,8 +1010,6 @@
 				A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */,
 				99885AFB2215CF7F002CA269 /* WPHTMLInAppController.h */,
 				99885AFC2215CF7F002CA269 /* WPHTMLInAppController.m */,
-				99EF82D723F4452C00B9B287 /* WPInAppMessaging.h */,
-				99EF82D623F4452C00B9B287 /* WPInAppMessagingRendering.h */,
 				99129C31220C8B1500111272 /* WPInstallationCoreProperties.h */,
 				99129C30220C8B1500111272 /* WPInstallationCoreProperties.m */,
 				3D0A92651E9D18D900784273 /* WPJsonSync.h */,
