@@ -35,7 +35,7 @@
       ],
       "dependencies": {
       },
-      "xcconfig": { "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/Sources/WonderPushCommon/include\"" },
+      "xcconfig": { "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/Sources/WonderPushCommon/include\" \"$(PODS_ROOT)/WonderPush/Sources\"" },
       "public_header_files": [
         "Sources/WonderPush/WonderPush.h",
         "Sources/WonderPush/WPAction.h",
@@ -44,7 +44,9 @@
         "Sources/WonderPush/InAppMessaging/WPInAppMessagingRendering.h"
       ],
       "source_files": [
-        "Sources/WonderPush/**/*.{m,h}",
+        "Sources/WonderPush/*.{m,h}",
+        "Sources/WonderPush/InAppMessaging/**/*.{m,h}",
+        "Sources/WonderPush/Segmenter/**/*.{m,h}",
         "Sources/WonderPushCommon/*.{m,h}"
       ],
       "resource_bundles": {
