@@ -18,7 +18,7 @@
   },
   "source": {
     "git": "https://github.com/wonderpush/wonderpush-ios-sdk.git",
-    "tag": "v4.0.6"
+    "branch": "cocoapodsdebug"
   },
   "requires_arc": true,
   "default_subspecs": ["Core"],
