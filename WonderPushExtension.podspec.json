@@ -23,14 +23,21 @@
   "requires_arc": true,
   "default_subspecs": ["Extension"],
   "xcconfig": {
-    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/Sources/WonderPushCommon/include\""
+    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/Sources/WonderPushCommon/include\" \"$(PODS_ROOT)/WonderPushExtension/Sources\""
   },
   "subspecs": [
     {
       "name": "Extension",
       "source_files": [
         "Sources/WonderPushExtension/*.{m,h}",
-        "Sources/WonderPushCommon/*.{m,h}"
+        "Sources/WonderPushCommon/*.{m,h}",
+        "Sources/WonderPush/WonderPush_constants.h",
+        "Sources/WonderPush/WPURLConstants.h"
+      ],
+      "exclude_files": [
+        "Sources/WonderPushExtension/WonderPush_constants.h",
+        "Sources/WonderPushExtension/WPURLConstants.h",
+        "Sources/WonderPushCommon/WonderPush_constants.h"
       ]
     }
   ]
