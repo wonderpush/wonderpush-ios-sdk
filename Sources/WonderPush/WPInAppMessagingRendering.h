@@ -15,7 +15,7 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <WonderPush/WPAction.h>
+#import "WPAction.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
