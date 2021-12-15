@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-#import "WPInAppMessaging.h"
-#import "WPInAppMessagingRendering.h"
+#import <WonderPush/WPInAppMessaging.h>
+#import <WonderPush/WPInAppMessagingRendering.h>
