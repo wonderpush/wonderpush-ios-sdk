@@ -902,4 +902,57 @@
     [waiter waitForExpectations:@[expectation] timeout:2];
 }
 
+- (void) testReentrantRead {
+    // The async fetcher lets us call the completion handler ourselves.
+    MockAsyncRemoteConfigFetcher *fetcher = [MockAsyncRemoteConfigFetcher new];
+    self.manager.remoteConfigFetcher = fetcher;
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+    expectation.expectedFulfillmentCount = 1;
+
+    WPRemoteConfig *resultConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1"];
+    
+    // The first read triggers the fetch
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        // This second read is done when a non-queued handler is running
+        [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+            [expectation fulfill];
+        }];
+    }];
+    
+    // Let's resolve, which should resolve the above read.
+    [fetcher resolveWithConfig:resultConfig error:nil];
+
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:0.1];
+}
+
+- (void) testReentrantQueuedRead {
+    // The async fetcher lets us call the completion handler ourselves.
+    MockAsyncRemoteConfigFetcher *fetcher = [MockAsyncRemoteConfigFetcher new];
+    self.manager.remoteConfigFetcher = fetcher;
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"wait"];
+    expectation.expectedFulfillmentCount = 1;
+
+    WPRemoteConfig *resultConfig = [[WPRemoteConfig alloc] initWithData:@{} version:@"1"];
+    
+    // The first read triggers the fetch
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+    }];
+
+    // The second read is queued
+    [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+        // This third read is done when a queued handler is running
+        [self.manager read:^(WPRemoteConfig *config, NSError *error) {
+            [expectation fulfill];
+        }];
+    }];
+
+    // Let's resolve, which should resolve the above read.
+    [fetcher resolveWithConfig:resultConfig error:nil];
+
+    XCTWaiter *waiter = [[XCTWaiter alloc] initWithDelegate:self];
+    [waiter waitForExpectations:@[expectation] timeout:0.1];
+}
 @end

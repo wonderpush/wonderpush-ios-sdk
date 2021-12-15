@@ -339,11 +339,11 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 }
 
 - (void) read:(WPRemoteConfigReadCompletionHandler)completion {
-    if (self.isFetching) {
-        @synchronized (self) {
+    @synchronized (self) {
+        if (self.isFetching) {
             [self.queuedHandlers addObject:completion];
+            return;
         }
-        return;
     }
 
     [self readConfigAndHighestDeclaredVersionFromStorageWithCompletion:^(WPRemoteConfig *storedConfig, NSString *highestVersion, NSError *storageError) {
@@ -437,17 +437,20 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     self.lastFetchDate = [NSDate date];
     [self.remoteConfigFetcher fetchConfigWithVersion:version completion:^(WPRemoteConfig *newConfig, NSError *fetchError) {
         WPRemoteConfigReadCompletionHandler handler = ^(WPRemoteConfig *config, NSError *error) {
+            NSArray *queuedHandlersCopy;
             @synchronized (self) {
-                for (WPRemoteConfigReadCompletionHandler queuedHandler in self.queuedHandlers) {
-                    // Avoid deadlocks on self.queuedHandlers
-                    // The handler might himself read the config and wait for this @synchronized block to finish
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        queuedHandler(config, error);
-                    });
-                }
-                [self.queuedHandlers removeAllObjects];
                 self.isFetching = NO;
+                queuedHandlersCopy = [NSArray arrayWithArray:self.queuedHandlers];
+                [self.queuedHandlers removeAllObjects];
             }
+            for (WPRemoteConfigReadCompletionHandler queuedHandler in queuedHandlersCopy) {
+                // Avoid deadlocks on self.queuedHandlers
+                // The handler might himself read the config and wait for this @synchronized block to finish
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    queuedHandler(config, error);
+                });
+            }
+
             if (completion) completion(config, error);
         };
         if (newConfig && !fetchError) {
