@@ -828,7 +828,7 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		9978C06927609EF000EDABB1 /* Segmenter */ = {
+		99791649276A4D9100A06846 /* Segmenter */ = {
 			isa = PBXGroup;
 			children = (
 				9979E0D824A63AFF002BC6EE /* WPSPASTCriterionNode.h */,
@@ -875,10 +875,10 @@
 				3DB7A41924B3340600204437 /* WPSPSegmenter.h */,
 				3DB7A41A24B3340600204437 /* WPSPSegmenter.m */,
 			);
-			path = Segmenter;
+			name = Segmenter;
 			sourceTree = "<group>";
 		};
-		9978C06A27609F0800EDABB1 /* InAppMessaging */ = {
+		9979164A276A4DDE00A06846 /* InAppMessaging */ = {
 			isa = PBXGroup;
 			children = (
 				99EF82C423F4452C00B9B287 /* UIColor+WPIAMHexString.h */,
@@ -956,14 +956,14 @@
 				99EF82D723F4452C00B9B287 /* WPInAppMessaging.h */,
 				99EF82D623F4452C00B9B287 /* WPInAppMessagingRendering.h */,
 			);
-			path = InAppMessaging;
+			name = InAppMessaging;
 			sourceTree = "<group>";
 		};
 		9998CA8C221C55D70028D955 /* WonderPush */ = {
 			isa = PBXGroup;
 			children = (
-				9978C06A27609F0800EDABB1 /* InAppMessaging */,
-				9978C06927609EF000EDABB1 /* Segmenter */,
+				9979164A276A4DDE00A06846 /* InAppMessaging */,
+				99791649276A4D9100A06846 /* Segmenter */,
 				99B39794275FC98B00C26D73 /* include */,
 				9998CA8D221C55E20028D955 /* Resources */,
 				994E63F0253494C900B9E367 /* WonderPush_constants.h */,

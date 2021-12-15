@@ -1,1 +1,1 @@
-../../InAppMessaging/WPInAppMessagingRendering.h
+../../WPInAppMessagingRendering.h
