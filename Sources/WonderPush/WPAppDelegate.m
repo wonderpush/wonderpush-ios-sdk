@@ -34,15 +34,18 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 + (void) setupDelegateForApplication:(UIApplication *)application
 {
-    WPAppDelegate *delegate = [WPAppDelegate new];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        WPAppDelegate *delegate = [WPAppDelegate new];
 
-    // Retain the delegate as long as the UIApplication lives
-    objc_setAssociatedObject(application, WPAPPDELEGATE_ASSOCIATION_KEY, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    // Note: the association is not breakable, like the created delegate chain
+        // Retain the delegate as long as the UIApplication lives
+        objc_setAssociatedObject(application, WPAPPDELEGATE_ASSOCIATION_KEY, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        // Note: the association is not breakable, like the created delegate chain
 
-    // Setup the delegate chain
-    delegate.nextDelegate = application.delegate;
-    application.delegate = delegate;
+        // Setup the delegate chain
+        delegate.nextDelegate = application.delegate;
+        application.delegate = delegate;
+    });
 }
 
 + (BOOL) isAlreadyRunning
