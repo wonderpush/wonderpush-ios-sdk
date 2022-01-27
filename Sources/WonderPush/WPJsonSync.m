@@ -26,6 +26,8 @@
 @property WPJsonSyncSaveCallback saveCallback;
 @property WPJsonSyncCallback schedulePatchCallCallback;
 
+@property (atomic, strong) NSDictionary *sdkState;
+@property (atomic, strong) NSDictionary *serverState;
 @property (copy) NSDictionary *upgradeMeta;
 @property (copy) NSDictionary *putAccumulator;
 @property (copy) NSDictionary *inflightDiff;
@@ -45,7 +47,6 @@
 
 @implementation WPJsonSync
 
-
 - (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback _Nullable)upgradeCallback {
     self = [super init];
     if (self) {
@@ -57,8 +58,8 @@
         NSNumber *syncStateVersion;
         syncStateVersion        = [WPNSUtil numberForKey:SAVED_STATE_FIELD__SYNC_STATE_VERSION inDictionary:savedState] ?: @0;
         _upgradeMeta            = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_UPGRADE_META inDictionary:savedState] ?: @{};
-        _sdkState               = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_SDK_STATE inDictionary:savedState] ?: @{};
-        _serverState            = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_SERVER_STATE inDictionary:savedState] ?: @{};
+        self.sdkState           = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_SDK_STATE inDictionary:savedState] ?: @{};
+        self.serverState        = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_SERVER_STATE inDictionary:savedState] ?: @{};
         _putAccumulator         = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
         _inflightDiff           = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_DIFF inDictionary:savedState] ?: @{};
         _inflightPutAccumulator = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
@@ -87,9 +88,9 @@
         _schedulePatchCallCallback = schedulePatchCallCallback;
 
         _upgradeMeta = @{};
-        _sdkState = [WPJsonUtil stripNulls:sdkState ?: @{}];
-        _serverState = [WPJsonUtil stripNulls:serverState ?: @{}];
-        _putAccumulator = [WPJsonUtil diff:_serverState with:_sdkState];
+        self.sdkState = [WPJsonUtil stripNulls:sdkState ?: @{}];
+        self.serverState = [WPJsonUtil stripNulls:serverState ?: @{}];
+        _putAccumulator = [WPJsonUtil diff:self.serverState with:self.sdkState];
         _inflightDiff = @{};
         _inflightPutAccumulator = @{};
         _scheduledPatchCall = true;
@@ -103,15 +104,15 @@
 - (void) applyUpgradeCallback:(WPJsonSyncUpgradeCallback)upgradeCallback {
     if (upgradeCallback != nil) {
         NSMutableDictionary *upgradeMeta            = [NSMutableDictionary dictionaryWithDictionary:_upgradeMeta];
-        NSMutableDictionary *sdkState               = [NSMutableDictionary dictionaryWithDictionary:_sdkState];
-        NSMutableDictionary *serverState            = [NSMutableDictionary dictionaryWithDictionary:_serverState];
+        NSMutableDictionary *sdkState               = [NSMutableDictionary dictionaryWithDictionary:self.sdkState];
+        NSMutableDictionary *serverState            = [NSMutableDictionary dictionaryWithDictionary:self.serverState];
         NSMutableDictionary *putAccumulator         = [NSMutableDictionary dictionaryWithDictionary:_putAccumulator];
         NSMutableDictionary *inflightDiff           = [NSMutableDictionary dictionaryWithDictionary:_inflightDiff];
         NSMutableDictionary *inflightPutAccumulator = [NSMutableDictionary dictionaryWithDictionary:_inflightPutAccumulator];
         upgradeCallback(upgradeMeta, sdkState, serverState, putAccumulator, inflightDiff, inflightPutAccumulator);
         _upgradeMeta            = [NSDictionary dictionaryWithDictionary:upgradeMeta];
-        _sdkState               = [NSDictionary dictionaryWithDictionary:sdkState];
-        _serverState            = [NSDictionary dictionaryWithDictionary:serverState];
+        self.sdkState           = [NSDictionary dictionaryWithDictionary:sdkState];
+        self.serverState        = [NSDictionary dictionaryWithDictionary:serverState];
         _putAccumulator         = [NSDictionary dictionaryWithDictionary:putAccumulator];
         _inflightDiff           = [NSDictionary dictionaryWithDictionary:inflightDiff];
         _inflightPutAccumulator = [NSDictionary dictionaryWithDictionary:inflightPutAccumulator];
@@ -123,8 +124,8 @@
         _saveCallback(@{
                         SAVED_STATE_FIELD__SYNC_STATE_VERSION:      SAVED_STATE_STATE_VERSION_2,
                         SAVED_STATE_FIELD_UPGRADE_META:             _upgradeMeta,
-                        SAVED_STATE_FIELD_SDK_STATE:                _sdkState,
-                        SAVED_STATE_FIELD_SERVER_STATE:             _serverState,
+                        SAVED_STATE_FIELD_SDK_STATE:                self.sdkState,
+                        SAVED_STATE_FIELD_SERVER_STATE:             self.serverState,
                         SAVED_STATE_FIELD_PUT_ACCUMULATOR:          _putAccumulator,
                         SAVED_STATE_FIELD_INFLIGHT_DIFF:            _inflightDiff ?: @{},
                         SAVED_STATE_FIELD_INFLIGHT_PUT_ACCUMULATOR: _inflightPutAccumulator,
@@ -137,7 +138,7 @@
 - (void) put:(NSDictionary *)diff {
     @synchronized (self) {
         diff = diff ?: @{};
-        _sdkState = [WPJsonUtil merge:_sdkState with:diff];
+        self.sdkState = [WPJsonUtil merge:self.sdkState with:diff];
         _putAccumulator = [WPJsonUtil merge:_putAccumulator with:diff nullFieldRemoves:NO];
         [self schedulePatchCallAndSave];
     }
@@ -146,12 +147,12 @@
 - (void) receiveState:(NSDictionary *)state resetSdkState:(bool)reset {
     @synchronized (self) {
         state = state ?: @{};
-        _serverState = [WPJsonUtil stripNulls:[state copy]];
-        _sdkState = [_serverState copy];
+        self.serverState = [WPJsonUtil stripNulls:[state copy]];
+        self.sdkState = [self.serverState copy];
         if (reset) {
             _putAccumulator = @{};
         } else {
-            _sdkState = [WPJsonUtil merge:[WPJsonUtil merge:_sdkState with:_inflightDiff] with:_putAccumulator];
+            self.sdkState = [WPJsonUtil merge:[WPJsonUtil merge:self.sdkState with:_inflightDiff] with:_putAccumulator];
         }
         [self schedulePatchCallAndSave];
     }
@@ -160,7 +161,7 @@
 - (void) receiveServerState:(NSDictionary *)state {
     @synchronized (self) {
         state = state ?: @{};
-        _serverState = [WPJsonUtil stripNulls:[state copy]];
+        self.serverState = [WPJsonUtil stripNulls:[state copy]];
         [self schedulePatchCallAndSave];
     }
 }
@@ -169,7 +170,7 @@
     @synchronized (self) {
         diff = diff ?: @{};
         // The diff is already server-side, by contract
-        _serverState = [WPJsonUtil merge:_serverState with:diff];
+        self.serverState = [WPJsonUtil merge:self.serverState with:diff];
         [self put:diff];
     }
 }
@@ -206,7 +207,7 @@
         }
         _scheduledPatchCall = false;
 
-        _inflightDiff = [WPJsonUtil diff:_serverState with:_sdkState];
+        _inflightDiff = [WPJsonUtil diff:self.serverState with:self.sdkState];
         if (_inflightDiff.count == 0) {
             WPLogDebug(@"No diff to send to server");
             [self save];
@@ -226,7 +227,7 @@
     @synchronized (self) {
         _inflightPatchCall = false;
         _inflightPutAccumulator = @{};
-        _serverState = [WPJsonUtil merge:_serverState with:_inflightDiff];
+        self.serverState = [WPJsonUtil merge:self.serverState with:_inflightDiff];
         _inflightDiff = @{};
         [self save];
     }
