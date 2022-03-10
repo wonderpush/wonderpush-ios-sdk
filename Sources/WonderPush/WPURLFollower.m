@@ -19,6 +19,7 @@
 
 #import "WPCore+InAppMessaging.h"
 #import "WPURLFollower.h"
+#import "WonderPush.h"
 
 @interface WPURLFollower ()
 @property(nonatomic, readonly, nonnull, copy) NSSet<NSString *> *appCustomURLSchemesSet;
@@ -137,6 +138,9 @@
     } else if ([self isCustomSchemeForCurrentApp:targetUrl]) {
         WPLogDebug( @"Custom URL scheme matches.");
         if ([self followURLWithAppDelegateOpenURLActivity:targetUrl]) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:WP_DEEPLINK_OPENED object:nil userInfo:@{
+                WP_DEEPLINK_OPENED_URL_USERINFO_KEY : targetUrl
+            }];
             completion(YES);
             return;  // following the url has been fully handled by App Delegate's openURL method
         }

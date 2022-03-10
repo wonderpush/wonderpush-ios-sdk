@@ -78,6 +78,16 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 #define WP_NOTIFICATION_OPENED @"_wonderpushNotificationOpened"
 
+/**
+ Name of the notification that is sent using `NSNotificationCenter` when a deeplink is being opened from a push notification or an in-app message.
+ */
+#define WP_DEEPLINK_OPENED @"_wonderpushDeepLinkOpened"
+
+/**
+ User info key of the deeplink URL, which is an NSURL object
+ */
+#define WP_DEEPLINK_OPENED_URL_USERINFO_KEY @"url"
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
