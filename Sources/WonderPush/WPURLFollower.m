@@ -127,14 +127,7 @@
     
     WPLogDebug( @"Following action url %@", targetUrl);
     
-    if ([self.class isHttpOrHttpsScheme:targetUrl]) {
-        WPLogDebug( @"Try to treat it as a universal link.");
-        if ([self followURLWithContinueUserActivity:targetUrl]) {
-            completion(YES);
-            return;  // following the url has been fully handled by App Delegate's
-            // continueUserActivity method
-        }
-    } else if ([self isCustomSchemeForCurrentApp:targetUrl]) {
+    if ([self isCustomSchemeForCurrentApp:targetUrl]) {
         WPLogDebug( @"Custom URL scheme matches.");
         if ([self followURLWithAppDelegateOpenURLActivity:targetUrl]) {
             completion(YES);
