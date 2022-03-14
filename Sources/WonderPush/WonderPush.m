@@ -44,6 +44,7 @@ NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatu
 NSString * const WPSubscriptionStatusChangedNotificationPreviousStatusInfoKey = @"previousSubscriptionStatus";
 NSString * const WPSubscriptionStatusOptIn = @"optIn";
 NSString * const WPSubscriptionStatusOptOut = @"optOut";
+NSString * const WPTargetUrlModeBrowser = @"browser";
 static BOOL _isInitialized = NO;
 static BOOL _isReachable = NO;
 
@@ -1199,6 +1200,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [reportingData fillEventDataInto:notificationOpenedEventData];
 
     NSString *targetUrl = [WPNSUtil stringForKey:WP_TARGET_URL_KEY inDictionary:wonderpushData];
+    NSString *targetUrlMode = [WPNSUtil stringForKey:WP_TARGET_URL_MODE_KEY inDictionary:wonderpushData];
     id actionsToExecute = [WPNSUtil arrayForKey:@"actions" inDictionary:wonderpushData];
 
     if (@available(iOS 10.0, *)) {
@@ -1241,7 +1243,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         // dispatch_async is necessary, before iOS 10, but dispatch_after 9ms is the minimum that seems necessary to avoid a 10s delay + possible crash with iOS 10...
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             WPLogDebug(@"Opening url: %@", targetUrl);
-            [self openURL:[NSURL URLWithString:targetUrl]];
+            [self openURL:[NSURL URLWithString:targetUrl] targetUrlMode:targetUrlMode];
         });
     }
 
@@ -1756,7 +1758,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 }
 
 #pragma mark - Open URL
-+ (void) openURL:(NSURL *)url
++ (void) openURL:(NSURL *)url targetUrlMode:(NSString *)targetUrlMode
 {
     __block bool completionHandlerCalled = NO;
     void (^completionHandler)(NSURL *url) = ^(NSURL *url){
@@ -1768,7 +1770,15 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             if (url == nil) return;
-            [[WPURLFollower URLFollower] followURL:url withCompletionBlock:^(BOOL success) {
+            if ([targetUrlMode isEqualToString:WPTargetUrlModeBrowser]) {
+                [[WPURLFollower URLFollower] followURLViaIOS:url withCompletionBlock:^(BOOL success) {
+                    WPLogDebug(@"Successfully opened %@", url);
+                }];
+                return;
+            }
+            [[WPURLFollower URLFollower]
+             followURL:url
+             withCompletionBlock:^(BOOL success) {
                 WPLogDebug(@"Successfully opened %@", url);
             }];
         });

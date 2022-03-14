@@ -16,6 +16,7 @@
 
 @implementation WPAction {
     NSArray<WPActionFollowUp *> *_followUps;
+    NSString * _targetUrlMode;
 }
 
 + (nullable instancetype)actionWithDictionaries:(NSArray<NSDictionary *> *)dicts targetUrl:(NSURL * _Nullable)targetUrl {
@@ -36,6 +37,8 @@
                 if (URLString) {
                     _targetUrl = [NSURL URLWithString:URLString];
                 }
+                NSString *targetUrlMode = [WPNSUtil stringForKey:@"targetUrlMode" inDictionary:dict];
+                _targetUrlMode = targetUrlMode;
                 continue;
             }
             WPActionFollowUp *followUp = [WPActionFollowUp actionFollowUpWithDictionary:dict];

@@ -222,7 +222,7 @@
 
 - (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData {
     if (action.targetUrl) {
-        [WonderPush openURL:action.targetUrl];
+        [WonderPush openURL:action.targetUrl targetUrlMode:action.targetUrlMode];
     }
     for (WPActionFollowUp *followUp in action.followUps) {
         [self executeActionFollowUp:followUp withReportingData:reportingData];
@@ -377,7 +377,7 @@
             case WPActionFollowUpTypeRating: {
                 NSString *itunesAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:WP_ITUNES_APP_ID];
                 if (itunesAppId != nil) {
-                    [WonderPush openURL:[NSURL URLWithString:[NSString stringWithFormat:ITUNES_APP_URL_FORMAT, itunesAppId]]];
+                    [WonderPush openURL:[NSURL URLWithString:[NSString stringWithFormat:ITUNES_APP_URL_FORMAT, itunesAppId]] targetUrlMode:nil];
                 }
             }
                 break;
@@ -398,7 +398,7 @@
                 if (!lat || !lon) return;
                 NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?ll=%f,%f", [lat doubleValue], [lon doubleValue]];
                 WPLogDebug(@"url: %@", url);
-                [WonderPush openURL:[NSURL URLWithString:url]];
+                [WonderPush openURL:[NSURL URLWithString:url] targetUrlMode:nil];
             }
                 break;
             case WPActionFollowUpTypeDumpState: {

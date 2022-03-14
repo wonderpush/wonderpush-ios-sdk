@@ -68,6 +68,11 @@ extern NSString * const WPSubscriptionStatusOptIn;
  */
 extern NSString * const WPSubscriptionStatusOptOut;
 
+/**
+ Force the opening of the URL in the default browser
+ */
+extern NSString * const WPTargetUrlModeBrowser;
+
 @interface WonderPush (private)
 
 + (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData;
@@ -138,7 +143,7 @@ Called when receiving the full state of the installation
 /**
  Opens the given URL
  */
-+ (void) openURL:(NSURL *)url;
++ (void) openURL:(NSURL *)url targetUrlMode:(NSString *)targetUrlMode;
 
 ///---------------------
 /// @name REST API

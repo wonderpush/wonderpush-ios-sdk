@@ -52,6 +52,11 @@
 #define WP_TARGET_URL_KEY @"targetUrl"
 
 /**
+ Key of the targetUrlMode
+ */
+#define WP_TARGET_URL_MODE_KEY @"targetUrlMode"
+
+/**
  Notification of type url
  */
 #define WP_PUSH_NOTIFICATION_SHOW_URL @"url"

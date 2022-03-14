@@ -42,5 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
  * Check its implementation about the details in the following logic.
  */
 - (void)followURL:(NSURL *)targetUrl withCompletionBlock:(void (^)(BOOL success))completion;
+
+/**
+ * Follow a given URL using one of UIApplication's openURL methods.
+ */
+- (void)followURLViaIOS:(NSURL *)url withCompletionBlock:(void (^)(BOOL success))completion;
 @end
 NS_ASSUME_NONNULL_END
