@@ -52,7 +52,7 @@ typedef enum {
 
 @interface WPAction (Private)
 @property (nonatomic, readonly) NSArray<WPActionFollowUp *> *followUps;
-@property (nonatomic, nullable, strong) NSString *targetUrlMode;
+@property (nonatomic, nullable, readonly) NSString *targetUrlMode;
 
 + (nullable instancetype)actionWithDictionaries:(NSArray<NSDictionary *> *)dicts;
 + (nullable instancetype)actionWithDictionaries:(NSArray<NSDictionary *> *)dicts targetUrl:(NSURL *_Nullable)targetUrl;

@@ -54,6 +54,10 @@
     return _followUps;
 }
 
+- (NSString *) targetUrlMode {
+    return _targetUrlMode;
+}
+
 @end
 
 @implementation WPActionFollowUp
