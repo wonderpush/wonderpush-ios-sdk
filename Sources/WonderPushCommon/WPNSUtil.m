@@ -138,6 +138,12 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
     return [self typesafeObjectForKey:key expectClass:[NSNumber class] inDictionary:dictionary];
 }
 
++ (NSNumber * _Nullable) numberForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary defaultValue:(NSNumber *)defaultValue
+{
+    NSNumber *result = [self typesafeObjectForKey:key expectClass:[NSNumber class] inDictionary:dictionary];
+    return result ?: defaultValue;
+}
+
 + (NSDictionary *)dictionaryByFilteringNulls:(NSDictionary *)dictionary
 {
     NSMutableDictionary *result = [NSMutableDictionary new];

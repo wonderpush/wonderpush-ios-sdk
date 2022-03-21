@@ -58,6 +58,11 @@
 #define USER_DEFAULTS_LOCALE @"_wonderpush_locale"
 #define USER_DEFAULTS_TIME_ZONE @"_wonderpush_timeZone"
 
+#define DEFAULT_MAXIMUM_COLLAPSED_LAST_BUILTIN_TRACKED_EVENTS_COUNT 100
+#define DEFAULT_MAXIMUM_COLLAPSED_LAST_CUSTOM_TRACKED_EVENTS_COUNT 1000
+#define DEFAULT_MAXIMUM_COLLAPSED_OTHER_TRACKED_EVENTS_COUNT 1000
+#define DEFAULT_MAXIMUM_UNCOLLAPSED_TRACKED_EVENTS_COUNT 10000
+#define DEFAULT_MAXIMUM_UNCOLLAPSED_TRACKED_EVENTS_AGE_MS ((NSInteger)90*24*60*60*1000)
 
 /**
  WPConfiguration is a singleton that holds configuration values for this WonderPush installation
@@ -130,6 +135,13 @@
 @property (nonatomic, strong) NSString *currency;
 @property (nonatomic, strong) NSString *locale;
 @property (nonatomic, strong) NSString *timeZone;
+
+@property (nonatomic, assign) NSInteger maximumCollapsedLastBuiltinTrackedEventsCount;
+@property (nonatomic, assign) NSInteger maximumCollapsedLastCustomTrackedEventsCount;
+@property (nonatomic, assign) NSInteger maximumCollapsedOtherTrackedEventsCount;
+@property (nonatomic, assign) NSInteger maximumUncollapsedTrackedEventsCount;
+@property (nonatomic, assign) NSInteger maximumUncollapsedTrackedEventsAgeMs;
+
 
 - (void) changeUserId:(NSString *)newUserId;
 - (NSArray *) listKnownUserIds;

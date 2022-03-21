@@ -26,12 +26,15 @@ static WPConfiguration *sharedConfiguration = nil;
 
 @interface WPConfiguration ()
 
+@property (nonatomic, strong) NSDate * (^now)(void);
+
 @property (nonatomic, strong) NSString *accessToken;
 
 @property (nonatomic, strong) NSNumber *_notificationEnabled;
 
-@end
+- (void) rememberTrackedEvent:(NSDictionary *)eventParams now:(NSDate *)now;
 
+@end
 
 @implementation WPConfiguration
 
@@ -49,6 +52,11 @@ static WPConfiguration *sharedConfiguration = nil;
 + (void) initialize
 {
     sharedConfiguration = [[self alloc] init];
+    sharedConfiguration.maximumUncollapsedTrackedEventsCount = DEFAULT_MAXIMUM_UNCOLLAPSED_TRACKED_EVENTS_COUNT;
+    sharedConfiguration.maximumUncollapsedTrackedEventsAgeMs = DEFAULT_MAXIMUM_UNCOLLAPSED_TRACKED_EVENTS_AGE_MS;
+    sharedConfiguration.maximumCollapsedOtherTrackedEventsCount = DEFAULT_MAXIMUM_COLLAPSED_OTHER_TRACKED_EVENTS_COUNT;
+    sharedConfiguration.maximumCollapsedLastCustomTrackedEventsCount = DEFAULT_MAXIMUM_COLLAPSED_LAST_CUSTOM_TRACKED_EVENTS_COUNT;
+    sharedConfiguration.maximumCollapsedLastBuiltinTrackedEventsCount = DEFAULT_MAXIMUM_COLLAPSED_LAST_BUILTIN_TRACKED_EVENTS_COUNT;
 }
 
 + (WPConfiguration *) sharedConfiguration
@@ -1001,30 +1009,151 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 - (void)rememberTrackedEvent:(NSDictionary *)eventParams {
+    [self rememberTrackedEvent:eventParams now: self.now ? self.now() : [NSDate date]];
+}
+
+- (NSArray *)removeExcessEventsFromStart:(NSArray *)list max:(NSInteger) max {
+    NSInteger excessEvents = list.count - max;
+    if (excessEvents < 0) excessEvents = 0;
+    return [list subarrayWithRange:NSMakeRange(excessEvents, list.count - excessEvents)];
+}
+
+- (void) rememberTrackedEvent:(NSDictionary *)eventParams now:(NSDate *)nowDate {
     if (!eventParams) return;
-    NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:eventParams];
+
+    // Note: It is assumed that the given event is more recent than any other already stored events
+    NSString *type = eventParams[@"type"];
     if (!type) return;
-
-    NSArray *trackedEvents = [self trackedEvents];
-    NSMutableArray *newTrackedEvents = [NSMutableArray new];
-    for (id event in trackedEvents) {
-        // Filter out events of the given type
-        // We only keep one copy per event type
-        NSString *eventType = [WPNSUtil stringForKey:@"type" inDictionary:event];
-        if (eventType == nil || [eventType isEqualToString:type]) continue;
-        [newTrackedEvents addObject:event];
+    
+    NSString *campaignId = eventParams[@"campaignId"];
+    NSString *collapsing = eventParams[@"collapsing"];
+    
+    NSArray *oldTrackedEvents = self.trackedEvents;
+    NSMutableArray *uncollapsedEvents = [[NSMutableArray alloc] initWithCapacity:oldTrackedEvents.count + 1]; // collapsing == null
+    NSMutableArray *collapsedLastBuiltinEvents = [NSMutableArray new]; // collapsing.equals("last") && type.startsWith("@")
+    NSMutableArray *collapsedLastCustomEvents = [NSMutableArray new]; // collapsing.equals("last") && !type.startsWith("@")
+    NSMutableArray *collapsedOtherEvents  = [NSMutableArray new]; // collapsing != null && !collapsing.equals("last") // ie. collapsing.equals("campaign"), as of this writing
+    
+    
+    NSInteger now = nowDate.timeIntervalSince1970 * 1000;
+    NSInteger getMaximumUncollapsedTrackedEventsAgeMs = self.maximumUncollapsedTrackedEventsAgeMs;
+    for (NSDictionary *oldTrackedEvent in oldTrackedEvents) {
+        NSString *oldTrackedEventCollapsing = oldTrackedEvent[@"collapsing"];
+        NSString *oldTrackedEventType = oldTrackedEvent[@"type"];
+        // Filter out the collapsing=last event of the same type as the new event we want to add
+        if ((!collapsing || [@"last" isEqualToString:collapsing])
+            && [@"last" isEqualToString:oldTrackedEventCollapsing]
+            && [type isEqualToString:oldTrackedEventType]) {
+            continue;
+        }
+        // Filter out the collapsing=campaign event of the same type and campaign as the new event we want to add
+        if (campaignId
+            && [@"campaign" isEqualToString:collapsing]
+            && [@"campaign" isEqualToString:oldTrackedEventCollapsing]
+            && [type isEqualToString:oldTrackedEventType]
+            && [campaignId isEqualToString:oldTrackedEvent[@"campaignId"]]) {
+            continue;
+        }
+        // Filter out old uncollapsed events
+        NSInteger oldTrackedEventActionDate = oldTrackedEvent[@"actionDate"] ? [oldTrackedEvent[@"actionDate"] integerValue] : now;
+        if (!oldTrackedEventCollapsing && now - oldTrackedEventActionDate >= getMaximumUncollapsedTrackedEventsAgeMs) {
+            continue;
+        }
+        // TODO We may want to filter out old collapsing=campaign (or any non-null value other than "last") events too
+        // Store the event in the proper, per-collapsing list
+        if (!oldTrackedEventCollapsing) {
+            [uncollapsedEvents addObject:oldTrackedEvent];
+        } else if ([@"last" isEqualToString:oldTrackedEventCollapsing]) {
+            if ([oldTrackedEventType hasPrefix:@"@"]) {
+                [collapsedLastBuiltinEvents addObject:oldTrackedEvent];
+            } else {
+                [collapsedLastCustomEvents addObject:oldTrackedEvent];
+            }
+        } else {
+            [collapsedOtherEvents addObject:oldTrackedEvent];
+        }
     }
-    NSMutableDictionary *eventToStore = [NSMutableDictionary dictionaryWithDictionary:eventParams];
-    // FIXME: remove me when the server sends a different DSL to clients and the database
-    eventToStore[@"collapsing"] = @"last";
-    [newTrackedEvents addObject:[eventToStore copy]];
 
-    [self setTrackedEvents:[newTrackedEvents copy]];
+    // Add the new event, uncollapsed
+    NSMutableDictionary *copyOfEventData;
+    if (!collapsing) {
+        NSError *error = nil;
+        // Let make a deep copy by serializing / deserializing to/from JSON
+        NSData *data = [NSJSONSerialization dataWithJSONObject:eventParams options:0 error:&error];
+        copyOfEventData = error ? nil : [[NSJSONSerialization JSONObjectWithData:data options:0 error:&error] mutableCopy];
+        if (error) {
+            WPLog(@"Could not store uncollapsed tracked event: %@", error);
+        } else {
+            [uncollapsedEvents addObject:copyOfEventData];
+        }
+    }
+    
+    // Add the new event with collapsing
+    // We default to collapsing=last, but we otherwise keep any existing collapsing
+    {
+        NSError *error = nil;
+        NSData *data = [NSJSONSerialization dataWithJSONObject:eventParams options:0 error:&error];
+        copyOfEventData = error ? nil : [[NSJSONSerialization JSONObjectWithData:data options:0 error:&error] mutableCopy];
+        if (error) {
+            WPLog(@"Could not store collapsed tracked event: %@", error);
+        } else {
+            if (!collapsing) {
+                copyOfEventData[@"collapsing"] = @"last";
+                collapsing = @"last";
+            }
+            if ([@"last" isEqualToString:collapsing]) {
+                if ([type hasPrefix:@"@"]) {
+                    [collapsedLastBuiltinEvents addObject:copyOfEventData];
+                } else {
+                    [collapsedLastCustomEvents addObject:copyOfEventData];
+                }
+            } else {
+                [collapsedOtherEvents addObject:copyOfEventData];
+            }
+        }
+    }
+
+    // Sort events by date
+    NSComparator comparator = ^(id o1, id o2) {
+        NSInteger delta = (o1[@"actionDate"] ? [o1[@"actionDate"] integerValue] : -1)
+        - (o2[@"actionDate"] ? [o2[@"actionDate"] integerValue] : -1);
+        if (delta < 0) return NSOrderedAscending;
+        if (delta > 0) return NSOrderedDescending;
+        return NSOrderedSame;
+    };
+    uncollapsedEvents = [[uncollapsedEvents sortedArrayUsingComparator:comparator] mutableCopy];
+    collapsedLastBuiltinEvents = [[collapsedLastBuiltinEvents sortedArrayUsingComparator:comparator] mutableCopy];
+    collapsedLastCustomEvents = [[collapsedLastCustomEvents sortedArrayUsingComparator:comparator] mutableCopy];
+    collapsedOtherEvents = [[collapsedOtherEvents sortedArrayUsingComparator:comparator] mutableCopy];
+
+    // Impose a limit on the maximum number of tracked events
+    uncollapsedEvents = [[self removeExcessEventsFromStart:uncollapsedEvents max:self.maximumUncollapsedTrackedEventsCount] mutableCopy];
+    collapsedLastBuiltinEvents = [[self removeExcessEventsFromStart:collapsedLastBuiltinEvents max:self.maximumCollapsedLastBuiltinTrackedEventsCount] mutableCopy];
+    collapsedLastCustomEvents = [[self removeExcessEventsFromStart:collapsedLastCustomEvents max:self.maximumCollapsedLastCustomTrackedEventsCount] mutableCopy];
+    collapsedOtherEvents = [[self removeExcessEventsFromStart:collapsedOtherEvents max:self.maximumCollapsedOtherTrackedEventsCount] mutableCopy];
+
+    // Reconstruct the whole list
+    NSMutableArray *storeTrackedEvents = [NSMutableArray new];
+    for (NSDictionary *e in collapsedLastBuiltinEvents) [storeTrackedEvents addObject:e];
+    for (NSDictionary *e in collapsedLastCustomEvents) [storeTrackedEvents addObject:e];
+    for (NSDictionary *e in collapsedOtherEvents) [storeTrackedEvents addObject:e];
+    for (NSDictionary *e in uncollapsedEvents) [storeTrackedEvents addObject:e];
+
+    // Store the new list
+    [self setTrackedEvents:[storeTrackedEvents copy]];
 }
 
 - (NSArray *)trackedEvents {
-    NSArray *rtn = [self _getNSArrayFromJSONForKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
-    return rtn ? rtn : @[];
+    NSMutableArray *result = [NSMutableArray new];
+    NSArray *storedTrackedEvents = [self _getNSArrayFromJSONForKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
+    for (NSInteger i = 0; storedTrackedEvents && i < storedTrackedEvents.count; i++) {
+        NSMutableDictionary *event = [[storedTrackedEvents objectAtIndex:i] mutableCopy];
+        if (event[@"creationDate"] && event[@"actionDate"]) {
+            event[@"creationDate"] = event[@"actionDate"];
+        }
+        [result addObject:event];
+    }
+    return result;
 }
 
 - (void)setTrackedEvents:(NSArray *)trackedEvents {

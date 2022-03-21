@@ -38,6 +38,7 @@
 #import "WPPresenceManager.h"
 #import "WPRequestVault.h"
 #import "WPIAMMessageDefinition.h"
+#import "WPConfiguration.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
@@ -414,6 +415,12 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
         // Measurements API
         [self measurementsApiClient].disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY inDictionary:config.data] boolValue];
+        // Events collapsing
+        WPConfiguration.sharedConfiguration.maximumUncollapsedTrackedEventsAgeMs = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_UNCOLLAPSED_MAXIMUM_AGE_MS_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_UNCOLLAPSED_TRACKED_EVENTS_AGE_MS]] integerValue];
+        WPConfiguration.sharedConfiguration.maximumUncollapsedTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_UNCOLLAPSED_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_UNCOLLAPSED_TRACKED_EVENTS_COUNT]] integerValue];
+        WPConfiguration.sharedConfiguration.maximumCollapsedLastBuiltinTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_COLLAPSED_LAST_BUILTIN_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_COLLAPSED_LAST_BUILTIN_TRACKED_EVENTS_COUNT]] integerValue];
+        WPConfiguration.sharedConfiguration.maximumCollapsedLastCustomTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_COLLAPSED_LAST_CUSTOM_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_COLLAPSED_LAST_CUSTOM_TRACKED_EVENTS_COUNT]] integerValue];
+        WPConfiguration.sharedConfiguration.maximumCollapsedOtherTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_COLLAPSED_OTHER_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_COLLAPSED_OTHER_TRACKED_EVENTS_COUNT]] integerValue];
     }];
 }
 
@@ -757,7 +764,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 + (NSString *) userId
 {
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-    return configuration.userId;    
+    return configuration.userId;
 }
 
 + (NSString *) installationId

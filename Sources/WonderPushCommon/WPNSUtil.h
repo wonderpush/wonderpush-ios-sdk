@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray * _Nullable) arrayForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary;
 + (NSString * _Nullable) stringForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary;
 + (NSNumber * _Nullable) numberForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary;
++ (NSNumber * _Nullable) numberForKey:(id)key inDictionary:(NSDictionary * _Nullable)dictionary defaultValue:(NSNumber *)defaultValue;
 
 ///-----------------------
 /// @name NSData utils
