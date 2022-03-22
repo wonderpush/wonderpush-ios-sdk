@@ -238,7 +238,10 @@
                 if (!followUp.event) return;
                 [self trackEvent:followUp.event
                  eventData:@{@"campaignId": reportingData.campaignId ?: [NSNull null],
-                             @"notificationId": reportingData.notificationId ?: [NSNull null]}
+                             @"notificationId": reportingData.notificationId ?: [NSNull null],
+                             @"viewId": reportingData.viewId ?: [NSNull null],
+                             @"reporting": reportingData.reporting ?: [NSNull null],
+                           }
                  customData:followUp.custom];
                 
             }
