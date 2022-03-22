@@ -1148,7 +1148,7 @@ static WPConfiguration *sharedConfiguration = nil;
     NSArray *storedTrackedEvents = [self _getNSArrayFromJSONForKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
     for (NSInteger i = 0; storedTrackedEvents && i < storedTrackedEvents.count; i++) {
         NSMutableDictionary *event = [[storedTrackedEvents objectAtIndex:i] mutableCopy];
-        if (event[@"creationDate"] && event[@"actionDate"]) {
+        if (!event[@"creationDate"] && event[@"actionDate"]) {
             event[@"creationDate"] = event[@"actionDate"];
         }
         [result addObject:event];
