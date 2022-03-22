@@ -45,7 +45,7 @@ NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatu
 NSString * const WPSubscriptionStatusChangedNotificationPreviousStatusInfoKey = @"previousSubscriptionStatus";
 NSString * const WPSubscriptionStatusOptIn = @"optIn";
 NSString * const WPSubscriptionStatusOptOut = @"optOut";
-NSString * const WPTargetUrlModeBrowser = @"browser";
+NSString * const WPTargetUrlModeExternal = @"external";
 static BOOL _isInitialized = NO;
 static BOOL _isReachable = NO;
 
@@ -1777,7 +1777,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             if (url == nil) return;
-            if ([targetUrlMode isEqualToString:WPTargetUrlModeBrowser]) {
+            if ([targetUrlMode isEqualToString:WPTargetUrlModeExternal]) {
                 [[WPURLFollower URLFollower] followURLViaIOS:url withCompletionBlock:^(BOOL success) {
                     WPLogDebug(@"Successfully opened %@", url);
                 }];

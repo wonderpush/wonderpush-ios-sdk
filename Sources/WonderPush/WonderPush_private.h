@@ -71,7 +71,7 @@ extern NSString * const WPSubscriptionStatusOptOut;
 /**
  Force the opening of the URL in the default browser
  */
-extern NSString * const WPTargetUrlModeBrowser;
+extern NSString * const WPTargetUrlModeExternal;
 
 @interface WonderPush (private)
 
