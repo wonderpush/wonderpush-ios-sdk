@@ -57,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly, nullable) WPAction *secondaryAction;
 @property(nonatomic, readonly, nullable) NSURL *imageURL;
 @property(nonatomic, readonly, nullable) NSURL *landscapeImageURL;
+@property(nonatomic, readonly, nullable) NSURL *webURL;
 @property(nonatomic, readonly) WPIAMCloseButtonPosition closeButtonPosition;
 @property(nonatomic, readonly) WPIAMEntryAnimation entryAnimation;
 @property(nonatomic, readonly) WPIAMExitAnimation exitAnimation;

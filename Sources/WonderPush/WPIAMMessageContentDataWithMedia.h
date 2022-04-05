@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  * An implementation for protocol WPIAMMessageContentData. This class takes a image url
  * and fetch it over the network to retrieve the image data.
  */
-@interface WPIAMMessageContentDataWithImageURL : NSObject <WPIAMMessageContentData>
+@interface WPIAMMessageContentDataWithMedia : NSObject <WPIAMMessageContentData>
 /**
  * Create an instance which uses NSURLSession to do the image data fetching.
  *
@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                      secondaryAction:(nullable WPAction *)secondaryAction
                             imageURL:(nullable NSURL *)imageURL
                    landscapeImageURL:(nullable NSURL *)landscapeImageURL
+                             webURL :(nullable NSURL *)webURL
                  closeButtonPosition:(WPIAMCloseButtonPosition)closeButtonPosition
                       bannerPosition:(WPIAMBannerPosition)bannerPosition
                       entryAnimation:(WPIAMEntryAnimation)entryAnimation

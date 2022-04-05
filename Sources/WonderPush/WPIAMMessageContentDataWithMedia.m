@@ -16,12 +16,12 @@
 
 #import "WPCore+InAppMessaging.h"
 #import "WPIAMMessageContentData.h"
-#import "WPIAMMessageContentDataWithImageURL.h"
+#import "WPIAMMessageContentDataWithMedia.h"
 #import "WPIAMSDKRuntimeErrorCodes.h"
 
 static NSInteger const SuccessHTTPStatusCode = 200;
 
-@interface WPIAMMessageContentDataWithImageURL ()
+@interface WPIAMMessageContentDataWithMedia ()
 @property(nonatomic, readwrite, nonnull, copy) NSString *titleText;
 @property(nonatomic, readwrite, nonnull, copy) NSString *bodyText;
 @property(nonatomic, copy, nullable) NSString *actionButtonText;
@@ -30,6 +30,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
 @property(nonatomic, copy, nullable) WPAction *secondaryAction;
 @property(nonatomic, nullable, copy) NSURL *imageURL;
 @property(nonatomic, nullable, copy) NSURL *landscapeImageURL;
+@property(nonatomic, nullable, copy) NSURL *webURL;
 @property(nonatomic, readwrite) WPIAMCloseButtonPosition closeButtonPosition;
 @property(nonatomic, readwrite) WPIAMEntryAnimation entryAnimation;
 @property(nonatomic, readwrite) WPIAMExitAnimation exitAnimation;
@@ -37,7 +38,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
 @property(readonly) NSURLSession *URLSession;
 @end
 
-@implementation WPIAMMessageContentDataWithImageURL
+@implementation WPIAMMessageContentDataWithMedia
 - (instancetype)initWithMessageTitle:(NSString *)title
                          messageBody:(NSString *)body
                     actionButtonText:(nullable NSString *)actionButtonText
@@ -46,6 +47,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
                      secondaryAction:(nullable WPAction *)secondaryAction
                             imageURL:(nullable NSURL *)imageURL
                    landscapeImageURL:(nullable NSURL *)landscapeImageURL
+                             webURL :(nullable NSURL *)webURL
                  closeButtonPosition:(WPIAMCloseButtonPosition)closeButtonPosition
                       bannerPosition:(WPIAMBannerPosition)bannerPosition
                       entryAnimation:(WPIAMEntryAnimation)entryAnimation
@@ -56,6 +58,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
         _bodyText = body;
         _imageURL = imageURL;
         _landscapeImageURL = landscapeImageURL;
+        _webURL = webURL;
         _actionButtonText = actionButtonText;
         _secondaryActionButtonText = secondaryActionButtonText;
         _action = action;
@@ -123,7 +126,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
         
         [self fetchImageFromURL:_imageURL
                       withBlock:^(NSData *_Nullable imageData, NSError *_Nullable error) {
-            __weak WPIAMMessageContentDataWithImageURL *weakSelf = self;
+            __weak WPIAMMessageContentDataWithMedia *weakSelf = self;
             
             // If the portrait image fails to load, we treat this as a failure.
             if (error) {

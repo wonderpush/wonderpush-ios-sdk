@@ -106,4 +106,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface WPInAppMessagingWebViewDisplay (Private)
+
+- (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
+                            payload:(NSDictionary *)payload
+                          webURL:(nullable NSURL *)webURL
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
+                             action:(nullable WPAction *)action
+                closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition;
+
+@end
+
+
 NS_ASSUME_NONNULL_END

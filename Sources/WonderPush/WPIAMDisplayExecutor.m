@@ -435,6 +435,40 @@
     return imageOnlyMessage;
 }
 
+- (WPInAppMessagingWebViewDisplay *)
+    webViewDisplayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
+                                       webURL:(NSURL *)webURL
+                                     triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
+    WPInAppMessagingCloseButtonPosition closeButtonPosition;
+    switch (definition.renderData.contentData.closeButtonPosition) {
+        case WPInAppMessagingCloseButtonPositionOutside:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionOutside;
+            break;
+        case WPInAppMessagingCloseButtonPositionInside:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionInside;
+            break;
+        case WPInAppMessagingCloseButtonPositionNone:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionNone;
+            break;
+    }
+    WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
+    WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    WPInAppMessagingWebViewDisplay *webViewMessage = [[WPInAppMessagingWebViewDisplay alloc]
+                                                          initWithTriggerType:triggerType
+                                                          payload:definition.payload
+                                                          webURL:webURL
+                                                          entryAnimation:entryAnimation
+                                                          exitAnimation:exitAnimation
+                                                          action:definition.renderData.contentData.action
+                                                          closeButtonPosition:closeButtonPosition];
+#pragma clang diagnostic pop
+    
+    return webViewMessage;
+}
+
 - (WPInAppMessagingModalDisplay *)
     modalDisplayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
                                    imageData:(WPInAppMessagingImageData *)imageData
@@ -494,8 +528,9 @@
 
 - (WPInAppMessagingDisplayMessage *)
     displayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
-                              imageData:(WPInAppMessagingImageData *)imageData
+                              imageData:(nullable WPInAppMessagingImageData *)imageData
                      landscapeImageData:(nullable WPInAppMessagingImageData *)landscapeImageData
+                            webURL:(nullable NSURL *)webURL
                             triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
     switch (definition.renderData.renderingEffectSettings.viewMode) {
         case WPIAMRenderAsCardView:
@@ -519,6 +554,12 @@
             return [self imageOnlyDisplayMessageWithMessageDefinition:definition
                                                             imageData:imageData
                                                           triggerType:triggerType];
+            
+        case WPIAMRenderAsWebView:
+            return [self webViewDisplayMessageWithMessageDefinition:definition
+                                                            webURL:webURL
+                                                          triggerType:triggerType];
+            
         default:
             return nil;
     }
@@ -545,6 +586,7 @@
             [self displayMessageWithMessageDefinition:message
                                             imageData:imageData
                                    landscapeImageData:landscapeImageData
+                                               webURL:message.renderData.contentData.webURL
                                           triggerType:triggerType];
             // short-circuit to display error handling
             [self displayErrorForMessage:erroredMessage error:error];
@@ -574,6 +616,7 @@
         [self displayMessageWithMessageDefinition:message
                                         imageData:imageData
                                landscapeImageData:landscapeImageData
+                                           webURL:message.renderData.contentData.webURL
                                       triggerType:triggerType];
         NSTimeInterval delayLeft = delay + originalDisplayTime - [timeProvider currentTimestampInSeconds];
         if (delayLeft > 0) {

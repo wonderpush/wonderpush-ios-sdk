@@ -23,6 +23,7 @@
 #import "WPIAMCardViewController.h"
 #import "WPIAMDefaultDisplayImpl.h"
 #import "WPIAMImageOnlyViewController.h"
+#import "WPIAMWebViewViewController.h"
 #import "WPIAMModalViewController.h"
 #import "WPIAMRenderingWindowHelper.h"
 #import "WPIAMTimeFetcher.h"
@@ -232,6 +233,49 @@ static WPIAMDefaultDisplayImpl *instance = nil;
     });
 }
 
++ (void)displayWebViewViewWithMessageDefinition:
+(WPInAppMessagingWebViewDisplay *)webViewMessage
+                                  displayDelegate:
+(id<WPInAppMessagingDisplayDelegate>)displayDelegate {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
+            WPLog(@"UIApplication not active when time has come to show message %@.", webViewMessage);
+            [displayDelegate displayErrorForMessage:webViewMessage error:[self applicationNotActiveError]];
+            return;
+        }
+        NSBundle *resourceBundle = [self getViewResourceBundle];
+        
+        if (resourceBundle == nil) {
+            NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                                 code:IAMDisplayRenderErrorTypeUnspecifiedError
+                                             userInfo:@{}];
+            [displayDelegate displayErrorForMessage:webViewMessage error:error];
+            return;
+        }
+        
+        WPIAMTimerWithNSDate *timeFetcher = [[WPIAMTimerWithNSDate alloc] init];
+        WPIAMWebViewViewController *webViewVC =
+        [WPIAMWebViewViewController instantiateViewControllerWithResourceBundle:resourceBundle
+                                                                    displayMessage:webViewMessage
+                                                                   displayDelegate:displayDelegate
+                                                                       timeFetcher:timeFetcher];
+        
+        if (webViewVC == nil) {
+            WPLog(
+                          @"webView view controller can not be created.");
+            NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                                 code:IAMDisplayRenderErrorTypeUnspecifiedError
+                                             userInfo:@{}];
+            [displayDelegate displayErrorForMessage:webViewMessage error:error];
+            return;
+        }
+        
+        UIWindow *displayUIWindow = [WPIAMRenderingWindowHelper UIWindowForWebViewView];
+        displayUIWindow.rootViewController = webViewVC;
+        [displayUIWindow setHidden:NO];
+    });
+}
+
 #pragma mark - protocol WPInAppMessagingDisplay
 - (BOOL)displayMessage:(WPInAppMessagingDisplayMessage *)messageForDisplay
        displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate {
@@ -247,6 +291,10 @@ static WPIAMDefaultDisplayImpl *instance = nil;
     } else if ([messageForDisplay isKindOfClass:[WPInAppMessagingImageOnlyDisplay class]]) {
         WPLogDebug( @"Display an image only message.");
         [self.class displayImageOnlyViewWithMessageDefinition:(WPInAppMessagingImageOnlyDisplay *)messageForDisplay
+                                              displayDelegate:displayDelegate];
+    } else if ([messageForDisplay isKindOfClass:[WPInAppMessagingWebViewDisplay class]]) {
+        WPLogDebug( @"Display a webview message.");
+        [self.class displayWebViewViewWithMessageDefinition:(WPInAppMessagingWebViewDisplay *)messageForDisplay
                                               displayDelegate:displayDelegate];
     } else if ([messageForDisplay isKindOfClass:[WPInAppMessagingCardDisplay class]]) {
         WPLogDebug( @"Display a card message.");

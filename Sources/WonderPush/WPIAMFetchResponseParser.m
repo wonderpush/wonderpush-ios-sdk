@@ -18,7 +18,7 @@
 #import "WPIAMDisplayTriggerDefinition.h"
 #import "WPIAMFetchResponseParser.h"
 #import "WPIAMMessageContentData.h"
-#import "WPIAMMessageContentDataWithImageURL.h"
+#import "WPIAMMessageContentDataWithMedia.h"
 #import "WPIAMMessageDefinition.h"
 #import "UIColor+WPIAMHexString.h"
 #import <WonderPushCommon/WPReportingData.h>
@@ -213,7 +213,7 @@
         viewCardBackgroundColor = btnBgColor = btnTxtColor = titleTextColor = nil;
         
         NSString *title, *body, *imageURLStr, *landscapeImageURLStr,
-        *actionButtonText, *secondaryActionButtonText;
+        *actionButtonText, *secondaryActionButtonText, *webUrlStr;
         WPIAMCloseButtonPosition closeButtonPosition = WPIAMCloseButtonPositionOutside;
         WPIAMEntryAnimation entryAnimation = WPIAMEntryAnimationFadeIn;
         WPIAMExitAnimation exitAnimation = WPIAMExitAnimationFadeOut;
@@ -304,6 +304,23 @@
             if ([imageOnlyNode[@"closeButtonPosition"] isEqualToString:@"outside"]) closeButtonPosition = WPIAMCloseButtonPositionOutside;
             if ([imageOnlyNode[@"closeButtonPosition"] isEqualToString:@"inside"]) closeButtonPosition = WPIAMCloseButtonPositionInside;
             if ([imageOnlyNode[@"closeButtonPosition"] isEqualToString:@"none"]) closeButtonPosition = WPIAMCloseButtonPositionNone;
+        } else if ([content[@"webView"] isKindOfClass:[NSDictionary class]]) {
+            mode = WPIAMRenderAsWebView;
+            NSDictionary *webViewNode = (NSDictionary *)contentNode[@"webView"];
+            entryAnimation = parseEntryAnimation(webViewNode);
+            exitAnimation = parseExitAnimation(webViewNode);
+
+            webUrlStr = webViewNode[@"url"];
+            
+            if (!webUrlStr) {
+                WPLog(
+                      @"web url is missing for webView message %@", notificationDict);
+                return nil;
+            }
+            action = [WPAction actionWithDictionaries:webViewNode[@"actions"]];
+            if ([webViewNode[@"closeButtonPosition"] isEqualToString:@"outside"]) closeButtonPosition = WPIAMCloseButtonPositionOutside;
+            if ([webViewNode[@"closeButtonPosition"] isEqualToString:@"inside"]) closeButtonPosition = WPIAMCloseButtonPositionInside;
+            if ([webViewNode[@"closeButtonPosition"] isEqualToString:@"none"]) closeButtonPosition = WPIAMCloseButtonPositionNone;
         } else if ([content[@"card"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsCardView;
             NSDictionary *cardNode = (NSDictionary *)contentNode[@"card"];
@@ -349,11 +366,13 @@
             return nil;
         }
         
-        if (title == nil && mode != WPIAMRenderAsImageOnlyView) {
+        if (title == nil && mode != WPIAMRenderAsImageOnlyView && mode != WPIAMRenderAsWebView) {
             WPLog(
                   @"Title text is missing in message node %@", notificationDict);
             return nil;
         }
+        
+        NSURL *webURL = (webUrlStr.length == 0) ? nil : [NSURL URLWithString:webUrlStr];
         
         NSURL *imageURL = (imageURLStr.length == 0) ? nil : [NSURL URLWithString:imageURLStr];
         NSURL *landscapeImageURL =
@@ -392,8 +411,8 @@
             renderEffect.isTestMessage = YES;
         }
         
-        WPIAMMessageContentDataWithImageURL *msgData =
-        [[WPIAMMessageContentDataWithImageURL alloc] initWithMessageTitle:title
+        WPIAMMessageContentDataWithMedia *msgData =
+        [[WPIAMMessageContentDataWithMedia alloc] initWithMessageTitle:title
                                                               messageBody:body
                                                          actionButtonText:actionButtonText
                                                 secondaryActionButtonText:secondaryActionButtonText
@@ -401,6 +420,7 @@
                                                           secondaryAction:secondaryAction
                                                                  imageURL:imageURL
                                                         landscapeImageURL:landscapeImageURL
+                                                                webURL:webURL
                                                       closeButtonPosition:closeButtonPosition
                                                            bannerPosition:bannerPosition
                                                            entryAnimation:entryAnimation

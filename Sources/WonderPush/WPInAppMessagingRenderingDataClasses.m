@@ -168,6 +168,28 @@
 }
 @end
 
+@implementation WPInAppMessagingWebViewDisplay
+
+- (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
+                            payload:(NSDictionary *)payload
+                          webURL:(nullable NSURL *)webURL
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
+                             action:(nullable WPAction *)action
+                closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition {
+    if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeModal
+                              triggerType:triggerType
+                           entryAnimation:entryAnimation
+                            exitAnimation:exitAnimation
+                                  payload:payload]) {
+        _webURL = webURL;
+        _action = action;
+        _closeButtonPosition = closeButtonPosition;
+    }
+    return self;
+}
+@end
+
 @implementation WPInAppMessagingActionButton
 
 - (instancetype)initWithButtonText:(NSString *)btnText

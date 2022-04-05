@@ -33,5 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Return the singleton UIWindow that can be used for rendering banner IAM views
 + (UIWindow *)UIWindowForImageOnlyView;
+
+// Return the singleton UIWindow that can be used for rendering webView IAM views
++ (UIWindow *)UIWindowForWebViewView;
+
 @end
 NS_ASSUME_NONNULL_END

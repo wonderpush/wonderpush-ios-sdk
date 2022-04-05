@@ -82,6 +82,27 @@
     return UIWindowForImageOnly;
 }
 
++ (UIWindow *)UIWindowForWebViewView {
+    static UIWindow *UIWindowForWebView;
+    static dispatch_once_t onceToken;
+    
+    dispatch_once(&onceToken, ^{
+#if defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        if (@available(iOS 13.0, *)) {
+            UIWindowScene *foregroundedScene = [[self class] foregroundedScene];
+            UIWindowForWebView = [[UIWindow alloc] initWithWindowScene:foregroundedScene];
+        } else {
+#endif  // defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+            UIWindowForWebView = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+#if defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        }
+#endif  // defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        UIWindowForWebView.windowLevel = UIWindowLevelNormal;
+    });
+    
+    return UIWindowForWebView;
+}
+
 #if defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
 + (UIWindowScene *)foregroundedScene API_AVAILABLE(ios(13.0)) {
     for (UIWindowScene *connectedScene in [UIApplication sharedApplication].connectedScenes) {

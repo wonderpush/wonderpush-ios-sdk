@@ -23,7 +23,8 @@ typedef NS_ENUM(NSInteger, WPIAMRenderingMode) {
   WPIAMRenderAsBannerView,
   WPIAMRenderAsModalView,
   WPIAMRenderAsImageOnlyView,
-  WPIAMRenderAsCardView
+  WPIAMRenderAsCardView,
+  WPIAMRenderAsWebView
 };
 
 /**

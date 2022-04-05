@@ -346,6 +346,31 @@ NS_SWIFT_NAME(InAppMessagingImageOnlyDisplay)
 
 @end
 
+/** Class for defining a webview message for display.
+ */
+NS_SWIFT_NAME(InAppMessagingWebViewDisplay)
+@interface WPInAppMessagingWebViewDisplay : WPInAppMessagingDisplayMessage
+
+/**
+ * Gets the url for this message
+ */
+@property(nonatomic, nonnull, copy, readonly) NSURL *webURL;
+
+/**
+ * Gets the action URL for an webView IAM message.
+ */
+@property(nonatomic, nullable, readonly) WPAction *action;
+
+/**
+ * Where to put the close button
+ */
+@property(nonatomic, readonly) WPInAppMessagingCloseButtonPosition closeButtonPosition;
+
+/// Unavailable.
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
 /// The way that an in-app message was dismissed.
 typedef NS_ENUM(NSInteger, WPInAppMessagingDismissType) {
   /// Message was swiped away (only valid for banner messages).
