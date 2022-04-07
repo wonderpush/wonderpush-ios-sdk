@@ -387,6 +387,8 @@ typedef NS_ENUM(NSInteger, WPInAppMessagingDismissType) {
 typedef NS_ENUM(NSInteger, IAMDisplayRenderErrorType) {
   /// The image data for this in-app message is invalid.
   IAMDisplayRenderErrorTypeImageDataInvalid,
+  /// The url data can't be loaded
+  IAMDisplayRenderErrorTypeWebUrlFailedToLoad,
   /// The UIApplication is not active when time comes to render the message
   IAMDisplayRenderErrorTypeApplicationNotActiveError,
   /// Unexpected error.

@@ -254,12 +254,11 @@ static WPIAMDefaultDisplayImpl *instance = nil;
         }
         
         WPIAMTimerWithNSDate *timeFetcher = [[WPIAMTimerWithNSDate alloc] init];
-        WPIAMWebViewViewController *webViewVC =
-        [WPIAMWebViewViewController instantiateViewControllerWithResourceBundle:resourceBundle
+        
+        WPIAMWebViewViewController *webViewVC = [WPIAMWebViewViewController instantiateViewControllerWithResourceBundle:resourceBundle
                                                                     displayMessage:webViewMessage
                                                                    displayDelegate:displayDelegate
                                                                        timeFetcher:timeFetcher];
-        
         if (webViewVC == nil) {
             WPLog(
                           @"webView view controller can not be created.");
@@ -270,9 +269,17 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             return;
         }
         
-        UIWindow *displayUIWindow = [WPIAMRenderingWindowHelper UIWindowForWebViewView];
-        displayUIWindow.rootViewController = webViewVC;
-        [displayUIWindow setHidden:NO];
+        [webViewVC preLoadWebViewUrlWithSuccessCompletionHander:^{
+            UIWindow *displayUIWindow = [WPIAMRenderingWindowHelper UIWindowForWebViewView];
+            displayUIWindow.rootViewController = webViewVC;
+            [displayUIWindow setHidden:NO];
+        }
+                                      withErrorCompletionHander:^(NSError* error){
+            WPLog(
+                          @"webView view controller error.");
+            [displayDelegate displayErrorForMessage:webViewMessage error:error];
+            return;
+        }];
     });
 }
 

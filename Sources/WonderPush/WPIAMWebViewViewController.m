@@ -11,7 +11,7 @@
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WPIAMHitTestDelegateView.h"
 
-@interface WPIAMWebViewViewController () <WPIAMHitTestDelegate>
+@interface WPIAMWebViewViewController () <WPIAMHitTestDelegate, WKNavigationDelegate>
 
 @property(nonatomic, readwrite) WPInAppMessagingWebViewDisplay *webViewMessage;
 @property (weak, nonatomic) IBOutlet UIButton *backgroundCloseButton;
@@ -22,17 +22,21 @@
 @property(weak, nonatomic) IBOutlet WKWebView *webView;
 @property(weak, nonatomic) IBOutlet UIButton *closeButton;
 
+@property(atomic) Boolean webViewUrlLoadingCallbackHasBeenDone;
+@property(atomic) void (^successWebViewUrlLoadingBlock)(void);
+@property(atomic) void (^errorWebViewUrlLoadingBlock)(NSError *);
+
+@property(retain, atomic) dispatch_semaphore_t webViewCallbackTreatmentSemaphore;
+
 @end
 
 @implementation WPIAMWebViewViewController 
 
-+ (WPIAMWebViewViewController *)
-    instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
-                                 displayMessage:
-                                     (WPInAppMessagingWebViewDisplay *)webViewMessage
-                                displayDelegate:
-                                    (id<WPInAppMessagingDisplayDelegate>)displayDelegate
-                                    timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher {
++ (WPIAMWebViewViewController *) instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
+                                      displayMessage:(WPInAppMessagingWebViewDisplay *)webViewMessage
+                                     displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                         timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher {
+    
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
                                                          bundle:resourceBundle];
     
@@ -42,13 +46,69 @@
                     resourceBundle);
         return nil;
     }
+    
     WPIAMWebViewViewController *webViewVC = (WPIAMWebViewViewController *)[storyboard
-                                                                                   instantiateViewControllerWithIdentifier:@"webview-vc"];
+                                                                           instantiateViewControllerWithIdentifier:@"webview-vc"];
+    
     webViewVC.displayDelegate = displayDelegate;
     webViewVC.webViewMessage = webViewMessage;
     webViewVC.timeFetcher = timeFetcher;
     
     return webViewVC;
+}
+
+- (void) preLoadWebViewUrlWithSuccessCompletionHander: (void (^)(void)) successBlock
+                            withErrorCompletionHander: (void (^)(NSError *)) errorBlock{
+    
+    self.webViewUrlLoadingCallbackHasBeenDone = false;
+    self.webViewCallbackTreatmentSemaphore = dispatch_semaphore_create(1);
+    self.successWebViewUrlLoadingBlock = successBlock;
+    self.errorWebViewUrlLoadingBlock = errorBlock;
+    
+    //Loads the view controller’s view if it has not yet been loaded.
+    [self loadViewIfNeeded];
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error{
+    dispatch_semaphore_wait(self.webViewCallbackTreatmentSemaphore, DISPATCH_TIME_FOREVER);
+    if (false == self.webViewUrlLoadingCallbackHasBeenDone){
+        self.errorWebViewUrlLoadingBlock(error);
+        self.webViewUrlLoadingCallbackHasBeenDone = true;
+    }
+    dispatch_semaphore_signal(self.webViewCallbackTreatmentSemaphore);
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    dispatch_semaphore_wait(self.webViewCallbackTreatmentSemaphore, DISPATCH_TIME_FOREVER);
+    if (false == self.webViewUrlLoadingCallbackHasBeenDone){
+        self.errorWebViewUrlLoadingBlock(error);
+        self.webViewUrlLoadingCallbackHasBeenDone = true;
+    }
+    dispatch_semaphore_signal(self.webViewCallbackTreatmentSemaphore);
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
+
+    if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
+
+        NSHTTPURLResponse * response = (NSHTTPURLResponse *)navigationResponse.response;
+        if (response.statusCode >= 400) {
+
+            decisionHandler(WKNavigationResponsePolicyCancel);
+            return;
+        }
+
+    }
+    decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
+-(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
+    dispatch_semaphore_wait(self.webViewCallbackTreatmentSemaphore, DISPATCH_TIME_FOREVER);
+    if (false == self.webViewUrlLoadingCallbackHasBeenDone){
+        self.successWebViewUrlLoadingBlock();
+        self.webViewUrlLoadingCallbackHasBeenDone = true;
+    }
+    dispatch_semaphore_signal(self.webViewCallbackTreatmentSemaphore);
 }
 
 - (WPInAppMessagingDisplayMessage *)inAppMessage {
@@ -83,12 +143,34 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self.view setBackgroundColor:UIColor.clearColor];
+    
     self.backgroundCloseButton.backgroundColor = UIColor.clearColor;
-
+    
     if (self.webViewMessage.webURL) {
+        self.webView.navigationDelegate = self;
         NSURLRequest *requestToLoad = [NSURLRequest requestWithURL:self.webViewMessage.webURL];
         [self.webView loadRequest:requestToLoad];
+        
+        // Delay execution of my block for 2 seconds.
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            dispatch_semaphore_wait(self.webViewCallbackTreatmentSemaphore, DISPATCH_TIME_FOREVER);
+            if (false == self.webViewUrlLoadingCallbackHasBeenDone){
+                self.errorWebViewUrlLoadingBlock([NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                                                     code:IAMDisplayRenderErrorTypeWebUrlFailedToLoad
+                                                                 userInfo:@{}]);
+                self.webViewUrlLoadingCallbackHasBeenDone = true;
+            }
+            dispatch_semaphore_signal(self.webViewCallbackTreatmentSemaphore);
+        });
+    }
+    else {
+        self.errorWebViewUrlLoadingBlock([NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                             code:IAMDisplayRenderErrorTypeUnspecifiedError
+                                         userInfo:@{}]);
+        self.webViewUrlLoadingCallbackHasBeenDone = true;
+        return;
     }
     
     switch (self.webViewMessage.closeButtonPosition) {
@@ -106,7 +188,9 @@
             self.closeButton.hidden = YES;
             break;
     }
+    
     self.containerView.pointInsideDelegate = self;
+    
     [self setupRecognizers];
 }
 
@@ -142,7 +226,9 @@
         // Do nothing
     }];
 }
+
 - (UIView *)viewToAnimate {
     return self.containerView;
 }
+
 @end
