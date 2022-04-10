@@ -10,8 +10,9 @@
 #import "WPIAMWebViewViewController.h"
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WPIAMHitTestDelegateView.h"
+#import "WPIAMWebViewBrige.h"
 
-@interface WPIAMWebViewViewController () <WPIAMHitTestDelegate, WKNavigationDelegate>
+@interface WPIAMWebViewViewController () <WPIAMHitTestDelegate, WKNavigationDelegate, WKScriptMessageHandler>
 
 @property(nonatomic, readwrite) WPInAppMessagingWebViewDisplay *webViewMessage;
 @property (weak, nonatomic) IBOutlet UIButton *backgroundCloseButton;
@@ -25,6 +26,8 @@
 @property(atomic) Boolean webViewUrlLoadingCallbackHasBeenDone;
 @property(atomic) void (^successWebViewUrlLoadingBlock)(void);
 @property(atomic) void (^errorWebViewUrlLoadingBlock)(NSError *);
+
+@property(atomic) WPIAMWebViewBrige* wpiAMWebViewBrigeInstance;
 
 @property(retain, atomic) dispatch_semaphore_t webViewCallbackTreatmentSemaphore;
 
@@ -107,8 +110,33 @@
     if (false == self.webViewUrlLoadingCallbackHasBeenDone){
         self.successWebViewUrlLoadingBlock();
         self.webViewUrlLoadingCallbackHasBeenDone = true;
+        [self.webView.configuration.userContentController addScriptMessageHandler:self name:@"WonderPushInAppSDK"];
+        self.wpiAMWebViewBrigeInstance = [[WPIAMWebViewBrige alloc] init];
     }
     dispatch_semaphore_signal(self.webViewCallbackTreatmentSemaphore);
+}
+
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    if (self.wpiAMWebViewBrigeInstance == nil){
+        return;
+    }
+    
+    if([message.body isKindOfClass:[NSDictionary class]]){
+        
+        NSDictionary *dictionnaryParamsFromWeb = message.body;
+        
+        if (nil == [dictionnaryParamsFromWeb valueForKey:@"method"]){
+            return;
+        }
+        
+        if ([[dictionnaryParamsFromWeb valueForKey:@"method"]  isEqual: @"dismiss"]){
+            [self.webView evaluateJavaScript:@"window._wpresults['dismiss'].resolve();return promise;};" completionHandler:nil];
+            [self dismissView:WPInAppMessagingDismissTypeUserTapClose];
+        }
+        else {
+            [self.wpiAMWebViewBrigeInstance onWPIAMWebViewDidReceivedMessage:dictionnaryParamsFromWeb with:[dictionnaryParamsFromWeb valueForKey:@"method"]  in:self.webView];
+        }
+    }
 }
 
 - (WPInAppMessagingDisplayMessage *)inAppMessage {
