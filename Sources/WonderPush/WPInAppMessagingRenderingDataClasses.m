@@ -15,6 +15,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
 
 #import <WonderPush/WPInAppMessagingRendering.h>
 #import "WPInAppMessagingRenderingPrivate.h"
@@ -172,7 +173,7 @@
 
 - (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                             payload:(NSDictionary *)payload
-                          webURL:(nullable NSURL *)webURL
+                          wkWebView:(WKWebView *)wkWebView
                      entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
                       exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                              action:(nullable WPAction *)action
@@ -182,7 +183,7 @@
                            entryAnimation:entryAnimation
                             exitAnimation:exitAnimation
                                   payload:payload]) {
-        _webURL = webURL;
+        _wkWebView = wkWebView;
         _action = action;
         _closeButtonPosition = closeButtonPosition;
     }

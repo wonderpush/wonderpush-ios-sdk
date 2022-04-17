@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                             payload:(NSDictionary *)payload
-                          webURL:(nullable NSURL *)webURL
+                          wkWebView:(WKWebView *)wkWebView
                      entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
                       exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                              action:(nullable WPAction *)action

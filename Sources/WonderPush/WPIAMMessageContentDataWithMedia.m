@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+#import <WebKit/WebKit.h>
 #import "WPCore+InAppMessaging.h"
 #import "WPIAMMessageContentData.h"
 #import "WPIAMMessageContentDataWithMedia.h"
 #import "WPIAMSDKRuntimeErrorCodes.h"
+#import "WPIAMWkWebViewPreloaderController.h"
+#import "WonderPush_private.h"
+#import "WPCore+InAppMessagingDisplay.h"
 
 static NSInteger const SuccessHTTPStatusCode = 200;
 
@@ -36,6 +40,8 @@ static NSInteger const SuccessHTTPStatusCode = 200;
 @property(nonatomic, readwrite) WPIAMExitAnimation exitAnimation;
 @property(nonatomic, readwrite) WPIAMBannerPosition bannerPosition;
 @property(readonly) NSURLSession *URLSession;
+
+@property(nonatomic) WPIAMWkWebViewPreloaderController * wpiAMWkWebViewPreloaderControllerInstance;
 @end
 
 @implementation WPIAMMessageContentDataWithMedia
@@ -95,28 +101,53 @@ static NSInteger const SuccessHTTPStatusCode = 200;
     return _actionButtonText;
 }
 
-- (void)loadImageDataWithBlock:(void (^)(NSData *_Nullable standardImageData,
-                                         NSData *_Nullable landscapeImageData,
-                                         NSError *_Nullable error))block {
+- (void)loadMediaWithBlock:(void (^)(NSData *_Nullable standardImageData,
+                                     NSData *_Nullable landscapeImageData,
+                                     WKWebView *_Nullable wkWebViewInstance,
+                                     NSError *_Nullable error))block {
     if (!block) {
         // no need for any further action if block is nil
         return;
     }
     
-    if (!_imageURL && !_landscapeImageURL) {
-        // no image data since image url is nil
-        block(nil, nil, nil);
-    } else if (!_landscapeImageURL) {
+    if (!_imageURL && !_landscapeImageURL && !_webURL) {
+        // no media data since media url is nil
+        block(nil, nil, nil, nil);
+    }
+    else if (_webURL){
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
+                                                             bundle:[WonderPush resourceBundle]];
+        
+        if (storyboard == nil) {
+            block(nil, nil, nil, [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                                     code:IAMDisplayRenderErrorTypeUnspecifiedError
+                                                 userInfo:@{@"message" : @"resource is missing"}]);
+            return;
+        }
+        
+        _wpiAMWkWebViewPreloaderControllerInstance = (WPIAMWkWebViewPreloaderController *)[storyboard
+                                                                               instantiateViewControllerWithIdentifier:@"webview-preloader-vc"];
+        [_wpiAMWkWebViewPreloaderControllerInstance preLoadWebViewWith:_webURL
+                               withSuccessCompletionHandler:^(WKWebView * wkWebViewInstance)
+        {
+            WPLog(@"wkWebView success.");
+            block(nil, nil, wkWebViewInstance, nil);
+        } withErrorCompletionHander:^(NSError* error){
+            WPLog(@"wkWebView error.");
+            block(nil, nil, nil, error);
+        }];
+    }
+    else if (!_landscapeImageURL) {
         // Only fetch standard image.
         [self fetchImageFromURL:_imageURL
                       withBlock:^(NSData *_Nullable imageData, NSError *_Nullable error) {
-            block(imageData, nil, error);
+            block(imageData, nil, nil, error);
         }];
     } else if (!_imageURL) {
         // Only fetch portrait image.
         [self fetchImageFromURL:_landscapeImageURL
                       withBlock:^(NSData *_Nullable imageData, NSError *_Nullable error) {
-            block(nil, imageData, error);
+            block(nil, imageData, nil, error);
         }];
     } else {
         // Fetch both images separately, call completion when they're both fetched.
@@ -133,13 +164,13 @@ static NSInteger const SuccessHTTPStatusCode = 200;
                 // Cancel landscape image fetch.
                 [weakSelf.URLSession invalidateAndCancel];
                 
-                block(nil, nil, error);
+                block(nil, nil, nil, error);
                 return;
             }
             
             portrait = imageData;
             if (landscape || landscapeImageLoadError) {
-                block(portrait, landscape, nil);
+                block(portrait, landscape, nil, nil);
             }
         }];
         
@@ -152,7 +183,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
             }
             
             if (portrait) {
-                block(portrait, landscape, nil);
+                block(portrait, landscape, nil, nil);
             }
         }];
     }

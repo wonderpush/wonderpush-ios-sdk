@@ -269,17 +269,9 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             return;
         }
         
-        [webViewVC preLoadWebViewUrlWithSuccessCompletionHander:^{
-            UIWindow *displayUIWindow = [WPIAMRenderingWindowHelper UIWindowForWebViewView];
-            displayUIWindow.rootViewController = webViewVC;
-            [displayUIWindow setHidden:NO];
-        }
-                                      withErrorCompletionHander:^(NSError* error){
-            WPLog(
-                          @"webView view controller error.");
-            [displayDelegate displayErrorForMessage:webViewMessage error:error];
-            return;
-        }];
+        UIWindow *displayUIWindow = [WPIAMRenderingWindowHelper UIWindowForWebViewView];
+        displayUIWindow.rootViewController = webViewVC;
+        [displayUIWindow setHidden:NO];
     });
 }
 

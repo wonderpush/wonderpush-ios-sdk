@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#import <WebKit/WebKit.h>
 #import <Foundation/Foundation.h>
 #import <WonderPush/WPAction.h>
 
@@ -74,9 +75,10 @@ NS_ASSUME_NONNULL_BEGIN
 // block and the error will be nil.
 // If no error happens and the imageData parameter is nil, it indicates the case that there is no
 // image associated with the message.
-- (void)loadImageDataWithBlock:(void (^)(NSData *_Nullable imageData,
-                                         NSData *_Nullable landscapeImageData,
-                                         NSError *_Nullable error))block;
+- (void)loadMediaWithBlock:(void (^)(NSData *_Nullable imageData,
+                                     NSData *_Nullable landscapeImageData,
+                                     WKWebView *_Nullable wkWebViewInstance,
+                                     NSError *_Nullable error))block;
 
 // convert to a description string of the content
 - (NSString *)description;

@@ -437,7 +437,7 @@
 
 - (WPInAppMessagingWebViewDisplay *)
     webViewDisplayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
-                                       webURL:(NSURL *)webURL
+                                       wkWebView:(WKWebView *)wkWebView
                                      triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
     WPInAppMessagingCloseButtonPosition closeButtonPosition;
     switch (definition.renderData.contentData.closeButtonPosition) {
@@ -459,7 +459,7 @@
     WPInAppMessagingWebViewDisplay *webViewMessage = [[WPInAppMessagingWebViewDisplay alloc]
                                                           initWithTriggerType:triggerType
                                                           payload:definition.payload
-                                                          webURL:webURL
+                                                          wkWebView:wkWebView
                                                           entryAnimation:entryAnimation
                                                           exitAnimation:exitAnimation
                                                           action:definition.renderData.contentData.action
@@ -530,7 +530,7 @@
     displayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
                               imageData:(nullable WPInAppMessagingImageData *)imageData
                      landscapeImageData:(nullable WPInAppMessagingImageData *)landscapeImageData
-                            webURL:(nullable NSURL *)webURL
+                            wkWebView:(nullable WKWebView *)wkWebView
                             triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
     switch (definition.renderData.renderingEffectSettings.viewMode) {
         case WPIAMRenderAsCardView:
@@ -557,7 +557,7 @@
             
         case WPIAMRenderAsWebView:
             return [self webViewDisplayMessageWithMessageDefinition:definition
-                                                            webURL:webURL
+                                                            wkWebView:wkWebView
                                                           triggerType:triggerType];
             
         default:
@@ -573,20 +573,22 @@
     WPIAMTimerWithNSDate *timeProvider = [WPIAMTimerWithNSDate new];
     NSTimeInterval originalDisplayTime = [timeProvider currentTimestampInSeconds];
     [message.renderData.contentData
-     loadImageDataWithBlock:^(NSData *_Nullable standardImageRawData,
-                              NSData *_Nullable landscapeImageRawData, NSError *_Nullable error) {
+     loadMediaWithBlock:^(NSData *_Nullable standardImageRawData,
+                          NSData *_Nullable landscapeImageRawData,
+                          WKWebView *_Nullable wkWebViewInstance,
+                          NSError *_Nullable error) {
         WPInAppMessagingImageData *imageData = nil;
         WPInAppMessagingImageData *landscapeImageData = nil;
         
         if (error) {
             WPLogDebug(
-                        @"Error in loading image data for the message.");
+                        @"Error in loading media for the message.");
             
             WPInAppMessagingDisplayMessage *erroredMessage =
             [self displayMessageWithMessageDefinition:message
                                             imageData:imageData
                                    landscapeImageData:landscapeImageData
-                                               webURL:message.renderData.contentData.webURL
+                                               wkWebView:wkWebViewInstance
                                           triggerType:triggerType];
             // short-circuit to display error handling
             [self displayErrorForMessage:erroredMessage error:error];
@@ -616,7 +618,7 @@
         [self displayMessageWithMessageDefinition:message
                                         imageData:imageData
                                landscapeImageData:landscapeImageData
-                                           webURL:message.renderData.contentData.webURL
+                                           wkWebView:wkWebViewInstance
                                       triggerType:triggerType];
         NSTimeInterval delayLeft = delay + originalDisplayTime - [timeProvider currentTimestampInSeconds];
         if (delayLeft > 0) {

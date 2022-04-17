@@ -15,6 +15,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 #import "WPAction.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -352,9 +353,9 @@ NS_SWIFT_NAME(InAppMessagingWebViewDisplay)
 @interface WPInAppMessagingWebViewDisplay : WPInAppMessagingDisplayMessage
 
 /**
- * Gets the url for this message
+ * Gets the wkWebView for this message
  */
-@property(nonatomic, nonnull, copy, readonly) NSURL *webURL;
+@property(nonatomic, nonnull, copy, readonly) WKWebView *wkWebView;
 
 /**
  * Gets the action URL for an webView IAM message.

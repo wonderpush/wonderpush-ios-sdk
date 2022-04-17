@@ -292,9 +292,12 @@
 		99F384952225A5E400EA2ECD /* NotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 99F384932225A5E400EA2ECD /* NotificationServiceExtension.m */; };
 		ED3718CA27FB291C0034A347 /* WPIAMMessageContentDataWithMedia.h in Headers */ = {isa = PBXBuildFile; fileRef = ED3718C827FB291C0034A347 /* WPIAMMessageContentDataWithMedia.h */; };
 		ED3718CC27FB291C0034A347 /* WPIAMMessageContentDataWithMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = ED3718C927FB291C0034A347 /* WPIAMMessageContentDataWithMedia.m */; };
+		ED39867C280C6D3300863EBE /* webViewBridgeJavascriptFileToInject.js in Resources */ = {isa = PBXBuildFile; fileRef = ED39867A280C647E00863EBE /* webViewBridgeJavascriptFileToInject.js */; };
 		ED47692E280165E9001A5FBF /* WPIAMWebViewBrige.h in Headers */ = {isa = PBXBuildFile; fileRef = ED47692C280165E9001A5FBF /* WPIAMWebViewBrige.h */; };
 		ED47692F280165E9001A5FBF /* WPIAMWebViewBrige.h in Headers */ = {isa = PBXBuildFile; fileRef = ED47692C280165E9001A5FBF /* WPIAMWebViewBrige.h */; };
 		ED476930280165E9001A5FBF /* WPIAMWebViewBrige.m in Sources */ = {isa = PBXBuildFile; fileRef = ED47692D280165E9001A5FBF /* WPIAMWebViewBrige.m */; };
+		ED875F13280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.h in Headers */ = {isa = PBXBuildFile; fileRef = ED875F11280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.h */; };
+		ED875F14280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED875F12280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.m */; };
 		EDA0887E27F9D10B00134BB2 /* WPIAMWebViewViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = EDA0887C27F9D10B00134BB2 /* WPIAMWebViewViewController.h */; };
 		EDA0887F27F9D10B00134BB2 /* WPIAMWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EDA0887D27F9D10B00134BB2 /* WPIAMWebViewViewController.m */; };
 /* End PBXBuildFile section */
@@ -663,8 +666,11 @@
 		A1E3E0A319E425DB00A4EE09 /* WonderPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPush.h; sourceTree = "<group>"; };
 		ED3718C827FB291C0034A347 /* WPIAMMessageContentDataWithMedia.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMMessageContentDataWithMedia.h; sourceTree = "<group>"; };
 		ED3718C927FB291C0034A347 /* WPIAMMessageContentDataWithMedia.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMMessageContentDataWithMedia.m; sourceTree = "<group>"; };
+		ED39867A280C647E00863EBE /* webViewBridgeJavascriptFileToInject.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = webViewBridgeJavascriptFileToInject.js; path = Sources/WonderPush/Resources/javascript/webViewBridgeJavascriptFileToInject.js; sourceTree = SOURCE_ROOT; };
 		ED47692C280165E9001A5FBF /* WPIAMWebViewBrige.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMWebViewBrige.h; sourceTree = "<group>"; };
 		ED47692D280165E9001A5FBF /* WPIAMWebViewBrige.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMWebViewBrige.m; sourceTree = "<group>"; };
+		ED875F11280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMWkWebViewPreloaderController.h; sourceTree = "<group>"; };
+		ED875F12280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMWkWebViewPreloaderController.m; sourceTree = "<group>"; };
 		EDA0887C27F9D10B00134BB2 /* WPIAMWebViewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMWebViewViewController.h; sourceTree = "<group>"; };
 		EDA0887D27F9D10B00134BB2 /* WPIAMWebViewViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMWebViewViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -937,6 +943,8 @@
 				9947AD6724FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m */,
 				99EF830623F4452C00B9B287 /* WPIAMImageOnlyViewController.h */,
 				99EF830723F4452C00B9B287 /* WPIAMImageOnlyViewController.m */,
+				ED875F11280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.h */,
+				ED875F12280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.m */,
 				EDA0887C27F9D10B00134BB2 /* WPIAMWebViewViewController.h */,
 				EDA0887D27F9D10B00134BB2 /* WPIAMWebViewViewController.m */,
 				ED47692C280165E9001A5FBF /* WPIAMWebViewBrige.h */,
@@ -1042,6 +1050,7 @@
 		9998CA8D221C55E20028D955 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				ED398679280C647200863EBE /* javascript */,
 				99EF82BA23F4452C00B9B287 /* WPInAppMessageDisplayStoryboard.storyboard */,
 				99EF82BB23F4452C00B9B287 /* close-with-transparency@2x.png */,
 				99EF82BC23F4452C00B9B287 /* close-with-transparency.png */,
@@ -1187,6 +1196,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		ED398679280C647200863EBE /* javascript */ = {
+			isa = PBXGroup;
+			children = (
+				ED39867A280C647E00863EBE /* webViewBridgeJavascriptFileToInject.js */,
+			);
+			path = javascript;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1276,6 +1293,7 @@
 				99536E84275FA83400EFC77E /* WPLog.h in Headers */,
 				99EF835823F4452C00B9B287 /* WPIAMDisplayTriggerDefinition.h in Headers */,
 				ED47692E280165E9001A5FBF /* WPIAMWebViewBrige.h in Headers */,
+				ED875F13280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.h in Headers */,
 				995F14F924AB7A8300CC499E /* WPSPGeoCircle.h in Headers */,
 				9979E0CA24A63711002BC6EE /* WPSPSegmentationDSLParser.h in Headers */,
 				99EF835923F4452C00B9B287 /* WPIAMMessageRenderData.h in Headers */,
@@ -1537,6 +1555,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED39867C280C6D3300863EBE /* webViewBridgeJavascriptFileToInject.js in Resources */,
 				9909CE1922215DD600F73A0B /* WonderPush.storyboard in Resources */,
 				99232AD023708D100064381B /* WonderPushLocalizable.strings in Resources */,
 				99232AD123708D100064381B /* WonderPushLocalizable.strings in Resources */,
@@ -1731,6 +1750,7 @@
 				9998CACD221C75480028D955 /* WPRequestVault.m in Sources */,
 				9998CACE221C75480028D955 /* WPResponse.m in Sources */,
 				9998CACF221C75480028D955 /* WPUtil.m in Sources */,
+				ED875F14280EDE260038AC8B /* WPIAMWkWebViewPreloaderController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

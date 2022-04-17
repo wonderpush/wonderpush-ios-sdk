@@ -12,24 +12,18 @@
 #import "WPIAMHitTestDelegateView.h"
 #import "WPIAMWebViewBrige.h"
 
-@interface WPIAMWebViewViewController () <WPIAMHitTestDelegate, WKNavigationDelegate, WKScriptMessageHandler>
+@interface WPIAMWebViewViewController () <WPIAMHitTestDelegate, WKScriptMessageHandler>
 
 @property(nonatomic, readwrite) WPInAppMessagingWebViewDisplay *webViewMessage;
 @property (weak, nonatomic) IBOutlet UIButton *backgroundCloseButton;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonPositionInsideHorizontalConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonPositionInsideVerticalConstraint;
 @property (weak, nonatomic) IBOutlet WPIAMHitTestDelegateView *containerView;
 
-@property(weak, nonatomic) IBOutlet WKWebView *webView;
 @property(weak, nonatomic) IBOutlet UIButton *closeButton;
 
-@property(atomic) Boolean webViewUrlLoadingCallbackHasBeenDone;
-@property(atomic) void (^successWebViewUrlLoadingBlock)(void);
-@property(atomic) void (^errorWebViewUrlLoadingBlock)(NSError *);
+@property (weak, nonatomic) IBOutlet WKWebView *wkWebView;
 
 @property(atomic) WPIAMWebViewBrige* wpiAMWebViewBrigeInstance;
-
-@property(retain, atomic) dispatch_semaphore_t webViewCallbackTreatmentSemaphore;
 
 @end
 
@@ -56,64 +50,9 @@
     webViewVC.displayDelegate = displayDelegate;
     webViewVC.webViewMessage = webViewMessage;
     webViewVC.timeFetcher = timeFetcher;
+    webViewVC.wkWebView = webViewMessage.wkWebView;
     
     return webViewVC;
-}
-
-- (void) preLoadWebViewUrlWithSuccessCompletionHander: (void (^)(void)) successBlock
-                            withErrorCompletionHander: (void (^)(NSError *)) errorBlock{
-    
-    self.webViewUrlLoadingCallbackHasBeenDone = false;
-    self.webViewCallbackTreatmentSemaphore = dispatch_semaphore_create(1);
-    self.successWebViewUrlLoadingBlock = successBlock;
-    self.errorWebViewUrlLoadingBlock = errorBlock;
-    
-    //Loads the view controller’s view if it has not yet been loaded.
-    [self loadViewIfNeeded];
-}
-
-- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error{
-    dispatch_semaphore_wait(self.webViewCallbackTreatmentSemaphore, DISPATCH_TIME_FOREVER);
-    if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-        self.errorWebViewUrlLoadingBlock(error);
-        self.webViewUrlLoadingCallbackHasBeenDone = true;
-    }
-    dispatch_semaphore_signal(self.webViewCallbackTreatmentSemaphore);
-}
-
-- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-    dispatch_semaphore_wait(self.webViewCallbackTreatmentSemaphore, DISPATCH_TIME_FOREVER);
-    if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-        self.errorWebViewUrlLoadingBlock(error);
-        self.webViewUrlLoadingCallbackHasBeenDone = true;
-    }
-    dispatch_semaphore_signal(self.webViewCallbackTreatmentSemaphore);
-}
-
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
-
-    if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
-
-        NSHTTPURLResponse * response = (NSHTTPURLResponse *)navigationResponse.response;
-        if (response.statusCode >= 400) {
-
-            decisionHandler(WKNavigationResponsePolicyCancel);
-            return;
-        }
-
-    }
-    decisionHandler(WKNavigationResponsePolicyAllow);
-}
-
--(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
-    dispatch_semaphore_wait(self.webViewCallbackTreatmentSemaphore, DISPATCH_TIME_FOREVER);
-    if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-        self.successWebViewUrlLoadingBlock();
-        self.webViewUrlLoadingCallbackHasBeenDone = true;
-        [self.webView.configuration.userContentController addScriptMessageHandler:self name:@"WonderPushInAppSDK"];
-        self.wpiAMWebViewBrigeInstance = [[WPIAMWebViewBrige alloc] init];
-    }
-    dispatch_semaphore_signal(self.webViewCallbackTreatmentSemaphore);
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
@@ -130,11 +69,11 @@
         }
         
         if ([[dictionnaryParamsFromWeb valueForKey:@"method"]  isEqual: @"dismiss"]){
-            [self.webView evaluateJavaScript:@"window._wpresults['dismiss'].resolve();return promise;};" completionHandler:nil];
+            [self.wkWebView evaluateJavaScript:@"window._wpresults['dismiss'].resolve();return promise;};" completionHandler:nil];
             [self dismissView:WPInAppMessagingDismissTypeUserTapClose];
         }
         else {
-            [self.wpiAMWebViewBrigeInstance onWPIAMWebViewDidReceivedMessage:dictionnaryParamsFromWeb with:[dictionnaryParamsFromWeb valueForKey:@"method"]  in:self.webView];
+            [self.wpiAMWebViewBrigeInstance onWPIAMWebViewDidReceivedMessage:dictionnaryParamsFromWeb with:[dictionnaryParamsFromWeb valueForKey:@"method"]  in:self.wkWebView];
         }
     }
 }
@@ -153,8 +92,8 @@
     tapGestureRecognizer.delaysTouchesBegan = YES;
     tapGestureRecognizer.numberOfTapsRequired = 1;
     
-    self.webView.userInteractionEnabled = YES;
-    [self.webView addGestureRecognizer:tapGestureRecognizer];
+    self.wkWebView.userInteractionEnabled = YES;
+    [self.wkWebView addGestureRecognizer:tapGestureRecognizer];
     
     if (self.webViewMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone) {
         UITapGestureRecognizer *closeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeButtonClicked:)];
@@ -175,46 +114,31 @@
     [self.view setBackgroundColor:UIColor.clearColor];
     
     self.backgroundCloseButton.backgroundColor = UIColor.clearColor;
+    [self.wkWebView.configuration.userContentController addScriptMessageHandler:self name:@"WonderPushInAppSDK"];
+    self.wpiAMWebViewBrigeInstance = [[WPIAMWebViewBrige alloc] init];
+    self.wkWebView.opaque = false;
+    self.wkWebView.backgroundColor = UIColor.clearColor;
+    self.wkWebView.scrollView.backgroundColor = UIColor.clearColor;
     
-    if (self.webViewMessage.webURL) {
-        self.webView.navigationDelegate = self;
-        NSURLRequest *requestToLoad = [NSURLRequest requestWithURL:self.webViewMessage.webURL];
-        [self.webView loadRequest:requestToLoad];
-        
-        // Delay execution of my block for 2 seconds.
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            dispatch_semaphore_wait(self.webViewCallbackTreatmentSemaphore, DISPATCH_TIME_FOREVER);
-            if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-                self.errorWebViewUrlLoadingBlock([NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
-                                                                     code:IAMDisplayRenderErrorTypeWebUrlFailedToLoad
-                                                                 userInfo:@{}]);
-                self.webViewUrlLoadingCallbackHasBeenDone = true;
-            }
-            dispatch_semaphore_signal(self.webViewCallbackTreatmentSemaphore);
-        });
+    [self.wkWebView removeConstraints: [self.wkWebView constraints]];
+    
+    [self.containerView addSubview:self.wkWebView];
+    
+    NSLayoutConstraint* wkWebViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
+    NSLayoutConstraint* wkWebViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
+    NSLayoutConstraint* wkWebViewTopConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeTop   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+    NSLayoutConstraint* wkWebViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    
+    [self.containerView addConstraints:@[wkWebViewTrailingConstraint, wkWebViewLeadingConstraint, wkWebViewTopConstraint, wkWebViewBottomConstraint]];
+    
+    [self.containerView layoutIfNeeded];
+    
+    if (self.webViewMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone){
+        self.closeButton.hidden = YES;
     }
     else {
-        self.errorWebViewUrlLoadingBlock([NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
-                                             code:IAMDisplayRenderErrorTypeUnspecifiedError
-                                         userInfo:@{}]);
-        self.webViewUrlLoadingCallbackHasBeenDone = true;
-        return;
-    }
-    
-    switch (self.webViewMessage.closeButtonPosition) {
-        case WPInAppMessagingCloseButtonPositionInside:
-            self.closeButtonPositionInsideVerticalConstraint.priority = 999;
-            self.closeButtonPositionInsideHorizontalConstraint.priority = 999;
-            self.closeButton.hidden = NO;
-            break;
-        case WPInAppMessagingCloseButtonPositionOutside:
-            self.closeButtonPositionInsideVerticalConstraint.priority = 1;
-            self.closeButtonPositionInsideHorizontalConstraint.priority = 1;
-            self.closeButton.hidden = NO;
-            break;
-        case WPInAppMessagingCloseButtonPositionNone:
-            self.closeButton.hidden = YES;
-            break;
+        //inside and outside are the same cause of fullscreen
+        self.closeButton.hidden = NO;
     }
     
     self.containerView.pointInsideDelegate = self;
