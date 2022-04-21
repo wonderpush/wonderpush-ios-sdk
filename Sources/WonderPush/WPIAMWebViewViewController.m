@@ -122,7 +122,7 @@
     
     [self.wkWebView removeConstraints: [self.wkWebView constraints]];
     
-    [self.containerView addSubview:self.wkWebView];
+    [self.containerView insertSubview:self.wkWebView belowSubview:self.closeButton];
     
     NSLayoutConstraint* wkWebViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
     NSLayoutConstraint* wkWebViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
