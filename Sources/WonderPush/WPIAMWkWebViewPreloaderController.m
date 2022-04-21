@@ -35,9 +35,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     self.successWebViewUrlLoadingBlock = successBlock;
     self.errorWebViewUrlLoadingBlock = errorBlock;
 
-    WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
-    configuration.allowsInlineMediaPlayback = YES;
-    
+    self.wkWebView.configuration.allowsInlineMediaPlayback = YES;
     self.wkWebView.navigationDelegate = self;
     
     if (@available(iOS 11.0, *)) {
