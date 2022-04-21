@@ -30,6 +30,8 @@
 #define PRESENCE_UPDATE_SAFETY_MARGIN 60
 #define PRESENCE_ANTICIPATED_TIME (5*60)
 
+#define INAPP_SDK_URL_REGEX @"https://cdn\\.by\\.wonderpush\\.com/inapp-sdk/1\\.0/wonderpush-loader\\.min\\.js"
+
 /**
  Key to set in your .plist file to allow rating button action
  */

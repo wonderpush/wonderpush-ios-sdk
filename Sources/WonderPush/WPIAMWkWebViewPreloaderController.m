@@ -7,6 +7,8 @@
 //
 
 #import "WPIAMWkWebViewPreloaderController.h"
+#import "WPLog.h"
+#import "WonderPush_constants.h"
 
 @interface WPIAMWkWebViewPreloaderController () <WKNavigationDelegate>
 @property (weak, nonatomic) IBOutlet WKWebView *wkWebView;
@@ -16,6 +18,9 @@
 @property(atomic) void (^errorWebViewUrlLoadingBlock)(NSError *);
 
 @end
+
+API_AVAILABLE(ios(11.0))
+static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 
 @implementation WPIAMWkWebViewPreloaderController
 
@@ -35,8 +40,18 @@
     
     self.wkWebView.navigationDelegate = self;
     
-    NSURLRequest *requestToLoad = [NSURLRequest requestWithURL: webViewURL];
-    [self.wkWebView loadRequest:requestToLoad];
+    if (@available(iOS 11.0, *)) {
+        [self fetchRuleList:^(WKContentRuleList *list, NSError *error) {
+            if (list) {
+                [self.wkWebView.configuration.userContentController addContentRuleList:list];
+            }
+            NSURLRequest *requestToLoad = [NSURLRequest requestWithURL: webViewURL];
+            [self.wkWebView loadRequest:requestToLoad];
+        }];
+    } else {
+        NSURLRequest *requestToLoad = [NSURLRequest requestWithURL: webViewURL];
+        [self.wkWebView loadRequest:requestToLoad];
+    }
 }
 
 
@@ -81,5 +96,27 @@
         self.successWebViewUrlLoadingBlock(self.wkWebView);
         self.webViewUrlLoadingCallbackHasBeenDone = true;
     }
+}
+
+- (void)fetchRuleList:(void(^)(WKContentRuleList *list, NSError *error))handler  API_AVAILABLE(ios(11.0)) {
+    if (blockWonderPushScriptContentRuleList) {
+        handler(blockWonderPushScriptContentRuleList, nil);
+        return;
+    }
+    NSString *scriptUrlString = INAPP_SDK_URL_REGEX;
+    id ruleListJson = @[
+        @{
+            @"trigger": @{@"url-filter": scriptUrlString},
+            @"action": @{@"type": @"block"},
+        }
+    ];
+    NSString *ruleListJsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:ruleListJson options:0 error:nil] encoding:NSUTF8StringEncoding];
+    [WKContentRuleListStore.defaultStore compileContentRuleListForIdentifier:@"BlockWonderPushInAppSDKScript" encodedContentRuleList:ruleListJsonString completionHandler:^(WKContentRuleList *list, NSError *error){
+        if (error) {
+            WPLog(@"Failed to create content rule list to block WonderPush in-app SDK script loading");
+        }
+        blockWonderPushScriptContentRuleList = list;
+        handler(list, error);
+    }];
 }
 @end
