@@ -9,6 +9,8 @@
 #import "WPIAMWkWebViewPreloaderController.h"
 #import "WPLog.h"
 #import "WonderPush_constants.h"
+#import "WPCore+InAppMessagingDisplay.h"
+#import "WPInAppMessagingRendering.h"
 
 @interface WPIAMWkWebViewPreloaderController () <WKNavigationDelegate>
 @property (weak, nonatomic) IBOutlet WKWebView *wkWebView;
@@ -52,26 +54,38 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
 }
 
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
+    //webview timeout of 2 seconds
+   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+       if (false == self.webViewUrlLoadingCallbackHasBeenDone){
+           self.webViewUrlLoadingCallbackHasBeenDone = true;
+           self.errorWebViewUrlLoadingBlock([NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                                                code:IAMDisplayRenderErrorTypeUnspecifiedError
+                                                            userInfo:@{@"message" : @"Timeout exception occured to load webView url"}]);
+       }
+   });
+}
+
 
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error{
     if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-        self.errorWebViewUrlLoadingBlock(error);
         self.webViewUrlLoadingCallbackHasBeenDone = true;
+        self.errorWebViewUrlLoadingBlock(error);
     }
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-        self.errorWebViewUrlLoadingBlock(error);
         self.webViewUrlLoadingCallbackHasBeenDone = true;
+        self.errorWebViewUrlLoadingBlock(error);
     }
 }
 
 - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation{
     
-    NSString *javascriptToInjectFile = [[NSBundle bundleForClass:[self class]] pathForResource:@"webViewBridgeJavascriptFileToInject" ofType:@"js"];
+    /*NSString *javascriptToInjectFile = [[NSBundle bundleForClass:[self class]] pathForResource:@"webViewBridgeJavascriptFileToInject" ofType:@"js"];
     NSString* javascriptString = [NSString stringWithContentsOfFile:javascriptToInjectFile encoding:NSUTF8StringEncoding error:nil];
-    [webView evaluateJavaScript:javascriptString completionHandler:nil];
+    [webView evaluateJavaScript:javascriptString completionHandler:nil];*/
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
@@ -91,8 +105,8 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 
 -(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
     if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-        self.successWebViewUrlLoadingBlock(self.wkWebView);
         self.webViewUrlLoadingCallbackHasBeenDone = true;
+        self.successWebViewUrlLoadingBlock(self.wkWebView);
     }
 }
 
