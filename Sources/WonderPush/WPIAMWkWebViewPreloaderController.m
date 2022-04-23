@@ -83,9 +83,9 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 
 - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation{
     
-    /*NSString *javascriptToInjectFile = [[NSBundle bundleForClass:[self class]] pathForResource:@"webViewBridgeJavascriptFileToInject" ofType:@"js"];
+    NSString *javascriptToInjectFile = [[NSBundle bundleForClass:[self class]] pathForResource:@"webViewBridgeJavascriptFileToInject" ofType:@"js"];
     NSString* javascriptString = [NSString stringWithContentsOfFile:javascriptToInjectFile encoding:NSUTF8StringEncoding error:nil];
-    [webView evaluateJavaScript:javascriptString completionHandler:nil];*/
+    [webView evaluateJavaScript:javascriptString completionHandler:nil];
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {

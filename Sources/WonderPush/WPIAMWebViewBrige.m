@@ -12,7 +12,12 @@
 @implementation WPIAMWebViewBrige
 
 -(void) onWPIAMWebViewDidReceivedMessage: (NSDictionary *) receivedMessageFromBridge with : (NSString *) methodName in: (WKWebView *) wkWebViewInstance {
+    
     if ([methodName  isEqual: @"openTargetUrl"]){
+        [wkWebViewInstance evaluateJavaScript:@"window._iosResults.resolve();" completionHandler:nil];
+    }
+    
+    /*if ([methodName  isEqual: @"openTargetUrl"]){
         [self openTargetUrlFor:receivedMessageFromBridge andSendCallbackTo:wkWebViewInstance];
     }
     else if ([methodName  isEqual: @"subscribeToNotifications"]){
@@ -83,7 +88,7 @@
     }
     else if ([methodName  isEqual: @"getProperties"]){
         [self sendPropertiesCallbackTo:wkWebViewInstance];
-    }
+    }*/
 }
 
 /********************************************************************/
