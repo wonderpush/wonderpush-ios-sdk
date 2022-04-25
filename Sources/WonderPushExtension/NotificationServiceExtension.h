@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "WPNotificationServiceExtension.h"
+#import <WonderPushExtension/WPNotificationServiceExtension.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
