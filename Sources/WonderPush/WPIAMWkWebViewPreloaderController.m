@@ -14,10 +14,9 @@
 
 @interface WPIAMWkWebViewPreloaderController () <WKNavigationDelegate>
 @property (weak, nonatomic) IBOutlet WKWebView *wkWebView;
-
-@property(atomic) Boolean webViewUrlLoadingCallbackHasBeenDone;
-@property(atomic) void (^successWebViewUrlLoadingBlock)(WKWebView *);
-@property(atomic) void (^errorWebViewUrlLoadingBlock)(NSError *);
+@property(atomic, assign) BOOL webViewUrlLoadingCallbackDone;
+@property(atomic, strong) void (^successWebViewUrlLoadingBlock)(WKWebView *);
+@property(atomic, strong) void (^errorWebViewUrlLoadingBlock)(NSError *);
 
 @end
 
@@ -33,7 +32,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     //Loads the view controller’s view if it has not yet been loaded.
     [self loadViewIfNeeded];
     
-    self.webViewUrlLoadingCallbackHasBeenDone = false;
+    self.webViewUrlLoadingCallbackDone = NO;
     self.successWebViewUrlLoadingBlock = successBlock;
     self.errorWebViewUrlLoadingBlock = errorBlock;
 
@@ -57,8 +56,8 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
     //webview timeout of 2 seconds
    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-       if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-           self.webViewUrlLoadingCallbackHasBeenDone = true;
+       if (!self.webViewUrlLoadingCallbackDone){
+           self.webViewUrlLoadingCallbackDone = YES;
            self.errorWebViewUrlLoadingBlock([NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                                 code:IAMDisplayRenderErrorTypeUnspecifiedError
                                                             userInfo:@{@"message" : @"Timeout exception occured to load webView url"}]);
@@ -68,15 +67,15 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 
 
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error{
-    if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-        self.webViewUrlLoadingCallbackHasBeenDone = true;
+    if (!self.webViewUrlLoadingCallbackDone){
+        self.webViewUrlLoadingCallbackDone = YES;
         self.errorWebViewUrlLoadingBlock(error);
     }
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-    if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-        self.webViewUrlLoadingCallbackHasBeenDone = true;
+    if (!self.webViewUrlLoadingCallbackDone){
+        self.webViewUrlLoadingCallbackDone = YES;
         self.errorWebViewUrlLoadingBlock(error);
     }
 }
@@ -104,8 +103,8 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 }
 
 -(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
-    if (false == self.webViewUrlLoadingCallbackHasBeenDone){
-        self.webViewUrlLoadingCallbackHasBeenDone = true;
+    if (!self.webViewUrlLoadingCallbackDone){
+        self.webViewUrlLoadingCallbackDone = YES;
         self.successWebViewUrlLoadingBlock(self.wkWebView);
     }
 }
