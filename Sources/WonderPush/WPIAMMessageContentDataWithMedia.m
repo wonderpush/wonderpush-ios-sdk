@@ -41,7 +41,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
 @property(nonatomic, readwrite) WPIAMBannerPosition bannerPosition;
 @property(readonly) NSURLSession *URLSession;
 
-@property(nonatomic) WPIAMWkWebViewPreloaderController * wpiAMWkWebViewPreloaderControllerInstance;
+@property(nonatomic, strong) WPIAMWkWebViewPreloaderController * wpiAMWkWebViewPreloaderControllerInstance;
 @end
 
 @implementation WPIAMMessageContentDataWithMedia
@@ -115,27 +115,36 @@ static NSInteger const SuccessHTTPStatusCode = 200;
         block(nil, nil, nil, nil);
     }
     else if (_webURL){
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
-                                                             bundle:[WonderPush resourceBundle]];
-        
-        if (storyboard == nil) {
-            block(nil, nil, nil, [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
-                                                     code:IAMDisplayRenderErrorTypeUnspecifiedError
-                                                 userInfo:@{@"message" : @"resource is missing"}]);
-            return;
-        }
-        
-        _wpiAMWkWebViewPreloaderControllerInstance = (WPIAMWkWebViewPreloaderController *)[storyboard
-                                                                               instantiateViewControllerWithIdentifier:@"webview-preloader-vc"];
-        [_wpiAMWkWebViewPreloaderControllerInstance preLoadWebViewWith:_webURL
-                               withSuccessCompletionHandler:^(WKWebView * wkWebViewInstance)
-        {
-            WPLog(@"wkWebView success.");
-            block(nil, nil, wkWebViewInstance, nil);
-        } withErrorCompletionHander:^(NSError* error){
-            WPLog(@"wkWebView error.");
-            block(nil, nil, nil, error);
-        }];
+        __weak __typeof__(self) weakSelf = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
+                                                                 bundle:[WonderPush resourceBundle]];
+            
+            if (storyboard == nil) {
+                block(nil, nil, nil, [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                                         code:IAMDisplayRenderErrorTypeUnspecifiedError
+                                                     userInfo:@{@"message" : @"resource is missing"}]);
+                return;
+            }
+            
+            weakSelf.wpiAMWkWebViewPreloaderControllerInstance = (WPIAMWkWebViewPreloaderController *)[storyboard
+                                                                                   instantiateViewControllerWithIdentifier:@"webview-preloader-vc"];
+            [weakSelf.wpiAMWkWebViewPreloaderControllerInstance preLoadWebViewWith:weakSelf.webURL
+                                   withSuccessCompletionHandler:^(WKWebView * wkWebViewInstance)
+            {
+                [self.wpiAMWkWebViewPreloaderControllerInstance dismissViewControllerAnimated:false completion:^{
+                    self.wpiAMWkWebViewPreloaderControllerInstance = nil;
+                }];
+                WPLog(@"wkWebView success.");
+                block(nil, nil, wkWebViewInstance, nil);
+            } withErrorCompletionHander:^(NSError* error){
+                [self.wpiAMWkWebViewPreloaderControllerInstance dismissViewControllerAnimated:false completion:^{
+                    self.wpiAMWkWebViewPreloaderControllerInstance = nil;
+                }];
+                WPLog(@"wkWebView error.");
+                block(nil, nil, nil, error);
+            }];
+        });
     }
     else if (!_landscapeImageURL) {
         // Only fetch standard image.

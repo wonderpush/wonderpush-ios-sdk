@@ -114,7 +114,6 @@
     [self.view setBackgroundColor:UIColor.clearColor];
     
     self.backgroundCloseButton.backgroundColor = UIColor.clearColor;
-    [self.wkWebView.configuration.userContentController addScriptMessageHandler:self name:@"WonderPushInAppSDK"];
     self.wpiAMWebViewBrigeInstance = [[WPIAMWebViewBrige alloc] init];
     self.wkWebView.opaque = false;
     self.wkWebView.backgroundColor = UIColor.clearColor;
@@ -155,15 +154,6 @@
     return NO;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    // close any potential keyboard, which would conflict with the modal in-app messagine view
-    [[UIApplication sharedApplication] sendAction:@selector(resignFirstResponder)
-                                               to:nil
-                                             from:nil
-                                         forEvent:nil];
-}
-
 - (void)flashCloseButton:(UIButton *)closeButton {
     closeButton.alpha = 1.0f;
     [UIView animateWithDuration:2.0
@@ -181,6 +171,21 @@
 
 - (UIView *)viewToAnimate {
     return self.containerView;
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    // close any potential keyboard, which would conflict with the modal in-app messagine view
+    [[UIApplication sharedApplication] sendAction:@selector(resignFirstResponder)
+                                               to:nil
+                                             from:nil
+                                         forEvent:nil];
+    [self.wkWebView.configuration.userContentController addScriptMessageHandler:self name:@"WonderPushInAppSDK"];
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [self.wkWebView.configuration.userContentController removeScriptMessageHandlerForName:@"WonderPushInAppSDK"];
 }
 
 @end
