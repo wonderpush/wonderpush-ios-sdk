@@ -27,7 +27,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 
 - (void) preLoadWebViewWith : (NSURL *) webViewURL
                            withSuccessCompletionHandler : (void (^)(WKWebView*)) successBlock
-                           withErrorCompletionHander: (void (^)(NSError *)) errorBlock{
+                           withErrorCompletionHander: (void (^)(NSError *)) errorBlock {
     
     //Loads the view controller’s view if it has not yet been loaded.
     [self loadViewIfNeeded];
@@ -70,7 +70,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
 }
 
-- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
     //webview timeout of X seconds
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, INAPP_WEBVIEW_LOAD_TIMEOUT_TIME_INTERVAL * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
@@ -81,7 +81,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 }
 
 
-- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error{
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     [self reportFailWithError:error];
 }
 
@@ -89,7 +89,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     [self reportFailWithError:error];
 }
 
-- (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation{
+- (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation {
     
     /*NSString *javascriptToInjectFile = [[NSBundle bundleForClass:[self class]] pathForResource:@"webViewBridgeJavascriptFileToInject" ofType:@"js"];
     NSString* javascriptString = [NSString stringWithContentsOfFile:javascriptToInjectFile encoding:NSUTF8StringEncoding error:nil];
@@ -114,8 +114,38 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
--(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     [self reportSuccess];
+}
+
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
+    NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                         code:IAMDisplayRenderErrorTypeAuthenticationRequiredError
+                                     userInfo:@{NSLocalizedDescriptionKey : @"Page required authentication"}];
+    [self reportFailWithError:error];
+}
+
+- (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
+    NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                         code:IAMDisplayRenderErrorTypeUnspecifiedError
+                                     userInfo:@{NSLocalizedDescriptionKey : @"Page load terminated"}];
+    [self reportFailWithError:error];
+}
+
+- (void)webView:(WKWebView *)webView navigationAction:(WKNavigationAction *)navigationAction didBecomeDownload:(WKDownload *)download  API_AVAILABLE(ios(14.5)) {
+    [download cancel:^(NSData *data) {}];
+    NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                         code:IAMDisplayRenderErrorTypeNavigationBecameDownloadError
+                                     userInfo:@{NSLocalizedDescriptionKey : @"Navigation became download"}];
+    [self reportFailWithError:error];
+}
+
+- (void)webView:(WKWebView *)webView navigationResponse:(WKNavigationResponse *)navigationResponse didBecomeDownload:(WKDownload *)download  API_AVAILABLE(ios(14.5)) {
+    [download cancel:^(NSData *data) {}];
+    NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                         code:IAMDisplayRenderErrorTypeNavigationBecameDownloadError
+                                     userInfo:@{NSLocalizedDescriptionKey : @"Navigation became download"}];
+    [self reportFailWithError:error];
 }
 
 - (void)fetchRuleList:(void(^)(WKContentRuleList *list, NSError *error))handler  API_AVAILABLE(ios(11.0)) {

@@ -396,6 +396,10 @@ typedef NS_ENUM(NSInteger, IAMDisplayRenderErrorType) {
   IAMDisplayRenderErrorTypeTimeoutError,
   /// HTTP error.
   IAMDisplayRenderErrorTypeHTTPError,
+  /// Authentication required
+  IAMDisplayRenderErrorTypeAuthenticationRequiredError,
+  /// Navigation became download
+  IAMDisplayRenderErrorTypeNavigationBecameDownloadError,
   /// Unexpected error.
   IAMDisplayRenderErrorTypeUnspecifiedError,
 };
