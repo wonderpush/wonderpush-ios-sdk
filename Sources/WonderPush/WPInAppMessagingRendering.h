@@ -392,6 +392,10 @@ typedef NS_ENUM(NSInteger, IAMDisplayRenderErrorType) {
   IAMDisplayRenderErrorTypeWebUrlFailedToLoad,
   /// The UIApplication is not active when time comes to render the message
   IAMDisplayRenderErrorTypeApplicationNotActiveError,
+  /// Timeout error.
+  IAMDisplayRenderErrorTypeTimeoutError,
+  /// HTTP error.
+  IAMDisplayRenderErrorTypeHTTPError,
   /// Unexpected error.
   IAMDisplayRenderErrorTypeUnspecifiedError,
 };

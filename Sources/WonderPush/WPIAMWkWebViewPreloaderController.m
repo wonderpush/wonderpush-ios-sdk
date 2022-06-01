@@ -39,6 +39,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     self.wkWebView.configuration.allowsInlineMediaPlayback = YES;
     self.wkWebView.navigationDelegate = self;
     
+    // Install content blockers
     if (@available(iOS 11.0, *)) {
         [self fetchRuleList:^(WKContentRuleList *list, NSError *error) {
             if (list) {
@@ -53,31 +54,39 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
 }
 
+- (void)reportFailWithError:(NSError *)error {
+    if (!self.webViewUrlLoadingCallbackDone) {
+        self.wkWebView.navigationDelegate = nil;
+        self.webViewUrlLoadingCallbackDone = YES;
+        self.errorWebViewUrlLoadingBlock(error);
+    }
+}
+
+- (void)reportSuccess {
+    if (!self.webViewUrlLoadingCallbackDone) {
+        self.wkWebView.navigationDelegate = nil;
+        self.webViewUrlLoadingCallbackDone = YES;
+        self.successWebViewUrlLoadingBlock(self.wkWebView);
+    }
+}
+
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
-    //webview timeout of 2 seconds
-   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-       if (!self.webViewUrlLoadingCallbackDone){
-           self.webViewUrlLoadingCallbackDone = YES;
-           self.errorWebViewUrlLoadingBlock([NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
-                                                                code:IAMDisplayRenderErrorTypeUnspecifiedError
-                                                            userInfo:@{@"message" : @"Timeout exception occured to load webView url"}]);
-       }
-   });
+    //webview timeout of X seconds
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, INAPP_WEBVIEW_LOAD_TIMEOUT_TIME_INTERVAL * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                             code:IAMDisplayRenderErrorTypeTimeoutError
+                                         userInfo:@{NSLocalizedDescriptionKey : @"Timeout exception occured to load webView url"}];
+        [self reportFailWithError:error];
+    });
 }
 
 
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error{
-    if (!self.webViewUrlLoadingCallbackDone){
-        self.webViewUrlLoadingCallbackDone = YES;
-        self.errorWebViewUrlLoadingBlock(error);
-    }
+    [self reportFailWithError:error];
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-    if (!self.webViewUrlLoadingCallbackDone){
-        self.webViewUrlLoadingCallbackDone = YES;
-        self.errorWebViewUrlLoadingBlock(error);
-    }
+    [self reportFailWithError:error];
 }
 
 - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation{
@@ -93,7 +102,10 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 
         NSHTTPURLResponse * response = (NSHTTPURLResponse *)navigationResponse.response;
         if (response.statusCode >= 400) {
-
+            NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                                 code:IAMDisplayRenderErrorTypeHTTPError
+                                             userInfo:@{NSLocalizedDescriptionKey : @"Bad response code"}];
+            [self reportFailWithError:error];
             decisionHandler(WKNavigationResponsePolicyCancel);
             return;
         }
@@ -103,10 +115,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 }
 
 -(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
-    if (!self.webViewUrlLoadingCallbackDone){
-        self.webViewUrlLoadingCallbackDone = YES;
-        self.successWebViewUrlLoadingBlock(self.wkWebView);
-    }
+    [self reportSuccess];
 }
 
 - (void)fetchRuleList:(void(^)(WKContentRuleList *list, NSError *error))handler  API_AVAILABLE(ios(11.0)) {
@@ -114,6 +123,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         handler(blockWonderPushScriptContentRuleList, nil);
         return;
     }
+    // Create a rule-list that blocks requests to the in-app SDK javascript loader.
     NSString *scriptUrlString = INAPP_SDK_URL_REGEX;
     id ruleListJson = @[
         @{
