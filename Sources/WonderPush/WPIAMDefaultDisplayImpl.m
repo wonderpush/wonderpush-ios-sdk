@@ -254,11 +254,11 @@ static WPIAMDefaultDisplayImpl *instance = nil;
         }
         
         WPIAMTimerWithNSDate *timeFetcher = [[WPIAMTimerWithNSDate alloc] init];
-        
-        WPIAMWebViewViewController *webViewVC = [WPIAMWebViewViewController instantiateViewControllerWithResourceBundle:resourceBundle
-                                                                    displayMessage:webViewMessage
-                                                                   displayDelegate:displayDelegate
-                                                                       timeFetcher:timeFetcher];
+        WPIAMWebViewViewController *webViewVC = [WPIAMWebViewViewController
+                                                 instantiateViewControllerWithResourceBundle:resourceBundle
+                                                 displayMessage:webViewMessage
+                                                 displayDelegate:displayDelegate
+                                                 timeFetcher:timeFetcher];
         if (webViewVC == nil) {
             WPLogDebug(@"webView view controller can not be created.");
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
