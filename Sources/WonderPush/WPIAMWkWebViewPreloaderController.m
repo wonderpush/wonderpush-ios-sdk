@@ -118,13 +118,6 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     [self reportSuccess];
 }
 
-- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
-    NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
-                                         code:IAMDisplayRenderErrorTypeAuthenticationRequiredError
-                                     userInfo:@{NSLocalizedDescriptionKey : @"Page required authentication"}];
-    [self reportFailWithError:error];
-}
-
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
     NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                          code:IAMDisplayRenderErrorTypeUnspecifiedError
