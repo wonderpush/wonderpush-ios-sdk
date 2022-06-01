@@ -135,13 +135,13 @@ static NSInteger const SuccessHTTPStatusCode = 200;
                 [self.wpiAMWkWebViewPreloaderControllerInstance dismissViewControllerAnimated:false completion:^{
                     self.wpiAMWkWebViewPreloaderControllerInstance = nil;
                 }];
-                WPLog(@"wkWebView success.");
+                WPLogDebug(@"Successfully preloaded webview with url %@", weakSelf.webURL);
                 block(nil, nil, wkWebViewInstance, nil);
             } withErrorCompletionHander:^(NSError* error){
                 [self.wpiAMWkWebViewPreloaderControllerInstance dismissViewControllerAnimated:false completion:^{
                     self.wpiAMWkWebViewPreloaderControllerInstance = nil;
                 }];
-                WPLog(@"wkWebView error.");
+                WPLogDebug(@"Error preloading webview with url %@ : %@", weakSelf.webURL, error);
                 block(nil, nil, nil, error);
             }];
         });

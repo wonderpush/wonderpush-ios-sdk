@@ -38,9 +38,7 @@
                                                          bundle:resourceBundle];
     
     if (storyboard == nil) {
-        WPLog(@"Storyboard '"
-                    "WPInAppMessageDisplayStoryboard' not found in bundle %@",
-                    resourceBundle);
+        WPLog(@"Storyboard 'WPInAppMessageDisplayStoryboard' not found in bundle %@", resourceBundle);
         return nil;
     }
     

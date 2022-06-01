@@ -239,7 +239,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
 (id<WPInAppMessagingDisplayDelegate>)displayDelegate {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
-            WPLog(@"UIApplication not active when time has come to show message %@.", webViewMessage);
+            WPLogDebug(@"UIApplication not active when time has come to show message %@.", webViewMessage);
             [displayDelegate displayErrorForMessage:webViewMessage error:[self applicationNotActiveError]];
             return;
         }
@@ -260,8 +260,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
                                                                    displayDelegate:displayDelegate
                                                                        timeFetcher:timeFetcher];
         if (webViewVC == nil) {
-            WPLog(
-                          @"webView view controller can not be created.");
+            WPLogDebug(@"webView view controller can not be created.");
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
                                              userInfo:@{}];

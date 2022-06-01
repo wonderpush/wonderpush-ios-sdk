@@ -313,8 +313,7 @@
             webUrlStr = webViewNode[@"url"];
             
             if (!webUrlStr) {
-                WPLog(
-                      @"web url is missing for webView message %@", notificationDict);
+                WPLog(@"web url is missing for webView message %@", notificationDict);
                 return nil;
             }
             action = [WPAction actionWithDictionaries:webViewNode[@"actions"]];

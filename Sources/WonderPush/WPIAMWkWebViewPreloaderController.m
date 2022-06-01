@@ -157,7 +157,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     NSString *ruleListJsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:ruleListJson options:0 error:nil] encoding:NSUTF8StringEncoding];
     [WKContentRuleListStore.defaultStore compileContentRuleListForIdentifier:@"BlockWonderPushInAppSDKScript" encodedContentRuleList:ruleListJsonString completionHandler:^(WKContentRuleList *list, NSError *error){
         if (error) {
-            WPLog(@"Failed to create content rule list to block WonderPush in-app SDK script loading");
+            WPLog(@"Failed to create content rule list to block WonderPush in-app SDK script loading: %@", error);
         }
         blockWonderPushScriptContentRuleList = list;
         handler(list, error);
