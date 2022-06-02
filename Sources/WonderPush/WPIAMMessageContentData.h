@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 // image associated with the message.
 - (void)loadMediaWithBlock:(void (^)(NSData *_Nullable imageData,
                                      NSData *_Nullable landscapeImageData,
-                                     WKWebView *_Nullable wkWebViewInstance,
+                                     WKWebView *_Nullable webView,
                                      NSError *_Nullable error))block;
 
 // convert to a description string of the content

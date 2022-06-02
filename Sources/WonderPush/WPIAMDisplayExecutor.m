@@ -437,7 +437,7 @@
 
 - (WPInAppMessagingWebViewDisplay *)
     webViewDisplayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
-                                       wkWebView:(WKWebView *)wkWebView
+                                       webView:(WKWebView *)webView
                                      triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
     WPInAppMessagingCloseButtonPosition closeButtonPosition;
     switch (definition.renderData.contentData.closeButtonPosition) {
@@ -459,7 +459,7 @@
     WPInAppMessagingWebViewDisplay *webViewMessage = [[WPInAppMessagingWebViewDisplay alloc]
                                                           initWithTriggerType:triggerType
                                                           payload:definition.payload
-                                                          wkWebView:wkWebView
+                                                          webView:webView
                                                           entryAnimation:entryAnimation
                                                           exitAnimation:exitAnimation
                                                           action:definition.renderData.contentData.action
@@ -530,7 +530,7 @@
     displayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
                               imageData:(nullable WPInAppMessagingImageData *)imageData
                      landscapeImageData:(nullable WPInAppMessagingImageData *)landscapeImageData
-                            wkWebView:(nullable WKWebView *)wkWebView
+                            webView:(nullable WKWebView *)webView
                             triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
     switch (definition.renderData.renderingEffectSettings.viewMode) {
         case WPIAMRenderAsCardView:
@@ -557,7 +557,7 @@
             
         case WPIAMRenderAsWebView:
             return [self webViewDisplayMessageWithMessageDefinition:definition
-                                                            wkWebView:wkWebView
+                                                            webView:webView
                                                           triggerType:triggerType];
             
         default:
@@ -575,7 +575,7 @@
     [message.renderData.contentData
      loadMediaWithBlock:^(NSData *_Nullable standardImageRawData,
                           NSData *_Nullable landscapeImageRawData,
-                          WKWebView *_Nullable wkWebViewInstance,
+                          WKWebView *_Nullable webView,
                           NSError *_Nullable error) {
         WPInAppMessagingImageData *imageData = nil;
         WPInAppMessagingImageData *landscapeImageData = nil;
@@ -588,7 +588,7 @@
             [self displayMessageWithMessageDefinition:message
                                             imageData:imageData
                                    landscapeImageData:landscapeImageData
-                                               wkWebView:wkWebViewInstance
+                                               webView:webView
                                           triggerType:triggerType];
             // short-circuit to display error handling
             [self displayErrorForMessage:erroredMessage error:error];
@@ -618,7 +618,7 @@
         [self displayMessageWithMessageDefinition:message
                                         imageData:imageData
                                landscapeImageData:landscapeImageData
-                                           wkWebView:wkWebViewInstance
+                                           webView:webView
                                       triggerType:triggerType];
         NSTimeInterval delayLeft = delay + originalDisplayTime - [timeProvider currentTimestampInSeconds];
         if (delayLeft > 0) {

@@ -10,9 +10,9 @@
 #import "WPIAMWebViewViewController.h"
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WPIAMHitTestDelegateView.h"
-#import "WPIAMWebViewBrige.h"
+#import "WPIAMWebView.h"
 
-@interface WPIAMWebViewViewController () <WPIAMHitTestDelegate, WKScriptMessageHandler>
+@interface WPIAMWebViewViewController () <WPIAMHitTestDelegate>
 
 @property(nonatomic, readwrite) WPInAppMessagingWebViewDisplay *webViewMessage;
 @property (weak, nonatomic) IBOutlet UIButton *backgroundCloseButton;
@@ -21,9 +21,7 @@
 
 @property(weak, nonatomic) IBOutlet UIButton *closeButton;
 
-@property (weak, nonatomic) IBOutlet WKWebView *wkWebView;
-
-@property(atomic) WPIAMWebViewBrige* wpiAMWebViewBrigeInstance;
+@property (weak, nonatomic) IBOutlet WKWebView *webView;
 
 @end
 
@@ -48,32 +46,9 @@
     webViewVC.displayDelegate = displayDelegate;
     webViewVC.webViewMessage = webViewMessage;
     webViewVC.timeFetcher = timeFetcher;
-    webViewVC.wkWebView = webViewMessage.wkWebView;
+    webViewVC.webView = webViewMessage.webView;
     
     return webViewVC;
-}
-
-- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
-    if (self.wpiAMWebViewBrigeInstance == nil){
-        return;
-    }
-    
-    if([message.body isKindOfClass:[NSDictionary class]]){
-        
-        NSDictionary *dictionnaryParamsFromWeb = message.body;
-        
-        if (nil == [dictionnaryParamsFromWeb valueForKey:@"method"]){
-            return;
-        }
-        
-        if ([[dictionnaryParamsFromWeb valueForKey:@"method"]  isEqual: @"dismiss"]){
-            [self.wkWebView evaluateJavaScript:@"window._wpresults['dismiss'].resolve();return promise;};" completionHandler:nil];
-            [self dismissView:WPInAppMessagingDismissTypeUserTapClose];
-        }
-        else {
-            [self.wpiAMWebViewBrigeInstance onWPIAMWebViewDidReceivedMessage:dictionnaryParamsFromWeb with:[dictionnaryParamsFromWeb valueForKey:@"method"]  in:self.wkWebView];
-        }
-    }
 }
 
 - (WPInAppMessagingDisplayMessage *)inAppMessage {
@@ -90,8 +65,8 @@
     tapGestureRecognizer.delaysTouchesBegan = YES;
     tapGestureRecognizer.numberOfTapsRequired = 1;
     
-    self.wkWebView.userInteractionEnabled = YES;
-    [self.wkWebView addGestureRecognizer:tapGestureRecognizer];
+    self.webView.userInteractionEnabled = YES;
+    [self.webView addGestureRecognizer:tapGestureRecognizer];
     
     if (self.webViewMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone) {
         UITapGestureRecognizer *closeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeButtonClicked:)];
@@ -112,21 +87,28 @@
     [self.view setBackgroundColor:UIColor.clearColor];
     
     self.backgroundCloseButton.backgroundColor = UIColor.clearColor;
-    self.wpiAMWebViewBrigeInstance = [[WPIAMWebViewBrige alloc] init];
-    self.wkWebView.opaque = false;
-    self.wkWebView.backgroundColor = UIColor.clearColor;
-    self.wkWebView.scrollView.backgroundColor = UIColor.clearColor;
+    self.webView.opaque = false;
+    self.webView.backgroundColor = UIColor.clearColor;
+    self.webView.scrollView.backgroundColor = UIColor.clearColor;
+    if ([self.webView isKindOfClass:WPIAMWebView.class]) {
+        __weak WPIAMWebView *webView = (WPIAMWebView *)self.webView;
+        __weak WPIAMWebViewViewController *weakSelf = self;
+        webView.onDismiss = ^(WPInAppMessagingDismissType type) {
+            [weakSelf dismissView:type];
+            webView.onDismiss = nil;
+        };
+    }
     
-    [self.wkWebView removeConstraints: [self.wkWebView constraints]];
+    [self.webView removeConstraints: [self.webView constraints]];
     
-    [self.containerView insertSubview:self.wkWebView belowSubview:self.closeButton];
+    [self.containerView insertSubview:self.webView belowSubview:self.closeButton];
     
-    NSLayoutConstraint* wkWebViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
-    NSLayoutConstraint* wkWebViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
-    NSLayoutConstraint* wkWebViewTopConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeTop   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
-    NSLayoutConstraint* wkWebViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.wkWebView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewTopConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTop   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
     
-    [self.containerView addConstraints:@[wkWebViewTrailingConstraint, wkWebViewLeadingConstraint, wkWebViewTopConstraint, wkWebViewBottomConstraint]];
+    [self.containerView addConstraints:@[webViewTrailingConstraint, webViewLeadingConstraint, webViewTopConstraint, webViewBottomConstraint]];
     
     [self.containerView layoutIfNeeded];
     
@@ -178,12 +160,11 @@
                                                to:nil
                                              from:nil
                                          forEvent:nil];
-    [self.wkWebView.configuration.userContentController addScriptMessageHandler:self name:@"WonderPushInAppSDK"];
 }
 
 -(void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
-    [self.wkWebView.configuration.userContentController removeScriptMessageHandlerForName:@"WonderPushInAppSDK"];
+    [self.webView.configuration.userContentController removeScriptMessageHandlerForName:@"WonderPushInAppSDK"];
 }
 
 @end

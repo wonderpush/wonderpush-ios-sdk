@@ -353,9 +353,9 @@ NS_SWIFT_NAME(InAppMessagingWebViewDisplay)
 @interface WPInAppMessagingWebViewDisplay : WPInAppMessagingDisplayMessage
 
 /**
- * Gets the wkWebView for this message
+ * Gets the webView for this message
  */
-@property(nonatomic, nonnull, copy, readonly) WKWebView *wkWebView;
+@property(nonatomic, nonnull, copy, readonly) WKWebView *webView;
 
 /**
  * Gets the action URL for an webView IAM message.

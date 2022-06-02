@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment version="4352" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Wk Web View Preloader Controller-->
+        <!--Web View Preloader View Controller-->
         <scene sceneID="dqs-SR-2wb">
             <objects>
-                <viewController storyboardIdentifier="webview-preloader-vc" id="kdf-RM-LD3" customClass="WPIAMWkWebViewPreloaderController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="webview-preloader-vc" id="kdf-RM-LD3" customClass="WPIAMWebViewPreloaderViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="rJM-Kp-IqJ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <wkWebView contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aY0-KX-OtB">
+                            <wkWebView contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aY0-KX-OtB" customClass="WPIAMWebView">
                                 <rect key="frame" x="20" y="0.0" width="374" height="896"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
@@ -26,6 +26,7 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="GOv-VP-bVF"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="aY0-KX-OtB" firstAttribute="top" secondItem="rJM-Kp-IqJ" secondAttribute="topMargin" id="T1w-3T-pj7"/>
@@ -35,7 +36,7 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="wkWebView" destination="aY0-KX-OtB" id="cVH-Bl-1tD"/>
+                        <outlet property="webView" destination="aY0-KX-OtB" id="cVH-Bl-1tD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qPT-TX-wFG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

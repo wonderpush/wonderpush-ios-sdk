@@ -173,7 +173,7 @@
 
 - (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                             payload:(NSDictionary *)payload
-                          wkWebView:(WKWebView *)wkWebView
+                          webView:(WKWebView *)webView
                      entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
                       exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                              action:(nullable WPAction *)action
@@ -183,7 +183,7 @@
                            entryAnimation:entryAnimation
                             exitAnimation:exitAnimation
                                   payload:payload]) {
-        _wkWebView = wkWebView;
+        _webView = webView;
         _action = action;
         _closeButtonPosition = closeButtonPosition;
     }

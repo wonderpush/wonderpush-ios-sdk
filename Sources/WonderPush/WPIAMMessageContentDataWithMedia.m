@@ -19,7 +19,7 @@
 #import "WPIAMMessageContentData.h"
 #import "WPIAMMessageContentDataWithMedia.h"
 #import "WPIAMSDKRuntimeErrorCodes.h"
-#import "WPIAMWkWebViewPreloaderController.h"
+#import "WPIAMWebViewPreloaderViewController.h"
 #import "WonderPush_private.h"
 #import "WPCore+InAppMessagingDisplay.h"
 
@@ -41,7 +41,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
 @property(nonatomic, readwrite) WPIAMBannerPosition bannerPosition;
 @property(readonly) NSURLSession *URLSession;
 
-@property(nonatomic, strong) WPIAMWkWebViewPreloaderController * wpiAMWkWebViewPreloaderControllerInstance;
+@property(nonatomic, strong) WPIAMWebViewPreloaderViewController * webViewPreloaderViewController;
 @end
 
 @implementation WPIAMMessageContentDataWithMedia
@@ -103,7 +103,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
 
 - (void)loadMediaWithBlock:(void (^)(NSData *_Nullable standardImageData,
                                      NSData *_Nullable landscapeImageData,
-                                     WKWebView *_Nullable wkWebViewInstance,
+                                     WKWebView *_Nullable webView,
                                      NSError *_Nullable error))block {
     if (!block) {
         // no need for any further action if block is nil
@@ -127,19 +127,19 @@ static NSInteger const SuccessHTTPStatusCode = 200;
                 return;
             }
             
-            weakSelf.wpiAMWkWebViewPreloaderControllerInstance = (WPIAMWkWebViewPreloaderController *)[storyboard
+            weakSelf.webViewPreloaderViewController = (WPIAMWebViewPreloaderViewController *)[storyboard
                                                                                    instantiateViewControllerWithIdentifier:@"webview-preloader-vc"];
-            [weakSelf.wpiAMWkWebViewPreloaderControllerInstance preLoadWebViewWith:weakSelf.webURL
-                                   withSuccessCompletionHandler:^(WKWebView * wkWebViewInstance)
+            [weakSelf.webViewPreloaderViewController preLoadWebViewWith:weakSelf.webURL
+                                   withSuccessCompletionHandler:^(WKWebView * webView)
             {
-                [self.wpiAMWkWebViewPreloaderControllerInstance dismissViewControllerAnimated:false completion:^{
-                    self.wpiAMWkWebViewPreloaderControllerInstance = nil;
+                [weakSelf.webViewPreloaderViewController dismissViewControllerAnimated:false completion:^{
+                    weakSelf.webViewPreloaderViewController = nil;
                 }];
                 WPLogDebug(@"Successfully preloaded webview with url %@", weakSelf.webURL);
-                block(nil, nil, wkWebViewInstance, nil);
+                block(nil, nil, webView, nil);
             } withErrorCompletionHander:^(NSError* error){
-                [self.wpiAMWkWebViewPreloaderControllerInstance dismissViewControllerAnimated:false completion:^{
-                    self.wpiAMWkWebViewPreloaderControllerInstance = nil;
+                [weakSelf.webViewPreloaderViewController dismissViewControllerAnimated:false completion:^{
+                    weakSelf.webViewPreloaderViewController = nil;
                 }];
                 WPLogDebug(@"Error preloading webview with url %@ : %@", weakSelf.webURL, error);
                 block(nil, nil, nil, error);

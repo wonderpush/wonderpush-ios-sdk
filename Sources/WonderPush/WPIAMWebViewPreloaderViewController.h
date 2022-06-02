@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WPIAMWkWebViewPreloaderController : UIViewController
+@interface WPIAMWebViewPreloaderViewController : UIViewController
 - (void) preLoadWebViewWith : (NSURL *) webViewURL
                            withSuccessCompletionHandler : (void (^)(WKWebView*)) successBlock
                            withErrorCompletionHander: (void (^)(NSError *)) errorBlock;
