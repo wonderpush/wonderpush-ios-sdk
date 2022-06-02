@@ -16,6 +16,7 @@
 
 @property(nonatomic, readwrite) WPInAppMessagingWebViewDisplay *webViewMessage;
 @property(weak, nonatomic) IBOutlet UIButton *closeButton;
+@property (weak, nonatomic) IBOutlet UIView *containerView;
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
 @end
 
@@ -72,15 +73,14 @@
     
     [self.webView removeConstraints: [self.webView constraints]];
     
-    [self.view insertSubview:self.webView belowSubview:self.closeButton];
+    [self.containerView insertSubview:self.webView belowSubview:self.closeButton];
     
-    NSLayoutConstraint* webViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
-    NSLayoutConstraint* webViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
-    NSLayoutConstraint* webViewTopConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTop   relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
-    NSLayoutConstraint* webViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
-    NSLayoutConstraint* closeButtonTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.closeButton attribute:NSLayoutAttributeTrailing   relatedBy:NSLayoutRelationEqual toItem:self.webView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:-8];
+    NSLayoutConstraint* webViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewTopConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTop   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
 
-    [self.view addConstraints:@[webViewTrailingConstraint, webViewLeadingConstraint, webViewTopConstraint, webViewBottomConstraint, closeButtonTrailingConstraint]];
+    [self.containerView addConstraints:@[webViewTrailingConstraint, webViewLeadingConstraint, webViewTopConstraint, webViewBottomConstraint]];
     
     [self.view layoutIfNeeded];
     
@@ -108,7 +108,7 @@
 }
 
 - (UIView *)viewToAnimate {
-    return self.webView;
+    return self.containerView;
 }
 
 - (void)viewWillAppear:(BOOL)animated{

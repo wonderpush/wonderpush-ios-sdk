@@ -488,25 +488,39 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t0w-gE-Hqc">
-                                <rect key="frame" x="350" y="44" width="44" height="44"/>
-                                <accessibility key="accessibilityConfiguration" identifier="close-button"/>
-                                <state key="normal" backgroundImage="close-with-transparency.png"/>
-                                <connections>
-                                    <action selector="closeButtonClicked:" destination="mki-ER-hgN" eventType="touchUpInside" id="XdV-Ar-vx6"/>
-                                </connections>
-                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RAD-uS-Ztl">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t0w-gE-Hqc">
+                                        <rect key="frame" x="350" y="20" width="44" height="44"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="close-button"/>
+                                        <state key="normal" backgroundImage="close-with-transparency.png"/>
+                                        <connections>
+                                            <action selector="closeButtonClicked:" destination="mki-ER-hgN" eventType="touchUpInside" id="XdV-Ar-vx6"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <viewLayoutGuide key="safeArea" id="LVD-WI-ads"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="LVD-WI-ads" firstAttribute="trailing" secondItem="t0w-gE-Hqc" secondAttribute="trailing" id="JNp-ab-YMA"/>
+                                    <constraint firstItem="t0w-gE-Hqc" firstAttribute="top" secondItem="LVD-WI-ads" secondAttribute="top" id="tGf-CH-xh7"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="4zq-2k-tD9"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="t0w-gE-Hqc" firstAttribute="top" secondItem="4zq-2k-tD9" secondAttribute="top" id="1OP-Yy-WqZ"/>
-                            <constraint firstItem="4zq-2k-tD9" firstAttribute="trailing" secondItem="t0w-gE-Hqc" secondAttribute="trailing" constant="20" placeholder="YES" id="ZTS-8k-F2A"/>
+                            <constraint firstAttribute="bottom" secondItem="RAD-uS-Ztl" secondAttribute="bottom" id="DcU-WL-COx"/>
+                            <constraint firstItem="RAD-uS-Ztl" firstAttribute="leading" secondItem="ZkG-7Y-dH6" secondAttribute="leading" id="NWi-AU-mb4"/>
+                            <constraint firstAttribute="trailing" secondItem="RAD-uS-Ztl" secondAttribute="trailing" id="Qqc-ns-jpY"/>
+                            <constraint firstItem="RAD-uS-Ztl" firstAttribute="top" secondItem="ZkG-7Y-dH6" secondAttribute="top" id="oXD-ti-asA"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="closeButton" destination="t0w-gE-Hqc" id="WL2-RN-XCt"/>
+                        <outlet property="containerView" destination="RAD-uS-Ztl" id="dwr-0P-U5R"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yLU-ZF-iic" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
