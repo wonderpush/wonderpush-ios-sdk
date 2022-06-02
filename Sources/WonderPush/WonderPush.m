@@ -1581,6 +1581,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     return [wonderPushAPI location];
 }
 
++ (void) triggerLocationPrompt
+{
+    [wonderPushAPI triggerLocationPrompt];
+}
 + (void) enableGeolocation
 {
     _locationOverridden = NO;

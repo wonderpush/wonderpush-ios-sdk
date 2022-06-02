@@ -258,6 +258,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) setIntegrator:(NSString *)integrator;
 
 /**
+ Triggers the system location prompt. Requires that:
+   - you link with the CoreLocation framework
+   - you set NSLocationAlwaysUsageDescription, NSLocationAlwaysAndWhenInUseUsageDescription or NSLocationWhenInUseUsageDescription in your Info.plist file
+ */
++ (void) triggerLocationPrompt;
+
+/**
  Enables the collection of the user's geolocation.
  */
 + (void) enableGeolocation;

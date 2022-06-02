@@ -431,6 +431,19 @@
     }
 }
 
+- (void) triggerLocationPrompt
+{
+    NSString *alwaysDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
+        
+    if (alwaysDescription) {
+        [self.locationManager requestAlwaysAuthorization];
+    } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
+        [self.locationManager requestWhenInUseAuthorization];
+    } else {
+        WPLog(@"Location prompt requested but usage string not found in Info.plist. Please set NSLocationAlwaysUsageDescription, NSLocationAlwaysAndWhenInUseUsageDescription or NSLocationWhenInUseUsageDescription in your Info.plist file");
+    }
+}
+
 - (CLLocation *)location
 {
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];

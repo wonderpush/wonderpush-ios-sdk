@@ -52,6 +52,11 @@
     return nil;
 }
 
+- (void) triggerLocationPrompt
+{
+    [self log:@"triggerLocationPrompt"];
+}
+
 - (CLLocation *)location
 {
     [self log:@"location"];

@@ -215,6 +215,40 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     if ([methodName isEqual: @"openTargetUrl"]) {
         [self openTargetUrl:args callId:callId];
     }
+    else if ([methodName  isEqual: @"triggerLocationPrompt"]) {
+        switch ([CLLocationManager authorizationStatus]) {
+            case kCLAuthorizationStatusAuthorizedAlways:
+            case kCLAuthorizationStatusAuthorizedWhenInUse:
+                [self resolve:WPIAMBoolResult.yes callId:callId];
+                return;
+            case kCLAuthorizationStatusDenied:
+                [self resolve:WPIAMBoolResult.no callId:callId];
+                return;
+            default:
+                break;
+        }
+
+        [WonderPush triggerLocationPrompt];
+        __weak WPIAMWebViewBridge *weakSelf = self;
+        id __block token = [NSNotificationCenter.defaultCenter
+                            addObserverForName:UIApplicationDidBecomeActiveNotification
+                            object:nil
+                            queue:nil
+                            usingBlock:^(NSNotification *note) {
+            [NSNotificationCenter.defaultCenter removeObserver:token];
+            WPIAMBoolResult *result;
+            switch ([CLLocationManager authorizationStatus]) {
+                case kCLAuthorizationStatusAuthorizedAlways:
+                case kCLAuthorizationStatusAuthorizedWhenInUse:
+                    result = WPIAMBoolResult.yes;
+                    break;
+                default:
+                    result = WPIAMBoolResult.no;
+                    break;
+            }
+            [weakSelf resolve:result callId:callId];
+        }];
+    }
     else if ([methodName  isEqual: @"subscribeToNotifications"]) {
         [WonderPush subscribeToNotifications];
         [self resolve:nil callId:callId];
