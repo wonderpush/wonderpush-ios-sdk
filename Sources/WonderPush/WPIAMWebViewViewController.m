@@ -12,17 +12,11 @@
 #import "WPIAMHitTestDelegateView.h"
 #import "WPIAMWebView.h"
 
-@interface WPIAMWebViewViewController () <WPIAMHitTestDelegate>
+@interface WPIAMWebViewViewController ()
 
 @property(nonatomic, readwrite) WPInAppMessagingWebViewDisplay *webViewMessage;
-@property (weak, nonatomic) IBOutlet UIButton *backgroundCloseButton;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonPositionInsideVerticalConstraint;
-@property (weak, nonatomic) IBOutlet WPIAMHitTestDelegateView *containerView;
-
 @property(weak, nonatomic) IBOutlet UIButton *closeButton;
-
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
-
 @end
 
 @implementation WPIAMWebViewViewController 
@@ -59,34 +53,11 @@
     [self dismissView:WPInAppMessagingDismissTypeUserTapClose];
 }
 
-- (void)setupRecognizers {
-    UITapGestureRecognizer *tapGestureRecognizer =
-    [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(messageTapped:)];
-    tapGestureRecognizer.delaysTouchesBegan = YES;
-    tapGestureRecognizer.numberOfTapsRequired = 1;
-    
-    self.webView.userInteractionEnabled = YES;
-    [self.webView addGestureRecognizer:tapGestureRecognizer];
-    
-    if (self.webViewMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone) {
-        UITapGestureRecognizer *closeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeButtonClicked:)];
-        closeGestureRecognizer.delaysTouchesBegan = YES;
-        closeGestureRecognizer.numberOfTapsRequired = 1;
-        self.dimBackgroundView.userInteractionEnabled = YES;
-        [self.dimBackgroundView addGestureRecognizer:closeGestureRecognizer];
-    }
-}
-
-- (void)messageTapped:(UITapGestureRecognizer *)recognizer {
-    [self followAction:self.webViewMessage.action];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     [self.view setBackgroundColor:UIColor.clearColor];
     
-    self.backgroundCloseButton.backgroundColor = UIColor.clearColor;
     self.webView.opaque = false;
     self.webView.backgroundColor = UIColor.clearColor;
     self.webView.scrollView.backgroundColor = UIColor.clearColor;
@@ -101,37 +72,24 @@
     
     [self.webView removeConstraints: [self.webView constraints]];
     
-    [self.containerView insertSubview:self.webView belowSubview:self.closeButton];
+    [self.view insertSubview:self.webView belowSubview:self.closeButton];
     
-    NSLayoutConstraint* webViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
-    NSLayoutConstraint* webViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
-    NSLayoutConstraint* webViewTopConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTop   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
-    NSLayoutConstraint* webViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewTopConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTop   relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+    NSLayoutConstraint* webViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    NSLayoutConstraint* closeButtonTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.closeButton attribute:NSLayoutAttributeTrailing   relatedBy:NSLayoutRelationEqual toItem:self.webView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:-8];
+
+    [self.view addConstraints:@[webViewTrailingConstraint, webViewLeadingConstraint, webViewTopConstraint, webViewBottomConstraint, closeButtonTrailingConstraint]];
     
-    [self.containerView addConstraints:@[webViewTrailingConstraint, webViewLeadingConstraint, webViewTopConstraint, webViewBottomConstraint]];
-    
-    [self.containerView layoutIfNeeded];
+    [self.view layoutIfNeeded];
     
     if (self.webViewMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone){
         self.closeButton.hidden = YES;
-    }
-    else {
+    } else {
         //inside and outside are the same cause of fullscreen
         self.closeButton.hidden = NO;
     }
-    
-    self.containerView.pointInsideDelegate = self;
-    
-    [self setupRecognizers];
-}
-
-- (BOOL)pointInside:(CGPoint)point view:(UIView *)view withEvent:(UIEvent *)event {
-    if (view == self.containerView) {
-        if ([self.closeButton pointInside:[self.closeButton convertPoint:point fromView:view] withEvent:event]) return YES;
-        return CGRectContainsPoint(self.containerView.bounds, [self.containerView convertPoint:point fromView:view]);
-
-    }
-    return NO;
 }
 
 - (void)flashCloseButton:(UIButton *)closeButton {
@@ -150,7 +108,7 @@
 }
 
 - (UIView *)viewToAnimate {
-    return self.containerView;
+    return self.webView;
 }
 
 - (void)viewWillAppear:(BOOL)animated{
