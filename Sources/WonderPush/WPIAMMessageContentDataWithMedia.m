@@ -101,62 +101,29 @@ static NSInteger const SuccessHTTPStatusCode = 200;
     return _actionButtonText;
 }
 
-- (void)loadMediaWithBlock:(void (^)(NSData *_Nullable standardImageData,
-                                     NSData *_Nullable landscapeImageData,
-                                     WKWebView *_Nullable webView,
-                                     NSError *_Nullable error))block {
-    if (!block) {
+- (void)loadImageData:(void(^)(NSData *_Nullable standardImageData,
+                               NSData *_Nullable landscapeImageData,
+                               NSError * _Nullable error))complete {
+    if (!complete) {
         // no need for any further action if block is nil
         return;
     }
     
-    if (!_imageURL && !_landscapeImageURL && !_webURL) {
+    if (!_imageURL && !_landscapeImageURL) {
         // no media data since media url is nil
-        block(nil, nil, nil, nil);
-    }
-    else if (_webURL){
-        __weak __typeof__(self) weakSelf = self;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
-                                                                 bundle:[WonderPush resourceBundle]];
-            
-            if (storyboard == nil) {
-                block(nil, nil, nil, [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
-                                                         code:IAMDisplayRenderErrorTypeUnspecifiedError
-                                                     userInfo:@{@"message" : @"resource is missing"}]);
-                return;
-            }
-            
-            weakSelf.webViewPreloaderViewController = (WPIAMWebViewPreloaderViewController *)[storyboard
-                                                                                   instantiateViewControllerWithIdentifier:@"webview-preloader-vc"];
-            [weakSelf.webViewPreloaderViewController preLoadWebViewWithURL:weakSelf.webURL
-                                   successCompletionHandler:^(WKWebView * webView)
-            {
-                [weakSelf.webViewPreloaderViewController dismissViewControllerAnimated:false completion:^{
-                    weakSelf.webViewPreloaderViewController = nil;
-                }];
-                WPLogDebug(@"Successfully preloaded webview with url %@", weakSelf.webURL);
-                block(nil, nil, webView, nil);
-            } errorCompletionHander:^(NSError* error){
-                [weakSelf.webViewPreloaderViewController dismissViewControllerAnimated:false completion:^{
-                    weakSelf.webViewPreloaderViewController = nil;
-                }];
-                WPLogDebug(@"Error preloading webview with url %@ : %@", weakSelf.webURL, error);
-                block(nil, nil, nil, error);
-            }];
-        });
+        complete(nil, nil, nil);
     }
     else if (!_landscapeImageURL) {
         // Only fetch standard image.
         [self fetchImageFromURL:_imageURL
                       withBlock:^(NSData *_Nullable imageData, NSError *_Nullable error) {
-            block(imageData, nil, nil, error);
+            complete(imageData, nil, error);
         }];
     } else if (!_imageURL) {
         // Only fetch portrait image.
         [self fetchImageFromURL:_landscapeImageURL
                       withBlock:^(NSData *_Nullable imageData, NSError *_Nullable error) {
-            block(nil, imageData, nil, error);
+            complete(nil, imageData, error);
         }];
     } else {
         // Fetch both images separately, call completion when they're both fetched.
@@ -173,13 +140,13 @@ static NSInteger const SuccessHTTPStatusCode = 200;
                 // Cancel landscape image fetch.
                 [weakSelf.URLSession invalidateAndCancel];
                 
-                block(nil, nil, nil, error);
+                complete(nil, nil, error);
                 return;
             }
             
             portrait = imageData;
             if (landscape || landscapeImageLoadError) {
-                block(portrait, landscape, nil, nil);
+                complete(portrait, landscape, nil);
             }
         }];
         
@@ -192,10 +159,70 @@ static NSInteger const SuccessHTTPStatusCode = 200;
             }
             
             if (portrait) {
-                block(portrait, landscape, nil, nil);
+                complete(portrait, landscape, nil);
             }
         }];
     }
+
+}
+
+- (void)loadWebView:(void(^)(WKWebView *_Nullable webView,
+                             NSError * _Nullable error))complete {
+    if (!complete) {
+        // no need for any further action if block is nil
+        return;
+    }
+    
+    if (!_webURL) {
+        // no media data since media url is nil
+        complete(nil, nil);
+        return;
+    }
+    __weak __typeof__(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
+                                                             bundle:[WonderPush resourceBundle]];
+        
+        if (storyboard == nil) {
+            complete(nil, [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                              code:IAMDisplayRenderErrorTypeUnspecifiedError
+                                          userInfo:@{@"message" : @"resource is missing"}]);
+            return;
+        }
+        
+        weakSelf.webViewPreloaderViewController = (WPIAMWebViewPreloaderViewController *)[storyboard
+                                                                               instantiateViewControllerWithIdentifier:@"webview-preloader-vc"];
+        [weakSelf.webViewPreloaderViewController preLoadWebViewWithURL:weakSelf.webURL
+                               successCompletionHandler:^(WKWebView * webView)
+        {
+            WPLogDebug(@"Successfully preloaded webview with url %@", weakSelf.webURL);
+            complete(webView, nil);
+        } errorCompletionHander:^(NSError* error){
+            [weakSelf.webViewPreloaderViewController dismissViewControllerAnimated:false completion:^{
+                weakSelf.webViewPreloaderViewController = nil;
+            }];
+            WPLogDebug(@"Error preloading webview with url %@ : %@", weakSelf.webURL, error);
+            complete(nil, error);
+        }];
+    });
+}
+
+- (void)loadMedia:(void (^)(NSData *_Nullable standardImageData,
+                                     NSData *_Nullable landscapeImageData,
+                                     WKWebView *_Nullable webView,
+                                     NSError *_Nullable error))complete {
+    [self loadImageData:^(NSData *_Nullable standardImageData,
+                          NSData *_Nullable landscapeImageData,
+                          NSError *_Nullable error) {
+        if (error) {
+            complete(standardImageData, landscapeImageData, nil, error);
+            return;
+        }
+        [self loadWebView:^(WKWebView *_Nullable webView,
+                            NSError *_Nullable error) {
+            complete(standardImageData, landscapeImageData, webView, error);
+        }];
+    }];
 }
 
 - (void)fetchImageFromURL:(NSURL *)imageURL

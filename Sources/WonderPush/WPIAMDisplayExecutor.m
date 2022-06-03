@@ -577,7 +577,7 @@
     WPIAMTimerWithNSDate *timeProvider = [WPIAMTimerWithNSDate new];
     NSTimeInterval originalDisplayTime = [timeProvider currentTimestampInSeconds];
     [message.renderData.contentData
-     loadMediaWithBlock:^(NSData *_Nullable standardImageRawData,
+     loadMedia:^(NSData *_Nullable standardImageRawData,
                           NSData *_Nullable landscapeImageRawData,
                           WKWebView *_Nullable webView,
                           NSError *_Nullable error) {

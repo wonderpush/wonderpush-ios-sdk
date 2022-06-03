@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 // block and the error will be nil.
 // If no error happens and the imageData parameter is nil, it indicates the case that there is no
 // image associated with the message.
-- (void)loadMediaWithBlock:(void (^)(NSData *_Nullable imageData,
+- (void)loadMedia:(void (^)(NSData *_Nullable imageData,
                                      NSData *_Nullable landscapeImageData,
                                      WKWebView *_Nullable webView,
                                      NSError *_Nullable error))block;
