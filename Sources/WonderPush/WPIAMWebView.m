@@ -11,6 +11,8 @@
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WonderPush_constants.h"
 #import "WonderPush_private.h"
+#import "WPURLFollower.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPIAMWebViewBridge: NSObject<WKScriptMessageHandler>
@@ -418,11 +420,19 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
     NSDictionary *options = args.count >= 2 && [args[1] isKindOfClass:NSDictionary.class] ? args[1]: nil;
     NSString *mode = options[@"mode"] ?: @"current";
-//    NSString *buttonLabel = options[@"buttonLabel"];
+    
     if ([@"external" isEqualToString:mode]) {
-        [[UIApplication sharedApplication] openURL:url];
+        [WPURLFollower.URLFollower
+         followURLViaIOS:url
+         withCompletionBlock:^(BOOL success) {
+            WPLogDebug(@"Successfully opened %@", url);
+        }];
     } else if ([@"parent" isEqualToString:mode]) {
-        // TODO: handle deeplinks and universal links here
+        [WPURLFollower.URLFollower
+         followURL:url
+         withCompletionBlock:^(BOOL success) {
+            WPLogDebug(@"Successfully opened %@", url);
+        }];
     } else {
         [self.webView loadRequest:[NSURLRequest requestWithURL:url]];
     }
