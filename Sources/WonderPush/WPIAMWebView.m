@@ -518,5 +518,4 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     [self reportFailWithError:error];
 }
 
-
 @end

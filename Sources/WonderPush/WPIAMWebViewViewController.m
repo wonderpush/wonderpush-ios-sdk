@@ -107,14 +107,14 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    // close any potential keyboard, which would conflict with the modal in-app messagine view
+    // close any potential keyboard
     [[UIApplication sharedApplication] sendAction:@selector(resignFirstResponder)
                                                to:nil
                                              from:nil
                                          forEvent:nil];
 }
 
--(void)viewDidDisappear:(BOOL)animated{
+- (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     [self.webView.configuration.userContentController removeScriptMessageHandlerForName:INAPP_SDK_GLOBAL_NAME];
 }
