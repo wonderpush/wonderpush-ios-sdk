@@ -119,4 +119,7 @@
     [self.webView.configuration.userContentController removeScriptMessageHandlerForName:INAPP_SDK_GLOBAL_NAME];
 }
 
+- (BOOL)dimsBackground {
+    return NO;
+}
 @end
