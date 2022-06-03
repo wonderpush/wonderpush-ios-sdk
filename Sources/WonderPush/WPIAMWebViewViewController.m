@@ -12,6 +12,7 @@
 #import "WPIAMHitTestDelegateView.h"
 #import "WPIAMWebView.h"
 #import "WonderPush_constants.h"
+#import "WPInAppMessagingRenderingPrivate.h"
 
 @interface WPIAMWebViewViewController ()
 

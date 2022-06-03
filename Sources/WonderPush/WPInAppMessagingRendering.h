@@ -15,7 +15,6 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <WebKit/WebKit.h>
 #import <WonderPush/WPAction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -351,11 +350,6 @@ NS_SWIFT_NAME(InAppMessagingImageOnlyDisplay)
  */
 NS_SWIFT_NAME(InAppMessagingWebViewDisplay)
 @interface WPInAppMessagingWebViewDisplay : WPInAppMessagingDisplayMessage
-
-/**
- * Gets the webView for this message
- */
-@property(nonatomic, nonnull, copy, readonly) WKWebView *webView;
 
 /**
  * Gets the action URL for an webView IAM message.
