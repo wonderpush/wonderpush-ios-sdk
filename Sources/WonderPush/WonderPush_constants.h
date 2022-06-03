@@ -31,6 +31,7 @@
 #define PRESENCE_ANTICIPATED_TIME (5*60)
 
 #define INAPP_SDK_URL_REGEX @"https://cdn\\.by\\.wonderpush\\.com/inapp-sdk/1\\.0/wonderpush-loader\\.min\\.js"
+#define INAPP_SDK_GLOBAL_NAME @"WonderPushInAppSDK"
 #define INAPP_WEBVIEW_LOAD_TIMEOUT_TIME_INTERVAL 2
 /**
  Key to set in your .plist file to allow rating button action
