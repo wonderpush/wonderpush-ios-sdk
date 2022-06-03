@@ -10,7 +10,7 @@
 #import "WPLog.h"
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WonderPush_constants.h"
-
+#import "WonderPush_private.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPIAMWebViewBridge: NSObject<WKScriptMessageHandler>

@@ -200,6 +200,13 @@ Called when receiving the full state of the installation
 + (void) postEventually:(NSString *)resource params:(id)params;
 
 /**
+ Triggers the system location prompt. Requires that:
+   - you link with the CoreLocation framework
+   - you set NSLocationAlwaysUsageDescription, NSLocationAlwaysAndWhenInUseUsageDescription or NSLocationWhenInUseUsageDescription in your Info.plist file
+ */
++ (void) triggerLocationPrompt;
+
+/**
  The last known location
  @return the last known location
  */
