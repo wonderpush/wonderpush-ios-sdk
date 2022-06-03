@@ -12,13 +12,13 @@
         <!--Web View Preloader View Controller-->
         <scene sceneID="dqs-SR-2wb">
             <objects>
-                <viewController storyboardIdentifier="webview-preloader-vc" id="kdf-RM-LD3" customClass="WPIAMWebViewPreloaderViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="webview-preloader-vc" extendedLayoutIncludesOpaqueBars="YES" id="kdf-RM-LD3" customClass="WPIAMWebViewPreloaderViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="rJM-Kp-IqJ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aY0-KX-OtB" customClass="WPIAMWebView">
-                                <rect key="frame" x="20" y="0.0" width="374" height="896"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -29,10 +29,10 @@
                         <viewLayoutGuide key="safeArea" id="GOv-VP-bVF"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="aY0-KX-OtB" firstAttribute="top" secondItem="rJM-Kp-IqJ" secondAttribute="topMargin" id="T1w-3T-pj7"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="aY0-KX-OtB" secondAttribute="trailing" id="c7I-t5-8vg"/>
-                            <constraint firstAttribute="bottomMargin" secondItem="aY0-KX-OtB" secondAttribute="bottom" id="cKR-2L-RVZ"/>
-                            <constraint firstItem="aY0-KX-OtB" firstAttribute="leading" secondItem="rJM-Kp-IqJ" secondAttribute="leadingMargin" id="ke2-li-qHC"/>
+                            <constraint firstItem="aY0-KX-OtB" firstAttribute="leading" secondItem="rJM-Kp-IqJ" secondAttribute="leading" id="jc7-EP-ye8"/>
+                            <constraint firstAttribute="bottom" secondItem="aY0-KX-OtB" secondAttribute="bottom" id="s1u-zm-PYc"/>
+                            <constraint firstAttribute="trailing" secondItem="aY0-KX-OtB" secondAttribute="trailing" id="udP-uE-131"/>
+                            <constraint firstItem="aY0-KX-OtB" firstAttribute="top" secondItem="rJM-Kp-IqJ" secondAttribute="top" id="wBa-iT-f2D"/>
                         </constraints>
                     </view>
                     <connections>
@@ -41,7 +41,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qPT-TX-wFG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2050" y="-81"/>
+            <point key="canvasLocation" x="-2050.7246376811595" y="-81.026785714285708"/>
         </scene>
         <!--Image Only View Controller-->
         <scene sceneID="Uc0-ks-ER1">
@@ -483,7 +483,7 @@
         <!--Web View View Controller-->
         <scene sceneID="WDS-3q-bK2">
             <objects>
-                <viewController storyboardIdentifier="webview-vc" id="mki-ER-hgN" customClass="WPIAMWebViewViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="webview-vc" extendedLayoutIncludesOpaqueBars="YES" id="mki-ER-hgN" customClass="WPIAMWebViewViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ZkG-7Y-dH6">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -501,7 +501,7 @@
                                     </button>
                                 </subviews>
                                 <viewLayoutGuide key="safeArea" id="LVD-WI-ads"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="LVD-WI-ads" firstAttribute="trailing" secondItem="t0w-gE-Hqc" secondAttribute="trailing" id="JNp-ab-YMA"/>
                                     <constraint firstItem="t0w-gE-Hqc" firstAttribute="top" secondItem="LVD-WI-ads" secondAttribute="top" id="tGf-CH-xh7"/>

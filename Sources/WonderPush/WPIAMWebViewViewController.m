@@ -59,9 +59,6 @@
     
     [self.view setBackgroundColor:UIColor.clearColor];
     
-    self.webView.opaque = false;
-    self.webView.backgroundColor = UIColor.clearColor;
-    self.webView.scrollView.backgroundColor = UIColor.clearColor;
     if ([self.webView isKindOfClass:WPIAMWebView.class]) {
         __weak WPIAMWebView *webView = (WPIAMWebView *)self.webView;
         __weak WPIAMWebViewViewController *weakSelf = self;
@@ -71,8 +68,6 @@
         };
     }
     
-    [self.webView removeConstraints: [self.webView constraints]];
-    
     [self.containerView insertSubview:self.webView belowSubview:self.closeButton];
     
     NSLayoutConstraint* webViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
@@ -81,8 +76,6 @@
     NSLayoutConstraint* webViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
 
     [self.containerView addConstraints:@[webViewTrailingConstraint, webViewLeadingConstraint, webViewTopConstraint, webViewBottomConstraint]];
-    
-    [self.view layoutIfNeeded];
     
     if (self.webViewMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone){
         self.closeButton.hidden = YES;
