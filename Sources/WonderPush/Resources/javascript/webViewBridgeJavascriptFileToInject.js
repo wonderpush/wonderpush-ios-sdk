@@ -32,5 +32,27 @@
             delete window.WonderPushInAppSDK.callIdToPromise[callId];
         };
     });
+    
+    // Executed when the window is loaded
+    var onload = function() {
+        // Register event listeners on data-wonderpush-button-label elements
+        document.querySelectorAll('*[data-wonderpush-button-label]').forEach(function(elt) {
+            var buttonLabel = elt.dataset.wonderpushButtonLabel;
+            elt.addEventListener('click', function() {
+                window.WonderPushInAppSDK.trackClick(buttonLabel);
+            });
+        });
+        // Register event listeners on data-wonderpush-dismiss elements
+        document.querySelectorAll('*[data-wonderpush-dismiss]').forEach(function(elt) {
+            elt.addEventListener('click', function() {
+                window.WonderPushInAppSDK.dismiss();
+            });
+        });
+    }
+    if (document.readyState === "complete") {
+        onload();
+    } else {
+        window.addEventListener("load", onload);
+    }
 })();
 

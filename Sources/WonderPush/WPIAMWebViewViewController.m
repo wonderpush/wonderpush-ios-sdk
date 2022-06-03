@@ -63,6 +63,8 @@
     if ([self.webView isKindOfClass:WPIAMWebView.class]) {
         __weak WPIAMWebView *webView = (WPIAMWebView *)self.webView;
         __weak WPIAMWebViewViewController *weakSelf = self;
+        webView.displayDelegate = self.displayDelegate;
+        webView.inAppMessage = self.inAppMessage;
         webView.onDismiss = ^(WPInAppMessagingDismissType type) {
             [weakSelf dismissView:type];
             webView.onDismiss = nil;

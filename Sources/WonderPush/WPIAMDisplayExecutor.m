@@ -70,35 +70,45 @@
 }
 #pragma mark - WPInAppMessagingDisplayDelegate methods
 - (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
+             withLabel:(NSString *)label {
+    
+}
+
+- (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
+       withButtonLabel:(NSString *)buttonLabel {
+    if (!_currentMsgBeingDisplayed.renderData.reportingData.campaignId) {
+        WPLog(@"messageClicked called but there is no current message ID.");
+        return;
+    }
+    if (_currentMsgBeingDisplayed.isTestMessage) {
+        WPLogDebug(@"A test message clicked. Do test event impression/click analytics logging");
+    } else {
+        // Logging the impression
+        [self recordValidImpression:_currentMsgBeingDisplayed.renderData.reportingData];
+    }
+    
+    // Send an event to log click
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [_currentMsgBeingDisplayed.renderData.reportingData fillEventDataInto:eventData];
+    eventData[@"actionDate"] = [NSNumber numberWithLongLong:(long long)([self.timeFetcher currentTimestampInSeconds] * 1000)];
+    if (buttonLabel) eventData[@"buttonLabel"] = buttonLabel;
+    if ([WonderPush subscriptionStatusIsOptIn]) {
+        [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+    } else {
+        [WonderPush countInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+    }
+}
+
+- (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
             withAction:(WPAction *)action {
     // Call through to app-side delegate.
     __weak id<WPInAppMessagingDisplayDelegate> appSideDelegate = self.inAppMessaging.delegate;
     if ([appSideDelegate respondsToSelector:@selector(messageClicked:withAction:)]) {
         [appSideDelegate messageClicked:inAppMessage withAction:action];
     }
-    
     self.isMsgBeingDisplayed = NO;
-    if (!_currentMsgBeingDisplayed.renderData.reportingData.campaignId) {
-        WPLog(
-                      @"messageClicked called but "
-                      "there is no current message ID.");
-        return;
-    }
-    
-    if (_currentMsgBeingDisplayed.isTestMessage) {
-        WPLogDebug(
-                    @"A test message clicked. Do test event impression/click analytics logging");
-    } else {
-        // Logging the impression
-        [self recordValidImpression:_currentMsgBeingDisplayed.renderData.reportingData];
-    }
-    
+    NSString *buttonLabel = nil;
     if (action.targetUrl || action.followUps.count) {
-        // Send an event to log click
-        NSMutableDictionary *eventData = [NSMutableDictionary new];
-        [_currentMsgBeingDisplayed.renderData.reportingData fillEventDataInto:eventData];
-        eventData[@"actionDate"] = [NSNumber numberWithLongLong:(long long)([self.timeFetcher currentTimestampInSeconds] * 1000)];
-        NSString *buttonLabel = nil;
         if ([inAppMessage respondsToSelector:@selector(action)]) {
             buttonLabel = [inAppMessage performSelector:@selector(action)] == (id)action ? @"primary" : nil;
         } else if ([inAppMessage respondsToSelector:@selector(primaryAction)]) {
@@ -107,15 +117,13 @@
         if (!buttonLabel && [inAppMessage respondsToSelector:@selector(secondaryAction)]) {
             buttonLabel = [inAppMessage performSelector:@selector(secondaryAction)] == (id)action ? @"secondary" : nil;
         }
-        if (buttonLabel) eventData[@"buttonLabel"] = buttonLabel;
-        if ([WonderPush subscriptionStatusIsOptIn]) {
-            [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
-        } else {
-            [WonderPush countInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
-        }
     }
-    [WonderPush executeAction:action withReportingData:_currentMsgBeingDisplayed.renderData.reportingData];
-
+    if (action) {
+        // Record @INAPP_CLICKED
+        [self messageClicked:inAppMessage withButtonLabel:buttonLabel];
+        // Exec action
+        [WonderPush executeAction:action withReportingData:_currentMsgBeingDisplayed.renderData.reportingData];
+    }
 }
 
 - (void)messageDismissed:(WPInAppMessagingDisplayMessage *)inAppMessage
@@ -128,21 +136,17 @@
     
     self.isMsgBeingDisplayed = NO;
     if (!_currentMsgBeingDisplayed.renderData.reportingData.campaignId) {
-        WPLog(
-                      @"messageDismissedWithType called but "
-                      "there is no current message ID.");
+        WPLog(@"messageDismissedWithType called but there is no current message ID.");
         return;
     }
     
     if (_currentMsgBeingDisplayed.isTestMessage) {
-        WPLogDebug(
-                    @"A test message dismissed. Record the impression event.");
+        WPLogDebug(@"A test message dismissed. Record the impression event.");
         return;
     }
     
     // Logging the impression
     [self recordValidImpression:_currentMsgBeingDisplayed.renderData.reportingData];
-    
 }
 
 - (void)impressionDetectedForMessage:(WPInAppMessagingDisplayMessage *)inAppMessage {

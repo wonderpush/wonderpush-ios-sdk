@@ -414,6 +414,14 @@ NS_SWIFT_NAME(InAppMessagingDisplayDelegate)
 @optional
 
 /**
+ * Called when a labelled button is clicked without an Action. The in-app is still visible until `messageDismissed:dismissType:` or `messageClicked:withAction:` is called.
+ * @param inAppMessage the message that was clicked.
+ * @param buttonLabel specifies the button label
+ */
+- (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
+       withButtonLabel:(NSString *)buttonLabel;
+
+/**
  * Called when the message is dismissed. Should be called from main thread.
  * @param inAppMessage the message that was dismissed.
  * @param dismissType specifies how the message is closed.

@@ -129,15 +129,15 @@ static NSInteger const SuccessHTTPStatusCode = 200;
             
             weakSelf.webViewPreloaderViewController = (WPIAMWebViewPreloaderViewController *)[storyboard
                                                                                    instantiateViewControllerWithIdentifier:@"webview-preloader-vc"];
-            [weakSelf.webViewPreloaderViewController preLoadWebViewWith:weakSelf.webURL
-                                   withSuccessCompletionHandler:^(WKWebView * webView)
+            [weakSelf.webViewPreloaderViewController preLoadWebViewWithURL:weakSelf.webURL
+                                   successCompletionHandler:^(WKWebView * webView)
             {
                 [weakSelf.webViewPreloaderViewController dismissViewControllerAnimated:false completion:^{
                     weakSelf.webViewPreloaderViewController = nil;
                 }];
                 WPLogDebug(@"Successfully preloaded webview with url %@", weakSelf.webURL);
                 block(nil, nil, webView, nil);
-            } withErrorCompletionHander:^(NSError* error){
+            } errorCompletionHander:^(NSError* error){
                 [weakSelf.webViewPreloaderViewController dismissViewControllerAnimated:false completion:^{
                     weakSelf.webViewPreloaderViewController = nil;
                 }];

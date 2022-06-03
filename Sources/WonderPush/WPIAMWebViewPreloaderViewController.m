@@ -26,7 +26,7 @@
     self.webView.scrollView.backgroundColor = UIColor.clearColor;
 }
 
-- (void) preLoadWebViewWith: (NSURL *) webViewURL withSuccessCompletionHandler: (void (^)(WKWebView*)) successBlock withErrorCompletionHander: (void (^)(NSError *)) errorBlock {
+- (void) preLoadWebViewWithURL: (NSURL *) webViewURL successCompletionHandler: (void (^)(WKWebView*)) successBlock errorCompletionHander: (void (^)(NSError *)) errorBlock {
     
     //Loads the view controller’s view if it has not yet been loaded.
     [self loadViewIfNeeded];

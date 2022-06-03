@@ -212,7 +212,12 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         }
         [self resolve:nil callId:callId];
     }
-    if ([methodName isEqual: @"openTargetUrl"]) {
+    else if ([methodName isEqualToString:@"trackClick"]) {
+        NSString *buttonLabel = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
+        [self.webView.displayDelegate messageClicked:self.webView.inAppMessage withButtonLabel:buttonLabel];
+        [self resolve:nil callId:callId];
+    }
+    else if ([methodName isEqual: @"openTargetUrl"]) {
         [self openTargetUrl:args callId:callId];
     }
     else if ([methodName  isEqual: @"triggerLocationPrompt"]) {

@@ -12,6 +12,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPIAMWebView : WKWebView
+@property (nonatomic, weak, nullable) id<WPInAppMessagingDisplayDelegate> displayDelegate;
+@property (nonatomic, weak, nullable) WPInAppMessagingDisplayMessage * inAppMessage;
 @property (nonatomic, strong, nullable) void(^onNavigationError)(NSError *);
 @property (nonatomic, strong, nullable) void(^onNavigationSuccess)(WKWebView *);
 @property (nonatomic, strong, nullable) void(^onDismiss)(WPInAppMessagingDismissType);
