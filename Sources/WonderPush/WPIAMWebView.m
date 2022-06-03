@@ -105,7 +105,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     if (!self.bridge) {
         self.bridge = [WPIAMWebViewBridge new];
         self.bridge.webView = self;
-        [self.configuration.userContentController addScriptMessageHandler:self.bridge name:@"WonderPushInAppSDK"];
+        [self.configuration.userContentController addScriptMessageHandler:self.bridge name:INAPP_SDK_GLOBAL_NAME];
     }
     
     // Install navigation delegate

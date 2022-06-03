@@ -11,6 +11,7 @@
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WPIAMHitTestDelegateView.h"
 #import "WPIAMWebView.h"
+#import "WonderPush_constants.h"
 
 @interface WPIAMWebViewViewController ()
 
@@ -115,7 +116,7 @@
 
 -(void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
-    [self.webView.configuration.userContentController removeScriptMessageHandlerForName:@"WonderPushInAppSDK"];
+    [self.webView.configuration.userContentController removeScriptMessageHandlerForName:INAPP_SDK_GLOBAL_NAME];
 }
 
 @end
