@@ -243,6 +243,16 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             [displayDelegate displayErrorForMessage:webViewMessage error:[self applicationNotActiveError]];
             return;
         }
+        if (!webViewMessage.webView) {
+            WPLogDebug(@"Message misses its webView %@.", webViewMessage);
+            [displayDelegate
+             displayErrorForMessage:webViewMessage
+             error:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                       code:IAMDisplayRenderErrorTypeWebUrlFailedToLoad
+                                   userInfo:@{}]];
+            return;
+
+        }
         NSBundle *resourceBundle = [self getViewResourceBundle];
         
         if (resourceBundle == nil) {

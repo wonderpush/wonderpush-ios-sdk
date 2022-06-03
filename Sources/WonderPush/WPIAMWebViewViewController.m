@@ -59,6 +59,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    if (!self.webView) {
+        [self dismissView:WPInAppMessagingDismissUnspecified];
+        return;
+    }
+    
     [self.view setBackgroundColor:UIColor.clearColor];
     
     if ([self.webView isKindOfClass:WPIAMWebView.class]) {

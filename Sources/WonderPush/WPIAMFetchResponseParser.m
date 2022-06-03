@@ -371,7 +371,13 @@
             return nil;
         }
         
-        NSURL *webURL = (webUrlStr.length == 0) ? nil : [NSURL URLWithString:webUrlStr];
+        NSURL *webURL = nil;
+        if (webUrlStr.length > 0){
+            webURL = [NSURL URLWithString:webUrlStr];;
+            if (!webURL) {
+                WPLog(@"Invalid url specified for in-app message: %@", webUrlStr);
+            }
+        }
         
         NSURL *imageURL = (imageURLStr.length == 0) ? nil : [NSURL URLWithString:imageURLStr];
         NSURL *landscapeImageURL =

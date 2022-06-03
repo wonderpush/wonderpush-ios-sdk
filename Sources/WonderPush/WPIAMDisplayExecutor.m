@@ -190,8 +190,7 @@
     
     NSString *campaignId = _currentMsgBeingDisplayed.renderData.reportingData.campaignId;
     
-    WPLogDebug(
-                @"Display ran into error for message %@: %@", campaignId, error);
+    WPLogDebug(@"Display ran into error for message %@: %@", campaignId, error);
     
     if (_currentMsgBeingDisplayed.isTestMessage) {
         [self displayMessageLoadError:error];
