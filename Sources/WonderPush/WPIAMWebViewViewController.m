@@ -85,11 +85,10 @@
     NSLayoutConstraint* webViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
 
     [self.containerView addConstraints:@[webViewTrailingConstraint, webViewLeadingConstraint, webViewTopConstraint, webViewBottomConstraint]];
-    
+
     if (self.webViewMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone){
         self.closeButton.hidden = YES;
     } else {
-        //inside and outside are the same cause of fullscreen
         self.closeButton.hidden = NO;
     }
 }

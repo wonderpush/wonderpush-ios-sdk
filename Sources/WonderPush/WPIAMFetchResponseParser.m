@@ -317,9 +317,10 @@
                 return nil;
             }
             action = [WPAction actionWithDictionaries:webViewNode[@"actions"]];
-            if ([webViewNode[@"closeButtonPosition"] isEqualToString:@"outside"]) closeButtonPosition = WPIAMCloseButtonPositionOutside;
-            if ([webViewNode[@"closeButtonPosition"] isEqualToString:@"inside"]) closeButtonPosition = WPIAMCloseButtonPositionInside;
-            if ([webViewNode[@"closeButtonPosition"] isEqualToString:@"none"]) closeButtonPosition = WPIAMCloseButtonPositionNone;
+            if ([@"none" isEqualToString:webViewNode[@"closeButtonPosition"]]) { closeButtonPosition = WPIAMCloseButtonPositionNone;
+            } else {
+                closeButtonPosition = WPIAMCloseButtonPositionInside;
+            }
         } else if ([content[@"card"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsCardView;
             NSDictionary *cardNode = (NSDictionary *)contentNode[@"card"];

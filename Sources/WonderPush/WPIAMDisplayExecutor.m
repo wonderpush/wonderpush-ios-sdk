@@ -444,14 +444,12 @@
                                      triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
     WPInAppMessagingCloseButtonPosition closeButtonPosition;
     switch (definition.renderData.contentData.closeButtonPosition) {
-        case WPInAppMessagingCloseButtonPositionOutside:
-            closeButtonPosition = WPInAppMessagingCloseButtonPositionOutside;
-            break;
-        case WPInAppMessagingCloseButtonPositionInside:
-            closeButtonPosition = WPInAppMessagingCloseButtonPositionInside;
-            break;
         case WPInAppMessagingCloseButtonPositionNone:
             closeButtonPosition = WPInAppMessagingCloseButtonPositionNone;
+            break;
+        case WPInAppMessagingCloseButtonPositionInside:
+        default:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionInside;
             break;
     }
     WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
