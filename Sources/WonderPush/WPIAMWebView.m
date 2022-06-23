@@ -219,8 +219,11 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         [self.webView.displayDelegate messageClicked:self.webView.inAppMessage withButtonLabel:buttonLabel];
         [self resolve:nil callId:callId];
     }
-    else if ([methodName isEqual: @"openTargetUrl"]) {
-        [self openTargetUrl:args callId:callId];
+    else if ([methodName isEqual: @"openDeepLink"]) {
+        [self openDeepLink:args callId:callId];
+    }
+    else if ([methodName isEqual: @"openExternalUrl"]) {
+        [self openExternalUrl:args callId:callId];
     }
     else if ([methodName  isEqual: @"triggerLocationPrompt"]) {
         switch ([CLLocationManager authorizationStatus]) {
@@ -414,8 +417,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
 }
 
-- (void) openTargetUrl:(NSArray *)args callId:(NSString *)callId {
-            
+- (void) openDeepLink:(NSArray *)args callId:(NSString *)callId {
     if (args.count < 1) return;
     if (![args[0] isKindOfClass:NSString.class]) return;
     NSString *urlString = args[0];
@@ -424,23 +426,33 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         WPLog(@"Invalid URL supplied to openTargetUrl: %@", urlString);
         return;
     }
-    NSDictionary *options = args.count >= 2 && [args[1] isKindOfClass:NSDictionary.class] ? args[1]: nil;
-    NSString *mode = options[@"mode"] ?: @"current";
-    
-    if ([@"external" isEqualToString:mode]) {
-        [WPURLFollower.URLFollower
-         followURLViaIOS:url
-         withCompletionBlock:^(BOOL success) {
-            WPLogDebug(@"Successfully opened %@", url);
-        }];
-    } else if ([@"parent" isEqualToString:mode]) {
-        [WPURLFollower.URLFollower
-         followURL:url
-         withCompletionBlock:^(BOOL success) {
-            WPLogDebug(@"Successfully opened %@", url);
-        }];
-    } else {
-        [self.webView loadRequest:[NSURLRequest requestWithURL:url]];
+    [WPURLFollower.URLFollower
+     followURL:url
+     withCompletionBlock:^(BOOL success) {
+        WPLogDebug(@"Successfully opened %@", url);
+    }];
+    if (self.webView.onDismiss) {
+        self.webView.onDismiss(WPInAppMessagingDismissTypeUserTapClose);
+    }
+    [self resolve:nil callId:callId];
+}
+
+- (void) openExternalUrl:(NSArray *)args callId:(NSString *)callId {
+    if (args.count < 1) return;
+    if (![args[0] isKindOfClass:NSString.class]) return;
+    NSString *urlString = args[0];
+    NSURL *url = [NSURL URLWithString:urlString];
+    if (!url) {
+        WPLog(@"Invalid URL supplied to openTargetUrl: %@", urlString);
+        return;
+    }
+    [WPURLFollower.URLFollower
+     followURLViaIOS:url
+     withCompletionBlock:^(BOOL success) {
+        WPLogDebug(@"Successfully opened %@", url);
+    }];
+    if (self.webView.onDismiss) {
+        self.webView.onDismiss(WPInAppMessagingDismissTypeUserTapClose);
     }
     [self resolve:nil callId:callId];
 }
