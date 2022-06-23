@@ -35,18 +35,73 @@
     
     // Executed when the window is loaded
     var onload = function() {
-        // Register event listeners on data-wonderpush-button-label elements
-        document.querySelectorAll('*[data-wonderpush-button-label]').forEach(function(elt) {
-            var buttonLabel = elt.dataset.wonderpushButtonLabel;
-            elt.addEventListener('click', function() {
-                window.WonderPushInAppSDK.trackClick(buttonLabel);
-            });
-        });
-        // Register event listeners on data-wonderpush-dismiss elements
-        document.querySelectorAll('*[data-wonderpush-dismiss]').forEach(function(elt) {
-            elt.addEventListener('click', function() {
-                window.WonderPushInAppSDK.dismiss();
-            });
+        // Register event listeners on data-wonderpush-* elements
+        document.querySelectorAll('*').forEach(function(elt) {
+          if (!elt.dataset) return;
+          Object.keys(elt.dataset).forEach(function (key) {
+            var val = elt.dataset[key];
+            var fn;
+            switch (key) {
+              case "wonderpushAddTag":
+                fn = function () {
+                  window.WonderPushInAppSDK.addTag(val);
+                };
+                break;
+              case "wonderpushButtonLabel":
+                fn = function () {
+                  window.WonderPushInAppSDK.trackClick(val);
+                };
+                break;
+              case "wonderpushDismiss":
+                fn = function () {
+                  window.WonderPushInAppSDK.dismiss();
+                };
+                break;
+              case "wonderpushOpenDeepLink":
+                fn = function () {
+                  window.WonderPushInAppSDK.openDeepLink(val);
+                };
+                break;
+              case "wonderpushOpenExternalUrl":
+                fn = function () {
+                  window.WonderPushInAppSDK.openExternalUrl(val);
+                };
+                break;
+              case "wonderpushRemoveAllTags":
+                fn = function () {
+                  window.WonderPushInAppSDK.removeAllTags();
+                };
+                break;
+              case "wonderpushRemoveTag":
+                fn = function () {
+                  window.WonderPushInAppSDK.removeTag(val);
+                };
+                break;
+              case "wonderpushSubscribeToNotifications":
+                fn = function () {
+                  window.WonderPushInAppSDK.subscribeToNotifications();
+                };
+                break;
+              case "wonderpushTrackEvent":
+                fn = function () {
+                  window.WonderPushInAppSDK.trackEvent(val);
+                };
+                break;
+              case "wonderpushTriggerLocationPrompt":
+                fn = function () {
+                  window.WonderPushInAppSDK.triggerLocationPrompt();
+                };
+                break;
+              case "wonderpushUnsubscribeFromNotifications":
+                fn = function () {
+                  window.WonderPushInAppSDK.unsubscribeFromNotifications();
+                };
+                break;
+            }
+            if (fn) {
+              elt.addEventListener('click', fn);
+            }
+          });
         });
     }
     if (document.readyState === "complete") {
