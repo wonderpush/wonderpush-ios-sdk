@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WPIAMWebViewNavigationDelegate: NSObject<WKNavigationDelegate>
 @property (nonatomic, weak) WPIAMWebView *webView;
 @property(atomic, assign) BOOL webViewUrlLoadingCallbackDone;
-@property(atomic, assign) BOOL sdkInjected;
 @end
 
 @interface WPIAMBoolResult : NSObject
@@ -34,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WPIAMWebView ()
 @property (nonatomic, strong) WPIAMWebViewBridge *bridge;
 @property (nonatomic, strong) WPIAMWebViewNavigationDelegate *navDelegate;
-@property(nullable, nonatomic, weak) id<WKNavigationDelegate> otherNavigationDelegate;
+@property (nonatomic, strong) NSURL *initialURL;
 @end
 
 NS_ASSUME_NONNULL_END
@@ -93,6 +92,13 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     });
 }
 
+- (WKNavigation *)loadRequest:(NSURLRequest *)request {
+    if (!self.initialURL) {
+        self.initialURL = request.URL;
+    }
+    return [super loadRequest:request];
+}
+
 - (void) installEnvironment {
     self.configuration.allowsInlineMediaPlayback = YES;
     
@@ -108,7 +114,6 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         self.bridge = [WPIAMWebViewBridge new];
         self.bridge.webView = self;
         self.UIDelegate = self.bridge;
-        [self.configuration.userContentController addScriptMessageHandler:self.bridge name:INAPP_SDK_GLOBAL_NAME];
     }
     
     // Install navigation delegate
@@ -509,11 +514,23 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 }
 
 - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation {
-    if (self.sdkInjected) return;
-    NSString *javascriptToInjectFile = [[NSBundle bundleForClass:[self class]] pathForResource:@"webViewBridgeJavascriptFileToInject" ofType:@"js"];
-    NSString* javascriptString = [NSString stringWithContentsOfFile:javascriptToInjectFile encoding:NSUTF8StringEncoding error:nil];
-    [webView evaluateJavaScript:javascriptString completionHandler:nil];
-    self.sdkInjected = YES;
+    NSURL *initialURL = self.webView.initialURL;
+    NSURL *targetURL = webView.URL;
+    
+    // Ensure same origin
+    if (initialURL.port == targetURL.port
+        && [initialURL.host isEqualToString:targetURL.host]
+        && [initialURL.scheme isEqualToString:targetURL.scheme]) {
+        // Inject message handler
+        [self.webView.configuration.userContentController addScriptMessageHandler:self.webView.bridge name:INAPP_SDK_GLOBAL_NAME];
+        // Inject bridge
+        NSString *javascriptToInjectFile = [[NSBundle bundleForClass:[self class]] pathForResource:@"webViewBridgeJavascriptFileToInject" ofType:@"js"];
+        NSString* javascriptString = [NSString stringWithContentsOfFile:javascriptToInjectFile encoding:NSUTF8StringEncoding error:nil];
+        [webView evaluateJavaScript:javascriptString completionHandler:nil];
+    } else {
+        // Remove message handler
+        [self.webView.configuration.userContentController removeScriptMessageHandlerForName:INAPP_SDK_GLOBAL_NAME];
+    }
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
