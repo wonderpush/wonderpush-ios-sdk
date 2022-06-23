@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WPIAMWebViewBridge: NSObject<WKScriptMessageHandler>
+@interface WPIAMWebViewBridge: NSObject<WKScriptMessageHandler, WKUIDelegate>
 @property (nonatomic, weak) WPIAMWebView *webView;
 @end
 
@@ -107,6 +107,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     if (!self.bridge) {
         self.bridge = [WPIAMWebViewBridge new];
         self.bridge.webView = self;
+        self.UIDelegate = self.bridge;
         [self.configuration.userContentController addScriptMessageHandler:self.bridge name:INAPP_SDK_GLOBAL_NAME];
     }
     
@@ -167,6 +168,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 }
 
 - (void)resolve:(id)result callId:(NSString *)callId {
+    if (!callId) return;
     NSError *error = nil;
     NSString *resultString = [WPIAMWebViewBridge serialize:result error:&error];
     if (error) {
@@ -455,6 +457,14 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         self.webView.onDismiss(WPInAppMessagingDismissTypeUserTapClose);
     }
     [self resolve:nil callId:callId];
+}
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+    if (navigationAction.targetFrame.isMainFrame) {
+        return nil;
+    }
+    [self openExternalUrl:@[navigationAction.request.URL.absoluteString] callId:nil];
+    return nil;
 }
 
 @end
