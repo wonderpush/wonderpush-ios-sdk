@@ -298,12 +298,18 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         }
     }
     else if ([methodName  isEqual: @"addTag"]) {
-        NSArray *tags = [args filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) { return [obj isKindOfClass:NSString.class]; }]];
+        // Support array as first arg
+        NSArray *tags = [args.firstObject isKindOfClass:NSArray.class] ? args.firstObject : args;
+        // Filter on strings only
+        tags = [tags filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) { return [obj isKindOfClass:NSString.class]; }]];
         [WonderPush addTags:tags];
         [self resolve:nil callId:callId];
     }
     else if ([methodName  isEqual: @"removeTag"]) {
-        NSArray *tags = [args filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) { return [obj isKindOfClass:NSString.class]; }]];
+        // Support array as first arg
+        NSArray *tags = [args.firstObject isKindOfClass:NSArray.class] ? args.firstObject : args;
+        // Filter on strings only
+        tags = [tags filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) { return [obj isKindOfClass:NSString.class]; }]];
         [WonderPush removeTags:tags];
         [self resolve:nil callId:callId];
     }
