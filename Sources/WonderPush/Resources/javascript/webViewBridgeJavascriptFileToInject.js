@@ -36,9 +36,23 @@
     // Executed when the window is loaded
     var onload = function() {
         // Register event listeners on data-wonderpush-* elements
+        var keys = [ // Order matters: we try to dismiss last
+          "wonderpushButtonLabel",
+          "wonderpushRemoveAllTags", // remove tags before adding them
+          "wonderpushRemoveTag",
+          "wonderpushAddTag",
+          "wonderpushUnsubscribeFromNotifications", // unsubscribe before subscribe
+          "wonderpushSubscribeToNotifications",
+          "wonderpushTrackEvent",
+          "wonderpushTriggerLocationPrompt",
+          "wonderpushOpenDeepLink", // move somewhere else last
+          "wonderpushOpenExternalUrl",
+          "wonderpushDismiss",
+        ];
         document.querySelectorAll('*').forEach(function(elt) {
           if (!elt.dataset) return;
-          Object.keys(elt.dataset).forEach(function (key) {
+          keys.forEach(function (key) {
+            if (!(key in elt.dataset)) return;
             var val = elt.dataset[key];
             var fn;
             switch (key) {
