@@ -42,6 +42,7 @@
 @property(nonatomic, nonnull, readonly) WPIAMMessageClientCache *messageCache;
 @property(nonatomic, nonnull, readonly) id<WPIAMBookKeeper> displayBookKeeper;
 @property(nonatomic) BOOL impressionRecorded;
+@property(nonatomic, strong) NSMutableSet<NSString *> *campaignIdsImpressedWithoutClick;
 // Used for displaying the test on device message error alert.
 @property(nonatomic, strong) UIWindow *alertWindow;
 @end
@@ -69,10 +70,6 @@
     }
 }
 #pragma mark - WPInAppMessagingDisplayDelegate methods
-- (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
-             withLabel:(NSString *)label {
-    
-}
 
 - (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
        withButtonLabel:(NSString *)buttonLabel {
@@ -92,10 +89,23 @@
     [_currentMsgBeingDisplayed.renderData.reportingData fillEventDataInto:eventData];
     eventData[@"actionDate"] = [NSNumber numberWithLongLong:(long long)([self.timeFetcher currentTimestampInSeconds] * 1000)];
     if (buttonLabel) eventData[@"buttonLabel"] = buttonLabel;
+    BOOL trackInAppClicked = NO;
+    NSString *campaignId = _currentMsgBeingDisplayed.renderData.reportingData.campaignId;
+    if (campaignId && [self.campaignIdsImpressedWithoutClick containsObject:campaignId]) {
+        trackInAppClicked = YES;
+        [self.campaignIdsImpressedWithoutClick removeObject:campaignId];
+    }
+
     if ([WonderPush subscriptionStatusIsOptIn]) {
-        [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        if (trackInAppClicked) {
+            [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        }
+        [WonderPush trackInternalEvent:@"@INAPP_ITEM_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
     } else {
-        [WonderPush countInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        if (trackInAppClicked) {
+            [WonderPush countInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        }
+        [WonderPush countInternalEvent:@"@INAPP_ITEM_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
     }
 }
 
@@ -147,6 +157,11 @@
     
     // Logging the impression
     [self recordValidImpression:_currentMsgBeingDisplayed.renderData.reportingData];
+    
+    if (_currentMsgBeingDisplayed.renderData.reportingData.campaignId) {
+        [self.campaignIdsImpressedWithoutClick removeObject:_currentMsgBeingDisplayed.renderData.reportingData.campaignId];
+    }
+
 }
 
 - (void)impressionDetectedForMessage:(WPInAppMessagingDisplayMessage *)inAppMessage {
@@ -200,6 +215,10 @@
         return;
     }
     
+    if (campaignId) {
+        [self.campaignIdsImpressedWithoutClick removeObject:campaignId];
+    }
+
     // we remove the message from the client side cache so that it won't be retried until next time
     // it's fetched again from server.
     [self.messageCache removeMessagesWithCampaignId:campaignId];
@@ -211,6 +230,9 @@
         [self.displayBookKeeper recordNewImpressionForReportingData:reportingData
                                         withStartTimestampInSeconds:self.lastInAppDisplayTime];
         self.impressionRecorded = YES;
+        if (reportingData.campaignId) {
+            [self.campaignIdsImpressedWithoutClick addObject:reportingData.campaignId];
+        }
     }
 }
 
@@ -273,6 +295,7 @@
         _displayBookKeeper = displayBookKeeper;
         _isMsgBeingDisplayed = NO;
         _suppressMessageDisplay = NO;  // always allow message display on startup
+        _campaignIdsImpressedWithoutClick = [NSMutableSet new];
     }
     return self;
 }
