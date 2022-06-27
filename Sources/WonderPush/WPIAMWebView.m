@@ -226,6 +226,9 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         [self.webView.displayDelegate messageClicked:self.webView.inAppMessage withButtonLabel:buttonLabel];
         [self resolve:nil callId:callId];
     }
+    else if ([methodName isEqual:@"getPayload"]) {
+        [self getPayload:callId];
+    }
     else if ([methodName isEqual: @"openDeepLink"]) {
         [self openDeepLink:args callId:callId];
     }
@@ -424,6 +427,9 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
 }
 
+- (void) getPayload:(NSString *)callId {
+    [self resolve:self.webView.inAppMessage.payload callId:callId];
+}
 - (void) openDeepLink:(NSArray *)args callId:(NSString *)callId {
     if (args.count < 1) return;
     if (![args[0] isKindOfClass:NSString.class]) return;
