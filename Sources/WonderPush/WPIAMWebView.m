@@ -70,6 +70,10 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 @implementation WPIAMWebView
 
 + (void)initialize {
+    [self ensureInitialized];
+}
+
++ (void)ensureInitialized {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         if (@available(iOS 11.0, *)) {

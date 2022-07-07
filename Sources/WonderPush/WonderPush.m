@@ -39,6 +39,7 @@
 #import "WPRequestVault.h"
 #import "WPIAMMessageDefinition.h"
 #import "WPConfiguration.h"
+#import "WPIAMWebView.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
@@ -92,6 +93,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        [WPIAMWebView ensureInitialized];
         safeDeferWithSubscriptionBlocks = [NSMutableArray new];
         NSBundle *resourceBundle = [self resourceBundle];
         if (!resourceBundle) {
