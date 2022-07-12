@@ -302,6 +302,9 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     else if ([methodName  isEqual: @"getTimeZone"]) {
         [self resolve:[WonderPush timeZone] callId:callId];
     }
+    else if ([methodName isEqual:@"getPlatform"]) {
+        [self resolve:@"iOS" callId:callId];
+    }
     else if ([methodName  isEqual: @"trackEvent"]) {
         NSString *eventName = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         NSDictionary *attributes = args.count >= 2 && [args[1] isKindOfClass:NSDictionary.class] ? args[1] : nil;
