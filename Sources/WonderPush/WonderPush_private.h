@@ -228,6 +228,8 @@ Called when receiving the full state of the installation
 
 + (void) requestEventuallyWithMeasurementsApi:(WPRequest *)request;
 
++ (void)requestEventuallyWithOptionalAccessToken:(WPRequest *)request;
+
 + (WPReportingData *) lastClickedNotificationReportingData;
 
 + (NSString *) subscriptionStatus;

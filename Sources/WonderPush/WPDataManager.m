@@ -92,7 +92,7 @@ static dispatch_queue_t dataManagerQueue;
                     dispatch_semaphore_signal(sem);
                 };
                 appendString([NSString stringWithFormat:@"{\"%@\":", resource]);
-                [[WPAPIClient sharedClient] requestAuthenticated:request];
+                [[WPAPIClient sharedClient] executeRequest:request];
                 dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
                 appendString(@"}\n");
             }
@@ -141,7 +141,7 @@ static dispatch_queue_t dataManagerQueue;
                 request.method = @"GET";
                 request.params = params;
                 request.handler = handler;
-                [[WPAPIClient sharedClient] requestAuthenticated:request];
+                [[WPAPIClient sharedClient] executeRequest:request];
             };
             getNextEventPage(@{@"limit": @1000});
             dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
@@ -162,7 +162,7 @@ static dispatch_queue_t dataManagerQueue;
     request.userId = userId;
     request.resource = @"/events";
     request.method = @"DELETE";
-    [[WPAPIClient sharedClient] requestAuthenticated:request];
+    [[WPAPIClient sharedClient] executeRequest:request];
 }
 
 - (void) clearPreferences
@@ -183,7 +183,7 @@ static dispatch_queue_t dataManagerQueue;
         request.resource = @"/user";
         request.method = @"PUT";
         request.params = @{ @"body": @"{\"custom\":null}" };
-        [[WPAPIClient sharedClient] requestAuthenticated:request];
+        [[WPAPIClient sharedClient] executeRequest:request];
     }
 }
 - (void) clearInstallation:(NSString *)userId
@@ -197,7 +197,7 @@ static dispatch_queue_t dataManagerQueue;
     request.handler = ^(WPResponse *response, NSError *error) {
         NSLog(@"response:%@ error:%@", response, error);
     };
-    [[WPAPIClient sharedClient] requestAuthenticated:request];
+    [[WPAPIClient sharedClient] executeRequest:request];
 
 }
 - (void) clearLocalStorage

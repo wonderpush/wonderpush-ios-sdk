@@ -23,9 +23,37 @@ FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
 /**
  WPAPIClient is an implementation of AFHTTPClient that handles authentication to the API.
  */
-@interface WPAPIClient : NSObject <WPRequestExecutor>
-
+@interface WPBaseAPIClient : NSObject <WPRequestExecutor>
 @property (nonatomic, assign) BOOL disabled;
+@property (readonly) NSURL *baseURL;
+
+/**
+ The designated initializer
+ @param url The base URL for this client
+ */
+- (id) initWithBaseURL:(NSURL *)url;
+
+/**
+  Adds common parameters to the provided request
+ */
+- (NSDictionary *)decorateRequestParams:(WPRequest *)request;
+
+/**
+ Performs the given request in an authenticated manner, immediately. Upon network error, save this request and try again later,
+ even after application restart.
+
+ The given request is saved in the `NSUserDefaults` and will be tried again upon application restart.
+
+ The request's handler will be called upon success or error (other than network related) unless the application has restarted.
+
+ @param request The request to be run
+ @exception InvalidHTTPVerb   Raised when using a verb other than GET, POST or DELETE.
+ */
+- (void) requestEventually:(WPRequest *)request;
+
+@end
+
+@interface WPAPIClient : WPBaseAPIClient
 
 ///---------------
 ///@name Singleton
@@ -49,32 +77,6 @@ FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
  */
 
 - (void) fetchAccessTokenAndRunRequest:(WPRequest *)request;
-
-
-///----------------------
-/// @name REST API access
-///----------------------
-
-/**
- Performs the given request. If no accessToken can be found, requests an anonymous access token before running the given request.
- @param request The request to be run
- @exception InvalidHTTPVerb   Raised when using a verb other than GET, POST or DELETE.
- */
-- (void) requestAuthenticated:(WPRequest *)request;
-
-/**
- Performs the given request in an authenticated manner, immediately. Upon network error, save this request and try again later,
- even after application restart.
-
- The given request is saved in the `NSUserDefaults` and will be tried again upon application restart.
-
- The request's handler will be called upon success or error (other than network related) unless the application has restarted.
-
- @param request The request to be run
- @exception InvalidHTTPVerb   Raised when using a verb other than GET, POST or DELETE.
- */
-- (void) requestEventually:(WPRequest *)request;
-
 
 ///------------------
 /// @name HTTP client

@@ -40,6 +40,7 @@
 #import "WPIAMMessageDefinition.h"
 #import "WPConfiguration.h"
 #import "WPIAMWebView.h"
+#import "WPAnonymousAPIClient.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
@@ -1434,7 +1435,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.handler = handler;
     request.params = [parameters copy];
 
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) post:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
@@ -1459,7 +1460,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.handler = handler;
     request.params = [parameters copy];
 
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) get:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
@@ -1483,7 +1484,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.resource = resource;
     request.handler = handler;
     request.params = [parameters copy];
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) delete:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
@@ -1507,7 +1508,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.resource = resource;
     request.handler = handler;
     request.params = [parameters copy];
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) put:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
@@ -1531,7 +1532,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.resource = resource;
     request.handler = handler;
     request.params = [parameters copy];
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) postEventually:(NSString *)resource params:(id)params
@@ -1958,6 +1959,21 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
         return remoteConfigManager;
     }
+}
+
++ (void)requestEventuallyWithOptionalAccessToken:(WPRequest *)request {
+    if (![WonderPush isInitialized]) {
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        return;
+    }
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:request.params];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
+    request.userId = [WPConfiguration sharedConfiguration].userId;
+    request.params = [parameters copy];
+
+    NSString *accessToken = WPConfiguration.sharedConfiguration.accessToken;
+    WPBaseAPIClient *client = accessToken ? WPAPIClient.sharedClient : WPAnonymousAPIClient.sharedClient;
+    [client requestEventually:request];
 }
 
 + (void)requestEventuallyWithMeasurementsApi:(WPRequest *)request {

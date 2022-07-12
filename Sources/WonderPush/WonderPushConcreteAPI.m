@@ -76,7 +76,7 @@
 
 - (void)trackInAppEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
-    [self trackEvent:type eventData:data customData:customData sentCallback:nil];
+    [self trackEvent:type eventData:data customData:customData requiresSubscription:NO sentCallback:nil];
 }
 
 - (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
@@ -169,7 +169,9 @@
 }
 
 - (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void(^)(void))sentCallback {
-
+    [self trackEvent:type eventData:data customData:customData requiresSubscription:YES sentCallback:sentCallback];
+}
+- (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData requiresSubscription:(BOOL)requiresSubscription sentCallback:(void(^)(void))sentCallback {
     if (![type isKindOfClass:[NSString class]]) return;
     @synchronized (self) {
         NSString *eventEndPoint = @"/events";
@@ -202,10 +204,18 @@
                     [WonderPush postEventually:eventEndPoint params:params];
                     if (sentCallback) sentCallback();
                 } else {
-                    [WonderPush safeDeferWithSubscription:^{
-                        [WonderPush postEventually:eventEndPoint params:params];
-                        if (sentCallback) sentCallback();
-                    }];
+                    if (requiresSubscription) {
+                        [WonderPush safeDeferWithSubscription:^{
+                            [WonderPush postEventually:eventEndPoint params:params];
+                            if (sentCallback) sentCallback();
+                        }];
+                    } else {
+                        WPRequest *request = [WPRequest new];
+                        request.method = @"POST";
+                        request.params = params;
+                        request.resource = @"/events";
+                        [WonderPush requestEventuallyWithOptionalAccessToken:request];
+                    }
                 }
             }];
         }];
