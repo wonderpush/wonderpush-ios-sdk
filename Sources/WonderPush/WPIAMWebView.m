@@ -303,7 +303,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     else if ([methodName  isEqual: @"getTimeZone"]) {
         [self resolve:[WonderPush timeZone] callId:callId];
     }
-    else if ([methodName isEqual:@"getPlatform"]) {
+    else if ([methodName isEqual:@"getDevicePlatform"]) {
         [self resolve:@"iOS" callId:callId];
     } else if ([methodName isEqual:@"openAppRating"]) {
         if (@available(iOS 10.3, *)) {
