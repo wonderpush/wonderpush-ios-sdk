@@ -25,8 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (WPIAMCardViewController *)
     instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                  displayMessage:(WPInAppMessagingCardDisplay *)cardMessage
-                                displayDelegate:
-                                    (id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                controllerDelegate:
+                                    (id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                     timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher;
 
 @end

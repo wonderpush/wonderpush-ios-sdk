@@ -28,8 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
     instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                  displayMessage:
                                      (WPInAppMessagingImageOnlyDisplay *)imageOnlyMessage
-                                displayDelegate:
-                                    (id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                controllerDelegate:
+                                    (id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                     timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher;
 @end
 NS_ASSUME_NONNULL_END

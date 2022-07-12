@@ -15,15 +15,22 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "WPIAMBaseRenderingViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@protocol WPInAppMessagingInternalDisplay<WPInAppMessagingDisplay>
+- (BOOL)displayMessage:(WPInAppMessagingDisplayMessage *)messageForDisplay
+       displayDelegate:(id<WPInAppMessagingControllerDelegate>)displayDelegate;
+@end
+
 NS_SWIFT_NAME(InAppMessagingDefaultDisplayImpl)
 /**
  * Public class for displaying IAM messages. Most apps should not use it since its instance
  * would be instantiated upon SDK start-up automatically. It's exposed in public interface
  * to help UI Testing app access the UI layer directly.
  */
-@interface WPIAMDefaultDisplayImpl : NSObject <WPInAppMessagingDisplay>
+@interface WPIAMDefaultDisplayImpl : NSObject <WPInAppMessagingInternalDisplay>
 + (instancetype) instance;
 @end
 NS_ASSUME_NONNULL_END

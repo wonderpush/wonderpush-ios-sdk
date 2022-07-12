@@ -492,6 +492,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     [wonderPushAPI trackInternalEvent:type eventData:data customData:customData sentCallback:sentCallback];
 }
 
++ (void) trackInAppEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData {
+    [wonderPushAPI trackInAppEvent:type eventData:data customData:customData];
+}
+
 + (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
     [wonderPushAPI trackInternalEvent:type eventData:data customData:customData];

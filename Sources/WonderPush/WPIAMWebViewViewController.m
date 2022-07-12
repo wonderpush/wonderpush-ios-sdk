@@ -26,7 +26,7 @@
 
 + (WPIAMWebViewViewController *) instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                       displayMessage:(WPInAppMessagingWebViewDisplay *)webViewMessage
-                                     displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                     controllerDelegate:(id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                          timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher {
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
@@ -40,7 +40,7 @@
     WPIAMWebViewViewController *webViewVC = (WPIAMWebViewViewController *)[storyboard
                                                                            instantiateViewControllerWithIdentifier:@"webview-vc"];
     
-    webViewVC.displayDelegate = displayDelegate;
+    webViewVC.controllerDelegate = controllerDelegate;
     webViewVC.webViewMessage = webViewMessage;
     webViewVC.timeFetcher = timeFetcher;
     webViewVC.webView = webViewMessage.webView;
@@ -69,7 +69,7 @@
     if ([self.webView isKindOfClass:WPIAMWebView.class]) {
         __weak WPIAMWebView *webView = (WPIAMWebView *)self.webView;
         __weak WPIAMWebViewViewController *weakSelf = self;
-        webView.displayDelegate = self.displayDelegate;
+        webView.controllerDelegate = self.controllerDelegate;
         webView.inAppMessage = self.inAppMessage;
         webView.onDismiss = ^(WPInAppMessagingDismissType type) {
             [weakSelf dismissView:type];

@@ -58,12 +58,12 @@ static WPIAMDefaultDisplayImpl *instance = nil;
 }
 
 + (void)displayCardViewWithMessageDefinition:(WPInAppMessagingCardDisplay *)cardMessage
-                             displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate {
+                             controllerDelegate:(id<WPInAppMessagingControllerDelegate>)controllerDelegate {
     dispatch_async(dispatch_get_main_queue(), ^{
 
         if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
             WPLog(@"UIApplication not active when time has come to show message %@.", cardMessage);
-            [displayDelegate displayErrorForMessage:cardMessage error:[self applicationNotActiveError]];
+            [controllerDelegate displayErrorForMessage:cardMessage error:[self applicationNotActiveError]];
             return;
         }
 
@@ -74,7 +74,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                 code:IAMDisplayRenderErrorTypeUnspecifiedError
                             userInfo:@{NSLocalizedDescriptionKey : @"Resource bundle is missing."}];
-            [displayDelegate displayErrorForMessage:cardMessage error:error];
+            [controllerDelegate displayErrorForMessage:cardMessage error:error];
             return;
         }
         
@@ -82,7 +82,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
         WPIAMCardViewController *cardVC =
         [WPIAMCardViewController instantiateViewControllerWithResourceBundle:resourceBundle
                                                                displayMessage:cardMessage
-                                                              displayDelegate:displayDelegate
+                                                              controllerDelegate:controllerDelegate
                                                                   timeFetcher:timeFetcher];
         
         if (cardVC == nil) {
@@ -92,7 +92,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
                               errorWithDomain:kInAppMessagingDisplayErrorDomain
                               code:IAMDisplayRenderErrorTypeUnspecifiedError
                               userInfo:@{NSLocalizedDescriptionKey : @"View controller could not be created"}];
-            [displayDelegate displayErrorForMessage:cardMessage error:error];
+            [controllerDelegate displayErrorForMessage:cardMessage error:error];
             return;
         }
         
@@ -103,13 +103,13 @@ static WPIAMDefaultDisplayImpl *instance = nil;
 }
 
 + (void)displayModalViewWithMessageDefinition:(WPInAppMessagingModalDisplay *)modalMessage
-                              displayDelegate:
-(id<WPInAppMessagingDisplayDelegate>)displayDelegate {
+                              controllerDelegate:
+(id<WPInAppMessagingControllerDelegate>)controllerDelegate {
     dispatch_async(dispatch_get_main_queue(), ^{
 
         if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
             WPLog(@"UIApplication not active when time has come to show message %@.", modalMessage);
-            [displayDelegate displayErrorForMessage:modalMessage error:[self applicationNotActiveError]];
+            [controllerDelegate displayErrorForMessage:modalMessage error:[self applicationNotActiveError]];
             return;
         }
 
@@ -119,7 +119,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
                                              userInfo:@{@"message" : @"resource bundle is missing"}];
-            [displayDelegate displayErrorForMessage:modalMessage error:error];
+            [controllerDelegate displayErrorForMessage:modalMessage error:error];
             return;
         }
         
@@ -127,7 +127,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
         WPIAMModalViewController *modalVC =
         [WPIAMModalViewController instantiateViewControllerWithResourceBundle:resourceBundle
                                                                 displayMessage:modalMessage
-                                                               displayDelegate:displayDelegate
+                                                               controllerDelegate:controllerDelegate
                                                                    timeFetcher:timeFetcher];
         
         if (modalVC == nil) {
@@ -136,7 +136,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
                                              userInfo:@{}];
-            [displayDelegate displayErrorForMessage:modalMessage error:error];
+            [controllerDelegate displayErrorForMessage:modalMessage error:error];
             return;
         }
         
@@ -147,13 +147,13 @@ static WPIAMDefaultDisplayImpl *instance = nil;
 }
 
 + (void)displayBannerViewWithMessageDefinition:(WPInAppMessagingBannerDisplay *)bannerMessage
-                               displayDelegate:
-(id<WPInAppMessagingDisplayDelegate>)displayDelegate {
+                               controllerDelegate:
+(id<WPInAppMessagingControllerDelegate>)controllerDelegate {
     dispatch_async(dispatch_get_main_queue(), ^{
 
         if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
             WPLog(@"UIApplication not active when time has come to show message %@.", bannerMessage);
-            [displayDelegate displayErrorForMessage:bannerMessage error:[self applicationNotActiveError]];
+            [controllerDelegate displayErrorForMessage:bannerMessage error:[self applicationNotActiveError]];
             return;
         }
 
@@ -163,7 +163,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
                                              userInfo:@{}];
-            [displayDelegate displayErrorForMessage:bannerMessage error:error];
+            [controllerDelegate displayErrorForMessage:bannerMessage error:error];
             return;
         }
         
@@ -171,7 +171,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
         WPIAMBannerViewController *bannerVC =
         [WPIAMBannerViewController instantiateViewControllerWithResourceBundle:resourceBundle
                                                                  displayMessage:bannerMessage
-                                                                displayDelegate:displayDelegate
+                                                                controllerDelegate:controllerDelegate
                                                                     timeFetcher:timeFetcher];
         
         if (bannerVC == nil) {
@@ -180,7 +180,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
                                              userInfo:@{}];
-            [displayDelegate displayErrorForMessage:bannerMessage error:error];
+            [controllerDelegate displayErrorForMessage:bannerMessage error:error];
             return;
         }
         
@@ -192,12 +192,12 @@ static WPIAMDefaultDisplayImpl *instance = nil;
 
 + (void)displayImageOnlyViewWithMessageDefinition:
 (WPInAppMessagingImageOnlyDisplay *)imageOnlyMessage
-                                  displayDelegate:
-(id<WPInAppMessagingDisplayDelegate>)displayDelegate {
+                                  controllerDelegate:
+(id<WPInAppMessagingControllerDelegate>)controllerDelegate {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
             WPLog(@"UIApplication not active when time has come to show message %@.", imageOnlyMessage);
-            [displayDelegate displayErrorForMessage:imageOnlyMessage error:[self applicationNotActiveError]];
+            [controllerDelegate displayErrorForMessage:imageOnlyMessage error:[self applicationNotActiveError]];
             return;
         }
         NSBundle *resourceBundle = [self getViewResourceBundle];
@@ -206,7 +206,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
                                              userInfo:@{}];
-            [displayDelegate displayErrorForMessage:imageOnlyMessage error:error];
+            [controllerDelegate displayErrorForMessage:imageOnlyMessage error:error];
             return;
         }
         
@@ -214,7 +214,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
         WPIAMImageOnlyViewController *imageOnlyVC =
         [WPIAMImageOnlyViewController instantiateViewControllerWithResourceBundle:resourceBundle
                                                                     displayMessage:imageOnlyMessage
-                                                                   displayDelegate:displayDelegate
+                                                                   controllerDelegate:controllerDelegate
                                                                        timeFetcher:timeFetcher];
         
         if (imageOnlyVC == nil) {
@@ -223,7 +223,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
                                              userInfo:@{}];
-            [displayDelegate displayErrorForMessage:imageOnlyMessage error:error];
+            [controllerDelegate displayErrorForMessage:imageOnlyMessage error:error];
             return;
         }
         
@@ -235,17 +235,17 @@ static WPIAMDefaultDisplayImpl *instance = nil;
 
 + (void)displayWebViewViewWithMessageDefinition:
 (WPInAppMessagingWebViewDisplay *)webViewMessage
-                                  displayDelegate:
-(id<WPInAppMessagingDisplayDelegate>)displayDelegate {
+                                  controllerDelegate:
+(id<WPInAppMessagingControllerDelegate>)controllerDelegate {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
             WPLogDebug(@"UIApplication not active when time has come to show message %@.", webViewMessage);
-            [displayDelegate displayErrorForMessage:webViewMessage error:[self applicationNotActiveError]];
+            [controllerDelegate displayErrorForMessage:webViewMessage error:[self applicationNotActiveError]];
             return;
         }
         if (!webViewMessage.webView) {
             WPLogDebug(@"Message misses its webView %@.", webViewMessage);
-            [displayDelegate
+            [controllerDelegate
              displayErrorForMessage:webViewMessage
              error:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                        code:IAMDisplayRenderErrorTypeWebUrlFailedToLoad
@@ -259,7 +259,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
                                              userInfo:@{}];
-            [displayDelegate displayErrorForMessage:webViewMessage error:error];
+            [controllerDelegate displayErrorForMessage:webViewMessage error:error];
             return;
         }
         
@@ -267,14 +267,14 @@ static WPIAMDefaultDisplayImpl *instance = nil;
         WPIAMWebViewViewController *webViewVC = [WPIAMWebViewViewController
                                                  instantiateViewControllerWithResourceBundle:resourceBundle
                                                  displayMessage:webViewMessage
-                                                 displayDelegate:displayDelegate
+                                                 controllerDelegate:controllerDelegate
                                                  timeFetcher:timeFetcher];
         if (webViewVC == nil) {
             WPLogDebug(@"webView view controller can not be created.");
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
                                              userInfo:@{}];
-            [displayDelegate displayErrorForMessage:webViewMessage error:error];
+            [controllerDelegate displayErrorForMessage:webViewMessage error:error];
             return;
         }
         
@@ -286,28 +286,28 @@ static WPIAMDefaultDisplayImpl *instance = nil;
 
 #pragma mark - protocol WPInAppMessagingDisplay
 - (BOOL)displayMessage:(WPInAppMessagingDisplayMessage *)messageForDisplay
-       displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate {
+       displayDelegate:(id<WPInAppMessagingControllerDelegate>)displayDelegate {
     if ([messageForDisplay isKindOfClass:[WPInAppMessagingModalDisplay class]]) {
         WPLogDebug( @"Display a modal message.");
         [self.class displayModalViewWithMessageDefinition:(WPInAppMessagingModalDisplay *)messageForDisplay
-                                          displayDelegate:displayDelegate];
+                                          controllerDelegate:displayDelegate];
         
     } else if ([messageForDisplay isKindOfClass:[WPInAppMessagingBannerDisplay class]]) {
         WPLogDebug( @"Display a banner message.");
         [self.class displayBannerViewWithMessageDefinition:(WPInAppMessagingBannerDisplay *)messageForDisplay
-                                           displayDelegate:displayDelegate];
+                                           controllerDelegate:displayDelegate];
     } else if ([messageForDisplay isKindOfClass:[WPInAppMessagingImageOnlyDisplay class]]) {
         WPLogDebug( @"Display an image only message.");
         [self.class displayImageOnlyViewWithMessageDefinition:(WPInAppMessagingImageOnlyDisplay *)messageForDisplay
-                                              displayDelegate:displayDelegate];
+                                              controllerDelegate:displayDelegate];
     } else if ([messageForDisplay isKindOfClass:[WPInAppMessagingWebViewDisplay class]]) {
         WPLogDebug( @"Display a webview message.");
         [self.class displayWebViewViewWithMessageDefinition:(WPInAppMessagingWebViewDisplay *)messageForDisplay
-                                              displayDelegate:displayDelegate];
+                                              controllerDelegate:displayDelegate];
     } else if ([messageForDisplay isKindOfClass:[WPInAppMessagingCardDisplay class]]) {
         WPLogDebug( @"Display a card message.");
         [self.class displayCardViewWithMessageDefinition:(WPInAppMessagingCardDisplay *)messageForDisplay
-                                         displayDelegate:displayDelegate];
+                                         controllerDelegate:displayDelegate];
         
     } else {
         WPLog(

@@ -36,8 +36,8 @@
 + (WPIAMCardViewController *)
     instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                  displayMessage:(WPInAppMessagingCardDisplay *)cardMessage
-                                displayDelegate:
-                                    (id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                controllerDelegate:
+                                    (id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                     timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
                                                          bundle:resourceBundle];
@@ -50,7 +50,7 @@
     }
     WPIAMCardViewController *cardVC = (WPIAMCardViewController *)[storyboard
                                                                     instantiateViewControllerWithIdentifier:@"card-view-vc"];
-    cardVC.displayDelegate = displayDelegate;
+    cardVC.controllerDelegate = controllerDelegate;
     cardVC.cardDisplayMessage = cardMessage;
     cardVC.timeFetcher = timeFetcher;
     

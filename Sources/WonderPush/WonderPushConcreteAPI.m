@@ -73,6 +73,12 @@
     
     [self trackEvent:type eventData:data customData:customData sentCallback:sentCallback];
 }
+
+- (void)trackInAppEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+{
+    [self trackEvent:type eventData:data customData:customData sentCallback:nil];
+}
+
 - (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
     [self trackInternalEvent:type eventData:data customData:customData sentCallback:nil];

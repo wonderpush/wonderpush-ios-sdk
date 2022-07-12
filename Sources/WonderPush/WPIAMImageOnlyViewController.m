@@ -37,8 +37,8 @@
     instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                  displayMessage:
                                      (WPInAppMessagingImageOnlyDisplay *)imageOnlyMessage
-                                displayDelegate:
-                                    (id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                controllerDelegate:
+                                    (id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                     timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
                                                          bundle:resourceBundle];
@@ -51,7 +51,7 @@
     }
     WPIAMImageOnlyViewController *imageOnlyVC = (WPIAMImageOnlyViewController *)[storyboard
                                                                                    instantiateViewControllerWithIdentifier:@"image-only-vc"];
-    imageOnlyVC.displayDelegate = displayDelegate;
+    imageOnlyVC.controllerDelegate = controllerDelegate;
     imageOnlyVC.imageOnlyMessage = imageOnlyMessage;
     imageOnlyVC.timeFetcher = timeFetcher;
     

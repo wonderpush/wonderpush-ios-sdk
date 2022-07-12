@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WPIAMWebViewViewController : WPIAMBaseRenderingViewController
 + (WPIAMWebViewViewController *) instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                       displayMessage:(WPInAppMessagingWebViewDisplay *)webViewMessage
-                                     displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                     controllerDelegate:(id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                          timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher;
 @end
 NS_ASSUME_NONNULL_END

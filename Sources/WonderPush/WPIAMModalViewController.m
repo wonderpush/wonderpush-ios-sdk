@@ -75,7 +75,7 @@ static CGFloat LandScapePaddingBetweenImageAndTextColumn = 24;
 + (WPIAMModalViewController *)
     instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                  displayMessage:(WPInAppMessagingModalDisplay *)modalMessage
-                                displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                controllerDelegate:(id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                     timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
                                                          bundle:resourceBundle];
@@ -88,7 +88,7 @@ static CGFloat LandScapePaddingBetweenImageAndTextColumn = 24;
     }
     WPIAMModalViewController *modalVC = (WPIAMModalViewController *)[storyboard
                                                                        instantiateViewControllerWithIdentifier:@"modal-view-vc"];
-    modalVC.displayDelegate = displayDelegate;
+    modalVC.controllerDelegate = controllerDelegate;
     modalVC.modalDisplayMessage = modalMessage;
     modalVC.timeFetcher = timeFetcher;
     

@@ -58,7 +58,7 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
 + (WPIAMBannerViewController *)
     instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                  displayMessage:(WPInAppMessagingBannerDisplay *)bannerMessage
-                                displayDelegate:(id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                controllerDelegate:(id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                     timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
                                                          bundle:resourceBundle];
@@ -71,7 +71,7 @@ static const CGFloat kSwipeDownThreshold = 10.0f;
     }
     WPIAMBannerViewController *bannerVC = (WPIAMBannerViewController *)[storyboard
                                                                           instantiateViewControllerWithIdentifier:@"banner-view-vc"];
-    bannerVC.displayDelegate = displayDelegate;
+    bannerVC.controllerDelegate = controllerDelegate;
     bannerVC.bannerDisplayMessage = bannerMessage;
     bannerVC.timeFetcher = timeFetcher;
     

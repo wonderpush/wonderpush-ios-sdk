@@ -26,8 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (WPIAMModalViewController *)
     instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                  displayMessage:(WPInAppMessagingModalDisplay *)modalMessage
-                                displayDelegate:
-                                    (id<WPInAppMessagingDisplayDelegate>)displayDelegate
+                                controllerDelegate:
+                                    (id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                     timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher;
 @end
 NS_ASSUME_NONNULL_END

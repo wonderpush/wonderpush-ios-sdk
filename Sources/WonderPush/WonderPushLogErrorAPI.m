@@ -109,6 +109,11 @@
     [self log:@"trackInternalEvent:eventData:customData:"];
 }
 
+- (void)trackInAppEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+{
+    [self log:@"trackInAppEvent:eventData:customData:"];
+}
+
 - (void)trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void (^)(void))sentCallback
 {
     [self log:@"trackInternalEvent:eventData:customData:sentCallback:"];

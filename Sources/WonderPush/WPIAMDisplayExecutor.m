@@ -30,7 +30,7 @@
 @implementation WPIAMDisplaySetting
 @end
 
-@interface WPIAMDisplayExecutor () <WPInAppMessagingDisplayDelegate>
+@interface WPIAMDisplayExecutor () <WPInAppMessagingControllerDelegate>
 @property(nonatomic) id<WPIAMTimeFetcher> timeFetcher;
 
 // YES if a message is being rendered at this time
@@ -278,6 +278,11 @@
         self.alertWindow.hidden = NO;
         [alertViewController presentViewController:alert animated:YES completion:nil];
     });
+}
+
+- (void)trackEvent:(NSString *)type attributes:(NSDictionary *)attributes {
+    WPReportingData *reportingData = _currentMsgBeingDisplayed.renderData.reportingData;
+    [WonderPush trackInAppEvent:type eventData:reportingData.serializationDictValue customData:attributes];
 }
 
 - (instancetype)initWithInAppMessaging:(WPInAppMessaging *)inAppMessaging

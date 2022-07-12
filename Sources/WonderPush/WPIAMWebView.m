@@ -228,7 +228,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
     else if ([methodName isEqualToString:@"trackClick"]) {
         NSString *buttonLabel = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
-        [self.webView.displayDelegate messageClicked:self.webView.inAppMessage withButtonLabel:buttonLabel];
+        [self.webView.controllerDelegate messageClicked:self.webView.inAppMessage withButtonLabel:buttonLabel];
         [self resolve:nil callId:callId];
     }
     else if ([methodName isEqual:@"getPayload"]) {
@@ -320,7 +320,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         NSString *eventName = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         NSDictionary *attributes = args.count >= 2 && [args[1] isKindOfClass:NSDictionary.class] ? args[1] : nil;
         if (eventName) {
-            [WonderPush trackEvent:eventName attributes:attributes];
+            [self.webView.controllerDelegate trackEvent:eventName attributes:attributes];
             [self resolve:nil callId:callId];
         } else {
             [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnspecifiedError userInfo:@{
