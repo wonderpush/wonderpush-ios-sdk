@@ -12,6 +12,7 @@
 #import "WonderPush_constants.h"
 #import "WonderPush_private.h"
 #import "WPURLFollower.h"
+#import <StoreKit/StoreKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -304,6 +305,16 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
     else if ([methodName isEqual:@"getPlatform"]) {
         [self resolve:@"iOS" callId:callId];
+    } else if ([methodName isEqual:@"openAppRating"]) {
+        if (@available(iOS 10.3, *)) {
+            [SKStoreReviewController requestReview];
+        } else {
+            [self reject:[NSError
+                          errorWithDomain:kInAppMessagingDisplayErrorDomain
+                          code:IAMDisplayRenderErrorTypeUnspecifiedError
+                          userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Method not available on iOS < 10.3", nil)}]
+                  callId:callId];
+        }
     }
     else if ([methodName  isEqual: @"trackEvent"]) {
         NSString *eventName = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
