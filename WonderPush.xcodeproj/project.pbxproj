@@ -56,6 +56,9 @@
 		99232AF123708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08671D33F543001289BD /* WonderPushLocalizable.strings */; };
 		9926788F287DA33200DB43E9 /* WPAnonymousAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 9926788D287DA33200DB43E9 /* WPAnonymousAPIClient.h */; };
 		99267890287DA33200DB43E9 /* WPAnonymousAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9926788E287DA33200DB43E9 /* WPAnonymousAPIClient.m */; };
+		99267893287EA34F00DB43E9 /* WPRateLimiter.h in Headers */ = {isa = PBXBuildFile; fileRef = 99267891287EA34F00DB43E9 /* WPRateLimiter.h */; };
+		99267894287EA34F00DB43E9 /* WPRateLimiter.m in Sources */ = {isa = PBXBuildFile; fileRef = 99267892287EA34F00DB43E9 /* WPRateLimiter.m */; };
+		99267896287EA37900DB43E9 /* WPRateLimiterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99267895287EA37900DB43E9 /* WPRateLimiterTests.m */; };
 		9929944C2510A27C00DF5F92 /* WPIAMCappingDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 9929944A2510A27C00DF5F92 /* WPIAMCappingDefinition.m */; };
 		992F65A4251C8B7100526C90 /* WPPresenceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 992F65A2251C8B7100526C90 /* WPPresenceManager.h */; };
 		992F65A5251C8B7100526C90 /* WPPresenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 992F65A3251C8B7100526C90 /* WPPresenceManager.m */; };
@@ -439,6 +442,9 @@
 		99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPushLogErrorAPI.m; sourceTree = "<group>"; };
 		9926788D287DA33200DB43E9 /* WPAnonymousAPIClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPAnonymousAPIClient.h; sourceTree = "<group>"; };
 		9926788E287DA33200DB43E9 /* WPAnonymousAPIClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPAnonymousAPIClient.m; sourceTree = "<group>"; };
+		99267891287EA34F00DB43E9 /* WPRateLimiter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPRateLimiter.h; sourceTree = "<group>"; };
+		99267892287EA34F00DB43E9 /* WPRateLimiter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPRateLimiter.m; sourceTree = "<group>"; };
+		99267895287EA37900DB43E9 /* WPRateLimiterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPRateLimiterTests.m; sourceTree = "<group>"; };
 		992994482510A26300DF5F92 /* WPIAMCappingDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMCappingDefinition.h; sourceTree = "<group>"; };
 		9929944A2510A27C00DF5F92 /* WPIAMCappingDefinition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMCappingDefinition.m; sourceTree = "<group>"; };
 		992F65A2251C8B7100526C90 /* WPPresenceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPPresenceManager.h; sourceTree = "<group>"; };
@@ -777,6 +783,7 @@
 				992F65A9251C8BA800526C90 /* WPPresenceManagerTests.m */,
 				99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */,
 				99991B0B27E874500020DCDE /* WPConfigurationRememberTrackedEventsTests.m */,
+				99267895287EA37900DB43E9 /* WPRateLimiterTests.m */,
 			);
 			path = WonderPushExampleTests;
 			sourceTree = "<group>";
@@ -1037,6 +1044,8 @@
 				3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */,
 				992F65A2251C8B7100526C90 /* WPPresenceManager.h */,
 				992F65A3251C8B7100526C90 /* WPPresenceManager.m */,
+				99267891287EA34F00DB43E9 /* WPRateLimiter.h */,
+				99267892287EA34F00DB43E9 /* WPRateLimiter.m */,
 				9942FD79246BDAB20002BEA0 /* WPRemoteConfig.h */,
 				9942FD7A246BDAB20002BEA0 /* WPRemoteConfig.m */,
 				A189375219C998D100F91DDD /* WPRequestVault.h */,
@@ -1337,6 +1346,7 @@
 				9998CAB8221C75370028D955 /* WPRequestVault.h in Headers */,
 				9998CAB9221C75370028D955 /* WPResponse.h in Headers */,
 				99EF839023F4452C00B9B287 /* WPIAMDisplayCheckOnFetchDoneNotificationFlow.h in Headers */,
+				99267893287EA34F00DB43E9 /* WPRateLimiter.h in Headers */,
 				9998CABA221C75370028D955 /* WPUtil.h in Headers */,
 				99EF834023F4452C00B9B287 /* UIColor+WPIAMHexString.h in Headers */,
 				99EF834623F4452C00B9B287 /* WPIAMSDKRuntimeErrorCodes.h in Headers */,
@@ -1653,6 +1663,7 @@
 				99ED541824B33A2700EECDE0 /* WPSPDataSourceTests.m in Sources */,
 				99ED541A24B33DFB00EECDE0 /* WPSPGeoBoxTests.m in Sources */,
 				995F14EA24AA493600CC499E /* WPSPISO8601DurationTests.m in Sources */,
+				99267896287EA37900DB43E9 /* WPRateLimiterTests.m in Sources */,
 				99563402252B0E7C00F6CF3E /* WPBlackWhiteListTests.m in Sources */,
 				99EE9ACC24AF5BBB00EC2A28 /* WPSPGeohashTests.m in Sources */,
 				3DB7A41E24B486DC00204437 /* WPSPSegmenterTests.m in Sources */,
@@ -1669,6 +1680,7 @@
 				99EF838D23F4452C00B9B287 /* WPIAMBookKeeper.m in Sources */,
 				99EF837523F4452C00B9B287 /* WPIAMImageOnlyViewController.m in Sources */,
 				9979E0E824A640EC002BC6EE /* WPSPASTValueNode.m in Sources */,
+				99267894287EA34F00DB43E9 /* WPRateLimiter.m in Sources */,
 				99EF837223F4452C00B9B287 /* WPIAMDefaultDisplayImpl.m in Sources */,
 				EDA0887F27F9D10B00134BB2 /* WPIAMWebViewViewController.m in Sources */,
 				99EF838023F4452C00B9B287 /* WPIAMBannerViewUIWindow.m in Sources */,
