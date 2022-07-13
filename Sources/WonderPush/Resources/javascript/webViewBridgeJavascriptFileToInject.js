@@ -45,6 +45,7 @@
           "wonderpushSubscribeToNotifications",
           "wonderpushTrackEvent",
           "wonderpushTriggerLocationPrompt",
+          "wonderpushOpenAppRating",
           "wonderpushOpenDeepLink", // move somewhere else last
           "wonderpushOpenExternalUrl",
           "wonderpushDismiss",
@@ -109,6 +110,11 @@
               case "wonderpushUnsubscribeFromNotifications":
                 fn = function () {
                   window.WonderPushInAppSDK.unsubscribeFromNotifications();
+                };
+                break;
+              case "wonderpushOpenAppRating":
+                fn = function () {
+                  window.WonderPushInAppSDK.openAppRating();
                 };
                 break;
             }
