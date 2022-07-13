@@ -411,6 +411,8 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
         // API client
         WPAPIClient.sharedClient.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY inDictionary:config.data] boolValue];
+        // Anonymous API client
+        WPAnonymousAPIClient.sharedClient.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_ANONYMOUS_API_CLIENT_KEY inDictionary:config.data] boolValue];
         // JSONSync
         WPJsonSyncInstallation.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY inDictionary:config.data] boolValue];
         if (!WPJsonSyncInstallation.disabled) {

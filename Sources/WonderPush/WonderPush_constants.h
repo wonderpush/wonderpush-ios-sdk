@@ -83,4 +83,9 @@
 
 #define LAST_RECEIVED_NOTIFICATION_CHECK_DATE_USER_DEFAULTS_KEY @"_wonderpush_lastReceivedNotificationCheckDate"
 #define LAST_RECEIVED_NOTIFICATION_CHECK_DATE_PROPERTY @"lastReceivedNotificationCheckDate"
+
+// 6 calls / minute
+#define ANONYMOUS_API_CLIENT_RATE_LIMIT_LIMIT @6
+#define ANONYMOUS_API_CLIENT_RATE_LIMIT_TIME_TO_LIVE_MILLISECONDS @60000
+
 #endif /* WonderPush_constants_h */
