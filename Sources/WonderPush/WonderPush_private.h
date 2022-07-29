@@ -48,6 +48,11 @@ extern NSString * const WPEventFiredNotificationEventTypeKey;
 extern NSString * const WPEventFiredNotificationEventDataKey;
 
 /**
+* Name of the NSNotificationCenter notification payload key that contains the event occurrences dictionary.
+*/
+extern NSString * const WPEventFiredNotificationEventOccurrencesKey;
+
+/**
  * Name of the NSNotificationCenter notification fired when subscription status changes.
  */
 extern NSString * const WPSubscriptionStatusChangedNotification;

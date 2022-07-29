@@ -111,13 +111,25 @@
     if (!body) return;
 
     // Store locally
-    [WPConfiguration.sharedConfiguration rememberTrackedEvent:body];
+    NSDictionary *occurrences = nil;
+    [WPConfiguration.sharedConfiguration rememberTrackedEvent:body occurrences:&occurrences];
     
+    // Add occurrences to the body
+    if (occurrences) {
+        NSMutableDictionary *mutableBody = body.mutableCopy;
+        mutableBody[@"occurrences"] = occurrences;
+        body = [NSDictionary dictionaryWithDictionary:mutableBody];
+        NSMutableDictionary *mutableParams = params.mutableCopy;
+        mutableParams[@"body"] = body;
+        params = [NSDictionary dictionaryWithDictionary:mutableParams];
+    }
+
     // Notify locally
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:WPEventFiredNotification object:nil userInfo:@{
             WPEventFiredNotificationEventTypeKey : type,
             WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:body],
+            WPEventFiredNotificationEventOccurrencesKey : occurrences,
         }];
     });
 
@@ -181,13 +193,25 @@
         if (!body) return;
         
         // Store locally
-        [WPConfiguration.sharedConfiguration rememberTrackedEvent:body];
+        NSDictionary *occurrences = nil;
+        [WPConfiguration.sharedConfiguration rememberTrackedEvent:body occurrences:&occurrences];
+        
+        // Add occurrences to the body
+        if (occurrences) {
+            NSMutableDictionary *mutableBody = body.mutableCopy;
+            mutableBody[@"occurrences"] = occurrences;
+            body = [NSDictionary dictionaryWithDictionary:mutableBody];
+            NSMutableDictionary *mutableParams = params.mutableCopy;
+            mutableParams[@"body"] = body;
+            params = [NSDictionary dictionaryWithDictionary:mutableParams];
+        }
 
         // Notify locally
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:WPEventFiredNotification object:nil userInfo:@{
                 WPEventFiredNotificationEventTypeKey : type,
                 WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:body],
+                WPEventFiredNotificationEventOccurrencesKey : occurrences,
             }];
         });
         

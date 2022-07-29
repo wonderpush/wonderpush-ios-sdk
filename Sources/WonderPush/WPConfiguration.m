@@ -1019,7 +1019,17 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 - (void) rememberTrackedEvent:(NSDictionary *)eventParams now:(NSDate *)nowDate {
+    [self rememberTrackedEvent:eventParams occurrences:nil now:nowDate];
+}
+
+- (void) rememberTrackedEvent:(NSDictionary *)eventParams occurrences:(NSDictionary **)occurrences {
+    [self rememberTrackedEvent:eventParams occurrences:occurrences now:self.now ? self.now() : [NSDate date]];
+}
+
+- (void) rememberTrackedEvent:(NSDictionary *)eventParams occurrences:(NSDictionary **)occurrencesOut now:(NSDate *)nowDate {
     if (!eventParams) return;
+
+    NSInteger allTime = 0;
 
     // Note: It is assumed that the given event is more recent than any other already stored events
     NSString *type = eventParams[@"type"];
@@ -1044,6 +1054,7 @@ static WPConfiguration *sharedConfiguration = nil;
         if ((!collapsing || [@"last" isEqualToString:collapsing])
             && [@"last" isEqualToString:oldTrackedEventCollapsing]
             && [type isEqualToString:oldTrackedEventType]) {
+            allTime = MAX(1, oldTrackedEvent[@"occurrences"] && oldTrackedEvent[@"occurrences"][@"allTime"] ? [oldTrackedEvent[@"occurrences"][@"allTime"] integerValue] : 1);
             continue;
         }
         // Filter out the collapsing=campaign event of the same type and campaign as the new event we want to add
@@ -1052,6 +1063,7 @@ static WPConfiguration *sharedConfiguration = nil;
             && [@"campaign" isEqualToString:oldTrackedEventCollapsing]
             && [type isEqualToString:oldTrackedEventType]
             && [campaignId isEqualToString:oldTrackedEvent[@"campaignId"]]) {
+            allTime = MAX(1, oldTrackedEvent[@"occurrences"] && oldTrackedEvent[@"occurrences"][@"allTime"] ? [oldTrackedEvent[@"occurrences"][@"allTime"] integerValue] : 1);
             continue;
         }
         // Filter out old uncollapsed events
@@ -1075,16 +1087,22 @@ static WPConfiguration *sharedConfiguration = nil;
     }
 
     // Add the new event, uncollapsed
-    NSMutableDictionary *copyOfEventData;
+    NSMutableDictionary *uncollapsedEventData;
+    NSMutableDictionary *collapsedEventData;
     if (!collapsing) {
         NSError *error = nil;
         // Let make a deep copy by serializing / deserializing to/from JSON
         NSData *data = [NSJSONSerialization dataWithJSONObject:eventParams options:0 error:&error];
-        copyOfEventData = error ? nil : [[NSJSONSerialization JSONObjectWithData:data options:0 error:&error] mutableCopy];
+        uncollapsedEventData = error ? nil : [[NSJSONSerialization JSONObjectWithData:data options:0 error:&error] mutableCopy];
         if (error) {
             WPLog(@"Could not store uncollapsed tracked event: %@", error);
         } else {
-            [uncollapsedEvents addObject:copyOfEventData];
+            NSNumber *actionDateNumber = uncollapsedEventData[@"actionDate"] ?: @(now);
+            NSInteger actionDate = actionDateNumber.integerValue;
+            // Only add uncollapsed if it's not too old
+            if (now - actionDate < getMaximumUncollapsedTrackedEventsAgeMs) {
+                [uncollapsedEvents addObject:uncollapsedEventData];
+            }
         }
     }
     
@@ -1093,22 +1111,23 @@ static WPConfiguration *sharedConfiguration = nil;
     {
         NSError *error = nil;
         NSData *data = [NSJSONSerialization dataWithJSONObject:eventParams options:0 error:&error];
-        copyOfEventData = error ? nil : [[NSJSONSerialization JSONObjectWithData:data options:0 error:&error] mutableCopy];
+        collapsedEventData = error ? nil : [[NSJSONSerialization JSONObjectWithData:data options:0 error:&error] mutableCopy];
         if (error) {
             WPLog(@"Could not store collapsed tracked event: %@", error);
         } else {
+            allTime += 1;
             if (!collapsing) {
-                copyOfEventData[@"collapsing"] = @"last";
+                collapsedEventData[@"collapsing"] = @"last";
                 collapsing = @"last";
             }
             if ([@"last" isEqualToString:collapsing]) {
                 if ([type hasPrefix:@"@"]) {
-                    [collapsedLastBuiltinEvents addObject:copyOfEventData];
+                    [collapsedLastBuiltinEvents addObject:collapsedEventData];
                 } else {
-                    [collapsedLastCustomEvents addObject:copyOfEventData];
+                    [collapsedLastCustomEvents addObject:collapsedEventData];
                 }
             } else {
-                [collapsedOtherEvents addObject:copyOfEventData];
+                [collapsedOtherEvents addObject:collapsedEventData];
             }
         }
     }
@@ -1132,15 +1151,46 @@ static WPConfiguration *sharedConfiguration = nil;
     collapsedLastCustomEvents = [[self removeExcessEventsFromStart:collapsedLastCustomEvents max:self.maximumCollapsedLastCustomTrackedEventsCount] mutableCopy];
     collapsedOtherEvents = [[self removeExcessEventsFromStart:collapsedOtherEvents max:self.maximumCollapsedOtherTrackedEventsCount] mutableCopy];
 
+    // Compute occurrences
+    NSMutableDictionary *occurrences = [NSMutableDictionary new];
+    NSInteger last1days=0, last3days=0, last7days=0, last15days=0, last30days=0, last60days=0, last90days=0;
+
     // Reconstruct the whole list
     NSMutableArray *storeTrackedEvents = [NSMutableArray new];
     for (NSDictionary *e in collapsedLastBuiltinEvents) [storeTrackedEvents addObject:e];
     for (NSDictionary *e in collapsedLastCustomEvents) [storeTrackedEvents addObject:e];
     for (NSDictionary *e in collapsedOtherEvents) [storeTrackedEvents addObject:e];
-    for (NSDictionary *e in uncollapsedEvents) [storeTrackedEvents addObject:e];
+    for (NSDictionary *e in uncollapsedEvents) {
+        [storeTrackedEvents addObject:e];
+        if ([e[@"type"] isEqualToString:type]) {
+            NSNumber *actionDate = e[@"actionDate"] ?: @(now);
+            NSInteger numberOfDaysSinceNow = floor((now - actionDate.integerValue) / 86400000);
+            if (numberOfDaysSinceNow <= 1) ++last1days;
+            if (numberOfDaysSinceNow <= 3) ++last3days;
+            if (numberOfDaysSinceNow <= 7) ++last7days;
+            if (numberOfDaysSinceNow <= 15) ++last15days;
+            if (numberOfDaysSinceNow <= 30) ++last30days;
+            if (numberOfDaysSinceNow <= 60) ++last60days;
+            if (numberOfDaysSinceNow <= 90) ++last90days;
+        }
+    }
+    
+    occurrences[@"allTime"] = @(allTime);
+    occurrences[@"last1days"] = @(last1days);
+    occurrences[@"last3days"] = @(last3days);
+    occurrences[@"last7days"] = @(last7days);
+    occurrences[@"last15days"] = @(last15days);
+    occurrences[@"last30days"] = @(last30days);
+    occurrences[@"last60days"] = @(last60days);
+    occurrences[@"last90days"] = @(last90days);
+
+    [collapsedEventData setObject:occurrences forKey:@"occurrences"];
+    [uncollapsedEventData setObject:occurrences forKey:@"occurrences"];
 
     // Store the new list
     [self setTrackedEvents:[storeTrackedEvents copy]];
+    
+    if (occurrencesOut != nil) *occurrencesOut = [NSDictionary dictionaryWithDictionary:occurrences];
 }
 
 - (NSArray *)trackedEvents {

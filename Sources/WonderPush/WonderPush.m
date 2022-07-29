@@ -89,7 +89,7 @@ static UIStoryboard *storyboard = nil;
 NSString * const WPEventFiredNotification = @"WPEventFiredNotification";
 NSString * const WPEventFiredNotificationEventTypeKey = @"WPEventFiredNotificationEventTypeKey";
 NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificationEventDataKey";
-
+NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNotificationEventOccurrencesKey";
 + (void) initialize
 {
     static dispatch_once_t onceToken;
