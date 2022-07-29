@@ -227,19 +227,17 @@
                     // Save in request vault
                     [WonderPush postEventually:eventEndPoint params:params];
                     if (sentCallback) sentCallback();
+                } else if (requiresSubscription) {
+                    [WonderPush safeDeferWithSubscription:^{
+                        [WonderPush postEventually:eventEndPoint params:params];
+                        if (sentCallback) sentCallback();
+                    }];
                 } else {
-                    if (requiresSubscription) {
-                        [WonderPush safeDeferWithSubscription:^{
-                            [WonderPush postEventually:eventEndPoint params:params];
-                            if (sentCallback) sentCallback();
-                        }];
-                    } else {
                         WPRequest *request = [WPRequest new];
                         request.method = @"POST";
                         request.params = params;
                         request.resource = @"/events";
                         [WonderPush requestEventuallyWithOptionalAccessToken:request];
-                    }
                 }
             }];
         }];
