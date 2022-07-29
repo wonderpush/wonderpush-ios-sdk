@@ -146,12 +146,12 @@
     }];
 }
 
-- (nullable WPIAMMessageDefinition *)nextOnEventDisplayMsg:(NSString *)eventName {
+- (nullable WPIAMMessageDefinition *)nextOnEventDisplayMsg:(NSString *)eventName count:(NSInteger)count {
     if (![self.wonderpushEventsToWatch containsObject:eventName]) {
         return nil;
     }
     return [self nextMsgMatchingCondition:^(WPIAMMessageDefinition *next) {
-        return [next messageRenderedOnWonderPushEvent:eventName];
+        return [next messageRenderedOnWonderPushEvent:eventName count:count];
     }];
 }
 

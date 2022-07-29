@@ -24,14 +24,15 @@
     return [self initForAppForegroundTriggerDelay:0];
 
 }
-- (instancetype)initWithEvent:(NSString *)title {
-    return [self initWithEvent:title delay:0];
+- (instancetype)initWithEvent:(NSString *)title count:(NSNumber * _Nullable)count {
+    return [self initWithEvent:title count:count delay:0];
 }
 
 - (instancetype)initForAppLaunchTriggerDelay:(NSTimeInterval)delay {
     if (self = [super init]) {
         _triggerType = WPIAMRenderTriggerOnAppLaunch;
         _delay = delay;
+        _eventCount = nil;
     }
     return self;
 }
@@ -40,14 +41,16 @@
     if (self = [super init]) {
         _triggerType = WPIAMRenderTriggerOnAppForeground;
         _delay = delay;
+        _eventCount = nil;
     }
     return self;
 }
-- (instancetype)initWithEvent:(NSString *)title delay:(NSTimeInterval)delay {
+- (instancetype)initWithEvent:(NSString *)title count:(NSNumber * _Nullable)count delay:(NSTimeInterval)delay {
     if (self = [super init]) {
         _triggerType = WPIAMRenderTriggerOnWonderPushEvent;
         _eventName = title;
         _delay = delay;
+        _eventCount = count;
     }
     return self;
 }

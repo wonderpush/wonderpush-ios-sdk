@@ -74,6 +74,9 @@
         // Parse delay
         NSTimeInterval delay = [([WPNSUtil numberForKey:@"delay" inDictionary:nextTriggerCondition] ?: @0) doubleValue] / 1000;
 
+        // Count
+        NSNumber *count = [WPNSUtil numberForKey:@"count" inDictionary:nextTriggerCondition];
+
         NSString *systemEvent = [WPNSUtil stringForKey:@"systemEvent" inDictionary:nextTriggerCondition];
         NSDictionary *triggeringEvent = [WPNSUtil dictionaryForKey:@"event" inDictionary:nextTriggerCondition];
         // Handle app_launch and on_foreground cases.
@@ -87,7 +90,7 @@
             NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:triggeringEvent];
             if (type) {
                 [triggers addObject:[[WPIAMDisplayTriggerDefinition alloc]
-                                     initWithEvent:type delay:delay]];
+                                     initWithEvent:type count:count delay:delay]];
             }
         }
     }
