@@ -61,7 +61,7 @@
     mutable[@"clientSecret"] = WPConfiguration.sharedConfiguration.clientSecret;
     mutable[@"deviceId"] = WPConfiguration.sharedConfiguration.deviceId;
     mutable[@"devicePlatform"] = @"iOS";
-    mutable[@"userId"] = WPConfiguration.sharedConfiguration.userId;
+    mutable[@"userId"] = WPConfiguration.sharedConfiguration.userId ?: @"";
     return [NSDictionary dictionaryWithDictionary:mutable];
 }
 @end
