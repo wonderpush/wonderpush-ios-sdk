@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Check and display next in-app message eligible for app open trigger
 - (void)checkAndDisplayNextAppForegroundMessage;
 // Check and display next in-app message eligible for analytics event trigger with given event name.
-- (void)checkAndDisplayNextContextualMessageForWonderPushEvent:(NSString *)eventName allTimeCount:(NSInteger) allTimeCount;
+- (void)checkAndDisplayNextContextualMessageForWonderPushEvent:(NSString *)eventName allTimeOccurrences:(NSInteger) allTimeCount;
 // Force display a message now
 - (void)displayMessage:(WPIAMMessageDefinition *)message
               triggerType:(WPInAppMessagingDisplayTriggerType)triggerType

@@ -53,11 +53,11 @@ static dispatch_queue_t eventListenerQueue;
     }
     NSString *eventType = notification.userInfo[WPEventFiredNotificationEventTypeKey];
     NSDictionary *occurrences = notification.userInfo[WPEventFiredNotificationEventOccurrencesKey];
-    NSInteger allTimeCount = [occurrences[@"allTime"] integerValue] ?: 1;
+    NSInteger allTimeOccurrences = [occurrences[@"allTime"] integerValue] ?: 1;
     dispatch_async(eventListenerQueue, ^{
       [self.displayExecutor
        checkAndDisplayNextContextualMessageForWonderPushEvent:eventType
-       allTimeCount: allTimeCount];
+       allTimeOccurrences: allTimeOccurrences];
     });
 }
 

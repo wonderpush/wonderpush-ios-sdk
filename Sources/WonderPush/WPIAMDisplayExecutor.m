@@ -305,7 +305,7 @@
     return self;
 }
 
-- (void)checkAndDisplayNextContextualMessageForWonderPushEvent:(NSString *)eventName allTimeCount:(NSInteger)allTimeCount {
+- (void)checkAndDisplayNextContextualMessageForWonderPushEvent:(NSString *)eventName allTimeOccurrences:(NSInteger)allTimeOccurrences {
     // synchronizing on self so that we won't potentially enter the render flow from two
     // threads: example like showing analytics triggered message and a regular app open
     // triggered message
@@ -329,7 +329,7 @@
         
         // Pop up next analytics event based message to be displayed
         WPIAMMessageDefinition *nextAnalyticsBasedMessage =
-        [self.messageCache nextOnEventDisplayMsg:eventName count:allTimeCount];
+        [self.messageCache nextOnEventDisplayMsg:eventName allTimeOccurrences:allTimeOccurrences];
         
         if (nextAnalyticsBasedMessage) {
             NSTimeInterval now = [self.timeFetcher currentTimestampInSeconds];

@@ -72,12 +72,12 @@
     return NO;
 }
 
-- (BOOL)messageRenderedOnWonderPushEvent:(NSString *)eventName count:(NSInteger)count {
+- (BOOL)messageRenderedOnWonderPushEvent:(NSString *)eventName allTimeOccurrences:(NSInteger)allTimeOccurrences {
     for (WPIAMDisplayTriggerDefinition *nextTrigger in self.renderTriggers) {
         if (nextTrigger.triggerType == WPIAMRenderTriggerOnWonderPushEvent &&
             [nextTrigger.eventName isEqualToString:eventName]) {
             // Is there a count criteria?
-            if (nextTrigger.eventCount != nil && nextTrigger.eventCount.integerValue > 0 && nextTrigger.eventCount.integerValue > count) {
+            if (nextTrigger.minOccurrences != nil && nextTrigger.minOccurrences.integerValue > 0 && nextTrigger.minOccurrences.integerValue > allTimeOccurrences) {
                 // Count criteria not met, skip to next trigger definition
                 continue;
             }

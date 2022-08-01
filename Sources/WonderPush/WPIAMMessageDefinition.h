@@ -63,10 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)messageHasStarted;
 
 // should this message be rendered given the IAM trigger type? only use this method for app launch
-// and foreground trigger, use messageRenderedOnWonderPushEvent:count: for analytics triggers
+// and foreground trigger, use messageRenderedOnWonderPushEvent:allTimeOccurrences: for analytics triggers
 - (BOOL)messageRenderedOnTrigger:(WPIAMRenderTrigger)trigger;
 // should this message be rendered when a given analytics event is fired?
-- (BOOL)messageRenderedOnWonderPushEvent:(NSString *)eventName count:(NSInteger)count;
+- (BOOL)messageRenderedOnWonderPushEvent:(NSString *)eventName allTimeOccurrences:(NSInteger)allTimeOccurrences;
 // returns the delay associated with the first trigger of provided type or 0
 - (NSTimeInterval)delayForTrigger:(WPIAMRenderTrigger)trigger;
 @end
