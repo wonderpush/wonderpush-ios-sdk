@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) NSDate * (^now)(void);
 
+- (void)setTrackedEvents:(NSArray *)trackedEvents;
+
 @end
 
 @interface WPConfigurationRememberTrackedEventsTests : XCTestCase
@@ -646,6 +648,22 @@
         }
     }
 
+}
+
+- (void) testMigration {
+    // This checks that the allTime counter is always at least the number of uncollapsed events of the same type
+    // This is useful when the collapsed event doesn't hold the allTime info,
+    // which is most likely when people will upgrade to the new SDK that counts occurrences
+
+    NSMutableArray *trackedEvents = [NSMutableArray new];
+    [trackedEvents addObject:[self toJSON:@"{\"type\":\"test\", \"collapsing\": \"last\", \"actionDate\": 1000000000000, \"creationDate\":1000000000000}"]];
+    for (int i = 0; i < 20; i++) {
+        [trackedEvents addObject:[self toJSON:@"{\"type\":\"test\", \"actionDate\": 1000000000000, \"creationDate\":1000000000000}"]];
+    }
+    WPConfiguration.sharedConfiguration.trackedEvents = [NSArray arrayWithArray:trackedEvents];
+    NSDictionary *occurrences = nil;
+    [WPConfiguration.sharedConfiguration rememberTrackedEvent:[self toJSON:@"{\"type\":\"test\", \"actionDate\": 1000000000000, \"creationDate\":1000000000000}"] occurrences:&occurrences];
+    XCTAssertEqual(21, [occurrences[@"allTime"] integerValue]);
 }
 
 @end

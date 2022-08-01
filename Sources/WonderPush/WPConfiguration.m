@@ -1160,9 +1160,11 @@ static WPConfiguration *sharedConfiguration = nil;
     for (NSDictionary *e in collapsedLastBuiltinEvents) [storeTrackedEvents addObject:e];
     for (NSDictionary *e in collapsedLastCustomEvents) [storeTrackedEvents addObject:e];
     for (NSDictionary *e in collapsedOtherEvents) [storeTrackedEvents addObject:e];
+    NSInteger uncollapsedCount = 0;
     for (NSDictionary *e in uncollapsedEvents) {
         [storeTrackedEvents addObject:e];
         if ([e[@"type"] isEqualToString:type]) {
+            ++uncollapsedCount;
             NSNumber *actionDate = e[@"actionDate"] ?: @(now);
             NSInteger numberOfDaysSinceNow = floor((now - actionDate.integerValue) / 86400000);
             if (numberOfDaysSinceNow <= 1) ++last1days;
@@ -1175,7 +1177,7 @@ static WPConfiguration *sharedConfiguration = nil;
         }
     }
     
-    occurrences[@"allTime"] = @(allTime);
+    occurrences[@"allTime"] = @(MAX(uncollapsedCount, allTime));
     occurrences[@"last1days"] = @(last1days);
     occurrences[@"last3days"] = @(last3days);
     occurrences[@"last7days"] = @(last7days);
