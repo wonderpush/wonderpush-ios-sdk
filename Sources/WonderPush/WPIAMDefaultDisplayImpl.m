@@ -253,8 +253,8 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             return;
 
         }
+
         NSBundle *resourceBundle = [self getViewResourceBundle];
-        
         if (resourceBundle == nil) {
             NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                                  code:IAMDisplayRenderErrorTypeUnspecifiedError
@@ -262,7 +262,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             [controllerDelegate displayErrorForMessage:webViewMessage error:error];
             return;
         }
-        
+
         WPIAMTimerWithNSDate *timeFetcher = [[WPIAMTimerWithNSDate alloc] init];
         WPIAMWebViewViewController *webViewVC = [WPIAMWebViewViewController
                                                  instantiateViewControllerWithResourceBundle:resourceBundle
@@ -277,7 +277,7 @@ static WPIAMDefaultDisplayImpl *instance = nil;
             [controllerDelegate displayErrorForMessage:webViewMessage error:error];
             return;
         }
-        
+
         UIWindow *displayUIWindow = [WPIAMRenderingWindowHelper UIWindowForWebViewView];
         displayUIWindow.rootViewController = webViewVC;
         [displayUIWindow setHidden:NO];

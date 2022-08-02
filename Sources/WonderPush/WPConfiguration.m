@@ -1176,7 +1176,7 @@ static WPConfiguration *sharedConfiguration = nil;
             if (numberOfDaysSinceNow <= 90) ++last90days;
         }
     }
-    
+
     occurrences[@"allTime"] = @(MAX(uncollapsedCount, allTime));
     occurrences[@"last1days"] = @(last1days);
     occurrences[@"last3days"] = @(last3days);
@@ -1191,7 +1191,7 @@ static WPConfiguration *sharedConfiguration = nil;
 
     // Store the new list
     [self setTrackedEvents:[storeTrackedEvents copy]];
-    
+
     if (occurrencesOut != nil) *occurrencesOut = [NSDictionary dictionaryWithDictionary:occurrences];
 }
 

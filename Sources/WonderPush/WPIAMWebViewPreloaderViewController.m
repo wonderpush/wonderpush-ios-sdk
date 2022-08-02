@@ -27,10 +27,10 @@
 }
 
 - (void) preLoadWebViewWithURL: (NSURL *) webViewURL successCompletionHandler: (void (^)(WKWebView*)) successBlock errorCompletionHander: (void (^)(NSError *)) errorBlock {
-    
-    //Loads the view controller’s view if it has not yet been loaded.
+
+    //Loads the view controller's view if it has not yet been loaded.
     [self loadViewIfNeeded];
-    
+
     self.webView.onNavigationSuccess = successBlock;
     self.webView.onNavigationError = errorBlock;
     NSURLRequest *requestToLoad = [NSURLRequest requestWithURL: webViewURL];

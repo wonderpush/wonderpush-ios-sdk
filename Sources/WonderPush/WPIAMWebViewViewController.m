@@ -28,23 +28,18 @@
                                       displayMessage:(WPInAppMessagingWebViewDisplay *)webViewMessage
                                      controllerDelegate:(id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                          timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher {
-    
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
                                                          bundle:resourceBundle];
-    
     if (storyboard == nil) {
         WPLog(@"Storyboard 'WPInAppMessageDisplayStoryboard' not found in bundle %@", resourceBundle);
         return nil;
     }
-    
     WPIAMWebViewViewController *webViewVC = (WPIAMWebViewViewController *)[storyboard
                                                                            instantiateViewControllerWithIdentifier:@"webview-vc"];
-    
     webViewVC.controllerDelegate = controllerDelegate;
     webViewVC.webViewMessage = webViewMessage;
     webViewVC.timeFetcher = timeFetcher;
     webViewVC.webView = webViewMessage.webView;
-    
     return webViewVC;
 }
 
@@ -58,14 +53,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     if (!self.webView) {
         [self dismissView:WPInAppMessagingDismissUnspecified];
         return;
     }
-    
+
     [self.view setBackgroundColor:UIColor.clearColor];
-    
+
     if ([self.webView isKindOfClass:WPIAMWebView.class]) {
         __weak WPIAMWebView *webView = (WPIAMWebView *)self.webView;
         __weak WPIAMWebViewViewController *weakSelf = self;
@@ -76,9 +71,9 @@
             webView.onDismiss = nil;
         };
     }
-    
+
     [self.containerView insertSubview:self.webView belowSubview:self.closeButton];
-    
+
     NSLayoutConstraint* webViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
     NSLayoutConstraint* webViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
     NSLayoutConstraint* webViewTopConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTop   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];

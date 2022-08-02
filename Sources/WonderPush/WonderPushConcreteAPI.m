@@ -113,7 +113,7 @@
     // Store locally
     NSDictionary *occurrences = nil;
     [WPConfiguration.sharedConfiguration rememberTrackedEvent:body occurrences:&occurrences];
-    
+
     // Add occurrences to the body
     if (occurrences) {
         NSMutableDictionary *mutableBody = body.mutableCopy;
@@ -195,7 +195,7 @@
         // Store locally
         NSDictionary *occurrences = nil;
         [WPConfiguration.sharedConfiguration rememberTrackedEvent:body occurrences:&occurrences];
-        
+
         // Add occurrences to the body
         if (occurrences) {
             NSMutableDictionary *mutableBody = body.mutableCopy;
@@ -472,7 +472,7 @@
 - (void) triggerLocationPrompt
 {
     NSString *alwaysDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
-        
+
     if (alwaysDescription) {
         [self.locationManager requestAlwaysAuthorization];
     } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {

@@ -144,18 +144,17 @@ static WPRateLimiter *rateLimiter = nil;
     @synchronized (self) {
         WPRateLimiterData *existingData = self.limiterData[rateLimit.key];
         WPRateLimiterData *data = existingData ?: [[WPRateLimiterData alloc] initWithKey:rateLimit.key];
-        
+
         // Remove all dates prior to the rateLimit's timeToLive
         [data removeIncrementsOlderThan:rateLimit.timeToLive];
-        
+
         // Increment
         [data.incrementDates addObject:[NSDate date]];
-        
+
         // Store
         self.limiterData[data.key] = data;
         [self save];
     }
-    
 }
 
 - (BOOL)isRateLimited:(WPRateLimit *)rateLimit {
@@ -174,6 +173,5 @@ static WPRateLimiter *rateLimiter = nil;
         [self.limiterData removeObjectForKey:rateLimit.key];
         [self save];
     }
-    
 }
 @end

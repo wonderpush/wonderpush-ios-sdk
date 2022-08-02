@@ -106,7 +106,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 
 - (void) installEnvironment {
     self.configuration.allowsInlineMediaPlayback = YES;
-    
+
     // Install content blockers
     if (@available(iOS 11.0, *)) {
         if (blockWonderPushScriptContentRuleList) {
@@ -120,7 +120,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         self.bridge.webView = self;
         self.UIDelegate = self.bridge;
     }
-    
+
     // Install navigation delegate
     if (!self.navDelegate) {
         self.navDelegate = [WPIAMWebViewNavigationDelegate new];
@@ -540,7 +540,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation {
     NSURL *initialURL = self.webView.initialURL;
     NSURL *targetURL = webView.URL;
-    
+
     // Ensure same origin
     if (initialURL.port == targetURL.port
         && [initialURL.host isEqualToString:targetURL.host]

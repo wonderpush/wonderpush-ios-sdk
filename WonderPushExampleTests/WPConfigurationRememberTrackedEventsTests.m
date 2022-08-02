@@ -62,10 +62,10 @@
 - (void) assert:(id)subject contains:(NSString *)expected {
     XCTAssertTrue([subject isKindOfClass:NSDictionary.class], @"Not a dict: %@", subject);
     XCTAssertTrue([expected isKindOfClass:NSString.class], @"Not a string: %@", expected);
-    
+
     id expectedDict = [self toJSON:expected];
     XCTAssertTrue([expectedDict isKindOfClass:NSDictionary.class], @"Not a dict: %@", expectedDict);
-    
+
     NSEnumerator *keyEnumerator = [expectedDict keyEnumerator];
     id expectedKey;
     while ((expectedKey = [keyEnumerator nextObject])) {
@@ -505,7 +505,7 @@
 
 - (void) testOccurrencesStorage {
     // Checks that the "occurrences" dictionary is added to both collapsed and uncollapsed events in the event storage
-    
+
     [WPConfiguration.sharedConfiguration rememberTrackedEvent:[self toJSON:@"{\"type\":\"test\",\"actionDate\":1000000000000,\"creationDate\":1000000000000}"]];
     XCTAssertEqual(2, WPConfiguration.sharedConfiguration.trackedEvents.count);
     [self assert:[WPConfiguration.sharedConfiguration.trackedEvents objectAtIndex:0] contains:@"{\"type\":\"test\",\"collapsing\":\"last\",\"occurrences\": {\"allTime\":1,\"last1days\":1,\"last3days\":1,\"last7days\":1,\"last15days\":1,\"last30days\":1,\"last60days\":1,\"last90days\":1}}"];
@@ -520,7 +520,7 @@
 
 - (void) testOccurrencesDays {
     // Checks the lastXdays entries of the occurrences
-    
+
     NSInteger now = [WPConfiguration.sharedConfiguration.now() timeIntervalSince1970] * 1000;
     NSInteger eventMaxAgeDays = WPConfiguration.sharedConfiguration.maximumUncollapsedTrackedEventsAgeMs / 86400000;
     for (NSInteger i = 0; i < 100; i++) {
@@ -565,7 +565,7 @@
     NSDictionary *occurrences = nil;
     // Altername between the 2 collapsing options
     NSArray *collapsings = @[@"last", NSNull.null];
-    
+
     for (NSInteger i = 0; i < 1000; i++) {
         NSMutableDictionary *eventData = [NSMutableDictionary new];
         eventData[@"type"] = @"test";
@@ -578,7 +578,7 @@
         }
         [WPConfiguration.sharedConfiguration rememberTrackedEvent:eventData occurrences:&occurrences];
         XCTAssertEqual(i + 1, [occurrences[@"allTime"] integerValue]);
-        
+
         // Find the collapsed version and check its "occurrences" property
         BOOL found = NO;
         for(id event in WPConfiguration.sharedConfiguration.trackedEvents) {
@@ -591,13 +591,11 @@
         }
         XCTAssertTrue(found);
     }
-    
 }
 
 - (void) testOccurrencesAllTimeCollapsingCampaign {
     // Adding collapsing=campaign event only increments the allTime count for that campaign
     NSDictionary *occurrences;
-    
     for (NSString *campaignId in @[@"c1", @"c2"]) {
         for (NSInteger i = 0; i < 1000; i++) {
             NSMutableDictionary *eventData = [NSMutableDictionary new];
@@ -629,7 +627,6 @@
 - (void) testOccurrencesAllTimeCollapsingUnhandled {
     // Adding collapsing=unhandled event sets a allTime count of 1 for each event
     NSDictionary *occurrences;
-    
     for (NSInteger i = 0; i < 1000; i++) {
         NSMutableDictionary *eventData = [NSMutableDictionary new];
         eventData[@"type"] = @"test";

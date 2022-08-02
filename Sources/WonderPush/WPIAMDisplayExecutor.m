@@ -494,7 +494,6 @@
                                                           action:definition.renderData.contentData.action
                                                           closeButtonPosition:closeButtonPosition];
 #pragma clang diagnostic pop
-    
     return webViewMessage;
 }
 
@@ -583,12 +582,10 @@
             return [self imageOnlyDisplayMessageWithMessageDefinition:definition
                                                             imageData:imageData
                                                           triggerType:triggerType];
-            
         case WPIAMRenderAsWebView:
             return [self webViewDisplayMessageWithMessageDefinition:definition
                                                             webView:webView
                                                           triggerType:triggerType];
-            
         default:
             return nil;
     }

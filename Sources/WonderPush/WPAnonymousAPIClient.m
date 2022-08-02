@@ -39,7 +39,6 @@
         NSNumber *limit = remoteConfig.data[WP_REMOTE_CONFIG_ANONYMOUS_API_CLIENT_RATE_LIMIT_LIMIT] ?: ANONYMOUS_API_CLIENT_RATE_LIMIT_LIMIT;
         NSNumber *timeToLiveMilliseconds = remoteConfig.data[WP_REMOTE_CONFIG_ANONYMOUS_API_CLIENT_RATE_LIMIT_TIME_TO_LIVE_MILLISECONDS] ?: ANONYMOUS_API_CLIENT_RATE_LIMIT_TIME_TO_LIVE_MILLISECONDS;
         WPRateLimit *rateLimit = [[WPRateLimit alloc] initWithKey:@"AnonymousAPIClient" timeToLive:timeToLiveMilliseconds.doubleValue / 1000 limit:limit.unsignedIntegerValue];
-        
         if ([WPRateLimiter.rateLimiter isRateLimited:rateLimit]) {
             // Retry later
             double delayInSeconds = 10;
@@ -52,7 +51,6 @@
             [super executeRequest:request];
         }
     }];
-    
 }
 
 - (NSDictionary *)decorateRequestParams:(WPRequest *)request {

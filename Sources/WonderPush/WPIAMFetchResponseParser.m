@@ -314,13 +314,13 @@
             exitAnimation = parseExitAnimation(webViewNode);
 
             webUrlStr = webViewNode[@"url"];
-            
             if (!webUrlStr) {
                 WPLog(@"web url is missing for webView message %@", notificationDict);
                 return nil;
             }
             action = [WPAction actionWithDictionaries:webViewNode[@"actions"]];
-            if ([@"none" isEqualToString:webViewNode[@"closeButtonPosition"]]) { closeButtonPosition = WPIAMCloseButtonPositionNone;
+            if ([@"none" isEqualToString:webViewNode[@"closeButtonPosition"]]) {
+                closeButtonPosition = WPIAMCloseButtonPositionNone;
             } else {
                 closeButtonPosition = WPIAMCloseButtonPositionInside;
             }
@@ -382,7 +382,7 @@
                 WPLog(@"Invalid url specified for in-app message: %@", webUrlStr);
             }
         }
-        
+
         NSURL *imageURL = (imageURLStr.length == 0) ? nil : [NSURL URLWithString:imageURLStr];
         NSURL *landscapeImageURL =
         (landscapeImageURLStr.length == 0) ? nil : [NSURL URLWithString:landscapeImageURLStr];

@@ -172,7 +172,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
         // no need for any further action if block is nil
         return;
     }
-    
+
     if (!_webURL) {
         // no media data since media url is nil
         complete(nil, nil);
@@ -182,14 +182,13 @@ static NSInteger const SuccessHTTPStatusCode = 200;
     dispatch_async(dispatch_get_main_queue(), ^{
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
                                                              bundle:[WonderPush resourceBundle]];
-        
         if (storyboard == nil) {
             complete(nil, [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                               code:IAMDisplayRenderErrorTypeUnspecifiedError
                                           userInfo:@{@"message" : @"resource is missing"}]);
             return;
         }
-        
+
         weakSelf.webViewPreloaderViewController = (WPIAMWebViewPreloaderViewController *)[storyboard
                                                                                instantiateViewControllerWithIdentifier:@"webview-preloader-vc"];
         [weakSelf.webViewPreloaderViewController preLoadWebViewWithURL:weakSelf.webURL
