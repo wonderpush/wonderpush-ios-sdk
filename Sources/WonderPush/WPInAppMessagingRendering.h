@@ -412,8 +412,8 @@ NS_SWIFT_NAME(InAppMessagingDisplayDelegate)
  * @param inAppMessage the message that was clicked.
  * @param buttonLabel specifies the button label
  */
-- (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
-       withButtonLabel:(NSString *)buttonLabel;
+- (void)trackClickWithMessage:(WPInAppMessagingDisplayMessage *)inAppMessage
+       buttonLabel:(NSString *)buttonLabel;
 
 /**
  * Called when the message is dismissed. Should be called from main thread.

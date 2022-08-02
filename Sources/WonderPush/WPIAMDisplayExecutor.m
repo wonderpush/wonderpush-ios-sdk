@@ -71,8 +71,8 @@
 }
 #pragma mark - WPInAppMessagingDisplayDelegate methods
 
-- (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
-       withButtonLabel:(NSString *)buttonLabel {
+- (void)trackClickWithMessage:(WPInAppMessagingDisplayMessage *)inAppMessage
+       buttonLabel:(NSString *)buttonLabel {
     if (!_currentMsgBeingDisplayed.renderData.reportingData.campaignId) {
         WPLog(@"messageClicked called but there is no current message ID.");
         return;
@@ -130,7 +130,7 @@
     }
     if (action) {
         // Record @INAPP_CLICKED
-        [self messageClicked:inAppMessage withButtonLabel:buttonLabel];
+        [self trackClickWithMessage:inAppMessage buttonLabel:buttonLabel];
         // Exec action
         [WonderPush executeAction:action withReportingData:_currentMsgBeingDisplayed.renderData.reportingData];
     }

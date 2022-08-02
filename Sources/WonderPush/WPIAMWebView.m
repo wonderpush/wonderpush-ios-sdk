@@ -228,7 +228,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
     else if ([methodName isEqualToString:@"trackClick"]) {
         NSString *buttonLabel = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
-        [self.webView.controllerDelegate messageClicked:self.webView.inAppMessage withButtonLabel:buttonLabel];
+        [self.webView.controllerDelegate trackClickWithMessage:self.webView.inAppMessage buttonLabel:buttonLabel];
         [self resolve:nil callId:callId];
     }
     else if ([methodName isEqual:@"getPayload"]) {
