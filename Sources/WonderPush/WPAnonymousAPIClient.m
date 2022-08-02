@@ -31,13 +31,8 @@
 
 - (void)executeRequest:(WPRequest *)request {
     [WonderPush.remoteConfigManager read:^(WPRemoteConfig *remoteConfig, NSError *error) {
-        if (error) {
-            // On error, no rate limiting
-            [super executeRequest:request];
-            return;
-        }
-        NSNumber *limit = remoteConfig.data[WP_REMOTE_CONFIG_ANONYMOUS_API_CLIENT_RATE_LIMIT_LIMIT] ?: ANONYMOUS_API_CLIENT_RATE_LIMIT_LIMIT;
-        NSNumber *timeToLiveMilliseconds = remoteConfig.data[WP_REMOTE_CONFIG_ANONYMOUS_API_CLIENT_RATE_LIMIT_TIME_TO_LIVE_MILLISECONDS] ?: ANONYMOUS_API_CLIENT_RATE_LIMIT_TIME_TO_LIVE_MILLISECONDS;
+        NSNumber *limit = error != nil ? ANONYMOUS_API_CLIENT_RATE_LIMIT_LIMIT : (remoteConfig.data[WP_REMOTE_CONFIG_ANONYMOUS_API_CLIENT_RATE_LIMIT_LIMIT] ?: ANONYMOUS_API_CLIENT_RATE_LIMIT_LIMIT);
+        NSNumber *timeToLiveMilliseconds = error != nil ? ANONYMOUS_API_CLIENT_RATE_LIMIT_TIME_TO_LIVE_MILLISECONDS :  (remoteConfig.data[WP_REMOTE_CONFIG_ANONYMOUS_API_CLIENT_RATE_LIMIT_TIME_TO_LIVE_MILLISECONDS] ?: ANONYMOUS_API_CLIENT_RATE_LIMIT_TIME_TO_LIVE_MILLISECONDS);
         WPRateLimit *rateLimit = [[WPRateLimit alloc] initWithKey:@"AnonymousAPIClient" timeToLive:timeToLiveMilliseconds.doubleValue / 1000 limit:limit.unsignedIntegerValue];
         if ([WPRateLimiter.rateLimiter isRateLimited:rateLimit]) {
             // Retry later
