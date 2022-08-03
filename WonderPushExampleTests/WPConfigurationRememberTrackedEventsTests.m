@@ -654,11 +654,18 @@
 
     NSMutableArray *trackedEvents = [NSMutableArray new];
     [trackedEvents addObject:[self toJSON:@"{\"type\":\"test\", \"collapsing\": \"last\", \"actionDate\": 1000000000000, \"creationDate\":1000000000000}"]];
+    [trackedEvents addObject:[self toJSON:@"{\"type\":\"another\", \"collapsing\": \"last\", \"actionDate\": 1000000000000, \"creationDate\":1000000000000}"]];
     for (int i = 0; i < 20; i++) {
         [trackedEvents addObject:[self toJSON:@"{\"type\":\"test\", \"actionDate\": 1000000000000, \"creationDate\":1000000000000}"]];
+        [trackedEvents addObject:[self toJSON:@"{\"type\":\"another\", \"actionDate\": 1000000000000, \"creationDate\":1000000000000}"]];
     }
     WPConfiguration.sharedConfiguration.trackedEvents = [NSArray arrayWithArray:trackedEvents];
     NSDictionary *occurrences = nil;
+
+    // Add an unrelated event, making sure this doesn't affect the occurrences of "test"
+    [WPConfiguration.sharedConfiguration rememberTrackedEvent:[self toJSON:@"{\"type\":\"yetanother\", \"actionDate\": 1000000000000, \"creationDate\":1000000000000}"] occurrences:&occurrences];
+    XCTAssertEqual(1, [occurrences[@"allTime"] integerValue]);
+
     [WPConfiguration.sharedConfiguration rememberTrackedEvent:[self toJSON:@"{\"type\":\"test\", \"actionDate\": 1000000000000, \"creationDate\":1000000000000}"] occurrences:&occurrences];
     XCTAssertEqual(21, [occurrences[@"allTime"] integerValue]);
 }
