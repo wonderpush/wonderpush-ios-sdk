@@ -66,6 +66,7 @@
 - (BOOL)messageRenderedOnTrigger:(WPIAMRenderTrigger)trigger {
     for (WPIAMDisplayTriggerDefinition *nextTrigger in self.renderTriggers) {
         if (nextTrigger.triggerType == trigger) {
+            // Note: we're ignoring minOccurrences for system events
             return YES;
         }
     }
