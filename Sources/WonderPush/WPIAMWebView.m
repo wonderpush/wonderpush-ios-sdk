@@ -228,6 +228,12 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
     else if ([methodName isEqualToString:@"trackClick"]) {
         NSString *buttonLabel = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
+        if (!buttonLabel) {
+            [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnspecifiedError userInfo:@{
+                NSLocalizedDescriptionKey: NSLocalizedString(@"buttonLabel cannot be null", nil),
+            }] callId:callId];
+            return;
+        }
         [self.webView.controllerDelegate trackClickWithMessage:self.webView.inAppMessage buttonLabel:buttonLabel];
         [self resolve:nil callId:callId];
     }
@@ -449,12 +455,18 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     [self resolve:self.webView.inAppMessage.payload callId:callId];
 }
 - (void) openDeepLink:(NSArray *)args callId:(NSString *)callId {
-    if (args.count < 1) return;
-    if (![args[0] isKindOfClass:NSString.class]) return;
+    if (args.count < 1 || ![args[0] isKindOfClass:NSString.class]) {
+        [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnspecifiedError userInfo:@{
+            NSLocalizedDescriptionKey: NSLocalizedString(@"Url is mandatory", nil),
+        }] callId:callId];
+        return;
+    }
     NSString *urlString = args[0];
     NSURL *url = [NSURL URLWithString:urlString];
     if (!url) {
-        WPLog(@"Invalid URL supplied to openTargetUrl: %@", urlString);
+        [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnspecifiedError userInfo:@{
+            NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid url", nil),
+        }] callId:callId];
         return;
     }
     [WPURLFollower.URLFollower
@@ -469,12 +481,18 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 }
 
 - (void) openExternalUrl:(NSArray *)args callId:(NSString *)callId {
-    if (args.count < 1) return;
-    if (![args[0] isKindOfClass:NSString.class]) return;
+    if (args.count < 1 || ![args[0] isKindOfClass:NSString.class]) {
+        [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnspecifiedError userInfo:@{
+            NSLocalizedDescriptionKey: NSLocalizedString(@"Url is mandatory", nil),
+        }] callId:callId];
+        return;
+    }
     NSString *urlString = args[0];
     NSURL *url = [NSURL URLWithString:urlString];
     if (!url) {
-        WPLog(@"Invalid URL supplied to openTargetUrl: %@", urlString);
+        [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnspecifiedError userInfo:@{
+            NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid url", nil),
+        }] callId:callId];
         return;
     }
     [WPURLFollower.URLFollower
