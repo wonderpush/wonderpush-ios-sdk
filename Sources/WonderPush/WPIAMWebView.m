@@ -105,8 +105,6 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 }
 
 - (void) installEnvironment {
-    self.configuration.allowsInlineMediaPlayback = YES;
-
     // Install content blockers
     if (@available(iOS 11.0, *)) {
         if (blockWonderPushScriptContentRuleList) {
@@ -138,6 +136,13 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
     if (self = [super initWithCoder:coder]) {
+        [self installEnvironment];
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration {
+    if (self = [super initWithFrame:frame configuration:configuration]) {
         [self installEnvironment];
     }
     return self;

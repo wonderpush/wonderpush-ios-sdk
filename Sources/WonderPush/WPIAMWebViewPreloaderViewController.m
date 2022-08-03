@@ -20,7 +20,15 @@
 
 @implementation WPIAMWebViewPreloaderViewController
 
-- (void)viewDidLoad {
+- (void)loadView {
+    [super loadView];
+    WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
+    configuration.allowsInlineMediaPlayback = YES;
+    configuration.applicationNameForUserAgent = @"WonderPushInAppSDK";
+    // Seems like this is the only way to have the applicationNameForUserAgent setting working
+    WPIAMWebView *webView = [[WPIAMWebView alloc] initWithFrame:self.view.frame configuration:configuration];
+    [self.view addSubview:webView];
+    self.webView = webView;
     self.webView.opaque = false;
     self.webView.backgroundColor = UIColor.clearColor;
     self.webView.scrollView.backgroundColor = UIColor.clearColor;

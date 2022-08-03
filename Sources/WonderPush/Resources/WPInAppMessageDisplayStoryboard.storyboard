@@ -16,28 +16,9 @@
                     <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="rJM-Kp-IqJ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <wkWebView contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aY0-KX-OtB" customClass="WPIAMWebView">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <wkWebViewConfiguration key="configuration">
-                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                    <wkPreferences key="preferences"/>
-                                </wkWebViewConfiguration>
-                            </wkWebView>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="GOv-VP-bVF"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="aY0-KX-OtB" firstAttribute="leading" secondItem="rJM-Kp-IqJ" secondAttribute="leading" id="jc7-EP-ye8"/>
-                            <constraint firstAttribute="bottom" secondItem="aY0-KX-OtB" secondAttribute="bottom" id="s1u-zm-PYc"/>
-                            <constraint firstAttribute="trailing" secondItem="aY0-KX-OtB" secondAttribute="trailing" id="udP-uE-131"/>
-                            <constraint firstItem="aY0-KX-OtB" firstAttribute="top" secondItem="rJM-Kp-IqJ" secondAttribute="top" id="wBa-iT-f2D"/>
-                        </constraints>
                     </view>
-                    <connections>
-                        <outlet property="webView" destination="aY0-KX-OtB" id="cVH-Bl-1tD"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qPT-TX-wFG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -492,7 +473,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t0w-gE-Hqc">
-                                        <rect key="frame" x="350" y="20" width="44" height="44"/>
+                                        <rect key="frame" x="370" y="44" width="44" height="44"/>
                                         <accessibility key="accessibilityConfiguration" identifier="close-button"/>
                                         <state key="normal" backgroundImage="close-with-transparency.png"/>
                                         <connections>
