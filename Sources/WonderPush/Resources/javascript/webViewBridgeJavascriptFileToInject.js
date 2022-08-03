@@ -32,7 +32,7 @@
             delete window.WonderPushInAppSDK.callIdToPromise[callId];
         };
     });
-    
+
     // Executed when the window is loaded
     var onload = function() {
         // Register event listeners on data-wonderpush-* elements
