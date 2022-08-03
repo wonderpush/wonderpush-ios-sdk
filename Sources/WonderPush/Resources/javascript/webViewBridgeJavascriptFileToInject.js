@@ -8,14 +8,16 @@
             if (this.hasOwnProperty(prop)) return this[prop];
             return function() {
                 var callId = generateIdentifier();
-                webkit.messageHandlers.WonderPushInAppSDK.postMessage({
+                var message = {
                     method : prop,
                     args: Array.from(arguments),
                     callId: callId,
-                });
-                return new Promise(function(res, rej) {
+                };
+                var promise = new Promise(function(res, rej) {
                     window.WonderPushInAppSDK.callIdToPromise[callId] = {resolve:res, reject:rej};
                 });
+                webkit.messageHandlers.WonderPushInAppSDK.postMessage(message);
+                return promise;
             };
         }.bind(this);
         this.callIdToPromise = {};
