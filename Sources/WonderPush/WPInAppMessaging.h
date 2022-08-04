@@ -18,7 +18,7 @@
 
 @class WPApp;
 
-#import <WonderPush/WPInAppMessagingRendering.h>
+#import "WPInAppMessagingRendering.h"
 
 NS_ASSUME_NONNULL_BEGIN
 /**

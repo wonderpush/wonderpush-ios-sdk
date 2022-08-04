@@ -1,2 +1,2 @@
-#import <WonderPushExtension/WPNotificationServiceExtension.h>
-#import <WonderPushExtension/NotificationServiceExtension.h>
+#import "WPNotificationServiceExtension.h"
+#import "NotificationServiceExtension.h"
