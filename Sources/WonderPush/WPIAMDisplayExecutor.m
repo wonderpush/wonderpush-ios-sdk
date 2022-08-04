@@ -355,24 +355,18 @@
     WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
 
     // Action button data is never nil for a card message.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingActionButton *primaryActionButton = [[WPInAppMessagingActionButton alloc]
                                                           initWithButtonText:renderData.contentData.actionButtonText
                                                           buttonTextColor:renderData.renderingEffectSettings.btnTextColor
                                                           backgroundColor:renderData.renderingEffectSettings.btnBGColor];
     
-#pragma clang diagnostic pop
     
     WPInAppMessagingActionButton *secondaryActionButton = nil;
     if (definition.renderData.contentData.secondaryActionButtonText) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         secondaryActionButton = [[WPInAppMessagingActionButton alloc]
                                  initWithButtonText:renderData.contentData.secondaryActionButtonText
                                  buttonTextColor:renderData.renderingEffectSettings.secondaryActionBtnTextColor
                                  backgroundColor:renderData.renderingEffectSettings.secondaryActionBtnBGColor];
-#pragma clang diagnostic pop
     }
     
     WPInAppMessagingCardDisplay *cardMessage = [[WPInAppMessagingCardDisplay alloc]
@@ -413,8 +407,6 @@
     WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
     WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingBannerDisplay *bannerMessage = [[WPInAppMessagingBannerDisplay alloc]
                                                     initWithTriggerType:triggerType
                                                     payload:definition.payload
@@ -427,7 +419,6 @@
                                                     entryAnimation:entryAnimation
                                                      exitAnimation:exitAnimation
                                                     action:definition.renderData.contentData.action];
-#pragma clang diagnostic pop
     
     return bannerMessage;
 }
@@ -451,8 +442,6 @@
     WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
     WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingImageOnlyDisplay *imageOnlyMessage = [[WPInAppMessagingImageOnlyDisplay alloc]
                                                           initWithTriggerType:triggerType
                                                           payload:definition.payload
@@ -461,7 +450,6 @@
                                                           exitAnimation:exitAnimation
                                                           action:definition.renderData.contentData.action
                                                           closeButtonPosition:closeButtonPosition];
-#pragma clang diagnostic pop
     
     return imageOnlyMessage;
 }
@@ -483,8 +471,6 @@
     WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
     WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingWebViewDisplay *webViewMessage = [[WPInAppMessagingWebViewDisplay alloc]
                                                           initWithTriggerType:triggerType
                                                           payload:definition.payload
@@ -493,7 +479,6 @@
                                                           exitAnimation:exitAnimation
                                                           action:definition.renderData.contentData.action
                                                           closeButtonPosition:closeButtonPosition];
-#pragma clang diagnostic pop
     return webViewMessage;
 }
 
@@ -512,13 +497,10 @@
     WPInAppMessagingActionButton *actionButton = nil;
     
     if (definition.renderData.contentData.actionButtonText) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         actionButton = [[WPInAppMessagingActionButton alloc]
                         initWithButtonText:renderData.contentData.actionButtonText
                         buttonTextColor:renderData.renderingEffectSettings.btnTextColor
                         backgroundColor:renderData.renderingEffectSettings.btnBGColor];
-#pragma clang diagnostic pop
     }
     
     WPInAppMessagingCloseButtonPosition closeButtonPosition;
@@ -534,8 +516,6 @@
             break;
     }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingModalDisplay *modalViewMessage = [[WPInAppMessagingModalDisplay alloc]
                                                       initWithTriggerType:triggerType
                                                       payload:definition.payload
@@ -549,7 +529,6 @@
                                                       actionButton:actionButton
                                                       action:definition.renderData.contentData.action
                                                       closeButtonPosition:closeButtonPosition];
-#pragma clang diagnostic pop
     
     return modalViewMessage;
 }
@@ -621,20 +600,14 @@
             return;
         } else {
             if (standardImageRawData) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 imageData = [[WPInAppMessagingImageData alloc]
                              initWithImageURL:message.renderData.contentData.imageURL.absoluteString
                              imageData:standardImageRawData];
-#pragma clang diagnostic pop
             }
             if (landscapeImageRawData) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 landscapeImageData = [[WPInAppMessagingImageData alloc]
                                       initWithImageURL:message.renderData.contentData.landscapeImageURL.absoluteString
                                       imageData:landscapeImageRawData];
-#pragma clang diagnostic pop
             }
         }
         
