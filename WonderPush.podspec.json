@@ -47,6 +47,9 @@
         "Sources/WonderPush/*.{m,h}",
         "Sources/WonderPushCommon/*.{m,h}"
       ],
+      "exclude_files": [
+        "Sources/WonderPush/WPAction.h"
+      ],
       "resource_bundles": {
         "WonderPush": [
           "Sources/WonderPush/Resources/*.{lproj,storyboard,png,json}"
