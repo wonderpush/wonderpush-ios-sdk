@@ -173,7 +173,7 @@
 
 - (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
                             payload:(NSDictionary *)payload
-                          webView:(WKWebView *)webView
+                            webView:(WKWebView *)webView
                      entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
                       exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
                              action:(nullable WPAction *)action

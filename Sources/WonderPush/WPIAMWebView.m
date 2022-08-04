@@ -623,7 +623,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     [self reportFailWithError:error];
 }
 
-- (void)webView:(WKWebView *)webView navigationAction:(WKNavigationAction *)navigationAction didBecomeDownload:(WKDownload *)download  API_AVAILABLE(ios(14.5)) {
+- (void)webView:(WKWebView *)webView navigationAction:(WKNavigationAction *)navigationAction didBecomeDownload:(WKDownload *)download API_AVAILABLE(ios(14.5)) {
     [download cancel:^(NSData *data) {}];
     NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                          code:IAMDisplayRenderErrorTypeNavigationBecameDownloadError
@@ -631,7 +631,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     [self reportFailWithError:error];
 }
 
-- (void)webView:(WKWebView *)webView navigationResponse:(WKNavigationResponse *)navigationResponse didBecomeDownload:(WKDownload *)download  API_AVAILABLE(ios(14.5)) {
+- (void)webView:(WKWebView *)webView navigationResponse:(WKNavigationResponse *)navigationResponse didBecomeDownload:(WKDownload *)download API_AVAILABLE(ios(14.5)) {
     [download cancel:^(NSData *data) {}];
     NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
                                          code:IAMDisplayRenderErrorTypeNavigationBecameDownloadError
