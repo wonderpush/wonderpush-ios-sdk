@@ -478,11 +478,17 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
      followURL:url
      withCompletionBlock:^(BOOL success) {
         WPLogDebug(@"Successfully opened %@", url);
+        if (success) {
+            [self resolve:nil callId:callId];
+            if (self.webView.onDismiss) {
+                self.webView.onDismiss(WPInAppMessagingDismissTypeUserTapClose);
+            }
+        } else {
+            [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnspecifiedError userInfo:@{
+                NSLocalizedDescriptionKey: NSLocalizedString(@"Could not open URL", nil),
+            }] callId:callId];
+        }
     }];
-    if (self.webView.onDismiss) {
-        self.webView.onDismiss(WPInAppMessagingDismissTypeUserTapClose);
-    }
-    [self resolve:nil callId:callId];
 }
 
 - (void) openExternalUrl:(NSArray *)args callId:(NSString *)callId {
@@ -504,11 +510,17 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
      followURLViaIOS:url
      withCompletionBlock:^(BOOL success) {
         WPLogDebug(@"Successfully opened %@", url);
+        if (success) {
+            [self resolve:nil callId:callId];
+            if (self.webView.onDismiss) {
+                self.webView.onDismiss(WPInAppMessagingDismissTypeUserTapClose);
+            }
+        } else {
+            [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnspecifiedError userInfo:@{
+                NSLocalizedDescriptionKey: NSLocalizedString(@"Could not open URL", nil),
+            }] callId:callId];
+        }
     }];
-    if (self.webView.onDismiss) {
-        self.webView.onDismiss(WPInAppMessagingDismissTypeUserTapClose);
-    }
-    [self resolve:nil callId:callId];
 }
 
 - (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
