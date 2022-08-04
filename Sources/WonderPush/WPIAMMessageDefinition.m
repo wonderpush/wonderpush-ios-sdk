@@ -77,9 +77,9 @@
     for (WPIAMDisplayTriggerDefinition *nextTrigger in self.renderTriggers) {
         if (nextTrigger.triggerType == WPIAMRenderTriggerOnWonderPushEvent &&
             [nextTrigger.eventName isEqualToString:eventName]) {
-            // Is there a count criteria?
-            if (nextTrigger.minOccurrences != nil && nextTrigger.minOccurrences.integerValue > 0 && nextTrigger.minOccurrences.integerValue > allTimeOccurrences) {
-                // Count criteria not met, skip to next trigger definition
+            // Is there a minOccurrences criteria?
+            if (nextTrigger.minOccurrences.integerValue > allTimeOccurrences) {
+                // minOccurrences criteria not met, skip to next trigger definition
                 continue;
             }
             return YES;
