@@ -22,10 +22,14 @@
 @protocol WPInAppMessagingDisplayDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
+
+@protocol WPInAppMessagingControllerDelegate <WPInAppMessagingDisplayDelegate>
+- (void)trackEvent:(NSString *)type attributes:(NSDictionary * _Nullable)attributes;
+@end
+
 @interface WPIAMBaseRenderingViewController : UIViewController
 @property(nonatomic, readwrite) id<WPIAMTimeFetcher> timeFetcher;
-
-@property(nonatomic, readwrite) id<WPInAppMessagingDisplayDelegate> displayDelegate;
+@property(nonatomic, readwrite) id<WPInAppMessagingControllerDelegate> controllerDelegate;
 
 // These are the two methods we use to respond to app state change for the purpose of
 // actual display time tracking. Subclass can override this one to have more logic for responding

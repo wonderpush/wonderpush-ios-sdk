@@ -66,16 +66,22 @@
 - (BOOL)messageRenderedOnTrigger:(WPIAMRenderTrigger)trigger {
     for (WPIAMDisplayTriggerDefinition *nextTrigger in self.renderTriggers) {
         if (nextTrigger.triggerType == trigger) {
+            // Note: we're ignoring minOccurrences for system events
             return YES;
         }
     }
     return NO;
 }
 
-- (BOOL)messageRenderedOnWonderPushEvent:(NSString *)eventName {
+- (BOOL)messageRenderedOnWonderPushEvent:(NSString *)eventName allTimeOccurrences:(NSInteger)allTimeOccurrences {
     for (WPIAMDisplayTriggerDefinition *nextTrigger in self.renderTriggers) {
         if (nextTrigger.triggerType == WPIAMRenderTriggerOnWonderPushEvent &&
             [nextTrigger.eventName isEqualToString:eventName]) {
+            // Is there a minOccurrences criteria?
+            if (nextTrigger.minOccurrences.integerValue > allTimeOccurrences) {
+                // minOccurrences criteria not met, skip to next trigger definition
+                continue;
+            }
             return YES;
         }
     }

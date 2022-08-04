@@ -73,6 +73,12 @@
     
     [self trackEvent:type eventData:data customData:customData sentCallback:sentCallback];
 }
+
+- (void)trackInAppEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
+{
+    [self trackEvent:type eventData:data customData:customData requiresSubscription:NO sentCallback:nil];
+}
+
 - (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
 {
     [self trackInternalEvent:type eventData:data customData:customData sentCallback:nil];
@@ -105,13 +111,25 @@
     if (!body) return;
 
     // Store locally
-    [WPConfiguration.sharedConfiguration rememberTrackedEvent:body];
-    
+    NSDictionary *occurrences = nil;
+    [WPConfiguration.sharedConfiguration rememberTrackedEvent:body occurrences:&occurrences];
+
+    // Add occurrences to the body
+    if (occurrences) {
+        NSMutableDictionary *mutableBody = body.mutableCopy;
+        mutableBody[@"occurrences"] = occurrences;
+        body = [NSDictionary dictionaryWithDictionary:mutableBody];
+        NSMutableDictionary *mutableParams = params.mutableCopy;
+        mutableParams[@"body"] = body;
+        params = [NSDictionary dictionaryWithDictionary:mutableParams];
+    }
+
     // Notify locally
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:WPEventFiredNotification object:nil userInfo:@{
             WPEventFiredNotificationEventTypeKey : type,
             WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:body],
+            WPEventFiredNotificationEventOccurrencesKey : occurrences,
         }];
     });
 
@@ -163,7 +181,9 @@
 }
 
 - (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void(^)(void))sentCallback {
-
+    [self trackEvent:type eventData:data customData:customData requiresSubscription:YES sentCallback:sentCallback];
+}
+- (void) trackEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData requiresSubscription:(BOOL)requiresSubscription sentCallback:(void(^)(void))sentCallback {
     if (![type isKindOfClass:[NSString class]]) return;
     @synchronized (self) {
         NSString *eventEndPoint = @"/events";
@@ -173,13 +193,25 @@
         if (!body) return;
         
         // Store locally
-        [WPConfiguration.sharedConfiguration rememberTrackedEvent:body];
+        NSDictionary *occurrences = nil;
+        [WPConfiguration.sharedConfiguration rememberTrackedEvent:body occurrences:&occurrences];
+
+        // Add occurrences to the body
+        if (occurrences) {
+            NSMutableDictionary *mutableBody = body.mutableCopy;
+            mutableBody[@"occurrences"] = occurrences;
+            body = [NSDictionary dictionaryWithDictionary:mutableBody];
+            NSMutableDictionary *mutableParams = params.mutableCopy;
+            mutableParams[@"body"] = body;
+            params = [NSDictionary dictionaryWithDictionary:mutableParams];
+        }
 
         // Notify locally
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:WPEventFiredNotification object:nil userInfo:@{
                 WPEventFiredNotificationEventTypeKey : type,
                 WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:body],
+                WPEventFiredNotificationEventOccurrencesKey : occurrences,
             }];
         });
         
@@ -195,11 +227,17 @@
                     // Save in request vault
                     [WonderPush postEventually:eventEndPoint params:params];
                     if (sentCallback) sentCallback();
-                } else {
+                } else if (requiresSubscription) {
                     [WonderPush safeDeferWithSubscription:^{
                         [WonderPush postEventually:eventEndPoint params:params];
                         if (sentCallback) sentCallback();
                     }];
+                } else {
+                        WPRequest *request = [WPRequest new];
+                        request.method = @"POST";
+                        request.params = params;
+                        request.resource = @"/events";
+                        [WonderPush requestEventuallyWithOptionalAccessToken:request];
                 }
             }];
         }];
@@ -428,6 +466,19 @@
                 WPLogDebug(@"Unhandled followUp %@", followUp);
                 break;
         }
+    }
+}
+
+- (void) triggerLocationPrompt
+{
+    NSString *alwaysDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
+
+    if (alwaysDescription) {
+        [self.locationManager requestAlwaysAuthorization];
+    } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
+        [self.locationManager requestWhenInUseAuthorization];
+    } else {
+        WPLog(@"Location prompt requested but usage string not found in Info.plist. Please set NSLocationAlwaysUsageDescription, NSLocationAlwaysAndWhenInUseUsageDescription or NSLocationWhenInUseUsageDescription in your Info.plist file");
     }
 }
 

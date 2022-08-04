@@ -131,8 +131,8 @@ static const NSTimeInterval kMinValidImpressionTime = 3.0;
 - (void)minImpressionTimeReached {
     WPLogDebug(@"Min impression time has been reached.");
     
-    if ([self.displayDelegate respondsToSelector:@selector(impressionDetectedForMessage:)]) {
-        [self.displayDelegate impressionDetectedForMessage:[self inAppMessage]];
+    if ([self.controllerDelegate respondsToSelector:@selector(impressionDetectedForMessage:)]) {
+        [self.controllerDelegate impressionDetectedForMessage:[self inAppMessage]];
     }
     
     [NSNotificationCenter.defaultCenter removeObserver:self];
@@ -166,8 +166,8 @@ static const NSTimeInterval kMinValidImpressionTime = 3.0;
     } else {
         [self hideAndClean];
     }
-    if (self.displayDelegate) {
-        [self.displayDelegate messageDismissed:[self inAppMessage] dismissType:dismissType];
+    if (self.controllerDelegate) {
+        [self.controllerDelegate messageDismissed:[self inAppMessage] dismissType:dismissType];
     } else {
         WPLog(@"Display delegate is nil while message is being dismissed.");
     }
@@ -192,8 +192,8 @@ static const NSTimeInterval kMinValidImpressionTime = 3.0;
         [self hideAndClean];
     }
     
-    if (self.displayDelegate) {
-        [self.displayDelegate messageClicked:[self inAppMessage] withAction:action];
+    if (self.controllerDelegate) {
+        [self.controllerDelegate messageClicked:[self inAppMessage] withAction:action];
     } else {
         WPLog(@"Display delegate is nil while trying to follow action :%@.", action.targetUrl.absoluteString);
     }

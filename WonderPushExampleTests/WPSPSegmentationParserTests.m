@@ -965,7 +965,7 @@ static const WPSPSegmentationDSLParser *parser = nil;
                 },
             },
         };
-        if (expectedDataSource == NSNull.null) {
+        if (expectedDataSource == (id)NSNull.null) {
             XCTAssertThrowsSpecific([parser parse:input dataSource:startDataSource], WPSPBadInputException);
             continue;
         }

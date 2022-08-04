@@ -48,6 +48,11 @@ extern NSString * const WPEventFiredNotificationEventTypeKey;
 extern NSString * const WPEventFiredNotificationEventDataKey;
 
 /**
+* Name of the NSNotificationCenter notification payload key that contains the event occurrences dictionary.
+*/
+extern NSString * const WPEventFiredNotificationEventOccurrencesKey;
+
+/**
  * Name of the NSNotificationCenter notification fired when subscription status changes.
  */
 extern NSString * const WPSubscriptionStatusChangedNotification;
@@ -122,6 +127,13 @@ Called when receiving the full state of the installation
  @param sentCallback A block executed once a request is in the request vault.
  */
 + (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void(^)(void))sentCallback;
+
+/**
+ Tracks an in-app event, sent to the SDK API no matter what (accessToken or not).
+ @param data A collection of properties to add directly to the event body.
+ @param customData A collection of custom properties to add to the `custom` field of the event.
+ */
++ (void) trackInAppEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData ;
 
 /**
  Counts an internal event with measurements API, starting with a @ sign.
@@ -200,6 +212,13 @@ Called when receiving the full state of the installation
 + (void) postEventually:(NSString *)resource params:(id)params;
 
 /**
+ Triggers the system location prompt. Requires that:
+   - you link with the CoreLocation framework
+   - you set NSLocationAlwaysUsageDescription, NSLocationAlwaysAndWhenInUseUsageDescription or NSLocationWhenInUseUsageDescription in your Info.plist file
+ */
++ (void) triggerLocationPrompt;
+
+/**
  The last known location
  @return the last known location
  */
@@ -213,6 +232,8 @@ Called when receiving the full state of the installation
 + (WPMeasurementsApiClient *) measurementsApiClient;
 
 + (void) requestEventuallyWithMeasurementsApi:(WPRequest *)request;
+
++ (void)requestEventuallyWithOptionalAccessToken:(WPRequest *)request;
 
 + (WPReportingData *) lastClickedNotificationReportingData;
 

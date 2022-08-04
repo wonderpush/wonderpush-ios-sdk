@@ -54,6 +54,11 @@
 		99232AEF23708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08651D33F39C001289BD /* WonderPushLocalizable.strings */; };
 		99232AF023708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08661D33F3A0001289BD /* WonderPushLocalizable.strings */; };
 		99232AF123708D100064381B /* WonderPushLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3D0A08671D33F543001289BD /* WonderPushLocalizable.strings */; };
+		9926788F287DA33200DB43E9 /* WPAnonymousAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 9926788D287DA33200DB43E9 /* WPAnonymousAPIClient.h */; };
+		99267890287DA33200DB43E9 /* WPAnonymousAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9926788E287DA33200DB43E9 /* WPAnonymousAPIClient.m */; };
+		99267893287EA34F00DB43E9 /* WPRateLimiter.h in Headers */ = {isa = PBXBuildFile; fileRef = 99267891287EA34F00DB43E9 /* WPRateLimiter.h */; };
+		99267894287EA34F00DB43E9 /* WPRateLimiter.m in Sources */ = {isa = PBXBuildFile; fileRef = 99267892287EA34F00DB43E9 /* WPRateLimiter.m */; };
+		99267896287EA37900DB43E9 /* WPRateLimiterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99267895287EA37900DB43E9 /* WPRateLimiterTests.m */; };
 		9929944C2510A27C00DF5F92 /* WPIAMCappingDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 9929944A2510A27C00DF5F92 /* WPIAMCappingDefinition.m */; };
 		992F65A4251C8B7100526C90 /* WPPresenceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 992F65A2251C8B7100526C90 /* WPPresenceManager.h */; };
 		992F65A5251C8B7100526C90 /* WPPresenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 992F65A3251C8B7100526C90 /* WPPresenceManager.m */; };
@@ -251,7 +256,6 @@
 		99EF835A23F4452C00B9B287 /* WPIAMFetchResponseParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82E723F4452C00B9B287 /* WPIAMFetchResponseParser.h */; };
 		99EF835B23F4452C00B9B287 /* WPIAMMessageContentData.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82E823F4452C00B9B287 /* WPIAMMessageContentData.h */; };
 		99EF835C23F4452C00B9B287 /* WPIAMRenderingEffectSetting.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82E923F4452C00B9B287 /* WPIAMRenderingEffectSetting.h */; };
-		99EF835D23F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82EA23F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.h */; };
 		99EF835E23F4452C00B9B287 /* WPIAMMessageDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82EB23F4452C00B9B287 /* WPIAMMessageDefinition.h */; };
 		99EF835F23F4452C00B9B287 /* WPIAMDisplayCheckOnAppForegroundFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82ED23F4452C00B9B287 /* WPIAMDisplayCheckOnAppForegroundFlow.h */; };
 		99EF836223F4452C00B9B287 /* WPIAMMessageClientCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF82F023F4452C00B9B287 /* WPIAMMessageClientCache.h */; };
@@ -278,7 +282,6 @@
 		99EF838023F4452C00B9B287 /* WPIAMBannerViewUIWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831423F4452C00B9B287 /* WPIAMBannerViewUIWindow.m */; };
 		99EF838123F4452C00B9B287 /* WPIAMBannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831523F4452C00B9B287 /* WPIAMBannerViewController.m */; };
 		99EF838223F4452C00B9B287 /* WPIAMBannerViewUIWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 99EF831623F4452C00B9B287 /* WPIAMBannerViewUIWindow.h */; };
-		99EF838323F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831823F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.m */; };
 		99EF838423F4452C00B9B287 /* WPIAMMessageDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831923F4452C00B9B287 /* WPIAMMessageDefinition.m */; };
 		99EF838523F4452C00B9B287 /* WPIAMFetchResponseParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831A23F4452C00B9B287 /* WPIAMFetchResponseParser.m */; };
 		99EF838623F4452C00B9B287 /* WPIAMRenderingEffectSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF831B23F4452C00B9B287 /* WPIAMRenderingEffectSetting.m */; };
@@ -292,6 +295,15 @@
 		99EF839323F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF832923F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m */; };
 		99F384942225A5E400EA2ECD /* NotificationServiceExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 99F384922225A5E400EA2ECD /* NotificationServiceExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		99F384952225A5E400EA2ECD /* NotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 99F384932225A5E400EA2ECD /* NotificationServiceExtension.m */; };
+		99FA78AE2847ADE0002B070F /* WPIAMWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 99FA78AC2847ADE0002B070F /* WPIAMWebView.h */; };
+		99FA78AF2847ADE0002B070F /* WPIAMWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 99FA78AD2847ADE0002B070F /* WPIAMWebView.m */; };
+		ED3718CA27FB291C0034A347 /* WPIAMMessageContentDataWithMedia.h in Headers */ = {isa = PBXBuildFile; fileRef = ED3718C827FB291C0034A347 /* WPIAMMessageContentDataWithMedia.h */; };
+		ED3718CC27FB291C0034A347 /* WPIAMMessageContentDataWithMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = ED3718C927FB291C0034A347 /* WPIAMMessageContentDataWithMedia.m */; };
+		ED39867C280C6D3300863EBE /* webViewBridgeJavascriptFileToInject.js in Resources */ = {isa = PBXBuildFile; fileRef = ED39867A280C647E00863EBE /* webViewBridgeJavascriptFileToInject.js */; };
+		ED875F13280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = ED875F11280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.h */; };
+		ED875F14280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED875F12280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.m */; };
+		EDA0887E27F9D10B00134BB2 /* WPIAMWebViewViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = EDA0887C27F9D10B00134BB2 /* WPIAMWebViewViewController.h */; };
+		EDA0887F27F9D10B00134BB2 /* WPIAMWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EDA0887D27F9D10B00134BB2 /* WPIAMWebViewViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -428,6 +440,11 @@
 		99129C31220C8B1500111272 /* WPInstallationCoreProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPInstallationCoreProperties.h; sourceTree = "<group>"; };
 		99129C3F220D8E0F00111272 /* WonderPushLogErrorAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPushLogErrorAPI.h; sourceTree = "<group>"; };
 		99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPushLogErrorAPI.m; sourceTree = "<group>"; };
+		9926788D287DA33200DB43E9 /* WPAnonymousAPIClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPAnonymousAPIClient.h; sourceTree = "<group>"; };
+		9926788E287DA33200DB43E9 /* WPAnonymousAPIClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPAnonymousAPIClient.m; sourceTree = "<group>"; };
+		99267891287EA34F00DB43E9 /* WPRateLimiter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPRateLimiter.h; sourceTree = "<group>"; };
+		99267892287EA34F00DB43E9 /* WPRateLimiter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPRateLimiter.m; sourceTree = "<group>"; };
+		99267895287EA37900DB43E9 /* WPRateLimiterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPRateLimiterTests.m; sourceTree = "<group>"; };
 		992994482510A26300DF5F92 /* WPIAMCappingDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMCappingDefinition.h; sourceTree = "<group>"; };
 		9929944A2510A27C00DF5F92 /* WPIAMCappingDefinition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMCappingDefinition.m; sourceTree = "<group>"; };
 		992F65A2251C8B7100526C90 /* WPPresenceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPPresenceManager.h; sourceTree = "<group>"; };
@@ -594,7 +611,6 @@
 		99EF82E723F4452C00B9B287 /* WPIAMFetchResponseParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMFetchResponseParser.h; sourceTree = "<group>"; };
 		99EF82E823F4452C00B9B287 /* WPIAMMessageContentData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMMessageContentData.h; sourceTree = "<group>"; };
 		99EF82E923F4452C00B9B287 /* WPIAMRenderingEffectSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMRenderingEffectSetting.h; sourceTree = "<group>"; };
-		99EF82EA23F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMMessageContentDataWithImageURL.h; sourceTree = "<group>"; };
 		99EF82EB23F4452C00B9B287 /* WPIAMMessageDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMMessageDefinition.h; sourceTree = "<group>"; };
 		99EF82ED23F4452C00B9B287 /* WPIAMDisplayCheckOnAppForegroundFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMDisplayCheckOnAppForegroundFlow.h; sourceTree = "<group>"; };
 		99EF82F023F4452C00B9B287 /* WPIAMMessageClientCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMMessageClientCache.h; sourceTree = "<group>"; };
@@ -621,7 +637,6 @@
 		99EF831423F4452C00B9B287 /* WPIAMBannerViewUIWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMBannerViewUIWindow.m; sourceTree = "<group>"; };
 		99EF831523F4452C00B9B287 /* WPIAMBannerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMBannerViewController.m; sourceTree = "<group>"; };
 		99EF831623F4452C00B9B287 /* WPIAMBannerViewUIWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMBannerViewUIWindow.h; sourceTree = "<group>"; };
-		99EF831823F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMMessageContentDataWithImageURL.m; sourceTree = "<group>"; };
 		99EF831923F4452C00B9B287 /* WPIAMMessageDefinition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMMessageDefinition.m; sourceTree = "<group>"; };
 		99EF831A23F4452C00B9B287 /* WPIAMFetchResponseParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMFetchResponseParser.m; sourceTree = "<group>"; };
 		99EF831B23F4452C00B9B287 /* WPIAMRenderingEffectSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMRenderingEffectSetting.m; sourceTree = "<group>"; };
@@ -635,6 +650,8 @@
 		99EF832923F4452C00B9B287 /* WPIAMDisplayCheckOnAnalyticEventsFlow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMDisplayCheckOnAnalyticEventsFlow.m; sourceTree = "<group>"; };
 		99F384922225A5E400EA2ECD /* NotificationServiceExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationServiceExtension.h; sourceTree = "<group>"; };
 		99F384932225A5E400EA2ECD /* NotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationServiceExtension.m; sourceTree = "<group>"; };
+		99FA78AC2847ADE0002B070F /* WPIAMWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMWebView.h; sourceTree = "<group>"; };
+		99FA78AD2847ADE0002B070F /* WPIAMWebView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMWebView.m; sourceTree = "<group>"; };
 		A120C1E419DD96A200370FE2 /* WonderPush_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WonderPush_private.h; sourceTree = "<group>"; };
 		A16E33AD19C886A700E4E158 /* WonderPush.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPush.m; sourceTree = "<group>"; };
 		A16E33EE19C88EDB00E4E158 /* WPConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPConfiguration.h; sourceTree = "<group>"; };
@@ -658,6 +675,13 @@
 		A1B8508B19D41F6700D1B6FB /* WPDialogButtonHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPDialogButtonHandler.m; sourceTree = "<group>"; };
 		A1E3E08519E423A200A4EE09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1E3E0A319E425DB00A4EE09 /* WonderPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderPush.h; sourceTree = "<group>"; };
+		ED3718C827FB291C0034A347 /* WPIAMMessageContentDataWithMedia.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPIAMMessageContentDataWithMedia.h; sourceTree = "<group>"; };
+		ED3718C927FB291C0034A347 /* WPIAMMessageContentDataWithMedia.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPIAMMessageContentDataWithMedia.m; sourceTree = "<group>"; };
+		ED39867A280C647E00863EBE /* webViewBridgeJavascriptFileToInject.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = webViewBridgeJavascriptFileToInject.js; path = Sources/WonderPush/Resources/javascript/webViewBridgeJavascriptFileToInject.js; sourceTree = SOURCE_ROOT; };
+		ED875F11280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMWebViewPreloaderViewController.h; sourceTree = "<group>"; };
+		ED875F12280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMWebViewPreloaderViewController.m; sourceTree = "<group>"; };
+		EDA0887C27F9D10B00134BB2 /* WPIAMWebViewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMWebViewViewController.h; sourceTree = "<group>"; };
+		EDA0887D27F9D10B00134BB2 /* WPIAMWebViewViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMWebViewViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -759,6 +783,7 @@
 				992F65A9251C8BA800526C90 /* WPPresenceManagerTests.m */,
 				99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */,
 				99991B0B27E874500020DCDE /* WPConfigurationRememberTrackedEventsTests.m */,
+				99267895287EA37900DB43E9 /* WPRateLimiterTests.m */,
 			);
 			path = WonderPushExampleTests;
 			sourceTree = "<group>";
@@ -884,6 +909,7 @@
 		9979164A276A4DDE00A06846 /* InAppMessaging */ = {
 			isa = PBXGroup;
 			children = (
+				99EF82D523F4452C00B9B287 /* InAppMessaging.h */,
 				99EF82C423F4452C00B9B287 /* UIColor+WPIAMHexString.h */,
 				99EF82C123F4452C00B9B287 /* UIColor+WPIAMHexString.m */,
 				99EF82BE23F4452C00B9B287 /* WPCore+InAppMessaging.h */,
@@ -929,8 +955,8 @@
 				99EF82F023F4452C00B9B287 /* WPIAMMessageClientCache.h */,
 				99EF832823F4452C00B9B287 /* WPIAMMessageClientCache.m */,
 				99EF82E823F4452C00B9B287 /* WPIAMMessageContentData.h */,
-				99EF82EA23F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.h */,
-				99EF831823F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.m */,
+				ED3718C827FB291C0034A347 /* WPIAMMessageContentDataWithMedia.h */,
+				ED3718C927FB291C0034A347 /* WPIAMMessageContentDataWithMedia.m */,
 				99EF82EB23F4452C00B9B287 /* WPIAMMessageDefinition.h */,
 				99EF831923F4452C00B9B287 /* WPIAMMessageDefinition.m */,
 				99EF82E623F4452C00B9B287 /* WPIAMMessageRenderData.h */,
@@ -949,15 +975,20 @@
 				99EF82CE23F4452C00B9B287 /* WPIAMSDKSettings.m */,
 				99EF82DB23F4452C00B9B287 /* WPIAMTimeFetcher.h */,
 				99EF82C023F4452C00B9B287 /* WPIAMTimeFetcher.m */,
+				99FA78AC2847ADE0002B070F /* WPIAMWebView.h */,
+				99FA78AD2847ADE0002B070F /* WPIAMWebView.m */,
+				ED875F11280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.h */,
+				ED875F12280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.m */,
+				EDA0887C27F9D10B00134BB2 /* WPIAMWebViewViewController.h */,
+				EDA0887D27F9D10B00134BB2 /* WPIAMWebViewViewController.m */,
+				99EF82D723F4452C00B9B287 /* WPInAppMessaging.h */,
 				99EF82D123F4452C00B9B287 /* WPInAppMessaging.m */,
 				99EF82DF23F4452C00B9B287 /* WPInAppMessaging+Bootstrap.h */,
 				99EF82CF23F4452C00B9B287 /* WPInAppMessaging+Bootstrap.m */,
 				99EF82C623F4452C00B9B287 /* WPInAppMessagingPrivate.h */,
+				99EF82D623F4452C00B9B287 /* WPInAppMessagingRendering.h */,
 				99EF82C823F4452C00B9B287 /* WPInAppMessagingRenderingDataClasses.m */,
 				99EF82C923F4452C00B9B287 /* WPInAppMessagingRenderingPrivate.h */,
-				99EF82D523F4452C00B9B287 /* InAppMessaging.h */,
-				99EF82D723F4452C00B9B287 /* WPInAppMessaging.h */,
-				99EF82D623F4452C00B9B287 /* WPInAppMessagingRendering.h */,
 			);
 			name = InAppMessaging;
 			sourceTree = "<group>";
@@ -966,21 +997,23 @@
 			isa = PBXGroup;
 			children = (
 				9979164A276A4DDE00A06846 /* InAppMessaging */,
-				99791649276A4D9100A06846 /* Segmenter */,
 				99B39794275FC98B00C26D73 /* include */,
 				9998CA8D221C55E20028D955 /* Resources */,
+				99791649276A4D9100A06846 /* Segmenter */,
 				994E63F0253494C900B9E367 /* WonderPush_constants.h */,
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
 				A1E3E0A319E425DB00A4EE09 /* WonderPush.h */,
 				A16E33AD19C886A700E4E158 /* WonderPush.m */,
+				99129C2C220C8B0800111272 /* WonderPushAPI.h */,
 				99129C2A220C8B0800111272 /* WonderPushConcreteAPI.h */,
 				99129C2B220C8B0800111272 /* WonderPushConcreteAPI.m */,
-				99129C2C220C8B0800111272 /* WonderPushAPI.h */,
 				99129C3F220D8E0F00111272 /* WonderPushLogErrorAPI.h */,
 				99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */,
 				990F269C23FD4C020015F8DE /* WPAction_private.h */,
 				990F269823FD4B0E0015F8DE /* WPAction.h */,
 				990F269923FD4B0E0015F8DE /* WPAction.m */,
+				9926788D287DA33200DB43E9 /* WPAnonymousAPIClient.h */,
+				9926788E287DA33200DB43E9 /* WPAnonymousAPIClient.m */,
 				A189374F19C997CA00F91DDD /* WPAPIClient.h */,
 				A189375019C997CA00F91DDD /* WPAPIClient.m */,
 				3DFEA88F1C46E0D600E27404 /* WPAppDelegate.h */,
@@ -1011,6 +1044,8 @@
 				3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */,
 				992F65A2251C8B7100526C90 /* WPPresenceManager.h */,
 				992F65A3251C8B7100526C90 /* WPPresenceManager.m */,
+				99267891287EA34F00DB43E9 /* WPRateLimiter.h */,
+				99267892287EA34F00DB43E9 /* WPRateLimiter.m */,
 				9942FD79246BDAB20002BEA0 /* WPRemoteConfig.h */,
 				9942FD7A246BDAB20002BEA0 /* WPRemoteConfig.m */,
 				A189375219C998D100F91DDD /* WPRequestVault.h */,
@@ -1029,6 +1064,7 @@
 		9998CA8D221C55E20028D955 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				ED398679280C647200863EBE /* javascript */,
 				99EF82BA23F4452C00B9B287 /* WPInAppMessageDisplayStoryboard.storyboard */,
 				99EF82BB23F4452C00B9B287 /* close-with-transparency@2x.png */,
 				99EF82BC23F4452C00B9B287 /* close-with-transparency.png */,
@@ -1174,6 +1210,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		ED398679280C647200863EBE /* javascript */ = {
+			isa = PBXGroup;
+			children = (
+				ED39867A280C647E00863EBE /* webViewBridgeJavascriptFileToInject.js */,
+			);
+			path = javascript;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1207,14 +1251,15 @@
 				990F269A23FD4B0E0015F8DE /* WPAction.h in Headers */,
 				99EF834E23F4452C00B9B287 /* WPInAppMessagingRendering.h in Headers */,
 				99EF838223F4452C00B9B287 /* WPIAMBannerViewUIWindow.h in Headers */,
-				99EF835D23F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.h in Headers */,
 				99EF835723F4452C00B9B287 /* WPURLFollower.h in Headers */,
 				9979E0DA24A63AFF002BC6EE /* WPSPASTCriterionNode.h in Headers */,
 				3DB7A41B24B3340600204437 /* WPSPSegmenter.h in Headers */,
 				9998CAD0221C75560028D955 /* WonderPushConcreteAPI.h in Headers */,
 				99EF836423F4452C00B9B287 /* WPIAMDisplayExecutor.h in Headers */,
 				99EF833E23F4452C00B9B287 /* WPIAMElapsedTimeTracker.h in Headers */,
+				99FA78AE2847ADE0002B070F /* WPIAMWebView.h in Headers */,
 				995F150124AB7BB200CC499E /* WPSPGeohash.h in Headers */,
+				9926788F287DA33200DB43E9 /* WPAnonymousAPIClient.h in Headers */,
 				99EF835523F4452C00B9B287 /* WPIAMRuntimeManager.h in Headers */,
 				99EF837B23F4452C00B9B287 /* WPIAMModalViewController.h in Headers */,
 				9998CAD1221C75560028D955 /* WonderPushAPI.h in Headers */,
@@ -1257,10 +1302,12 @@
 				99EF837E23F4452C00B9B287 /* WPCore+InAppMessagingDisplay.h in Headers */,
 				99EF835B23F4452C00B9B287 /* WPIAMMessageContentData.h in Headers */,
 				9979E0D224A638D6002BC6EE /* WPSPASTValueNodeParser.h in Headers */,
+				EDA0887E27F9D10B00134BB2 /* WPIAMWebViewViewController.h in Headers */,
 				9998CAB0221C75370028D955 /* WPJsonSyncInstallation.h in Headers */,
 				99EF835423F4452C00B9B287 /* WPInAppMessaging+Bootstrap.h in Headers */,
 				99536E84275FA83400EFC77E /* WPLog.h in Headers */,
 				99EF835823F4452C00B9B287 /* WPIAMDisplayTriggerDefinition.h in Headers */,
+				ED875F13280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.h in Headers */,
 				995F14F924AB7A8300CC499E /* WPSPGeoCircle.h in Headers */,
 				9979E0CA24A63711002BC6EE /* WPSPSegmentationDSLParser.h in Headers */,
 				99EF835923F4452C00B9B287 /* WPIAMMessageRenderData.h in Headers */,
@@ -1272,6 +1319,7 @@
 				9979E0F524A659D9002BC6EE /* WPSPConfigurableValueNodeParser.h in Headers */,
 				99EF837923F4452C00B9B287 /* WPIAMDefaultDisplayImpl.h in Headers */,
 				9998CAB4221C75370028D955 /* WPNetworkReachabilityManager.h in Headers */,
+				ED3718CA27FB291C0034A347 /* WPIAMMessageContentDataWithMedia.h in Headers */,
 				99EA16492487DDC000AA01BC /* WPNSUtil.h in Headers */,
 				995F14E724AA2A7D00CC499E /* WPSPISO8601Duration.h in Headers */,
 				99EF837723F4452C00B9B287 /* WPIAMBaseRenderingViewController.h in Headers */,
@@ -1298,6 +1346,7 @@
 				9998CAB8221C75370028D955 /* WPRequestVault.h in Headers */,
 				9998CAB9221C75370028D955 /* WPResponse.h in Headers */,
 				99EF839023F4452C00B9B287 /* WPIAMDisplayCheckOnFetchDoneNotificationFlow.h in Headers */,
+				99267893287EA34F00DB43E9 /* WPRateLimiter.h in Headers */,
 				9998CABA221C75370028D955 /* WPUtil.h in Headers */,
 				99EF834023F4452C00B9B287 /* UIColor+WPIAMHexString.h in Headers */,
 				99EF834623F4452C00B9B287 /* WPIAMSDKRuntimeErrorCodes.h in Headers */,
@@ -1421,8 +1470,7 @@
 					};
 					9942FD4F246AA8F40002BEA0 = {
 						CreatedOnToolsVersion = 11.4.1;
-						DevelopmentTeam = N9ZG2P9A72;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 						TestTargetID = 9942FD35246AA8F20002BEA0;
 					};
 					9998CA97221C74190028D955 = {
@@ -1522,6 +1570,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED39867C280C6D3300863EBE /* webViewBridgeJavascriptFileToInject.js in Resources */,
 				9909CE1922215DD600F73A0B /* WonderPush.storyboard in Resources */,
 				99232AD023708D100064381B /* WonderPushLocalizable.strings in Resources */,
 				99232AD123708D100064381B /* WonderPushLocalizable.strings in Resources */,
@@ -1614,6 +1663,7 @@
 				99ED541824B33A2700EECDE0 /* WPSPDataSourceTests.m in Sources */,
 				99ED541A24B33DFB00EECDE0 /* WPSPGeoBoxTests.m in Sources */,
 				995F14EA24AA493600CC499E /* WPSPISO8601DurationTests.m in Sources */,
+				99267896287EA37900DB43E9 /* WPRateLimiterTests.m in Sources */,
 				99563402252B0E7C00F6CF3E /* WPBlackWhiteListTests.m in Sources */,
 				99EE9ACC24AF5BBB00EC2A28 /* WPSPGeohashTests.m in Sources */,
 				3DB7A41E24B486DC00204437 /* WPSPSegmenterTests.m in Sources */,
@@ -1630,8 +1680,9 @@
 				99EF838D23F4452C00B9B287 /* WPIAMBookKeeper.m in Sources */,
 				99EF837523F4452C00B9B287 /* WPIAMImageOnlyViewController.m in Sources */,
 				9979E0E824A640EC002BC6EE /* WPSPASTValueNode.m in Sources */,
-				99EF838323F4452C00B9B287 /* WPIAMMessageContentDataWithImageURL.m in Sources */,
+				99267894287EA34F00DB43E9 /* WPRateLimiter.m in Sources */,
 				99EF837223F4452C00B9B287 /* WPIAMDefaultDisplayImpl.m in Sources */,
+				EDA0887F27F9D10B00134BB2 /* WPIAMWebViewViewController.m in Sources */,
 				99EF838023F4452C00B9B287 /* WPIAMBannerViewUIWindow.m in Sources */,
 				99EF839223F4452C00B9B287 /* WPIAMMessageClientCache.m in Sources */,
 				9979E0CB24A63711002BC6EE /* WPSPSegmentationDSLParser.m in Sources */,
@@ -1640,6 +1691,7 @@
 				99EF838123F4452C00B9B287 /* WPIAMBannerViewController.m in Sources */,
 				99EF838E23F4452C00B9B287 /* WPIAMDisplayCheckOnAppForegroundFlow.m in Sources */,
 				9979E0DB24A63AFF002BC6EE /* WPSPASTCriterionNode.m in Sources */,
+				ED3718CC27FB291C0034A347 /* WPIAMMessageContentDataWithMedia.m in Sources */,
 				9942FD85246C23DD0002BEA0 /* WPSemver.m in Sources */,
 				99EA164B2487DDC000AA01BC /* WPNSUtil.m in Sources */,
 				99E40E1A24F93CEE002DD7D2 /* WPIAMAnimationHelper.m in Sources */,
@@ -1647,6 +1699,7 @@
 				9979E0F624A659D9002BC6EE /* WPSPConfigurableValueNodeParser.m in Sources */,
 				99EF834923F4452C00B9B287 /* WPInAppMessaging+Bootstrap.m in Sources */,
 				9979E0F224A6571B002BC6EE /* WPSPConfigurableCriterionNodeParser.m in Sources */,
+				99267890287DA33200DB43E9 /* WPAnonymousAPIClient.m in Sources */,
 				9947AD6924FD0BA8007EF7AA /* WPIAMHitTestDelegateView.m in Sources */,
 				99EF834823F4452C00B9B287 /* WPIAMSDKSettings.m in Sources */,
 				99D16F212463E68C00C14989 /* WPMeasurementsApiClient.m in Sources */,
@@ -1678,6 +1731,7 @@
 				9998CABF221C75480028D955 /* WPConfiguration.m in Sources */,
 				995F14CC24A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.m in Sources */,
 				99EF834723F4452C00B9B287 /* WPURLFollower.m in Sources */,
+				99FA78AF2847ADE0002B070F /* WPIAMWebView.m in Sources */,
 				9998CAC0221C75480028D955 /* WPDataManager.m in Sources */,
 				9998CAC1221C75480028D955 /* WPDialogButtonHandler.m in Sources */,
 				99EF838623F4452C00B9B287 /* WPIAMRenderingEffectSetting.m in Sources */,
@@ -1714,6 +1768,7 @@
 				9998CACD221C75480028D955 /* WPRequestVault.m in Sources */,
 				9998CACE221C75480028D955 /* WPResponse.m in Sources */,
 				9998CACF221C75480028D955 /* WPUtil.m in Sources */,
+				ED875F14280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1930,9 +1985,9 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = N9ZG2P9A72;
+				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1946,6 +2001,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wonderpush.WonderPushExampleTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WonderPushExample.app/WonderPushExample";
 			};
@@ -1961,10 +2017,10 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = N9ZG2P9A72;
+				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = WonderPushExampleTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
@@ -1973,6 +2029,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wonderpush.WonderPushExampleTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WonderPushExample.app/WonderPushExample";
 			};

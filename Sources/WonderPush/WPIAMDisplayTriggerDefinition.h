@@ -28,14 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 // applicable only when triggerType == WPIAMRenderTriggerOnWonderPushEvent
 @property(nonatomic, copy, nullable, readonly) NSString *eventName;
+@property(nonatomic, copy, nullable, readonly) NSNumber *minOccurrences;
 @property(nonatomic, readonly) NSTimeInterval delay; // In seconds
 
 - (instancetype)initForAppLaunchTrigger;
 - (instancetype)initForAppForegroundTrigger;
-- (instancetype)initWithEvent:(NSString *)title;
+- (instancetype)initWithEvent:(NSString *)title minOccurrences:(NSNumber * _Nullable)minOccurrences;
 
 - (instancetype)initForAppLaunchTriggerDelay:(NSTimeInterval)delay;
 - (instancetype)initForAppForegroundTriggerDelay:(NSTimeInterval)delay;
-- (instancetype)initWithEvent:(NSString *)title delay:(NSTimeInterval)delay;
+- (instancetype)initWithEvent:(NSString *)title minOccurrences:(NSNumber * _Nullable)minOccurrences delay:(NSTimeInterval)delay;
 @end
 NS_ASSUME_NONNULL_END

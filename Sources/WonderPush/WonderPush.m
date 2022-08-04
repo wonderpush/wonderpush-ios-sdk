@@ -39,6 +39,8 @@
 #import "WPRequestVault.h"
 #import "WPIAMMessageDefinition.h"
 #import "WPConfiguration.h"
+#import "WPIAMWebView.h"
+#import "WPAnonymousAPIClient.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
@@ -87,11 +89,12 @@ static UIStoryboard *storyboard = nil;
 NSString * const WPEventFiredNotification = @"WPEventFiredNotification";
 NSString * const WPEventFiredNotificationEventTypeKey = @"WPEventFiredNotificationEventTypeKey";
 NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificationEventDataKey";
-
+NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNotificationEventOccurrencesKey";
 + (void) initialize
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        [WPIAMWebView ensureInitialized];
         safeDeferWithSubscriptionBlocks = [NSMutableArray new];
         NSBundle *resourceBundle = [self resourceBundle];
         if (!resourceBundle) {
@@ -408,6 +411,8 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
         // API client
         WPAPIClient.sharedClient.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY inDictionary:config.data] boolValue];
+        // Anonymous API client
+        WPAnonymousAPIClient.sharedClient.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_ANONYMOUS_API_CLIENT_KEY inDictionary:config.data] boolValue];
         // JSONSync
         WPJsonSyncInstallation.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY inDictionary:config.data] boolValue];
         if (!WPJsonSyncInstallation.disabled) {
@@ -488,6 +493,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
 
 + (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void (^)(void))sentCallback {
     [wonderPushAPI trackInternalEvent:type eventData:data customData:customData sentCallback:sentCallback];
+}
+
++ (void) trackInAppEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData {
+    [wonderPushAPI trackInAppEvent:type eventData:data customData:customData];
 }
 
 + (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData
@@ -1428,7 +1437,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.handler = handler;
     request.params = [parameters copy];
 
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) post:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
@@ -1453,7 +1462,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.handler = handler;
     request.params = [parameters copy];
 
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) get:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
@@ -1477,7 +1486,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.resource = resource;
     request.handler = handler;
     request.params = [parameters copy];
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) delete:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
@@ -1501,7 +1510,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.resource = resource;
     request.handler = handler;
     request.params = [parameters copy];
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) put:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
@@ -1525,7 +1534,7 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     request.resource = resource;
     request.handler = handler;
     request.params = [parameters copy];
-    [client requestAuthenticated:request];
+    [client executeRequest:request];
 }
 
 + (void) postEventually:(NSString *)resource params:(id)params
@@ -1581,6 +1590,10 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
     return [wonderPushAPI location];
 }
 
++ (void) triggerLocationPrompt
+{
+    [wonderPushAPI triggerLocationPrompt];
+}
 + (void) enableGeolocation
 {
     _locationOverridden = NO;
@@ -1948,6 +1961,21 @@ NSString * const WPEventFiredNotificationEventDataKey = @"WPEventFiredNotificati
         }
         return remoteConfigManager;
     }
+}
+
++ (void)requestEventuallyWithOptionalAccessToken:(WPRequest *)request {
+    if (![WonderPush isInitialized]) {
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        return;
+    }
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:request.params];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
+    request.userId = [WPConfiguration sharedConfiguration].userId;
+    request.params = [parameters copy];
+
+    NSString *accessToken = WPConfiguration.sharedConfiguration.accessToken;
+    WPBaseAPIClient *client = accessToken ? WPAPIClient.sharedClient : WPAnonymousAPIClient.sharedClient;
+    [client requestEventually:request];
 }
 
 + (void)requestEventuallyWithMeasurementsApi:(WPRequest *)request {

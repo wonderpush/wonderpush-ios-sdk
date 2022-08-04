@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<WPIAMMessageDefinition *> *)allRegularMessages;
 
 // clients that are to display messages should use nextOnAppOpenDisplayMsg or
-// nextOnEventDisplayMsg to fetch the next eligible message and use
+// nextOnEventDisplayMsg:allTimeOccurrences: to fetch the next eligible message and use
 // removeMessagesWithCampaignId to remove it from cache once the message has been correctly rendered
 
 // Fetch next eligible messages that are appropriate for display at app launch time
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Fetch next eligible messages that are appropriate for display at app open time
 - (nullable WPIAMMessageDefinition *)nextOnAppOpenDisplayMsg;
 // Fetch next eligible message that matches the event triggering condition
-- (nullable WPIAMMessageDefinition *)nextOnEventDisplayMsg:(NSString *)eventName;
+- (nullable WPIAMMessageDefinition *)nextOnEventDisplayMsg:(NSString *)eventName allTimeOccurrences:(NSInteger)count;
 
 // Call this after a message has been rendered to remove it from the cache.
 - (void)removeMessagesWithCampaignId:(NSString *)campaignId;

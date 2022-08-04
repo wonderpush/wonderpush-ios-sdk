@@ -346,6 +346,26 @@ NS_SWIFT_NAME(InAppMessagingImageOnlyDisplay)
 
 @end
 
+/** Class for defining a webview message for display.
+ */
+NS_SWIFT_NAME(InAppMessagingWebViewDisplay)
+@interface WPInAppMessagingWebViewDisplay : WPInAppMessagingDisplayMessage
+
+/**
+ * Gets the action URL for an webView IAM message.
+ */
+@property(nonatomic, nullable, readonly) WPAction *action;
+
+/**
+ * Where to put the close button
+ */
+@property(nonatomic, readonly) WPInAppMessagingCloseButtonPosition closeButtonPosition;
+
+/// Unavailable.
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
 /// The way that an in-app message was dismissed.
 typedef NS_ENUM(NSInteger, WPInAppMessagingDismissType) {
   /// Message was swiped away (only valid for banner messages).
@@ -362,8 +382,18 @@ typedef NS_ENUM(NSInteger, WPInAppMessagingDismissType) {
 typedef NS_ENUM(NSInteger, IAMDisplayRenderErrorType) {
   /// The image data for this in-app message is invalid.
   IAMDisplayRenderErrorTypeImageDataInvalid,
+  /// The url data can't be loaded
+  IAMDisplayRenderErrorTypeWebUrlFailedToLoad,
   /// The UIApplication is not active when time comes to render the message
   IAMDisplayRenderErrorTypeApplicationNotActiveError,
+  /// Timeout error.
+  IAMDisplayRenderErrorTypeTimeoutError,
+  /// HTTP error.
+  IAMDisplayRenderErrorTypeHTTPError,
+  /// Authentication required
+  IAMDisplayRenderErrorTypeAuthenticationRequiredError,
+  /// Navigation became download
+  IAMDisplayRenderErrorTypeNavigationBecameDownloadError,
   /// Unexpected error.
   IAMDisplayRenderErrorTypeUnspecifiedError,
 };
@@ -376,6 +406,14 @@ NS_SWIFT_NAME(InAppMessagingDisplayDelegate)
 @protocol WPInAppMessagingDisplayDelegate <NSObject>
 
 @optional
+
+/**
+ * Called when a labelled button is clicked without an Action. The in-app is still visible until `messageDismissed:dismissType:` or `messageClicked:withAction:` is called.
+ * @param inAppMessage the message that was clicked.
+ * @param buttonLabel specifies the button label
+ */
+- (void)trackClickWithMessage:(WPInAppMessagingDisplayMessage *)inAppMessage
+       buttonLabel:(NSString *)buttonLabel;
 
 /**
  * Called when the message is dismissed. Should be called from main thread.

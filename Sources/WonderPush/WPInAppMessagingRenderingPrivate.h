@@ -15,6 +15,8 @@
  */
 
 #import <WonderPush/WPInAppMessagingRendering.h>
+#import <WebKit/WebKit.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPInAppMessagingCardDisplay (Private)
@@ -105,5 +107,20 @@ NS_ASSUME_NONNULL_BEGIN
                 closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition;
 
 @end
+
+@interface WPInAppMessagingWebViewDisplay ()
+
+@property(nonatomic, nonnull, strong, readonly) WKWebView *webView;
+
+- (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
+                            payload:(NSDictionary *)payload
+                          webView:(WKWebView *)webView
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
+                             action:(nullable WPAction *)action
+                closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition;
+
+@end
+
 
 NS_ASSUME_NONNULL_END

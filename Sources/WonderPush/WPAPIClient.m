@@ -50,22 +50,14 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 @end
 
-#pragma mark - WPAPIClient
+@interface WPBaseAPIClient ()
 
-@interface WPAPIClient ()
 + (NSDictionary *)addParameterIfNotPresent:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params;
 + (NSDictionary *)replaceParameter:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params;
 
 @property (strong, nonatomic) NSURL *baseURL;
 @property (strong, nonatomic) WPRequestSerializer *requestSerializer;
-@property (strong, nonatomic) NSMutableArray *tokenFetchedHandlers;
 @property (strong, nonatomic) WPNetworkReachabilityManager *reachabilityManager;
-
-/**
- The designated initializer
- @param url The base URL for this client
- */
-- (id) initWithBaseURL:(NSURL *)url;
 
 /// The wrapped AFNetworking HTTP client
 @property (strong, nonatomic) NSURLSession *URLSession;
@@ -75,10 +67,13 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 - (void) checkMethod:(WPRequest *)request;
 
-- (NSDictionary *)decorateRequestParams:(WPRequest *)request;
 @end
 
-@implementation WPAPIClient
+@interface WPAPIClient ()
+@property (strong, nonatomic) NSMutableArray *tokenFetchedHandlers;
+@end
+
+@implementation WPBaseAPIClient
 
 + (void) initialize
 {
@@ -89,33 +84,13 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     });
 }
 
-+ (WPAPIClient *)sharedClient
-{
-    static WPAPIClient *sharedClient = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSURL *baseURL = [WPConfiguration sharedConfiguration].baseURL;
-        WPLogDebug(@"WonderPush base URL: %@", baseURL);
-        sharedClient = [[WPAPIClient alloc] initWithBaseURL:baseURL];
-    });
-    return sharedClient;
-}
-
 - (id)initWithBaseURL:(NSURL *)url
 {
     if (self = [super init]) {
-        self.isFetchingAccessToken = false;
-        self.tokenFetchedHandlers = [[NSMutableArray alloc] init];
-
         WPRequestVault *wpRequestVault = [[WPRequestVault alloc] initWithRequestExecutor:self];
         self.requestVault = wpRequestVault;
         self.reachabilityManager = [WPNetworkReachabilityManager managerForDomain:PRODUCTION_API_DOMAIN];
         [self.reachabilityManager setReachabilityStatusChangeBlock:^(WPNetworkReachabilityStatus status) {
-            if (status == WPNetworkReachabilityStatusNotReachable || status == WPNetworkReachabilityStatusUnknown) {
-                [WonderPush setIsReachable:NO];
-            } else {
-                [WonderPush setIsReachable:YES];
-            }
             if (wpRequestVault) {
                 [wpRequestVault reachabilityChanged:status];
             }
@@ -128,11 +103,175 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     return self;
 }
 
-#pragma mark - WPRequestExecutor
-
-- (void)executeRequest:(WPRequest *)request
+- (void) checkMethod:(WPRequest *)request
 {
-    [self requestAuthenticated:request];
+    NSString *method = request.method.uppercaseString;
+    if (!method || ![allowedMethods containsObject:method])
+        [NSException raise:@"InvalidHTTPVerb" format:@"Supported verbs are GET, POST, PUT, PATCH and DELETE."];
+
+    return;
+}
+
+- (void) requestEventually:(WPRequest *)request
+{
+    [self checkMethod:request];
+
+    [self.requestVault add:request];
+}
+
+- (NSDictionary *)decorateRequestParams:(WPRequest *)request
+{
+    NSDictionary *params = request.params;
+    // Add the language
+    params = [[self class] addParameterIfNotPresent:@"lang" value:[WonderPush languageCode] toParameters:params];
+
+    // Add the sdk version
+    params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WPInstallationCoreProperties getSDKVersionNumber] toParameters:params];
+
+    // Add the location
+    CLLocation *location = [WonderPush location];
+    if (location)
+        params = [[self class] addParameterIfNotPresent:@"location" value:[NSString stringWithFormat:@"%f,%f", location.coordinate.latitude, location.coordinate.longitude] toParameters:params];
+
+    // Add the sid for web resources
+    if ([request.resource hasPrefix:@"web/"])
+        params = [[self class] replaceParameter:@"sid" value:[WPConfiguration sharedConfiguration].sid toParameters:params];
+    return params;
+}
+
+- (void)executeRequest:(WPRequest *)request {
+    // Do not fetch nil requests
+    if (!request)
+        return;
+
+    __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        // Avoid being killed by saying we are done
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+    }];
+
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:[self decorateRequestParams:request]];
+
+    // The success handler
+    NSTimeInterval timeRequestStart = [[NSProcessInfo processInfo] systemUptime];
+    void(^success)(NSURLSessionTask *, id) = ^(NSURLSessionTask *task, id response) {
+        NSTimeInterval timeRequestStop = [[NSProcessInfo processInfo] systemUptime];
+        if ([response isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *responseJSON = (NSDictionary *)response;
+
+            NSError *wpError = [WPUtil errorFromJSON:responseJSON];
+            if (wpError) {
+                if (request.handler)
+                    request.handler(nil, wpError);
+
+            } else {
+
+                WPResponse *response = [[WPResponse alloc] init];
+                response.object = responseJSON;
+                NSNumber *_serverTime = [WPNSUtil numberForKey:@"_serverTime" inDictionary:responseJSON];
+                NSNumber *_serverTook = [WPNSUtil numberForKey:@"_serverTook" inDictionary:responseJSON];
+
+                if (_serverTime != nil) {
+                    NSTimeInterval serverTime = [_serverTime doubleValue] / 1000.;
+                    NSTimeInterval serverTook = 0;
+                    if (_serverTook)
+                        serverTook = [_serverTook doubleValue] / 1000.;
+                    NSTimeInterval uncertainty = (timeRequestStop - timeRequestStart - serverTook) / 2;
+                    NSTimeInterval offset = (serverTime + serverTook/2.) - (timeRequestStart + timeRequestStop)/2.;
+                    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+
+                    if (
+                        // Case 1: Lower uncertainty
+                        configuration.timeOffsetPrecision == 0 || uncertainty < configuration.timeOffsetPrecision
+                        // Case 2: Additional check for exceptional server-side time gaps
+                        || fabs(offset - configuration.timeOffset) > uncertainty + configuration.timeOffsetPrecision
+                    ) {
+                        configuration.timeOffset = offset;
+                        configuration.timeOffsetPrecision = uncertainty;
+                    }
+                }
+
+                if (request.handler)
+                    request.handler(response, nil);
+
+            }
+        }
+
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+    };
+
+    // The failure handler
+    void(^failure)(NSURLSessionTask *, NSError *) = ^(NSURLSessionTask *task, NSError *error) {
+        NSDictionary *jsonError = nil;
+        NSData *errorBody = error.userInfo[WPOperationFailingURLResponseDataErrorKey];
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            WPLogDebug(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
+        }
+        if ([errorBody isKindOfClass:[NSData class]]) {
+            NSError *decodeError = nil;
+            id decoded = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
+            if ([decoded isKindOfClass:[NSDictionary class]]) jsonError = decoded;
+            if (decodeError) WPLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
+        }
+
+        NSError *wpError = [WPUtil errorFromJSON:jsonError];
+        if (wpError) {
+
+            // Handle invalid access token by requesting a new one.
+            if (wpError.code == WPErrorInvalidAccessToken) {
+
+                WPLogDebug(@"Invalid access token: %@", jsonError);
+
+                // null out the access token
+                WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+                NSString *prevUserId = configuration.userId;
+                [configuration changeUserId:request.userId];
+                configuration.accessToken = nil;
+                configuration.sid = nil;
+                configuration.installationId = nil;
+                [configuration changeUserId:prevUserId];
+
+                // Retry later
+                double delayInSeconds = RETRY_INTERVAL;
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                    [self executeRequest:request];
+                });
+
+            } else if (wpError.code == WPErrorInvalidCredentials) {
+
+                WPLogDebug(@"Invalid client credentials: %@", jsonError);
+                WPLog(@"Please check your WonderPush clientId and clientSecret!");
+
+            } else if (request.handler) {
+                request.handler(nil, wpError);
+            }
+
+        } else if (request.handler) {
+            request.handler(nil, error);
+        }
+
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+    };
+
+    // Run the request
+
+    NSString *method = request.method.uppercaseString;
+
+    [self checkMethod:request];
+
+    WPLogDebug(@"Performing request: %@", request);
+
+    if ([@"POST" isEqualToString:method]) {
+        [self POST:request.resource parameters:[params copy] success:success failure:failure];
+    } else if ([@"GET" isEqualToString:method]) {
+        [self GET:request.resource parameters:[params copy] success:success failure:failure];
+    } else if ([@"DELETE" isEqualToString:method]) {
+        [self DELETE:request.resource parameters:[params copy] success:success failure:failure];
+    } else if ([@"PUT" isEqualToString:method]) {
+        [self PUT:request.resource parameters:[params copy] success:success failure:failure];
+    } else if ([@"PATCH" isEqualToString:method]) {
+        [self PATCH:request.resource parameters:[params copy] success:success failure:failure];
+    }
 }
 
 #pragma mark - Networking
@@ -237,6 +376,80 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     };
     task = [self.URLSession dataTaskWithRequest:request completionHandler:completion];
     [task resume];
+}
+
+
+#pragma mark - Parameters
++ (NSDictionary *)addParameterIfNotPresent:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
+{
+    if (!params[name]) {
+        NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
+        mutable[name] = value;
+        return [NSDictionary dictionaryWithDictionary:mutable];
+    }
+    return params;
+}
+
++ (NSDictionary *)replaceParameter:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
+{
+    NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
+    if (name && value) {
+        mutable[name] = value;
+    }
+    return [NSDictionary dictionaryWithDictionary:mutable];
+}
+
+@end
+
+#pragma mark - WPAPIClient
+
+@implementation WPAPIClient
+
++ (WPAPIClient *)sharedClient
+{
+    static WPAPIClient *sharedClient = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSURL *baseURL = [WPConfiguration sharedConfiguration].baseURL;
+        WPLogDebug(@"WonderPush base URL: %@", baseURL);
+        sharedClient = [[WPAPIClient alloc] initWithBaseURL:baseURL];
+    });
+    return sharedClient;
+}
+
+- (id)initWithBaseURL:(NSURL *)url
+{
+    if (self = [super initWithBaseURL:url]) {
+        self.isFetchingAccessToken = false;
+        self.tokenFetchedHandlers = [[NSMutableArray alloc] init];
+        WPRequestVault *vault = self.requestVault;
+        [self.reachabilityManager setReachabilityStatusChangeBlock:^(WPNetworkReachabilityStatus status) {
+            if (status == WPNetworkReachabilityStatusNotReachable || status == WPNetworkReachabilityStatusUnknown) {
+                [WonderPush setIsReachable:NO];
+            } else {
+                [WonderPush setIsReachable:YES];
+            }
+            if (vault) {
+                [vault reachabilityChanged:status];
+            }
+        }];
+    }
+    return self;
+}
+
+#pragma mark - WPRequestExecutor
+
+- (void)executeRequest:(WPRequest *)request
+{
+    // Fetch access token if needed then run request
+    NSString *accessToken = [[WPConfiguration sharedConfiguration] getAccessTokenForUserId:request.userId];
+    if (!accessToken) {
+        [self fetchAccessTokenAndRunRequest:request];
+        return;
+    } else {
+        WPLogDebug(@"Using accessToken: %@", accessToken);
+        [super executeRequest:request];
+    }
 }
 
 #pragma mark - Access Token
@@ -411,7 +624,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 {
 
     [self fetchAccessTokenAndCall:^(NSURLSessionTask *task, id response) {
-         [self requestAuthenticated:request];
+         [self executeRequest:request];
     } failure:^(NSURLSessionTask *task, NSError *error) {
         if (request.handler) {
              request.handler(nil, error);
@@ -419,211 +632,10 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     } nbRetry:0 forUserId:request.userId];
 }
 
-
-#pragma mark - REST API Access
-
-- (void)requestAuthenticated:(WPRequest *)request
-{
-    // Do not fetch nil requests
-    if (!request)
-        return;
-
-    // Fetch access token if needed then run request
-    NSString *accessToken = [[WPConfiguration sharedConfiguration] getAccessTokenForUserId:request.userId];
-    if (!accessToken) {
-        [self fetchAccessTokenAndRunRequest:request];
-        return;
-    } else {
-        WPLogDebug(@"Using accessToken: %@", accessToken);
-    }
-
-    // We have an access token if needed
-
-    __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        // Avoid being killed by saying we are done
-        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-    }];
-
-    NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:[self decorateRequestParams:request]];
-    
-    // Add the access token if present
-    if (accessToken) params[@"accessToken"] = accessToken;
-
-    // The success handler
-    NSTimeInterval timeRequestStart = [[NSProcessInfo processInfo] systemUptime];
-    void(^success)(NSURLSessionTask *, id) = ^(NSURLSessionTask *task, id response) {
-        NSTimeInterval timeRequestStop = [[NSProcessInfo processInfo] systemUptime];
-        if ([response isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *responseJSON = (NSDictionary *)response;
-
-            NSError *wpError = [WPUtil errorFromJSON:responseJSON];
-            if (wpError) {
-                if (request.handler)
-                    request.handler(nil, wpError);
-
-            } else {
-
-                WPResponse *response = [[WPResponse alloc] init];
-                response.object = responseJSON;
-                NSNumber *_serverTime = [WPNSUtil numberForKey:@"_serverTime" inDictionary:responseJSON];
-                NSNumber *_serverTook = [WPNSUtil numberForKey:@"_serverTook" inDictionary:responseJSON];
-
-                if (_serverTime != nil) {
-                    NSTimeInterval serverTime = [_serverTime doubleValue] / 1000.;
-                    NSTimeInterval serverTook = 0;
-                    if (_serverTook)
-                        serverTook = [_serverTook doubleValue] / 1000.;
-                    NSTimeInterval uncertainty = (timeRequestStop - timeRequestStart - serverTook) / 2;
-                    NSTimeInterval offset = (serverTime + serverTook/2.) - (timeRequestStart + timeRequestStop)/2.;
-                    WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-
-                    if (
-                        // Case 1: Lower uncertainty
-                        configuration.timeOffsetPrecision == 0 || uncertainty < configuration.timeOffsetPrecision
-                        // Case 2: Additional check for exceptional server-side time gaps
-                        || fabs(offset - configuration.timeOffset) > uncertainty + configuration.timeOffsetPrecision
-                    ) {
-                        configuration.timeOffset = offset;
-                        configuration.timeOffsetPrecision = uncertainty;
-                    }
-                }
-
-                if (request.handler)
-                    request.handler(response, nil);
-
-            }
-        }
-
-        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-    };
-
-    // The failure handler
-    void(^failure)(NSURLSessionTask *, NSError *) = ^(NSURLSessionTask *task, NSError *error) {
-        NSDictionary *jsonError = nil;
-        NSData *errorBody = error.userInfo[WPOperationFailingURLResponseDataErrorKey];
-        if ([errorBody isKindOfClass:[NSData class]]) {
-            WPLogDebug(@"Error body: %@", [[NSString alloc] initWithData:errorBody encoding:NSUTF8StringEncoding]);
-        }
-        if ([errorBody isKindOfClass:[NSData class]]) {
-            NSError *decodeError = nil;
-            id decoded = [NSJSONSerialization JSONObjectWithData:errorBody options:kNilOptions error:&decodeError];
-            if ([decoded isKindOfClass:[NSDictionary class]]) jsonError = decoded;
-            if (decodeError) WPLog(@"WPAPIClient: Error while deserializing: %@", decodeError);
-        }
-
-        NSError *wpError = [WPUtil errorFromJSON:jsonError];
-        if (wpError) {
-
-            // Handle invalid access token by requesting a new one.
-            if (wpError.code == WPErrorInvalidAccessToken) {
-
-                WPLogDebug(@"Invalid access token: %@", jsonError);
-
-                // null out the access token
-                WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
-                NSString *prevUserId = configuration.userId;
-                [configuration changeUserId:request.userId];
-                configuration.accessToken = nil;
-                configuration.sid = nil;
-                configuration.installationId = nil;
-                [configuration changeUserId:prevUserId];
-
-                // Retry later
-                double delayInSeconds = RETRY_INTERVAL;
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    [self requestAuthenticated:request];
-                });
-
-            } else if (wpError.code == WPErrorInvalidCredentials) {
-
-                WPLogDebug(@"Invalid client credentials: %@", jsonError);
-                WPLog(@"Please check your WonderPush clientId and clientSecret!");
-
-            } else if (request.handler) {
-                request.handler(nil, wpError);
-            }
-
-        } else if (request.handler) {
-            request.handler(nil, error);
-        }
-
-        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-    };
-
-    // Run the request
-
-    NSString *method = request.method.uppercaseString;
-
-    [self checkMethod:request];
-
-    WPLogDebug(@"Performing request: %@", request);
-
-    if ([@"POST" isEqualToString:method]) {
-        [self POST:request.resource parameters:[params copy] success:success failure:failure];
-    } else if ([@"GET" isEqualToString:method]) {
-        [self GET:request.resource parameters:[params copy] success:success failure:failure];
-    } else if ([@"DELETE" isEqualToString:method]) {
-        [self DELETE:request.resource parameters:[params copy] success:success failure:failure];
-    } else if ([@"PUT" isEqualToString:method]) {
-        [self PUT:request.resource parameters:[params copy] success:success failure:failure];
-    } else if ([@"PATCH" isEqualToString:method]) {
-        [self PATCH:request.resource parameters:[params copy] success:success failure:failure];
-    }
-}
-
-- (void) checkMethod:(WPRequest *)request
-{
-    NSString *method = request.method.uppercaseString;
-    if (!method || ![allowedMethods containsObject:method])
-        [NSException raise:@"InvalidHTTPVerb" format:@"Supported verbs are GET, POST, PUT, PATCH and DELETE."];
-
-    return;
-}
-
-- (void) requestEventually:(WPRequest *)request
-{
-    [self checkMethod:request];
-
-    [self.requestVault add:request];
-}
-
-- (NSDictionary *)decorateRequestParams:(WPRequest *)request
-{
-    NSDictionary *params = request.params;
-    // Add the language
-    params = [[self class] addParameterIfNotPresent:@"lang" value:[WonderPush languageCode] toParameters:params];
-
-    // Add the sdk version
-    params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WPInstallationCoreProperties getSDKVersionNumber] toParameters:params];
-
-    // Add the location
-    CLLocation *location = [WonderPush location];
-    if (location)
-        params = [[self class] addParameterIfNotPresent:@"location" value:[NSString stringWithFormat:@"%f,%f", location.coordinate.latitude, location.coordinate.longitude] toParameters:params];
-
-    // Add the sid for web resources
-    if ([request.resource hasPrefix:@"web/"])
-        params = [[self class] replaceParameter:@"sid" value:[WPConfiguration sharedConfiguration].sid toParameters:params];
-    return params;
-}
-
-+ (NSDictionary *)addParameterIfNotPresent:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
-{
-    if (!params[name]) {
-        NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
-        mutable[name] = value;
-        return [NSDictionary dictionaryWithDictionary:mutable];
-    }
-    return params;
-}
-
-+ (NSDictionary *)replaceParameter:(NSString *)name value:(NSString *)value toParameters:(NSDictionary *)params
-{
-    NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:params];
-    if (name && value) {
-        mutable[name] = value;
-    }
+- (NSDictionary *)decorateRequestParams:(WPRequest *)request {
+    NSMutableDictionary *mutable = [super decorateRequestParams:request].mutableCopy;
+    NSString *accessToken = WPConfiguration.sharedConfiguration.accessToken;
+    if (accessToken) mutable[@"accessToken"] = accessToken;
     return [NSDictionary dictionaryWithDictionary:mutable];
 }
 @end

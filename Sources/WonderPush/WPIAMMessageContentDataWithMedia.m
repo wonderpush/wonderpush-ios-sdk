@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
+#import <WebKit/WebKit.h>
 #import "WPCore+InAppMessaging.h"
 #import "WPIAMMessageContentData.h"
-#import "WPIAMMessageContentDataWithImageURL.h"
+#import "WPIAMMessageContentDataWithMedia.h"
 #import "WPIAMSDKRuntimeErrorCodes.h"
+#import "WPIAMWebViewPreloaderViewController.h"
+#import "WonderPush_private.h"
+#import "WPCore+InAppMessagingDisplay.h"
 
 static NSInteger const SuccessHTTPStatusCode = 200;
 
-@interface WPIAMMessageContentDataWithImageURL ()
+@interface WPIAMMessageContentDataWithMedia ()
 @property(nonatomic, readwrite, nonnull, copy) NSString *titleText;
 @property(nonatomic, readwrite, nonnull, copy) NSString *bodyText;
 @property(nonatomic, copy, nullable) NSString *actionButtonText;
@@ -30,14 +34,17 @@ static NSInteger const SuccessHTTPStatusCode = 200;
 @property(nonatomic, copy, nullable) WPAction *secondaryAction;
 @property(nonatomic, nullable, copy) NSURL *imageURL;
 @property(nonatomic, nullable, copy) NSURL *landscapeImageURL;
+@property(nonatomic, nullable, copy) NSURL *webURL;
 @property(nonatomic, readwrite) WPIAMCloseButtonPosition closeButtonPosition;
 @property(nonatomic, readwrite) WPIAMEntryAnimation entryAnimation;
 @property(nonatomic, readwrite) WPIAMExitAnimation exitAnimation;
 @property(nonatomic, readwrite) WPIAMBannerPosition bannerPosition;
 @property(readonly) NSURLSession *URLSession;
+
+@property(nonatomic, strong) WPIAMWebViewPreloaderViewController * webViewPreloaderViewController;
 @end
 
-@implementation WPIAMMessageContentDataWithImageURL
+@implementation WPIAMMessageContentDataWithMedia
 - (instancetype)initWithMessageTitle:(NSString *)title
                          messageBody:(NSString *)body
                     actionButtonText:(nullable NSString *)actionButtonText
@@ -46,6 +53,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
                      secondaryAction:(nullable WPAction *)secondaryAction
                             imageURL:(nullable NSURL *)imageURL
                    landscapeImageURL:(nullable NSURL *)landscapeImageURL
+                              webURL:(nullable NSURL *)webURL
                  closeButtonPosition:(WPIAMCloseButtonPosition)closeButtonPosition
                       bannerPosition:(WPIAMBannerPosition)bannerPosition
                       entryAnimation:(WPIAMEntryAnimation)entryAnimation
@@ -56,6 +64,7 @@ static NSInteger const SuccessHTTPStatusCode = 200;
         _bodyText = body;
         _imageURL = imageURL;
         _landscapeImageURL = landscapeImageURL;
+        _webURL = webURL;
         _actionButtonText = actionButtonText;
         _secondaryActionButtonText = secondaryActionButtonText;
         _action = action;
@@ -92,28 +101,29 @@ static NSInteger const SuccessHTTPStatusCode = 200;
     return _actionButtonText;
 }
 
-- (void)loadImageDataWithBlock:(void (^)(NSData *_Nullable standardImageData,
-                                         NSData *_Nullable landscapeImageData,
-                                         NSError *_Nullable error))block {
-    if (!block) {
+- (void)loadImageData:(void(^)(NSData *_Nullable standardImageData,
+                               NSData *_Nullable landscapeImageData,
+                               NSError * _Nullable error))complete {
+    if (!complete) {
         // no need for any further action if block is nil
         return;
     }
     
     if (!_imageURL && !_landscapeImageURL) {
-        // no image data since image url is nil
-        block(nil, nil, nil);
-    } else if (!_landscapeImageURL) {
+        // no media data since media url is nil
+        complete(nil, nil, nil);
+    }
+    else if (!_landscapeImageURL) {
         // Only fetch standard image.
         [self fetchImageFromURL:_imageURL
                       withBlock:^(NSData *_Nullable imageData, NSError *_Nullable error) {
-            block(imageData, nil, error);
+            complete(imageData, nil, error);
         }];
     } else if (!_imageURL) {
         // Only fetch portrait image.
         [self fetchImageFromURL:_landscapeImageURL
                       withBlock:^(NSData *_Nullable imageData, NSError *_Nullable error) {
-            block(nil, imageData, error);
+            complete(nil, imageData, error);
         }];
     } else {
         // Fetch both images separately, call completion when they're both fetched.
@@ -123,20 +133,20 @@ static NSInteger const SuccessHTTPStatusCode = 200;
         
         [self fetchImageFromURL:_imageURL
                       withBlock:^(NSData *_Nullable imageData, NSError *_Nullable error) {
-            __weak WPIAMMessageContentDataWithImageURL *weakSelf = self;
+            __weak WPIAMMessageContentDataWithMedia *weakSelf = self;
             
             // If the portrait image fails to load, we treat this as a failure.
             if (error) {
                 // Cancel landscape image fetch.
                 [weakSelf.URLSession invalidateAndCancel];
                 
-                block(nil, nil, error);
+                complete(nil, nil, error);
                 return;
             }
             
             portrait = imageData;
             if (landscape || landscapeImageLoadError) {
-                block(portrait, landscape, nil);
+                complete(portrait, landscape, nil);
             }
         }];
         
@@ -149,10 +159,69 @@ static NSInteger const SuccessHTTPStatusCode = 200;
             }
             
             if (portrait) {
-                block(portrait, landscape, nil);
+                complete(portrait, landscape, nil);
             }
         }];
     }
+
+}
+
+- (void)loadWebView:(void(^)(WKWebView *_Nullable webView,
+                             NSError * _Nullable error))complete {
+    if (!complete) {
+        // no need for any further action if block is nil
+        return;
+    }
+
+    if (!_webURL) {
+        // no media data since media url is nil
+        complete(nil, nil);
+        return;
+    }
+    __weak __typeof__(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"WPInAppMessageDisplayStoryboard"
+                                                             bundle:[WonderPush resourceBundle]];
+        if (storyboard == nil) {
+            complete(nil, [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                              code:IAMDisplayRenderErrorTypeUnspecifiedError
+                                          userInfo:@{@"message" : @"resource is missing"}]);
+            return;
+        }
+
+        weakSelf.webViewPreloaderViewController = (WPIAMWebViewPreloaderViewController *)[storyboard
+                                                                               instantiateViewControllerWithIdentifier:@"webview-preloader-vc"];
+        [weakSelf.webViewPreloaderViewController preLoadWebViewWithURL:weakSelf.webURL
+                               successCompletionHandler:^(WKWebView * webView)
+        {
+            WPLogDebug(@"Successfully preloaded webview with url %@", weakSelf.webURL);
+            complete(webView, nil);
+        } errorCompletionHander:^(NSError* error){
+            [weakSelf.webViewPreloaderViewController dismissViewControllerAnimated:false completion:^{
+                weakSelf.webViewPreloaderViewController = nil;
+            }];
+            WPLogDebug(@"Error preloading webview with url %@ : %@", weakSelf.webURL, error);
+            complete(nil, error);
+        }];
+    });
+}
+
+- (void)loadMedia:(void (^)(NSData *_Nullable standardImageData,
+                                     NSData *_Nullable landscapeImageData,
+                                     WKWebView *_Nullable webView,
+                                     NSError *_Nullable error))complete {
+    [self loadImageData:^(NSData *_Nullable standardImageData,
+                          NSData *_Nullable landscapeImageData,
+                          NSError *_Nullable error) {
+        if (error) {
+            complete(standardImageData, landscapeImageData, nil, error);
+            return;
+        }
+        [self loadWebView:^(WKWebView *_Nullable webView,
+                            NSError *_Nullable error) {
+            complete(standardImageData, landscapeImageData, webView, error);
+        }];
+    }];
 }
 
 - (void)fetchImageFromURL:(NSURL *)imageURL

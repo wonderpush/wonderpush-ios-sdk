@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#import <WebKit/WebKit.h>
 #import <Foundation/Foundation.h>
 #import <WonderPush/WPAction.h>
 
@@ -57,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly, nullable) WPAction *secondaryAction;
 @property(nonatomic, readonly, nullable) NSURL *imageURL;
 @property(nonatomic, readonly, nullable) NSURL *landscapeImageURL;
+@property(nonatomic, readonly, nullable) NSURL *webURL;
 @property(nonatomic, readonly) WPIAMCloseButtonPosition closeButtonPosition;
 @property(nonatomic, readonly) WPIAMEntryAnimation entryAnimation;
 @property(nonatomic, readonly) WPIAMExitAnimation exitAnimation;
@@ -73,9 +75,10 @@ NS_ASSUME_NONNULL_BEGIN
 // block and the error will be nil.
 // If no error happens and the imageData parameter is nil, it indicates the case that there is no
 // image associated with the message.
-- (void)loadImageDataWithBlock:(void (^)(NSData *_Nullable imageData,
-                                         NSData *_Nullable landscapeImageData,
-                                         NSError *_Nullable error))block;
+- (void)loadMedia:(void (^)(NSData *_Nullable imageData,
+                                     NSData *_Nullable landscapeImageData,
+                                     WKWebView *_Nullable webView,
+                                     NSError *_Nullable error))block;
 
 // convert to a description string of the content
 - (NSString *)description;

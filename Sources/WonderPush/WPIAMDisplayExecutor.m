@@ -30,7 +30,7 @@
 @implementation WPIAMDisplaySetting
 @end
 
-@interface WPIAMDisplayExecutor () <WPInAppMessagingDisplayDelegate>
+@interface WPIAMDisplayExecutor () <WPInAppMessagingControllerDelegate>
 @property(nonatomic) id<WPIAMTimeFetcher> timeFetcher;
 
 // YES if a message is being rendered at this time
@@ -42,6 +42,7 @@
 @property(nonatomic, nonnull, readonly) WPIAMMessageClientCache *messageCache;
 @property(nonatomic, nonnull, readonly) id<WPIAMBookKeeper> displayBookKeeper;
 @property(nonatomic) BOOL impressionRecorded;
+@property(nonatomic, strong) NSMutableSet<NSString *> *campaignIdsImpressedWithoutClick;
 // Used for displaying the test on device message error alert.
 @property(nonatomic, strong) UIWindow *alertWindow;
 @end
@@ -69,6 +70,45 @@
     }
 }
 #pragma mark - WPInAppMessagingDisplayDelegate methods
+
+- (void)trackClickWithMessage:(WPInAppMessagingDisplayMessage *)inAppMessage
+       buttonLabel:(NSString *)buttonLabel {
+    if (!_currentMsgBeingDisplayed.renderData.reportingData.campaignId) {
+        WPLog(@"messageClicked called but there is no current message ID.");
+        return;
+    }
+    if (_currentMsgBeingDisplayed.isTestMessage) {
+        WPLogDebug(@"A test message clicked. Do test event impression/click analytics logging");
+    } else {
+        // Logging the impression
+        [self recordValidImpression:_currentMsgBeingDisplayed.renderData.reportingData];
+    }
+    
+    // Send an event to log click
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [_currentMsgBeingDisplayed.renderData.reportingData fillEventDataInto:eventData];
+    eventData[@"actionDate"] = [NSNumber numberWithLongLong:(long long)([self.timeFetcher currentTimestampInSeconds] * 1000)];
+    if (buttonLabel) eventData[@"buttonLabel"] = buttonLabel;
+    BOOL trackInAppClicked = NO;
+    NSString *campaignId = _currentMsgBeingDisplayed.renderData.reportingData.campaignId;
+    if (campaignId && [self.campaignIdsImpressedWithoutClick containsObject:campaignId]) {
+        trackInAppClicked = YES;
+        [self.campaignIdsImpressedWithoutClick removeObject:campaignId];
+    }
+
+    if ([WonderPush subscriptionStatusIsOptIn]) {
+        if (trackInAppClicked) {
+            [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        }
+        [WonderPush trackInternalEvent:@"@INAPP_ITEM_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+    } else {
+        if (trackInAppClicked) {
+            [WonderPush countInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+        }
+        [WonderPush countInternalEvent:@"@INAPP_ITEM_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
+    }
+}
+
 - (void)messageClicked:(WPInAppMessagingDisplayMessage *)inAppMessage
             withAction:(WPAction *)action {
     // Call through to app-side delegate.
@@ -76,29 +116,9 @@
     if ([appSideDelegate respondsToSelector:@selector(messageClicked:withAction:)]) {
         [appSideDelegate messageClicked:inAppMessage withAction:action];
     }
-    
     self.isMsgBeingDisplayed = NO;
-    if (!_currentMsgBeingDisplayed.renderData.reportingData.campaignId) {
-        WPLog(
-                      @"messageClicked called but "
-                      "there is no current message ID.");
-        return;
-    }
-    
-    if (_currentMsgBeingDisplayed.isTestMessage) {
-        WPLogDebug(
-                    @"A test message clicked. Do test event impression/click analytics logging");
-    } else {
-        // Logging the impression
-        [self recordValidImpression:_currentMsgBeingDisplayed.renderData.reportingData];
-    }
-    
+    NSString *buttonLabel = nil;
     if (action.targetUrl || action.followUps.count) {
-        // Send an event to log click
-        NSMutableDictionary *eventData = [NSMutableDictionary new];
-        [_currentMsgBeingDisplayed.renderData.reportingData fillEventDataInto:eventData];
-        eventData[@"actionDate"] = [NSNumber numberWithLongLong:(long long)([self.timeFetcher currentTimestampInSeconds] * 1000)];
-        NSString *buttonLabel = nil;
         if ([inAppMessage respondsToSelector:@selector(action)]) {
             buttonLabel = [inAppMessage performSelector:@selector(action)] == (id)action ? @"primary" : nil;
         } else if ([inAppMessage respondsToSelector:@selector(primaryAction)]) {
@@ -107,15 +127,13 @@
         if (!buttonLabel && [inAppMessage respondsToSelector:@selector(secondaryAction)]) {
             buttonLabel = [inAppMessage performSelector:@selector(secondaryAction)] == (id)action ? @"secondary" : nil;
         }
-        if (buttonLabel) eventData[@"buttonLabel"] = buttonLabel;
-        if ([WonderPush subscriptionStatusIsOptIn]) {
-            [WonderPush trackInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
-        } else {
-            [WonderPush countInternalEvent:@"@INAPP_CLICKED" eventData:[NSDictionary dictionaryWithDictionary:eventData] customData:nil];
-        }
     }
-    [WonderPush executeAction:action withReportingData:_currentMsgBeingDisplayed.renderData.reportingData];
-
+    if (action) {
+        // Record @INAPP_CLICKED
+        [self trackClickWithMessage:inAppMessage buttonLabel:buttonLabel];
+        // Exec action
+        [WonderPush executeAction:action withReportingData:_currentMsgBeingDisplayed.renderData.reportingData];
+    }
 }
 
 - (void)messageDismissed:(WPInAppMessagingDisplayMessage *)inAppMessage
@@ -128,21 +146,22 @@
     
     self.isMsgBeingDisplayed = NO;
     if (!_currentMsgBeingDisplayed.renderData.reportingData.campaignId) {
-        WPLog(
-                      @"messageDismissedWithType called but "
-                      "there is no current message ID.");
+        WPLog(@"messageDismissedWithType called but there is no current message ID.");
         return;
     }
     
     if (_currentMsgBeingDisplayed.isTestMessage) {
-        WPLogDebug(
-                    @"A test message dismissed. Record the impression event.");
+        WPLogDebug(@"A test message dismissed. Record the impression event.");
         return;
     }
     
     // Logging the impression
     [self recordValidImpression:_currentMsgBeingDisplayed.renderData.reportingData];
     
+    if (_currentMsgBeingDisplayed.renderData.reportingData.campaignId) {
+        [self.campaignIdsImpressedWithoutClick removeObject:_currentMsgBeingDisplayed.renderData.reportingData.campaignId];
+    }
+
 }
 
 - (void)impressionDetectedForMessage:(WPInAppMessagingDisplayMessage *)inAppMessage {
@@ -186,8 +205,7 @@
     
     NSString *campaignId = _currentMsgBeingDisplayed.renderData.reportingData.campaignId;
     
-    WPLogDebug(
-                @"Display ran into error for message %@: %@", campaignId, error);
+    WPLogDebug(@"Display ran into error for message %@: %@", campaignId, error);
     
     if (_currentMsgBeingDisplayed.isTestMessage) {
         [self displayMessageLoadError:error];
@@ -197,6 +215,10 @@
         return;
     }
     
+    if (campaignId) {
+        [self.campaignIdsImpressedWithoutClick removeObject:campaignId];
+    }
+
     // we remove the message from the client side cache so that it won't be retried until next time
     // it's fetched again from server.
     [self.messageCache removeMessagesWithCampaignId:campaignId];
@@ -208,6 +230,9 @@
         [self.displayBookKeeper recordNewImpressionForReportingData:reportingData
                                         withStartTimestampInSeconds:self.lastInAppDisplayTime];
         self.impressionRecorded = YES;
+        if (reportingData.campaignId) {
+            [self.campaignIdsImpressedWithoutClick addObject:reportingData.campaignId];
+        }
     }
 }
 
@@ -255,6 +280,11 @@
     });
 }
 
+- (void)trackEvent:(NSString *)type attributes:(NSDictionary *)attributes {
+    WPReportingData *reportingData = _currentMsgBeingDisplayed.renderData.reportingData;
+    [WonderPush trackInAppEvent:type eventData:reportingData.serializationDictValue customData:attributes];
+}
+
 - (instancetype)initWithInAppMessaging:(WPInAppMessaging *)inAppMessaging
                                setting:(WPIAMDisplaySetting *)setting
                           messageCache:(WPIAMMessageClientCache *)cache
@@ -270,11 +300,12 @@
         _displayBookKeeper = displayBookKeeper;
         _isMsgBeingDisplayed = NO;
         _suppressMessageDisplay = NO;  // always allow message display on startup
+        _campaignIdsImpressedWithoutClick = [NSMutableSet new];
     }
     return self;
 }
 
-- (void)checkAndDisplayNextContextualMessageForWonderPushEvent:(NSString *)eventName {
+- (void)checkAndDisplayNextContextualMessageForWonderPushEvent:(NSString *)eventName allTimeOccurrences:(NSInteger)allTimeOccurrences {
     // synchronizing on self so that we won't potentially enter the render flow from two
     // threads: example like showing analytics triggered message and a regular app open
     // triggered message
@@ -298,7 +329,7 @@
         
         // Pop up next analytics event based message to be displayed
         WPIAMMessageDefinition *nextAnalyticsBasedMessage =
-        [self.messageCache nextOnEventDisplayMsg:eventName];
+        [self.messageCache nextOnEventDisplayMsg:eventName allTimeOccurrences:allTimeOccurrences];
         
         if (nextAnalyticsBasedMessage) {
             NSTimeInterval now = [self.timeFetcher currentTimestampInSeconds];
@@ -324,24 +355,18 @@
     WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
 
     // Action button data is never nil for a card message.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingActionButton *primaryActionButton = [[WPInAppMessagingActionButton alloc]
                                                           initWithButtonText:renderData.contentData.actionButtonText
                                                           buttonTextColor:renderData.renderingEffectSettings.btnTextColor
                                                           backgroundColor:renderData.renderingEffectSettings.btnBGColor];
     
-#pragma clang diagnostic pop
     
     WPInAppMessagingActionButton *secondaryActionButton = nil;
     if (definition.renderData.contentData.secondaryActionButtonText) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         secondaryActionButton = [[WPInAppMessagingActionButton alloc]
                                  initWithButtonText:renderData.contentData.secondaryActionButtonText
                                  buttonTextColor:renderData.renderingEffectSettings.secondaryActionBtnTextColor
                                  backgroundColor:renderData.renderingEffectSettings.secondaryActionBtnBGColor];
-#pragma clang diagnostic pop
     }
     
     WPInAppMessagingCardDisplay *cardMessage = [[WPInAppMessagingCardDisplay alloc]
@@ -382,8 +407,6 @@
     WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
     WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingBannerDisplay *bannerMessage = [[WPInAppMessagingBannerDisplay alloc]
                                                     initWithTriggerType:triggerType
                                                     payload:definition.payload
@@ -396,7 +419,6 @@
                                                     entryAnimation:entryAnimation
                                                      exitAnimation:exitAnimation
                                                     action:definition.renderData.contentData.action];
-#pragma clang diagnostic pop
     
     return bannerMessage;
 }
@@ -420,8 +442,6 @@
     WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
     WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingImageOnlyDisplay *imageOnlyMessage = [[WPInAppMessagingImageOnlyDisplay alloc]
                                                           initWithTriggerType:triggerType
                                                           payload:definition.payload
@@ -430,9 +450,36 @@
                                                           exitAnimation:exitAnimation
                                                           action:definition.renderData.contentData.action
                                                           closeButtonPosition:closeButtonPosition];
-#pragma clang diagnostic pop
     
     return imageOnlyMessage;
+}
+
+- (WPInAppMessagingWebViewDisplay *)
+    webViewDisplayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
+                                       webView:(WKWebView *)webView
+                                     triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
+    WPInAppMessagingCloseButtonPosition closeButtonPosition;
+    switch (definition.renderData.contentData.closeButtonPosition) {
+        case WPInAppMessagingCloseButtonPositionNone:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionNone;
+            break;
+        case WPInAppMessagingCloseButtonPositionInside:
+        default:
+            closeButtonPosition = WPInAppMessagingCloseButtonPositionInside;
+            break;
+    }
+    WPInAppMessagingEntryAnimation entryAnimation = [self.class convertEntryAnimation:definition.renderData.contentData.entryAnimation];
+    WPInAppMessagingExitAnimation exitAnimation = [self.class convertExitAnimation:definition.renderData.contentData.exitAnimation];
+
+    WPInAppMessagingWebViewDisplay *webViewMessage = [[WPInAppMessagingWebViewDisplay alloc]
+                                                          initWithTriggerType:triggerType
+                                                          payload:definition.payload
+                                                          webView:webView
+                                                          entryAnimation:entryAnimation
+                                                          exitAnimation:exitAnimation
+                                                          action:definition.renderData.contentData.action
+                                                          closeButtonPosition:closeButtonPosition];
+    return webViewMessage;
 }
 
 - (WPInAppMessagingModalDisplay *)
@@ -450,13 +497,10 @@
     WPInAppMessagingActionButton *actionButton = nil;
     
     if (definition.renderData.contentData.actionButtonText) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         actionButton = [[WPInAppMessagingActionButton alloc]
                         initWithButtonText:renderData.contentData.actionButtonText
                         buttonTextColor:renderData.renderingEffectSettings.btnTextColor
                         backgroundColor:renderData.renderingEffectSettings.btnBGColor];
-#pragma clang diagnostic pop
     }
     
     WPInAppMessagingCloseButtonPosition closeButtonPosition;
@@ -472,8 +516,6 @@
             break;
     }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     WPInAppMessagingModalDisplay *modalViewMessage = [[WPInAppMessagingModalDisplay alloc]
                                                       initWithTriggerType:triggerType
                                                       payload:definition.payload
@@ -487,15 +529,15 @@
                                                       actionButton:actionButton
                                                       action:definition.renderData.contentData.action
                                                       closeButtonPosition:closeButtonPosition];
-#pragma clang diagnostic pop
     
     return modalViewMessage;
 }
 
 - (WPInAppMessagingDisplayMessage *)
     displayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
-                              imageData:(WPInAppMessagingImageData *)imageData
+                              imageData:(nullable WPInAppMessagingImageData *)imageData
                      landscapeImageData:(nullable WPInAppMessagingImageData *)landscapeImageData
+                                webView:(nullable WKWebView *)webView
                             triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
     switch (definition.renderData.renderingEffectSettings.viewMode) {
         case WPIAMRenderAsCardView:
@@ -519,6 +561,10 @@
             return [self imageOnlyDisplayMessageWithMessageDefinition:definition
                                                             imageData:imageData
                                                           triggerType:triggerType];
+        case WPIAMRenderAsWebView:
+            return [self webViewDisplayMessageWithMessageDefinition:definition
+                                                            webView:webView
+                                                        triggerType:triggerType];
         default:
             return nil;
     }
@@ -532,39 +578,36 @@
     WPIAMTimerWithNSDate *timeProvider = [WPIAMTimerWithNSDate new];
     NSTimeInterval originalDisplayTime = [timeProvider currentTimestampInSeconds];
     [message.renderData.contentData
-     loadImageDataWithBlock:^(NSData *_Nullable standardImageRawData,
-                              NSData *_Nullable landscapeImageRawData, NSError *_Nullable error) {
+     loadMedia:^(NSData *_Nullable standardImageRawData,
+                 NSData *_Nullable landscapeImageRawData,
+                 WKWebView *_Nullable webView,
+                 NSError *_Nullable error) {
         WPInAppMessagingImageData *imageData = nil;
         WPInAppMessagingImageData *landscapeImageData = nil;
         
         if (error) {
             WPLogDebug(
-                        @"Error in loading image data for the message.");
+                        @"Error in loading media for the message.");
             
             WPInAppMessagingDisplayMessage *erroredMessage =
             [self displayMessageWithMessageDefinition:message
                                             imageData:imageData
                                    landscapeImageData:landscapeImageData
+                                               webView:webView
                                           triggerType:triggerType];
             // short-circuit to display error handling
             [self displayErrorForMessage:erroredMessage error:error];
             return;
         } else {
             if (standardImageRawData) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 imageData = [[WPInAppMessagingImageData alloc]
                              initWithImageURL:message.renderData.contentData.imageURL.absoluteString
                              imageData:standardImageRawData];
-#pragma clang diagnostic pop
             }
             if (landscapeImageRawData) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 landscapeImageData = [[WPInAppMessagingImageData alloc]
                                       initWithImageURL:message.renderData.contentData.landscapeImageURL.absoluteString
                                       imageData:landscapeImageRawData];
-#pragma clang diagnostic pop
             }
         }
         
@@ -574,6 +617,7 @@
         [self displayMessageWithMessageDefinition:message
                                         imageData:imageData
                                landscapeImageData:landscapeImageData
+                                           webView:webView
                                       triggerType:triggerType];
         NSTimeInterval delayLeft = delay + originalDisplayTime - [timeProvider currentTimestampInSeconds];
         if (delayLeft > 0) {

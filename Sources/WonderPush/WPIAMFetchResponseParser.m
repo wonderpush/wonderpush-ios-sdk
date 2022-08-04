@@ -18,7 +18,7 @@
 #import "WPIAMDisplayTriggerDefinition.h"
 #import "WPIAMFetchResponseParser.h"
 #import "WPIAMMessageContentData.h"
-#import "WPIAMMessageContentDataWithImageURL.h"
+#import "WPIAMMessageContentDataWithMedia.h"
 #import "WPIAMMessageDefinition.h"
 #import "UIColor+WPIAMHexString.h"
 #import <WonderPushCommon/WPReportingData.h>
@@ -74,6 +74,9 @@
         // Parse delay
         NSTimeInterval delay = [([WPNSUtil numberForKey:@"delay" inDictionary:nextTriggerCondition] ?: @0) doubleValue] / 1000;
 
+        // Count
+        NSNumber *minOccurrences = [WPNSUtil numberForKey:@"minOccurrences" inDictionary:nextTriggerCondition];
+
         NSString *systemEvent = [WPNSUtil stringForKey:@"systemEvent" inDictionary:nextTriggerCondition];
         NSDictionary *triggeringEvent = [WPNSUtil dictionaryForKey:@"event" inDictionary:nextTriggerCondition];
         // Handle app_launch and on_foreground cases.
@@ -87,7 +90,7 @@
             NSString *type = [WPNSUtil stringForKey:@"type" inDictionary:triggeringEvent];
             if (type) {
                 [triggers addObject:[[WPIAMDisplayTriggerDefinition alloc]
-                                     initWithEvent:type delay:delay]];
+                                     initWithEvent:type minOccurrences:minOccurrences delay:delay]];
             }
         }
     }
@@ -213,7 +216,7 @@
         viewCardBackgroundColor = btnBgColor = btnTxtColor = titleTextColor = nil;
         
         NSString *title, *body, *imageURLStr, *landscapeImageURLStr,
-        *actionButtonText, *secondaryActionButtonText;
+        *actionButtonText, *secondaryActionButtonText, *webUrlStr;
         WPIAMCloseButtonPosition closeButtonPosition = WPIAMCloseButtonPositionOutside;
         WPIAMEntryAnimation entryAnimation = WPIAMEntryAnimationFadeIn;
         WPIAMExitAnimation exitAnimation = WPIAMExitAnimationFadeOut;
@@ -304,6 +307,23 @@
             if ([imageOnlyNode[@"closeButtonPosition"] isEqualToString:@"outside"]) closeButtonPosition = WPIAMCloseButtonPositionOutside;
             if ([imageOnlyNode[@"closeButtonPosition"] isEqualToString:@"inside"]) closeButtonPosition = WPIAMCloseButtonPositionInside;
             if ([imageOnlyNode[@"closeButtonPosition"] isEqualToString:@"none"]) closeButtonPosition = WPIAMCloseButtonPositionNone;
+        } else if ([content[@"webView"] isKindOfClass:[NSDictionary class]]) {
+            mode = WPIAMRenderAsWebView;
+            NSDictionary *webViewNode = (NSDictionary *)contentNode[@"webView"];
+            entryAnimation = parseEntryAnimation(webViewNode);
+            exitAnimation = parseExitAnimation(webViewNode);
+
+            webUrlStr = webViewNode[@"url"];
+            if (!webUrlStr) {
+                WPLog(@"web url is missing for webView message %@", notificationDict);
+                return nil;
+            }
+            action = [WPAction actionWithDictionaries:webViewNode[@"actions"]];
+            if ([@"none" isEqualToString:webViewNode[@"closeButtonPosition"]]) {
+                closeButtonPosition = WPIAMCloseButtonPositionNone;
+            } else {
+                closeButtonPosition = WPIAMCloseButtonPositionInside;
+            }
         } else if ([content[@"card"] isKindOfClass:[NSDictionary class]]) {
             mode = WPIAMRenderAsCardView;
             NSDictionary *cardNode = (NSDictionary *)contentNode[@"card"];
@@ -349,12 +369,20 @@
             return nil;
         }
         
-        if (title == nil && mode != WPIAMRenderAsImageOnlyView) {
+        if (title == nil && mode != WPIAMRenderAsImageOnlyView && mode != WPIAMRenderAsWebView) {
             WPLog(
                   @"Title text is missing in message node %@", notificationDict);
             return nil;
         }
         
+        NSURL *webURL = nil;
+        if (webUrlStr.length > 0){
+            webURL = [NSURL URLWithString:webUrlStr];
+            if (!webURL) {
+                WPLog(@"Invalid url specified for in-app message: %@", webUrlStr);
+            }
+        }
+
         NSURL *imageURL = (imageURLStr.length == 0) ? nil : [NSURL URLWithString:imageURLStr];
         NSURL *landscapeImageURL =
         (landscapeImageURLStr.length == 0) ? nil : [NSURL URLWithString:landscapeImageURLStr];
@@ -392,20 +420,21 @@
             renderEffect.isTestMessage = YES;
         }
         
-        WPIAMMessageContentDataWithImageURL *msgData =
-        [[WPIAMMessageContentDataWithImageURL alloc] initWithMessageTitle:title
-                                                              messageBody:body
-                                                         actionButtonText:actionButtonText
-                                                secondaryActionButtonText:secondaryActionButtonText
-                                                                   action:action
-                                                          secondaryAction:secondaryAction
-                                                                 imageURL:imageURL
-                                                        landscapeImageURL:landscapeImageURL
-                                                      closeButtonPosition:closeButtonPosition
-                                                           bannerPosition:bannerPosition
-                                                           entryAnimation:entryAnimation
-                                                            exitAnimation:exitAnimation
-                                                          usingURLSession:nil];
+        WPIAMMessageContentDataWithMedia *msgData =
+        [[WPIAMMessageContentDataWithMedia alloc] initWithMessageTitle:title
+                                                           messageBody:body
+                                                      actionButtonText:actionButtonText
+                                             secondaryActionButtonText:secondaryActionButtonText
+                                                                action:action
+                                                       secondaryAction:secondaryAction
+                                                              imageURL:imageURL
+                                                     landscapeImageURL:landscapeImageURL
+                                                                webURL:webURL
+                                                   closeButtonPosition:closeButtonPosition
+                                                        bannerPosition:bannerPosition
+                                                        entryAnimation:entryAnimation
+                                                         exitAnimation:exitAnimation
+                                                       usingURLSession:nil];
         
         WPIAMMessageRenderData *renderData =
         [[WPIAMMessageRenderData alloc] initWithReportingData:reportingData

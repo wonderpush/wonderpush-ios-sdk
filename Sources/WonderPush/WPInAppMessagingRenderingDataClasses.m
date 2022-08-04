@@ -15,6 +15,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
 
 #import <WonderPush/WPInAppMessagingRendering.h>
 #import "WPInAppMessagingRenderingPrivate.h"
@@ -161,6 +162,28 @@
                             exitAnimation:exitAnimation
                                   payload:payload]) {
         _imageData = imageData;
+        _action = action;
+        _closeButtonPosition = closeButtonPosition;
+    }
+    return self;
+}
+@end
+
+@implementation WPInAppMessagingWebViewDisplay
+
+- (instancetype)initWithTriggerType:(WPInAppMessagingDisplayTriggerType)triggerType
+                            payload:(NSDictionary *)payload
+                            webView:(WKWebView *)webView
+                     entryAnimation:(WPInAppMessagingEntryAnimation)entryAnimation
+                      exitAnimation:(WPInAppMessagingExitAnimation)exitAnimation
+                             action:(nullable WPAction *)action
+                closeButtonPosition:(WPInAppMessagingCloseButtonPosition)closeButtonPosition {
+    if (self = [super initWithMessageType:WPInAppMessagingDisplayMessageTypeModal
+                              triggerType:triggerType
+                           entryAnimation:entryAnimation
+                            exitAnimation:exitAnimation
+                                  payload:payload]) {
+        _webView = webView;
         _action = action;
         _closeButtonPosition = closeButtonPosition;
     }

@@ -167,6 +167,8 @@
 
 - (void) rememberTrackedEvent:(NSDictionary *)eventParams;
 
+- (void) rememberTrackedEvent:(NSDictionary *)eventParams occurrences:(NSDictionary **)occurrences;
+
 - (NSArray *) trackedEvents;
 
 @end

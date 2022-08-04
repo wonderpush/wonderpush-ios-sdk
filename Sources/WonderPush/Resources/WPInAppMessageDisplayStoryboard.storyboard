@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <deployment version="4352" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Web View Preloader View Controller-->
+        <scene sceneID="dqs-SR-2wb">
+            <objects>
+                <viewController storyboardIdentifier="webview-preloader-vc" extendedLayoutIncludesOpaqueBars="YES" id="kdf-RM-LD3" customClass="WPIAMWebViewPreloaderViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="rJM-Kp-IqJ">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="GOv-VP-bVF"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qPT-TX-wFG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2050.7246376811595" y="-81.026785714285708"/>
+        </scene>
         <!--Image Only View Controller-->
         <scene sceneID="Uc0-ks-ER1">
             <objects>
                 <viewController storyboardIdentifier="image-only-vc" id="lGH-bl-7Xw" customClass="WPIAMImageOnlyViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="LA8-MJ-IeW"/>
-                        <viewControllerLayoutGuide type="bottom" id="8Ta-Lb-9Rg"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="ef6-R8-q1S">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -58,11 +70,12 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="PN2-cJ-Ixm"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="ydl-BH-AsM" secondAttribute="bottom" id="Vwg-tE-Bh9"/>
-                            <constraint firstItem="ydl-BH-AsM" firstAttribute="leading" secondItem="ef6-R8-q1S" secondAttribute="leading" id="dCm-ge-PLM"/>
-                            <constraint firstAttribute="trailing" secondItem="ydl-BH-AsM" secondAttribute="trailing" id="dtc-Y4-ZBE"/>
+                            <constraint firstItem="ydl-BH-AsM" firstAttribute="leading" secondItem="PN2-cJ-Ixm" secondAttribute="leading" id="dCm-ge-PLM"/>
+                            <constraint firstItem="PN2-cJ-Ixm" firstAttribute="trailing" secondItem="ydl-BH-AsM" secondAttribute="trailing" id="dtc-Y4-ZBE"/>
                             <constraint firstItem="ydl-BH-AsM" firstAttribute="top" secondItem="ef6-R8-q1S" secondAttribute="top" id="qmB-EF-PCx"/>
                         </constraints>
                     </view>
@@ -83,10 +96,6 @@
         <scene sceneID="zJa-hc-tKk">
             <objects>
                 <viewController storyboardIdentifier="banner-view-vc" id="lbb-HM-tHJ" customClass="WPIAMBannerViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="lHf-Ux-dEc"/>
-                        <viewControllerLayoutGuide type="bottom" id="K7E-8I-Yw5"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="vRb-yf-OWE">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -112,14 +121,14 @@
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalCompressionResistancePriority="998" text="message body" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GOK-vx-mU8">
-                                        <rect key="frame" x="70" y="25.5" width="336" height="39.5"/>
+                                        <rect key="frame" x="70" y="22" width="336" height="43"/>
                                         <accessibility key="accessibilityConfiguration" identifier="banner-body-label"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="999" text="Messaging Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rzo-9i-rXZ">
-                                        <rect key="frame" x="70" y="5" width="336" height="20.5"/>
+                                        <rect key="frame" x="70" y="5" width="336" height="17"/>
                                         <accessibility key="accessibilityConfiguration" identifier="banner-message-title-view"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                         <nil key="textColor"/>
@@ -151,18 +160,19 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="fek-gd-EV8"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <accessibility key="accessibilityConfiguration" identifier="banner-mode-uiview"/>
                         <constraints>
                             <constraint firstItem="JHw-o2-1pu" firstAttribute="top" secondItem="3a0-1K-rwG" secondAttribute="bottom" id="0mE-ex-n0e"/>
-                            <constraint firstAttribute="trailing" secondItem="JHw-o2-1pu" secondAttribute="trailing" id="3YN-yD-cj6"/>
-                            <constraint firstAttribute="trailing" secondItem="3a0-1K-rwG" secondAttribute="trailing" id="A0L-eb-SWR"/>
+                            <constraint firstItem="fek-gd-EV8" firstAttribute="trailing" secondItem="JHw-o2-1pu" secondAttribute="trailing" id="3YN-yD-cj6"/>
+                            <constraint firstItem="fek-gd-EV8" firstAttribute="trailing" secondItem="3a0-1K-rwG" secondAttribute="trailing" id="A0L-eb-SWR"/>
                             <constraint firstItem="3a0-1K-rwG" firstAttribute="top" secondItem="vRb-yf-OWE" secondAttribute="top" id="J7d-h2-edD"/>
-                            <constraint firstAttribute="trailing" secondItem="5m6-Xm-CCg" secondAttribute="trailing" id="JAI-Zi-qX3"/>
+                            <constraint firstItem="fek-gd-EV8" firstAttribute="trailing" secondItem="5m6-Xm-CCg" secondAttribute="trailing" id="JAI-Zi-qX3"/>
                             <constraint firstItem="5m6-Xm-CCg" firstAttribute="top" secondItem="JHw-o2-1pu" secondAttribute="bottom" id="Qsh-nt-ZAe"/>
-                            <constraint firstItem="5m6-Xm-CCg" firstAttribute="leading" secondItem="vRb-yf-OWE" secondAttribute="leading" id="nzd-8c-zxK"/>
-                            <constraint firstItem="3a0-1K-rwG" firstAttribute="leading" secondItem="vRb-yf-OWE" secondAttribute="leading" id="sHq-3b-a4b"/>
-                            <constraint firstItem="JHw-o2-1pu" firstAttribute="leading" secondItem="vRb-yf-OWE" secondAttribute="leading" id="yW5-nj-Sld"/>
+                            <constraint firstItem="5m6-Xm-CCg" firstAttribute="leading" secondItem="fek-gd-EV8" secondAttribute="leading" id="nzd-8c-zxK"/>
+                            <constraint firstItem="3a0-1K-rwG" firstAttribute="leading" secondItem="fek-gd-EV8" secondAttribute="leading" id="sHq-3b-a4b"/>
+                            <constraint firstItem="JHw-o2-1pu" firstAttribute="leading" secondItem="fek-gd-EV8" secondAttribute="leading" id="yW5-nj-Sld"/>
                         </constraints>
                     </view>
                     <connections>
@@ -185,10 +195,6 @@
         <scene sceneID="hvu-tO-txi">
             <objects>
                 <viewController storyboardIdentifier="modal-view-vc" id="x01-lq-3r6" customClass="WPIAMModalViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="42w-41-Nyy"/>
-                        <viewControllerLayoutGuide type="bottom" id="1nT-S0-O8H"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="1pz-BP-O6T">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -320,6 +326,12 @@
                                         <exclude reference="8qu-C8-A9u"/>
                                         <exclude reference="Ln4-8U-D7V"/>
                                         <exclude reference="MCf-U1-0tP"/>
+                                        <exclude reference="7vK-9V-j5H"/>
+                                        <exclude reference="9La-QV-ftg"/>
+                                        <exclude reference="Ait-Na-aVF"/>
+                                        <exclude reference="FTB-yV-c00"/>
+                                        <exclude reference="JJo-tI-mvn"/>
+                                        <exclude reference="RbZ-9Q-1S3"/>
                                         <exclude reference="0Fp-k2-48a"/>
                                         <exclude reference="Hm8-0s-RTs"/>
                                         <exclude reference="JUy-lx-oR6"/>
@@ -328,12 +340,6 @@
                                         <exclude reference="ivB-jb-LVl"/>
                                         <exclude reference="pyI-1U-ujR"/>
                                         <exclude reference="ysk-iC-Hz4"/>
-                                        <exclude reference="7vK-9V-j5H"/>
-                                        <exclude reference="9La-QV-ftg"/>
-                                        <exclude reference="Ait-Na-aVF"/>
-                                        <exclude reference="FTB-yV-c00"/>
-                                        <exclude reference="JJo-tI-mvn"/>
-                                        <exclude reference="RbZ-9Q-1S3"/>
                                         <exclude reference="RdS-Ao-GH0"/>
                                         <exclude reference="qgb-13-uT4"/>
                                         <exclude reference="CSN-TG-E9H"/>
@@ -344,12 +350,12 @@
                                 <variation key="heightClass=compact">
                                     <mask key="constraints">
                                         <include reference="MCf-U1-0tP"/>
-                                        <include reference="Hm8-0s-RTs"/>
-                                        <include reference="pyI-1U-ujR"/>
-                                        <include reference="ysk-iC-Hz4"/>
                                         <include reference="7vK-9V-j5H"/>
                                         <include reference="9La-QV-ftg"/>
                                         <include reference="Ait-Na-aVF"/>
+                                        <include reference="Hm8-0s-RTs"/>
+                                        <include reference="pyI-1U-ujR"/>
+                                        <include reference="ysk-iC-Hz4"/>
                                         <include reference="qgb-13-uT4"/>
                                         <include reference="xXr-od-zOM"/>
                                     </mask>
@@ -357,23 +363,23 @@
                                 <variation key="widthClass=regular">
                                     <mask key="constraints">
                                         <include reference="MCf-U1-0tP"/>
-                                        <include reference="Hm8-0s-RTs"/>
-                                        <include reference="ysk-iC-Hz4"/>
                                         <include reference="7vK-9V-j5H"/>
                                         <include reference="9La-QV-ftg"/>
                                         <include reference="Ait-Na-aVF"/>
+                                        <include reference="Hm8-0s-RTs"/>
+                                        <include reference="ysk-iC-Hz4"/>
                                         <include reference="qgb-13-uT4"/>
                                         <include reference="xXr-od-zOM"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
-                                        <include reference="JUy-lx-oR6"/>
-                                        <include reference="Kec-yq-1Pz"/>
-                                        <include reference="bD7-OU-bEW"/>
                                         <include reference="FTB-yV-c00"/>
                                         <include reference="JJo-tI-mvn"/>
                                         <include reference="RbZ-9Q-1S3"/>
+                                        <include reference="JUy-lx-oR6"/>
+                                        <include reference="Kec-yq-1Pz"/>
+                                        <include reference="bD7-OU-bEW"/>
                                         <include reference="RdS-Ao-GH0"/>
                                         <include reference="CSN-TG-E9H"/>
                                         <include reference="YoE-KS-uWS"/>
@@ -389,16 +395,17 @@
                                 </variation>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="9s1-vR-iLA"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="rHd-8t-2Ic" firstAttribute="leading" secondItem="1pz-BP-O6T" secondAttribute="leading" id="4VC-Zl-Mm5"/>
+                            <constraint firstItem="rHd-8t-2Ic" firstAttribute="leading" secondItem="9s1-vR-iLA" secondAttribute="leading" id="4VC-Zl-Mm5"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="centerY" secondItem="1pz-BP-O6T" secondAttribute="centerY" identifier="Message Card View.centerY = centerY" id="GSo-F2-pSS"/>
-                            <constraint firstAttribute="trailing" secondItem="rHd-8t-2Ic" secondAttribute="trailing" id="SkC-t9-F1u"/>
-                            <constraint firstItem="jER-Re-ODh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="42w-41-Nyy" secondAttribute="bottom" constant="24" identifier="Message Card View.top ≥ Top Layout Guide.bottom + 24" id="Yvr-Y4-aEK"/>
+                            <constraint firstItem="9s1-vR-iLA" firstAttribute="trailing" secondItem="rHd-8t-2Ic" secondAttribute="trailing" id="SkC-t9-F1u"/>
+                            <constraint firstItem="jER-Re-ODh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="9s1-vR-iLA" secondAttribute="top" constant="24" identifier="Message Card View.top ≥ Top Layout Guide.bottom + 24" id="Yvr-Y4-aEK"/>
                             <constraint firstItem="jER-Re-ODh" firstAttribute="leading" secondItem="1pz-BP-O6T" secondAttribute="leadingMargin" constant="10" identifier="Message Card View.leading = leadingMargin + 10" id="bX2-s2-74w"/>
-                            <constraint firstItem="jER-Re-ODh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="42w-41-Nyy" secondAttribute="bottom" constant="10" identifier="Message Card View.top ≥ Top Layout Guide.bottom + 10" id="fyU-hx-Wh1"/>
-                            <constraint firstItem="jER-Re-ODh" firstAttribute="leading" secondItem="1pz-BP-O6T" secondAttribute="leading" constant="20" identifier="Card Leading Margin In Landscape Mode" id="kj1-PP-7nG"/>
-                            <constraint firstItem="jER-Re-ODh" firstAttribute="centerX" secondItem="1pz-BP-O6T" secondAttribute="centerX" identifier="Message Card View.centerX = centerX" id="m0a-I2-6sC"/>
+                            <constraint firstItem="jER-Re-ODh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="9s1-vR-iLA" secondAttribute="top" constant="10" identifier="Message Card View.top ≥ Top Layout Guide.bottom + 10" id="fyU-hx-Wh1"/>
+                            <constraint firstItem="jER-Re-ODh" firstAttribute="leading" secondItem="9s1-vR-iLA" secondAttribute="leading" constant="20" identifier="Card Leading Margin In Landscape Mode" id="kj1-PP-7nG"/>
+                            <constraint firstItem="jER-Re-ODh" firstAttribute="centerX" secondItem="9s1-vR-iLA" secondAttribute="centerX" identifier="Message Card View.centerX = centerX" id="m0a-I2-6sC"/>
                             <constraint firstItem="rHd-8t-2Ic" firstAttribute="top" secondItem="1pz-BP-O6T" secondAttribute="top" id="oJT-lP-jpU"/>
                             <constraint firstAttribute="bottom" secondItem="rHd-8t-2Ic" secondAttribute="bottom" id="vJ8-Lo-nhX"/>
                         </constraints>
@@ -454,14 +461,57 @@
             </objects>
             <point key="canvasLocation" x="915.40178571428567" y="-178.2608695652174"/>
         </scene>
+        <!--Web View View Controller-->
+        <scene sceneID="WDS-3q-bK2">
+            <objects>
+                <viewController storyboardIdentifier="webview-vc" extendedLayoutIncludesOpaqueBars="YES" id="mki-ER-hgN" customClass="WPIAMWebViewViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ZkG-7Y-dH6">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RAD-uS-Ztl">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t0w-gE-Hqc">
+                                        <rect key="frame" x="370" y="44" width="44" height="44"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="close-button"/>
+                                        <state key="normal" backgroundImage="close-with-transparency.png"/>
+                                        <connections>
+                                            <action selector="closeButtonClicked:" destination="mki-ER-hgN" eventType="touchUpInside" id="XdV-Ar-vx6"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <viewLayoutGuide key="safeArea" id="LVD-WI-ads"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="LVD-WI-ads" firstAttribute="trailing" secondItem="t0w-gE-Hqc" secondAttribute="trailing" id="JNp-ab-YMA"/>
+                                    <constraint firstItem="t0w-gE-Hqc" firstAttribute="top" secondItem="LVD-WI-ads" secondAttribute="top" id="tGf-CH-xh7"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="4zq-2k-tD9"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="RAD-uS-Ztl" secondAttribute="bottom" id="DcU-WL-COx"/>
+                            <constraint firstItem="RAD-uS-Ztl" firstAttribute="leading" secondItem="ZkG-7Y-dH6" secondAttribute="leading" id="NWi-AU-mb4"/>
+                            <constraint firstAttribute="trailing" secondItem="RAD-uS-Ztl" secondAttribute="trailing" id="Qqc-ns-jpY"/>
+                            <constraint firstItem="RAD-uS-Ztl" firstAttribute="top" secondItem="ZkG-7Y-dH6" secondAttribute="top" id="oXD-ti-asA"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="closeButton" destination="t0w-gE-Hqc" id="WL2-RN-XCt"/>
+                        <outlet property="containerView" destination="RAD-uS-Ztl" id="dwr-0P-U5R"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yLU-ZF-iic" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-907.24637681159425" y="644.86607142857144"/>
+        </scene>
         <!--Card View Controller-->
         <scene sceneID="5eQ-Ln-que">
             <objects>
                 <viewController storyboardIdentifier="card-view-vc" id="oTF-1C-LZP" customClass="WPIAMCardViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="1Sy-cb-zoy"/>
-                        <viewControllerLayoutGuide type="bottom" id="I6y-sz-UcT"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="SM1-hn-m3n">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -473,7 +523,7 @@
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Aft-rr-icV" userLabel="Card view">
-                                <rect key="frame" x="87" y="270" width="240" height="356.5"/>
+                                <rect key="frame" x="87" y="273" width="240" height="350"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gB0-8W-G9z">
                                         <rect key="frame" x="0.0" y="0.0" width="240" height="160"/>
@@ -514,17 +564,17 @@
                                         </variation>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oVh-9O-yfC" userLabel="Title label">
-                                        <rect key="frame" x="24" y="184" width="192" height="26.5"/>
+                                        <rect key="frame" x="24" y="184" width="192" height="23"/>
                                         <accessibility key="accessibilityConfiguration" identifier="card-title-label"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tmr-ar-k7h">
-                                        <rect key="frame" x="24" y="234.5" width="192" height="38"/>
+                                        <rect key="frame" x="24" y="231" width="192" height="35"/>
                                         <subviews>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalHuggingPriority="1000" scrollEnabled="NO" contentInsetAdjustmentBehavior="never" editable="NO" text="Label" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="elG-N9-aqH" userLabel="Body text view">
-                                                <rect key="frame" x="0.0" y="0.0" width="192" height="38"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="192" height="35"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <accessibility key="accessibilityConfiguration" identifier="card-body-text-view"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
@@ -541,7 +591,7 @@
                                         </constraints>
                                     </scrollView>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" horizontalCompressionResistancePriority="251" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aZE-3x-WHk" userLabel="Primary action button">
-                                        <rect key="frame" x="131" y="296.5" width="85" height="36"/>
+                                        <rect key="frame" x="131" y="290" width="85" height="36"/>
                                         <accessibility key="accessibilityConfiguration" identifier="card-primary-action-button"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="pxm-yD-xhm"/>
@@ -553,7 +603,7 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Feg-VM-jUf" userLabel="Secondary action button">
-                                        <rect key="frame" x="24" y="296.5" width="95" height="36"/>
+                                        <rect key="frame" x="24" y="290" width="95" height="36"/>
                                         <accessibility key="accessibilityConfiguration" identifier="card-secondary-action-button"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="bpF-9w-pDe"/>
@@ -647,17 +697,18 @@
                                 </variation>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="MOD-WD-E8F"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Aft-rr-icV" firstAttribute="centerX" secondItem="SM1-hn-m3n" secondAttribute="centerX" identifier="Center card view horizontally" id="5rk-YP-Qx8" userLabel="Center card view horizontally"/>
+                            <constraint firstItem="Aft-rr-icV" firstAttribute="centerX" secondItem="MOD-WD-E8F" secondAttribute="centerX" identifier="Center card view horizontally" id="5rk-YP-Qx8" userLabel="Center card view horizontally"/>
                             <constraint firstAttribute="bottom" secondItem="tj7-xn-Mak" secondAttribute="bottom" id="JUF-eh-Bou"/>
-                            <constraint firstAttribute="trailing" secondItem="tj7-xn-Mak" secondAttribute="trailing" id="KPn-Va-Ros"/>
+                            <constraint firstItem="MOD-WD-E8F" firstAttribute="trailing" secondItem="tj7-xn-Mak" secondAttribute="trailing" id="KPn-Va-Ros"/>
                             <constraint firstItem="tj7-xn-Mak" firstAttribute="top" secondItem="SM1-hn-m3n" secondAttribute="top" id="LYf-Xu-ju2"/>
                             <constraint firstItem="Aft-rr-icV" firstAttribute="centerY" secondItem="SM1-hn-m3n" secondAttribute="centerY" identifier="Center card view vertically" id="N6p-hW-l6v" userLabel="Center card view vertically"/>
-                            <constraint firstItem="tj7-xn-Mak" firstAttribute="leading" secondItem="SM1-hn-m3n" secondAttribute="leading" id="RLZ-qb-OQc"/>
+                            <constraint firstItem="tj7-xn-Mak" firstAttribute="leading" secondItem="MOD-WD-E8F" secondAttribute="leading" id="RLZ-qb-OQc"/>
                             <constraint firstItem="Aft-rr-icV" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="SM1-hn-m3n" secondAttribute="leadingMargin" constant="10" identifier="Card view left padding of at least 10 in super view" id="UPX-5a-akO" userLabel="Card view left padding of at least 10 in super view"/>
                             <constraint firstItem="Aft-rr-icV" firstAttribute="leading" secondItem="SM1-hn-m3n" secondAttribute="leadingMargin" constant="20" identifier="Card view left padding of 20 in superview - landscape phone" id="f2U-O8-7pI" userLabel="Card view left padding of 20 in superview - landscape phone"/>
-                            <constraint firstItem="Aft-rr-icV" firstAttribute="top" relation="greaterThanOrEqual" secondItem="1Sy-cb-zoy" secondAttribute="bottom" constant="10" identifier="Card view top padding of at least 10 in super view" id="rYP-c9-NxX" userLabel="Card view top padding of at least 10 in super view"/>
+                            <constraint firstItem="Aft-rr-icV" firstAttribute="top" relation="greaterThanOrEqual" secondItem="MOD-WD-E8F" secondAttribute="top" constant="10" identifier="Card view top padding of at least 10 in super view" id="rYP-c9-NxX" userLabel="Card view top padding of at least 10 in super view"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">

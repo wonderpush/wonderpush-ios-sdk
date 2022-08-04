@@ -30,6 +30,9 @@
 #define PRESENCE_UPDATE_SAFETY_MARGIN 60
 #define PRESENCE_ANTICIPATED_TIME (5*60)
 
+#define INAPP_SDK_URL_REGEX @"https://cdn\\.by\\.wonderpush\\.com/inapp-sdk/1/wonderpush-loader\\.min\\.js"
+#define INAPP_SDK_GLOBAL_NAME @"WonderPushInAppSDK"
+#define INAPP_WEBVIEW_LOAD_TIMEOUT_TIME_INTERVAL 10
 /**
  Key to set in your .plist file to allow rating button action
  */
@@ -80,4 +83,9 @@
 
 #define LAST_RECEIVED_NOTIFICATION_CHECK_DATE_USER_DEFAULTS_KEY @"_wonderpush_lastReceivedNotificationCheckDate"
 #define LAST_RECEIVED_NOTIFICATION_CHECK_DATE_PROPERTY @"lastReceivedNotificationCheckDate"
+
+// 6 calls / minute
+#define ANONYMOUS_API_CLIENT_RATE_LIMIT_LIMIT @6
+#define ANONYMOUS_API_CLIENT_RATE_LIMIT_TIME_TO_LIVE_MILLISECONDS @60000
+
 #endif /* WonderPush_constants_h */
