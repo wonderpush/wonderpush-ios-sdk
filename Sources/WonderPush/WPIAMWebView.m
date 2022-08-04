@@ -554,13 +554,15 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
 }
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
-    //webview timeout of X seconds
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, INAPP_WEBVIEW_LOAD_TIMEOUT_TIME_INTERVAL * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
-                                             code:IAMDisplayRenderErrorTypeTimeoutError
-                                         userInfo:@{NSLocalizedDescriptionKey: @"Timeout exception occured to load webView url"}];
-        [self reportFailWithError:error];
-    });
+    if (!self.webViewUrlLoadingCallbackDone) {
+        //webview timeout of X seconds
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, INAPP_WEBVIEW_LOAD_TIMEOUT_TIME_INTERVAL * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            NSError *error = [NSError errorWithDomain:kInAppMessagingDisplayErrorDomain
+                                                 code:IAMDisplayRenderErrorTypeTimeoutError
+                                             userInfo:@{NSLocalizedDescriptionKey: @"Timeout exception occured to load webView url"}];
+            [self reportFailWithError:error];
+        });
+    }
 }
 
 
