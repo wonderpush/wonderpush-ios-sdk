@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
-#import <WonderPush/InAppMessaging.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPIAMWebViewPreloaderViewController : UIViewController
