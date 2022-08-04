@@ -7,7 +7,7 @@
 //
 
 #import "WPRateLimiter.h"
-#import "WPLog.h"
+#import <WonderPushCommon/WPLog.h>
 
 @interface WPRateLimit ()
 @property (nonatomic, strong) NSString *key;

@@ -8,7 +8,7 @@
 
 #import "WPBasicApiClient.h"
 #import "WPErrors.h"
-#import "WPRequestSerializer.h"
+#import <WonderPushCommon/WPRequestSerializer.h>
 #import "WPNSUtil.h"
 
 NSString * const WPBasicApiClientResponseNotification = @"WPBasicApiClientResponseNotification";
