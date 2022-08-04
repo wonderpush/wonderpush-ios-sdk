@@ -7,9 +7,9 @@
 //
 
 #import "WPAnonymousAPIClient.h"
-#import <WonderPushCommon/WPLog.h>
+#import "WPLog.h"
 #import "WPConfiguration.h"
-#import <WonderPushCommon/WPRequestSerializer.h>
+#import "WPRequestSerializer.h"
 #import "WPRequestVault.h"
 #import "WonderPush_constants.h"
 #import "WonderPush_private.h"

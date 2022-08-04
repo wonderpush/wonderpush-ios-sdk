@@ -7,7 +7,7 @@
 //
 
 #import "WPIAMWebViewPreloaderViewController.h"
-#import <WonderPushCommon/WPLog.h>
+#import "WPLog.h"
 #import "WonderPush_constants.h"
 #import "WPCore+InAppMessagingDisplay.h"
 #import "WPInAppMessagingRendering.h"
