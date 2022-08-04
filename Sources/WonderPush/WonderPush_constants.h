@@ -32,7 +32,7 @@
 
 #define INAPP_SDK_URL_REGEX @"https://cdn\\.by\\.wonderpush\\.com/inapp-sdk/1/wonderpush-loader\\.min\\.js"
 #define INAPP_SDK_GLOBAL_NAME @"WonderPushInAppSDK"
-#define INAPP_WEBVIEW_LOAD_TIMEOUT_TIME_INTERVAL 2
+#define INAPP_WEBVIEW_LOAD_TIMEOUT_TIME_INTERVAL 10
 /**
  Key to set in your .plist file to allow rating button action
  */
