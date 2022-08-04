@@ -537,7 +537,7 @@
     displayMessageWithMessageDefinition:(WPIAMMessageDefinition *)definition
                               imageData:(nullable WPInAppMessagingImageData *)imageData
                      landscapeImageData:(nullable WPInAppMessagingImageData *)landscapeImageData
-                            webView:(nullable WKWebView *)webView
+                                webView:(nullable WKWebView *)webView
                             triggerType:(WPInAppMessagingDisplayTriggerType)triggerType {
     switch (definition.renderData.renderingEffectSettings.viewMode) {
         case WPIAMRenderAsCardView:
@@ -564,7 +564,7 @@
         case WPIAMRenderAsWebView:
             return [self webViewDisplayMessageWithMessageDefinition:definition
                                                             webView:webView
-                                                          triggerType:triggerType];
+                                                        triggerType:triggerType];
         default:
             return nil;
     }
@@ -579,9 +579,9 @@
     NSTimeInterval originalDisplayTime = [timeProvider currentTimestampInSeconds];
     [message.renderData.contentData
      loadMedia:^(NSData *_Nullable standardImageRawData,
-                          NSData *_Nullable landscapeImageRawData,
-                          WKWebView *_Nullable webView,
-                          NSError *_Nullable error) {
+                 NSData *_Nullable landscapeImageRawData,
+                 WKWebView *_Nullable webView,
+                 NSError *_Nullable error) {
         WPInAppMessagingImageData *imageData = nil;
         WPInAppMessagingImageData *landscapeImageData = nil;
         

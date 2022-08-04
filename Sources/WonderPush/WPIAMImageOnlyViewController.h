@@ -26,10 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WPIAMImageOnlyViewController : WPIAMBaseRenderingViewController
 + (WPIAMImageOnlyViewController *)
     instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
-                                 displayMessage:
-                                     (WPInAppMessagingImageOnlyDisplay *)imageOnlyMessage
-                                controllerDelegate:
-                                    (id<WPInAppMessagingControllerDelegate>)controllerDelegate
+                                 displayMessage:(WPInAppMessagingImageOnlyDisplay *)imageOnlyMessage
+                             controllerDelegate:(id<WPInAppMessagingControllerDelegate>)controllerDelegate
                                     timeFetcher:(id<WPIAMTimeFetcher>)timeFetcher;
 @end
 NS_ASSUME_NONNULL_END

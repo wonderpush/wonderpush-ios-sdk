@@ -99,7 +99,7 @@
 #endif  // defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         UIWindowForWebView.windowLevel = UIWindowLevelNormal;
     });
-    
+
     return UIWindowForWebView;
 }
 

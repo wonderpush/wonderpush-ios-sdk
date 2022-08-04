@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                      secondaryAction:(nullable WPAction *)secondaryAction
                             imageURL:(nullable NSURL *)imageURL
                    landscapeImageURL:(nullable NSURL *)landscapeImageURL
-                             webURL :(nullable NSURL *)webURL
+                              webURL:(nullable NSURL *)webURL
                  closeButtonPosition:(WPIAMCloseButtonPosition)closeButtonPosition
                       bannerPosition:(WPIAMBannerPosition)bannerPosition
                       entryAnimation:(WPIAMEntryAnimation)entryAnimation

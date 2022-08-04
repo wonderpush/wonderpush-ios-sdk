@@ -377,7 +377,7 @@
         
         NSURL *webURL = nil;
         if (webUrlStr.length > 0){
-            webURL = [NSURL URLWithString:webUrlStr];;
+            webURL = [NSURL URLWithString:webUrlStr];
             if (!webURL) {
                 WPLog(@"Invalid url specified for in-app message: %@", webUrlStr);
             }
@@ -422,19 +422,19 @@
         
         WPIAMMessageContentDataWithMedia *msgData =
         [[WPIAMMessageContentDataWithMedia alloc] initWithMessageTitle:title
-                                                              messageBody:body
-                                                         actionButtonText:actionButtonText
-                                                secondaryActionButtonText:secondaryActionButtonText
-                                                                   action:action
-                                                          secondaryAction:secondaryAction
-                                                                 imageURL:imageURL
-                                                        landscapeImageURL:landscapeImageURL
+                                                           messageBody:body
+                                                      actionButtonText:actionButtonText
+                                             secondaryActionButtonText:secondaryActionButtonText
+                                                                action:action
+                                                       secondaryAction:secondaryAction
+                                                              imageURL:imageURL
+                                                     landscapeImageURL:landscapeImageURL
                                                                 webURL:webURL
-                                                      closeButtonPosition:closeButtonPosition
-                                                           bannerPosition:bannerPosition
-                                                           entryAnimation:entryAnimation
-                                                            exitAnimation:exitAnimation
-                                                          usingURLSession:nil];
+                                                   closeButtonPosition:closeButtonPosition
+                                                        bannerPosition:bannerPosition
+                                                        entryAnimation:entryAnimation
+                                                         exitAnimation:exitAnimation
+                                                       usingURLSession:nil];
         
         WPIAMMessageRenderData *renderData =
         [[WPIAMMessageRenderData alloc] initWithReportingData:reportingData
