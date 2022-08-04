@@ -245,13 +245,13 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     else if ([methodName isEqual:@"getPayload"]) {
         [self getPayload:callId];
     }
-    else if ([methodName isEqual: @"openDeepLink"]) {
+    else if ([methodName isEqual:@"openDeepLink"]) {
         [self openDeepLink:args callId:callId];
     }
-    else if ([methodName isEqual: @"openExternalUrl"]) {
+    else if ([methodName isEqual:@"openExternalUrl"]) {
         [self openExternalUrl:args callId:callId];
     }
-    else if ([methodName  isEqual: @"triggerLocationPrompt"]) {
+    else if ([methodName isEqual:@"triggerLocationPrompt"]) {
         switch ([CLLocationManager authorizationStatus]) {
             case kCLAuthorizationStatusAuthorizedAlways:
             case kCLAuthorizationStatusAuthorizedWhenInUse:
@@ -285,33 +285,33 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             [weakSelf resolve:result callId:callId];
         }];
     }
-    else if ([methodName  isEqual: @"subscribeToNotifications"]) {
+    else if ([methodName isEqual:@"subscribeToNotifications"]) {
         [WonderPush subscribeToNotifications];
         [self resolve:nil callId:callId];
     }
-    else if ([methodName  isEqual: @"unsubscribeFromNotifications"]) {
+    else if ([methodName isEqual:@"unsubscribeFromNotifications"]) {
         [WonderPush unsubscribeFromNotifications];
         [self resolve:nil callId:callId];
     }
-    else if ([methodName  isEqual: @"isSubscribedToNotifications"]) {
+    else if ([methodName isEqual:@"isSubscribedToNotifications"]) {
         [self resolve:[WPIAMBoolResult with:[WonderPush isSubscribedToNotifications]] callId:callId];
     }
-    else if ([methodName  isEqual: @"getUserId"]) {
+    else if ([methodName isEqual:@"getUserId"]) {
         [self resolve:[WonderPush userId] callId:callId];
     }
-    else if ([methodName  isEqual: @"getInstallationId"]) {
+    else if ([methodName isEqual:@"getInstallationId"]) {
         [self resolve:[WonderPush installationId] callId:callId];
     }
-    else if ([methodName  isEqual: @"getCountry"]) {
+    else if ([methodName isEqual:@"getCountry"]) {
         [self resolve:[WonderPush country] callId:callId];
     }
-    else if ([methodName isEqual: @"getCurrency"]) {
+    else if ([methodName isEqual:@"getCurrency"]) {
         [self resolve:[WonderPush currency] callId:callId];
     }
-    else if ([methodName  isEqual: @"getLocale"]) {
+    else if ([methodName isEqual:@"getLocale"]) {
         [self resolve:[WonderPush locale] callId:callId];
     }
-    else if ([methodName  isEqual: @"getTimeZone"]) {
+    else if ([methodName isEqual:@"getTimeZone"]) {
         [self resolve:[WonderPush timeZone] callId:callId];
     }
     else if ([methodName isEqual:@"getDevicePlatform"]) {
@@ -327,7 +327,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
                   callId:callId];
         }
     }
-    else if ([methodName  isEqual: @"trackEvent"]) {
+    else if ([methodName isEqual:@"trackEvent"]) {
         NSString *eventName = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         NSDictionary *attributes = args.count >= 2 && [args[1] isKindOfClass:NSDictionary.class] ? args[1] : nil;
         if (eventName) {
@@ -339,7 +339,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             }] callId:callId];
         }
     }
-    else if ([methodName  isEqual: @"addTag"]) {
+    else if ([methodName isEqual:@"addTag"]) {
         // Support array as first arg
         NSArray *tags = [args.firstObject isKindOfClass:NSArray.class] ? args.firstObject : args;
         // Filter on strings only
@@ -347,7 +347,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         [WonderPush addTags:tags];
         [self resolve:nil callId:callId];
     }
-    else if ([methodName  isEqual: @"removeTag"]) {
+    else if ([methodName isEqual:@"removeTag"]) {
         // Support array as first arg
         NSArray *tags = [args.firstObject isKindOfClass:NSArray.class] ? args.firstObject : args;
         // Filter on strings only
@@ -355,11 +355,11 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         [WonderPush removeTags:tags];
         [self resolve:nil callId:callId];
     }
-    else if ([methodName  isEqual: @"removeAllTags"]) {
+    else if ([methodName isEqual:@"removeAllTags"]) {
         [WonderPush removeAllTags];
         [self resolve:nil callId:callId];
     }
-    else if ([methodName  isEqual: @"hasTag"]) {
+    else if ([methodName isEqual:@"hasTag"]) {
         NSString *tag = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         if (tag) {
             [self resolve:[WPIAMBoolResult with:[WonderPush hasTag:tag]] callId:callId];
@@ -369,11 +369,11 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             }] callId:callId];
         }
     }
-    else if ([methodName isEqual: @"getTags"]) {
+    else if ([methodName isEqual:@"getTags"]) {
         NSOrderedSet<NSString *> *tags = [WonderPush getTags];
         [self resolve:[NSArray arrayWithArray:tags.array] callId:callId];
     }
-    else if ([methodName isEqual: @"getPropertyValue"]) {
+    else if ([methodName isEqual:@"getPropertyValue"]) {
         NSString *property = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         if (property) {
             [self resolve:[WonderPush getPropertyValue:property] callId:callId];
@@ -383,7 +383,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             }] callId:callId];
         }
     }
-    else if ([methodName  isEqual: @"getPropertyValues"]) {
+    else if ([methodName isEqual:@"getPropertyValues"]) {
         NSString *property = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         if (property) {
             [self resolve:[WonderPush getPropertyValues:property] callId:callId];
@@ -393,7 +393,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             }] callId:callId];
         }
     }
-    else if ([methodName  isEqual: @"addProperty"]) {
+    else if ([methodName isEqual:@"addProperty"]) {
         NSString *property = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         id val = args.count >= 2 ? args[1] : nil;
         if (property && val) {
@@ -405,7 +405,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             }] callId:callId];
         }
     }
-    else if ([methodName  isEqual: @"removeProperty"]) {
+    else if ([methodName isEqual:@"removeProperty"]) {
         NSString *property = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         id val = args.count >= 2 ? args[1] : nil;
         if (property) {
@@ -417,7 +417,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             }] callId:callId];
         }
     }
-    else if ([methodName  isEqual: @"setProperty"]) {
+    else if ([methodName isEqual:@"setProperty"]) {
         NSString *property = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         id val = args.count >= 2 ? args[1] : nil;
         if (property && args.count >= 2) {
@@ -429,7 +429,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             }] callId:callId];
         }
     }
-    else if ([methodName  isEqual: @"unsetProperty"]) {
+    else if ([methodName isEqual:@"unsetProperty"]) {
         NSString *property = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
         if (property) {
             [WonderPush unsetProperty:property];
@@ -440,7 +440,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             }] callId:callId];
         }
     }
-    else if ([methodName  isEqual: @"putProperties"]) {
+    else if ([methodName isEqual:@"putProperties"]) {
         NSDictionary *properties = args.count >= 1 && [args[0] isKindOfClass:NSDictionary.class] ? args[0] : nil;
         if (properties) {
             [WonderPush putProperties:properties];
@@ -451,7 +451,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
             }] callId:callId];
         }
     }
-    else if ([methodName  isEqual: @"getProperties"]) {
+    else if ([methodName isEqual:@"getProperties"]) {
         [self resolve:[WonderPush getProperties] callId:callId];
     }
 }
