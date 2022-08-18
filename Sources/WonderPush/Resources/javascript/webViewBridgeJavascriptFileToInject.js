@@ -16,7 +16,12 @@
                 var promise = new Promise(function(res, rej) {
                     window.WonderPushInAppSDK.callIdToPromise[callId] = {resolve:res, reject:rej};
                 });
-                webkit.messageHandlers.WonderPushInAppSDK.postMessage(message);
+                var post = function() {
+                    webkit.messageHandlers.WonderPushInAppSDK.postMessage(message);
+                };
+                // delay dimiss
+                if (prop === "dismiss") setTimeout(post, 10);
+                else post();
                 return promise;
             };
         }.bind(this);
