@@ -72,20 +72,19 @@
         };
     }
 
+    self.webView.translatesAutoresizingMaskIntoConstraints = YES;
     [self.containerView insertSubview:self.webView belowSubview:self.closeButton];
-
-    NSLayoutConstraint* webViewTrailingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0];
-    NSLayoutConstraint* webViewLeadingConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeLeading   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0];
-    NSLayoutConstraint* webViewTopConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeTop   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
-    NSLayoutConstraint* webViewBottomConstraint=[NSLayoutConstraint constraintWithItem:self.webView attribute:NSLayoutAttributeBottom   relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
-
-    [self.containerView addConstraints:@[webViewTrailingConstraint, webViewLeadingConstraint, webViewTopConstraint, webViewBottomConstraint]];
 
     if (self.webViewMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone){
         self.closeButton.hidden = YES;
     } else {
         self.closeButton.hidden = NO;
     }
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    self.webView.frame = self.containerView.bounds;
 }
 
 - (void)flashCloseButton:(UIButton *)closeButton {
