@@ -73,18 +73,16 @@
     }
 
     self.webView.translatesAutoresizingMaskIntoConstraints = YES;
+    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     [self.containerView insertSubview:self.webView belowSubview:self.closeButton];
+    self.containerView.frame = self.view.bounds;
+    self.webView.frame = self.containerView.bounds;
 
     if (self.webViewMessage.closeButtonPosition == WPInAppMessagingCloseButtonPositionNone){
         self.closeButton.hidden = YES;
     } else {
         self.closeButton.hidden = NO;
     }
-}
-
-- (void)viewDidLayoutSubviews {
-    [super viewDidLayoutSubviews];
-    self.webView.frame = self.containerView.bounds;
 }
 
 - (void)flashCloseButton:(UIButton *)closeButton {
