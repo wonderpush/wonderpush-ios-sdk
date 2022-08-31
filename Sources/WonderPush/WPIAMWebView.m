@@ -454,6 +454,11 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     else if ([methodName isEqual:@"getProperties"]) {
         [self resolve:[WonderPush getProperties] callId:callId];
     }
+    else {
+        [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnknownMethodError userInfo:@{
+            NSLocalizedDescriptionKey: [NSString stringWithFormat:NSLocalizedString(@"Unknown method %@", nil), methodName],
+        }] callId:callId];
+    }
 }
 
 - (void) getPayload:(NSString *)callId {

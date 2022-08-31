@@ -394,6 +394,8 @@ typedef NS_ENUM(NSInteger, IAMDisplayRenderErrorType) {
   IAMDisplayRenderErrorTypeAuthenticationRequiredError,
   /// Navigation became download
   IAMDisplayRenderErrorTypeNavigationBecameDownloadError,
+  /// Unknown method.
+  IAMDisplayRenderErrorTypeUnknownMethodError,
   /// Unexpected error.
   IAMDisplayRenderErrorTypeUnspecifiedError,
 };
