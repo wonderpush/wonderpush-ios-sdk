@@ -87,7 +87,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
                 }
             ];
             NSString *ruleListJsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:ruleListJson options:0 error:nil] encoding:NSUTF8StringEncoding];
-            [WKContentRuleListStore.defaultStore compileContentRuleListForIdentifier:@"BlockWonderPushInAppSDKScript" encodedContentRuleList:ruleListJsonString completionHandler:^(WKContentRuleList *list, NSError *error) {
+            [WKContentRuleListStore.defaultStore compileContentRuleListForIdentifier:@"BlockWonderPushPopupSDKScript" encodedContentRuleList:ruleListJsonString completionHandler:^(WKContentRuleList *list, NSError *error) {
                 if (error) {
                     WPLog(@"Failed to create content rule list to block WonderPush in-app SDK script loading: %@", error);
                 }
@@ -164,7 +164,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         if (![method isKindOfClass:NSString.class]
             || ![args isKindOfClass:NSArray.class]
             || ![callId isKindOfClass:NSString.class]) {
-            WPLog(@"Invalid message sent to WonderPushInAppSDK: %@", message);
+            WPLog(@"Invalid message sent to WonderPushPopupSDK: %@", message);
             return;
         }
         [self callMethod:method withArgs:args callId:callId];
@@ -196,7 +196,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         return;
     }
 
-    NSString *script = [NSString stringWithFormat:@"window.WonderPushInAppSDK.resolve(%@, %@);", resultString, callIdString];
+    NSString *script = [NSString stringWithFormat:@"window.WonderPushPopupSDK.resolve(%@, %@);", resultString, callIdString];
     [self.webView evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
         if (error) {
             WPLog(@"Error evaluation javascript code: %@", error);
@@ -216,7 +216,7 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         WPLog(@"Could not convert callId to JSON: %@", error);
         return;
     }
-    NSString *script = [NSString stringWithFormat:@"window.WonderPushInAppSDK.reject(new Error(%@), %@);", errorString, callIdString];
+    NSString *script = [NSString stringWithFormat:@"window.WonderPushPopupSDK.reject(new Error(%@), %@);", errorString, callIdString];
     [self.webView evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
         if (error) {
             WPLog(@"Error evaluation javascript code: %@", error);

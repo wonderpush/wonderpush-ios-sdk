@@ -24,14 +24,14 @@
 #define ITUNES_APP_URL_FORMAT @"https://itunes.apple.com/us/app/calcfast/id%@?mt=8"
 #define WEB_CALLBACK_RESOURCE @"web/callback"
 
-#define DIFFERENT_SESSION_REGULAR_MIN_TIME_GAP      (30*60*1000)
+#define DIFFERENT_SESSION_REGULAR_MIN_TIME_GAP      (1*60*1000)
 #define DIFFERENT_SESSION_NOTIFICATION_MIN_TIME_GAP (15*60*1000)
 
 #define PRESENCE_UPDATE_SAFETY_MARGIN 60
 #define PRESENCE_ANTICIPATED_TIME (5*60)
 
 #define INAPP_SDK_URL_REGEX @"https://cdn\\.by\\.wonderpush\\.com/inapp-sdk/1/wonderpush-loader\\.min\\.js"
-#define INAPP_SDK_GLOBAL_NAME @"WonderPushInAppSDK"
+#define INAPP_SDK_GLOBAL_NAME @"WonderPushPopupSDK"
 #define INAPP_WEBVIEW_LOAD_TIMEOUT_TIME_INTERVAL 10
 /**
  Key to set in your .plist file to allow rating button action
