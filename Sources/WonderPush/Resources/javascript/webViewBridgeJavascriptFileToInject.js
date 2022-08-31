@@ -18,7 +18,7 @@
                 });
                 var post = function() {
                     var result = webkit.messageHandlers.WonderPushPopupSDK.postMessage(message);
-                    if (result.catch) result.catch(function(error) {
+                    if (result && result.catch) result.catch(function(error) {
                         window.WonderPushPopupSDK.reject(error, callId);
                     });
                 };
