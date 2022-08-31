@@ -17,7 +17,10 @@
                     window.WonderPushPopupSDK.callIdToPromise[callId] = {resolve:res, reject:rej};
                 });
                 var post = function() {
-                    webkit.messageHandlers.WonderPushPopupSDK.postMessage(message);
+                    var result = webkit.messageHandlers.WonderPushPopupSDK.postMessage(message);
+                    if (result.catch) result.catch(function(error) {
+                        window.WonderPushPopupSDK.reject(error, callId);
+                    });
                 };
                 // delay dimiss
                 if (prop === "dismiss") setTimeout(post, 10);
