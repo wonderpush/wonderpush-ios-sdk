@@ -316,6 +316,24 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     }
     else if ([methodName isEqual:@"getDevicePlatform"]) {
         [self resolve:@"iOS" callId:callId];
+    }
+    else if ([methodName isEqual:@"callMethod"]) {
+        NSString *methodToCall = args.count >= 1 && [args[0] isKindOfClass:NSString.class] ? args[0] : nil;
+        id methodArgument = args.count >= 2 ? args[1] : nil;
+        if (methodToCall) {
+            NSDictionary *parameters = @{
+                                         WP_REGISTERED_CALLBACK_METHOD_KEY: methodToCall,
+                                         WP_REGISTERED_CALLBACK_PARAMETER_KEY: methodArgument ?: [NSNull null],
+                                         };
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_REGISTERED_CALLBACK object:self userInfo:parameters];
+            });
+            [self resolve:nil callId:callId];
+        } else {
+            [self reject:[NSError errorWithDomain:kInAppMessagingDisplayErrorDomain code:IAMDisplayRenderErrorTypeUnspecifiedError userInfo:@{
+                NSLocalizedDescriptionKey: NSLocalizedString(@"trackEvent requires an event name", nil),
+            }] callId:callId];
+        }
     } else if ([methodName isEqual:@"openAppRating"]) {
         if (@available(iOS 10.3, *)) {
             [SKStoreReviewController requestReview];
