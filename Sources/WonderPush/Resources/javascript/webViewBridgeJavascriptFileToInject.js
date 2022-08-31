@@ -3,7 +3,7 @@
     var generateIdentifier = function() {
         return ""+(+new Date())+":"+(identifierCounter++);
     };
-    window.WonderPushInAppSDK = new Proxy({}, new function() {
+    window.WonderPushInAppSDK = window.WonderPushPopupSDK = new Proxy({}, new function() {
         this.get = function(target, prop, receiver) {
             if (this.hasOwnProperty(prop)) return this[prop];
             return function() {
