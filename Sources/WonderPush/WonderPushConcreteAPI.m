@@ -527,6 +527,7 @@
                                  @"platform": @"iOS",
                                  @"osVersion": [WPInstallationCoreProperties getOsVersion] ?: null,
                                  @"brand": @"Apple",
+                                 @"category": @"mobile",
                                  @"model": [WPInstallationCoreProperties getDeviceModel] ?: null,
                                  @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width] ?: null,
                                  @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height] ?: null,
