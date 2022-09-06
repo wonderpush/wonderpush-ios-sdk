@@ -23,7 +23,8 @@ let package = Package(
             dependencies: ["WonderPushCommon"],
             resources: [
               .process("Resources/close-with-transparency.png"),
-              .process("Resources/close-with-transparency@2x.png")
+              .process("Resources/close-with-transparency@2x.png"),
+              .process("Resources/javascript/webViewBridgeJavascriptFileToInject.js")
             ],
             cSettings: [
               .headerSearchPath("InAppMessaging"),
