@@ -608,7 +608,8 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         // Inject message handler
         [self.webView.configuration.userContentController addScriptMessageHandler:self.webView.bridge name:INAPP_SDK_GLOBAL_NAME];
         // Inject bridge
-        NSString *javascriptToInjectFile = [[NSBundle bundleForClass:[self class]] pathForResource:@"webViewBridgeJavascriptFileToInject" ofType:@"js"];
+        NSBundle *bundle = WonderPush.resourceBundle;
+        NSString *javascriptToInjectFile = [bundle pathForResource:@"webViewBridgeJavascriptFileToInject" ofType:@"js"];
         NSString* javascriptString = [NSString stringWithContentsOfFile:javascriptToInjectFile encoding:NSUTF8StringEncoding error:nil];
         [webView evaluateJavaScript:javascriptString completionHandler:nil];
     } else {
