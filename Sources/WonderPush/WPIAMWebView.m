@@ -601,7 +601,9 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     NSURL *initialURL = self.webView.initialURL;
     NSURL *targetURL = webView.URL;
 
-    // Ensure same origin
+    // Ensure same origin: remove handler, we'll re-add it later if the origin is right
+    [self.webView.configuration.userContentController removeScriptMessageHandlerForName:INAPP_SDK_GLOBAL_NAME];
+
     if (initialURL.port == targetURL.port
         && [initialURL.host isEqualToString:targetURL.host]
         && [initialURL.scheme isEqualToString:targetURL.scheme]) {
