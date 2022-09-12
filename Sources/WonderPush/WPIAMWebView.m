@@ -78,21 +78,23 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         if (@available(iOS 11.0, *)) {
-            // Create a rule-list that blocks requests to the in-app SDK javascript loader.
-            NSString *scriptUrlString = INAPP_SDK_URL_REGEX;
-            id ruleListJson = @[
-                @{
-                    @"trigger": @{@"url-filter": scriptUrlString},
-                    @"action": @{@"type": @"block"},
-                }
-            ];
-            NSString *ruleListJsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:ruleListJson options:0 error:nil] encoding:NSUTF8StringEncoding];
-            [WKContentRuleListStore.defaultStore compileContentRuleListForIdentifier:@"BlockWonderPushPopupSDKScript" encodedContentRuleList:ruleListJsonString completionHandler:^(WKContentRuleList *list, NSError *error) {
-                if (error) {
-                    WPLog(@"Failed to create content rule list to block WonderPush in-app SDK script loading: %@", error);
-                }
-                blockWonderPushScriptContentRuleList = list;
-            }];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // Create a rule-list that blocks requests to the in-app SDK javascript loader.
+                NSString *scriptUrlString = INAPP_SDK_URL_REGEX;
+                id ruleListJson = @[
+                    @{
+                        @"trigger": @{@"url-filter": scriptUrlString},
+                        @"action": @{@"type": @"block"},
+                    }
+                ];
+                NSString *ruleListJsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:ruleListJson options:0 error:nil] encoding:NSUTF8StringEncoding];
+                [WKContentRuleListStore.defaultStore compileContentRuleListForIdentifier:@"BlockWonderPushPopupSDKScript" encodedContentRuleList:ruleListJsonString completionHandler:^(WKContentRuleList *list, NSError *error) {
+                    if (error) {
+                        WPLog(@"Failed to create content rule list to block WonderPush in-app SDK script loading: %@", error);
+                    }
+                    blockWonderPushScriptContentRuleList = list;
+                }];
+            });
         }
     });
 }
