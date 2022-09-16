@@ -18,6 +18,9 @@
 
 @implementation UIColor (HexString)
 + (UIColor *)firiam_colorWithHexString:(nullable NSString *)hexString {
+    if (![hexString isKindOfClass:NSString.class]) {
+        return nil;
+    }
     if (hexString.length < 7) {
         return nil;
     }

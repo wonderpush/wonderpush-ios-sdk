@@ -369,23 +369,23 @@
             return nil;
         }
         
-        if (title == nil && mode != WPIAMRenderAsImageOnlyView && mode != WPIAMRenderAsWebView) {
+        if ((title == nil || (id)title == NSNull.null) && mode != WPIAMRenderAsImageOnlyView && mode != WPIAMRenderAsWebView) {
             WPLog(
                   @"Title text is missing in message node %@", notificationDict);
             return nil;
         }
         
         NSURL *webURL = nil;
-        if (webUrlStr.length > 0){
+        if ([webUrlStr isKindOfClass:NSString.class] && webUrlStr.length > 0){
             webURL = [NSURL URLWithString:webUrlStr];
             if (!webURL) {
                 WPLog(@"Invalid url specified for in-app message: %@", webUrlStr);
             }
         }
 
-        NSURL *imageURL = (imageURLStr.length == 0) ? nil : [NSURL URLWithString:imageURLStr];
+        NSURL *imageURL = ((id)imageURLStr == NSNull.null || imageURLStr.length == 0) ? nil : [NSURL URLWithString:imageURLStr];
         NSURL *landscapeImageURL =
-        (landscapeImageURLStr.length == 0) ? nil : [NSURL URLWithString:landscapeImageURLStr];
+        ((id)landscapeImageURLStr == NSNull.null || landscapeImageURLStr.length == 0) ? nil : [NSURL URLWithString:landscapeImageURLStr];
         WPIAMRenderingEffectSetting *renderEffect =
         [WPIAMRenderingEffectSetting getDefaultRenderingEffectSetting];
         renderEffect.viewMode = mode;
@@ -420,6 +420,11 @@
             renderEffect.isTestMessage = YES;
         }
         
+        // Remove NSNulls
+        if ((id)body == NSNull.null) body = nil;
+        if ((id)actionButtonText == NSNull.null) actionButtonText = nil;
+        if ((id)secondaryActionButtonText == NSNull.null) secondaryActionButtonText = nil;
+
         WPIAMMessageContentDataWithMedia *msgData =
         [[WPIAMMessageContentDataWithMedia alloc] initWithMessageTitle:title
                                                            messageBody:body
