@@ -18,7 +18,7 @@
 
 @property(nonatomic, readwrite) WPInAppMessagingWebViewDisplay *webViewMessage;
 @property(weak, nonatomic) IBOutlet UIButton *closeButton;
-@property (weak, nonatomic) IBOutlet UIView *containerView;
+@property (weak, nonatomic) IBOutlet WPIAMWebViewContainerView *containerView;
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
 @end
 
@@ -70,6 +70,10 @@
             [weakSelf dismissView:type];
             webView.onDismiss = nil;
         };
+        if ([self.view isKindOfClass:WPIAMWebViewContainerView.class]) {
+            [(id)self.view setWebView:self.webView];
+        }
+        self.containerView.webView = self.webView;
     }
 
     self.webView.translatesAutoresizingMaskIntoConstraints = YES;
@@ -121,4 +125,22 @@
 - (BOOL)dimsBackground {
     return NO;
 }
+@end
+
+@implementation WPIAMWebViewContainerView
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+    if (!self.webView) return [super pointInside:point withEvent:event];
+    return [self.webView pointInside:[self convertPoint:point toView:self.webView] withEvent:event];
+}
+
+@end
+
+@implementation WPIAMWebViewContainerWindow
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+    if (!self.webView) return [super pointInside:point withEvent:event];
+    return [self.webView pointInside:[self convertPoint:point toView:self.webView] withEvent:event];
+}
+
 @end

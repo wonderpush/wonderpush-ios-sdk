@@ -3,6 +3,13 @@
     var generateIdentifier = function() {
         return ""+(+new Date())+":"+(identifierCounter++);
     };
+    // Send clipPath messages
+    var sendClipPathMessage = function() {
+        var rect = document.body.getBoundingClientRect();
+        webkit.messageHandlers.WonderPushPopupSDK.postMessage({
+          clipPath: { rect: JSON.parse(JSON.stringify(rect)) }
+        });
+    };
     window.WonderPushInAppSDK = window.WonderPushPopupSDK = new Proxy({}, new function() {
         this.get = function(target, prop, receiver) {
             if (this.hasOwnProperty(prop)) return this[prop];
@@ -45,6 +52,10 @@
 
     // Executed when the window is loaded
     var onload = function() {
+        // Register resize handler
+        window.addEventListener('resize', sendClipPathMessage);
+        sendClipPathMessage();
+
         // Register event listeners on data-wonderpush-* elements
         var keys = [ // Order matters: we try to dismiss last
           "wonderpushCallMethod",

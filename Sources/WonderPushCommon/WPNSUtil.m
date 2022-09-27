@@ -7,6 +7,8 @@
 //
 
 #import "WPNSUtil.h"
+#import <CoreGraphics/CoreGraphics.h>
+
 NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
 
 @implementation WPNSUtil
@@ -199,3 +201,16 @@ NSCharacterSet *PercentEncodedAllowedCharacterSet = nil;
 
 
 @end
+
+CGRect CGRectFromDOMRect(NSDictionary *domRect) {
+    if (!domRect) return CGRectNull;
+    NSNumber *x = domRect[@"x"];
+    if (![x isKindOfClass:NSNumber.class]) return CGRectNull;
+    NSNumber *y = domRect[@"y"];
+    if (![y isKindOfClass:NSNumber.class]) return CGRectNull;
+    NSNumber *width = domRect[@"width"];
+    if (![width isKindOfClass:NSNumber.class]) return CGRectNull;
+    NSNumber *height = domRect[@"height"];
+    if (![height isKindOfClass:NSNumber.class]) return CGRectNull;
+    return CGRectMake(x.floatValue, y.floatValue, width.floatValue, height.floatValue);
+}

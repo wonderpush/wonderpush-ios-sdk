@@ -15,6 +15,12 @@
 @protocol WPInAppMessagingDisplayDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
+@interface WPIAMWebViewContainerWindow : UIWindow
+@property (nonatomic, weak) UIView *webView;
+@end
+@interface WPIAMWebViewContainerView : UIView
+@property (nonatomic, weak) UIView *webView;
+@end
 @interface WPIAMWebViewViewController : WPIAMBaseRenderingViewController
 + (WPIAMWebViewViewController *) instantiateViewControllerWithResourceBundle:(NSBundle *)resourceBundle
                                       displayMessage:(WPInAppMessagingWebViewDisplay *)webViewMessage

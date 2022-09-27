@@ -50,4 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+extern CGRect CGRectFromDOMRect(NSDictionary *domRect);
+
 NS_ASSUME_NONNULL_END

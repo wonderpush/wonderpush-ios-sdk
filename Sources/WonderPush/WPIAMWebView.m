@@ -12,9 +12,14 @@
 #import "WonderPush_constants.h"
 #import "WonderPush_private.h"
 #import "WPURLFollower.h"
+#import "WPNSUtil.h"
 #import <StoreKit/StoreKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface WPIAMWebView ()
+@property (nonatomic, assign) CGRect clipRect;
+@end
 
 @interface WPIAMWebViewBridge: NSObject<WKScriptMessageHandler, WKUIDelegate>
 @property (nonatomic, weak) WPIAMWebView *webView;
@@ -99,6 +104,17 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
     });
 }
 
+- (void) clipToRect:(CGRect) rect {
+    self.clipRect = rect;
+}
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+    if (CGRectIsEmpty(self.clipRect)) {
+        return [super pointInside:point withEvent:event];
+    }
+    return CGRectContainsPoint(self.clipRect, point);
+}
+
 - (WKNavigation *)loadRequest:(NSURLRequest *)request {
     if (!self.initialURL) {
         self.initialURL = request.URL;
@@ -163,13 +179,24 @@ static WKContentRuleList *blockWonderPushScriptContentRuleList = nil;
         NSString *method = message.body[@"method"];
         NSArray *args = message.body[@"args"];
         NSString *callId = message.body[@"callId"];
-        if (![method isKindOfClass:NSString.class]
-            || ![args isKindOfClass:NSArray.class]
-            || ![callId isKindOfClass:NSString.class]) {
-            WPLog(@"Invalid message sent to WonderPushPopupSDK: %@", message);
+        if ([method isKindOfClass:NSString.class]
+            && [args isKindOfClass:NSArray.class]
+            && [callId isKindOfClass:NSString.class]) {
+            [self callMethod:method withArgs:args callId:callId];
             return;
         }
-        [self callMethod:method withArgs:args callId:callId];
+
+        NSDictionary *clipPath = message.body[@"clipPath"];
+        NSDictionary *rect = [clipPath isKindOfClass:NSDictionary.class] ? clipPath[@"rect"] : nil;
+        if ((id)rect == NSNull.null) {
+            [self.webView clipToRect:CGRectZero];
+            return;
+        } else if ([rect isKindOfClass:NSDictionary.class]) {
+            CGRect cgRect = CGRectFromDOMRect(rect);
+            [self.webView clipToRect:cgRect];
+            return;
+        }
+        WPLog(@"Invalid message sent to WonderPushPopupSDK: %@", message);
     }
 }
 

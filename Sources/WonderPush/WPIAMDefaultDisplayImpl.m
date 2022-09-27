@@ -280,6 +280,9 @@ static WPIAMDefaultDisplayImpl *instance = nil;
 
         UIWindow *displayUIWindow = [WPIAMRenderingWindowHelper UIWindowForWebViewView];
         displayUIWindow.rootViewController = webViewVC;
+        if ([displayUIWindow isKindOfClass:WPIAMWebViewContainerWindow.class]) {
+            [(id)displayUIWindow setWebView:webViewMessage.webView];
+        }
         [displayUIWindow setHidden:NO];
     });
 }
