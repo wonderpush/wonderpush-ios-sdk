@@ -57,7 +57,7 @@
 - (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void(^)(void))sentCallback;
 - (void) countInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData;
 - (void) refreshDeviceTokenIfPossible;
-- (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData;
+- (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData attributionReason:(NSString *)reason;
 - (void) triggerLocationPrompt;
 - (CLLocation *) location;
 - (void) setDeviceToken:(NSString *)deviceToken;

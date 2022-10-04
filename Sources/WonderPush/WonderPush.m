@@ -833,7 +833,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 {
     WPReportingData *reportingData = [WPReportingData extract:eventData];
     lastClickedNotificationReportingData = reportingData;
-    [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:eventData customData:nil];
+    [self trackInternalEvent:@"@NOTIFICATION_OPENED" eventData:[reportingData filledEventData:eventData attributionReason:WPReportingAttributionReasonNotificationOpened] customData:nil];
 }
 
 + (void) trackNotificationReceived:(NSDictionary *)userInfo
@@ -966,9 +966,9 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     dispatch_async(dispatch_get_main_queue(), presentBlock);
 }
 
-+ (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData
++ (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData attributionReason:(NSString * _Nullable)reason
 {
-    [wonderPushAPI executeAction:action withReportingData:reportingData];
+    [wonderPushAPI executeAction:action withReportingData:reportingData attributionReason:reason];
 }
 
 + (void) setDeviceToken:(NSString *)deviceToken
@@ -1017,7 +1017,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
             if ([atReceptionActions isKindOfClass:NSArray.class]) {
                 WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
                 WPReportingData *reportingData = [WPReportingData extract:wonderpushData];
-                [self executeAction:action withReportingData:reportingData];
+                [self executeAction:action withReportingData:reportingData attributionReason:nil];
             }
 
             [WonderPush trackNotificationReceived:notificationDictionary];
@@ -1071,7 +1071,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         if ([atReceptionActions isKindOfClass:NSArray.class]) {
             WPAction *action = [WPAction actionWithDictionaries:atReceptionActions];
             WPReportingData *reportingData = [WPReportingData extract:wonderpushData];
-            [self executeAction:action withReportingData:reportingData];
+            [self executeAction:action withReportingData:reportingData attributionReason:nil];
         }
     }
 
@@ -1240,7 +1240,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
     if ([actionsToExecute isKindOfClass:NSArray.class]) {
         WPAction *action = [WPAction actionWithDictionaries:actionsToExecute];
-        [self executeAction:action withReportingData:reportingData];
+        [self executeAction:action withReportingData:reportingData attributionReason:WPReportingAttributionReasonNotificationOpened];
     }
 
     if (!targetUrl)

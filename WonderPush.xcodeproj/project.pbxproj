@@ -195,6 +195,7 @@
 		9998CAD3221C75630028D955 /* WonderPushConcreteAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C2B220C8B0800111272 /* WonderPushConcreteAPI.m */; };
 		9998CAD4221C75630028D955 /* WonderPushLogErrorAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 99129C40220D8E0F00111272 /* WonderPushLogErrorAPI.m */; };
 		99991B0C27E874500020DCDE /* WPConfigurationRememberTrackedEventsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 99991B0B27E874500020DCDE /* WPConfigurationRememberTrackedEventsTests.m */; };
+		999DAB8E28EB0D9600E98803 /* WPReportingDataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 999DAB8D28EB0D9500E98803 /* WPReportingDataTests.m */; };
 		99A7B81B25F7EB820091850C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99A7B81A25F7EB820091850C /* NotificationService.swift */; };
 		99A7B81F25F7EB820091850C /* WonderPushNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 99A7B81825F7EB820091850C /* WonderPushNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		99A7B82725F7EB910091850C /* WonderPushExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */; };
@@ -556,6 +557,7 @@
 		9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationServiceExtension.h; sourceTree = "<group>"; };
 		9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNotificationServiceExtension.m; sourceTree = "<group>"; };
 		99991B0B27E874500020DCDE /* WPConfigurationRememberTrackedEventsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPConfigurationRememberTrackedEventsTests.m; sourceTree = "<group>"; };
+		999DAB8D28EB0D9500E98803 /* WPReportingDataTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPReportingDataTests.m; sourceTree = "<group>"; };
 		99A7B81825F7EB820091850C /* WonderPushNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WonderPushNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		99A7B81A25F7EB820091850C /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		99A7B81C25F7EB820091850C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -784,6 +786,7 @@
 				99563401252B0E7C00F6CF3E /* WPBlackWhiteListTests.m */,
 				99991B0B27E874500020DCDE /* WPConfigurationRememberTrackedEventsTests.m */,
 				99267895287EA37900DB43E9 /* WPRateLimiterTests.m */,
+				999DAB8D28EB0D9500E98803 /* WPReportingDataTests.m */,
 			);
 			path = WonderPushExampleTests;
 			sourceTree = "<group>";
@@ -1663,6 +1666,7 @@
 				99ED541824B33A2700EECDE0 /* WPSPDataSourceTests.m in Sources */,
 				99ED541A24B33DFB00EECDE0 /* WPSPGeoBoxTests.m in Sources */,
 				995F14EA24AA493600CC499E /* WPSPISO8601DurationTests.m in Sources */,
+				999DAB8E28EB0D9600E98803 /* WPReportingDataTests.m in Sources */,
 				99267896287EA37900DB43E9 /* WPRateLimiterTests.m in Sources */,
 				99563402252B0E7C00F6CF3E /* WPBlackWhiteListTests.m in Sources */,
 				99EE9ACC24AF5BBB00EC2A28 /* WPSPGeohashTests.m in Sources */,

@@ -86,7 +86,7 @@
     
     // Send an event to log click
     NSMutableDictionary *eventData = [NSMutableDictionary new];
-    [_currentMsgBeingDisplayed.renderData.reportingData fillEventDataInto:eventData];
+    [_currentMsgBeingDisplayed.renderData.reportingData fillEventDataInto:eventData attributionReason:WPReportingAttributionReasonInAppViewed];
     eventData[@"actionDate"] = [NSNumber numberWithLongLong:(long long)([self.timeFetcher currentTimestampInSeconds] * 1000)];
     if (buttonLabel) eventData[@"buttonLabel"] = buttonLabel;
     BOOL trackInAppClicked = NO;
@@ -132,7 +132,7 @@
         // Record @INAPP_CLICKED
         [self trackClickWithMessage:inAppMessage buttonLabel:buttonLabel];
         // Exec action
-        [WonderPush executeAction:action withReportingData:_currentMsgBeingDisplayed.renderData.reportingData];
+        [WonderPush executeAction:action withReportingData:_currentMsgBeingDisplayed.renderData.reportingData attributionReason:WPReportingAttributionReasonInAppViewed];
     }
 }
 
@@ -282,7 +282,7 @@
 
 - (void)trackEvent:(NSString *)type attributes:(NSDictionary *)attributes {
     WPReportingData *reportingData = _currentMsgBeingDisplayed.renderData.reportingData;
-    [WonderPush trackInAppEvent:type eventData:reportingData.serializationDictValue customData:attributes];
+    [WonderPush trackInAppEvent:type eventData:[reportingData filledEventData:@{} attributionReason:WPReportingAttributionReasonInAppViewed] customData:attributes];
 }
 
 - (instancetype)initWithInAppMessaging:(WPInAppMessaging *)inAppMessaging

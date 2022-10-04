@@ -10,6 +10,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString * const WPReportingAttributionReasonInAppViewed;
+extern NSString * const WPReportingAttributionReasonNotificationOpened;
+extern NSString * const WPReportingAttributionReasonRecentNotificationOpened;
+
 @interface WPReportingData : NSObject
 @property (readonly, nullable) NSDictionary *reporting;
 @property (readonly, nullable) NSString *campaignId;
@@ -25,7 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDictionary *) serializationDictValue;
 - (NSDictionary *) eventDataValue;
 - (void) fillEventDataInto:(NSMutableDictionary *)eventData;
+- (void) fillEventDataInto:(NSMutableDictionary *)eventData attributionReason:(NSString * _Nullable)reason;
 - (NSDictionary * _Nonnull) filledEventData:(NSDictionary * _Nullable)eventData;
+- (NSDictionary * _Nonnull) filledEventData:(NSDictionary * _Nullable)eventData attributionReason:(NSString * _Nullable)reason;
 
 @end
 

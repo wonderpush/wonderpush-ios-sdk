@@ -10,6 +10,10 @@
 #import "WPNSUtil.h"
 #import "WonderPush_constants.h"
 
+NSString * const WPReportingAttributionReasonInAppViewed = @"inAppViewed";
+NSString * const WPReportingAttributionReasonNotificationOpened = @"notificationOpened";
+NSString * const WPReportingAttributionReasonRecentNotificationOpened = @"recentNotificationOpened";
+
 @implementation WPReportingData
 
 - (instancetype) initWithNotificationId:(NSString * _Nullable)notificationId campaignId:(NSString * _Nullable)campaignId viewId:(NSString * _Nullable)viewId reporting:(NSDictionary * _Nullable)reporting {
@@ -72,21 +76,29 @@
 
 // We should check for *ALL* the keys we might write in eventDataValue: before overwriting any
 - (void) fillEventDataInto:(NSMutableDictionary *)eventData {
+    [self fillEventDataInto:eventData attributionReason:nil];
+}
+
+- (void)fillEventDataInto:(NSMutableDictionary *)eventData attributionReason:(NSString *)reason {
     if ([self canFillEventData:eventData]) {
         [eventData addEntriesFromDictionary:self.eventDataValue];
+        // Write attribution reason
+        if (reason != nil) {
+            id reporting = [eventData[@"reporting"] isKindOfClass:NSDictionary.class] ? eventData[@"reporting"] : nil;
+            NSMutableDictionary *mutableReporting = [NSMutableDictionary dictionaryWithDictionary:reporting ?: @{}];
+            mutableReporting[@"attributionReason"] = reason;
+            eventData[@"reporting"] = [NSDictionary dictionaryWithDictionary:mutableReporting];
+        }
     }
 }
 
 - (NSDictionary * _Nonnull) filledEventData:(NSDictionary * _Nullable)eventData {
-    if (eventData == nil) {
-        eventData = @{};
-    }
-    if ([self canFillEventData:eventData]) {
-        NSMutableDictionary *mutableEventData = [[NSMutableDictionary alloc] initWithDictionary:eventData];
-        [mutableEventData addEntriesFromDictionary:self.eventDataValue];
-        return [NSDictionary dictionaryWithDictionary:mutableEventData];
-    }
-    return eventData;
+    return [self filledEventData:eventData attributionReason:nil];
+}
+- (NSDictionary * _Nonnull) filledEventData:(NSDictionary * _Nullable)eventData attributionReason:(NSString * _Nullable)reason {
+    NSMutableDictionary *mutableEventData = [[NSMutableDictionary alloc] initWithDictionary:eventData ?: @{}];
+    [self fillEventDataInto:mutableEventData attributionReason:reason];
+    return [NSDictionary dictionaryWithDictionary:mutableEventData];
 }
 
 @end

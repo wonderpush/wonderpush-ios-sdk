@@ -158,7 +158,7 @@ NSString *const WPIAM_ImpressionDictKeyForReportingData = @"reportingData";
         [self.defaults setObject:[NSArray arrayWithArray:newImpressions] forKey:WPIAM_UserDefaultsKeyForImpressions];
         [self.defaults synchronize];
         NSMutableDictionary *eventData = [NSMutableDictionary new];
-        [reportingData fillEventDataInto:eventData];
+        [reportingData fillEventDataInto:eventData attributionReason:WPReportingAttributionReasonInAppViewed];
         eventData[@"actionDate"] = [NSNumber numberWithLong:(long)(timestamp * 1000)];
         
         [WonderPush countInternalEvent:@"@INAPP_VIEWED"

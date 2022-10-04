@@ -34,7 +34,7 @@
     if (![actions isKindOfClass:[NSArray class]]) return;
     WPAction *action = [WPAction actionWithDictionaries:actions];
     WPReportingData *reportingData = [WPReportingData extract:notificationConfiguration];
-    [WonderPush executeAction:action withReportingData:reportingData];
+    [WonderPush executeAction:action withReportingData:reportingData attributionReason:nil];
 }
 
 - (void)clickedButtonAtIndex:(NSInteger)buttonIndex

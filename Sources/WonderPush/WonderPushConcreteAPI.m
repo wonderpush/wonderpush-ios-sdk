@@ -172,7 +172,7 @@
     }
 
     WPReportingData *reportingData = WonderPush.lastClickedNotificationReportingData;
-    [reportingData fillEventDataInto:body];
+    [reportingData fillEventDataInto:body attributionReason:WPReportingAttributionReasonRecentNotificationOpened];
     return @{@"body":[body copy]};
 }
 
@@ -258,16 +258,16 @@
     }];
 }
 
-- (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData {
+- (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData attributionReason:(NSString *)reason {
     if (action.targetUrl) {
         [WonderPush openURL:action.targetUrl targetUrlMode:action.targetUrlMode];
     }
     for (WPActionFollowUp *followUp in action.followUps) {
-        [self executeActionFollowUp:followUp withReportingData:reportingData];
+        [self executeActionFollowUp:followUp withReportingData:reportingData attributionReason:reason];
     }
 }
 
-- (void) executeActionFollowUp:(WPActionFollowUp *)followUp withReportingData:(WPReportingData *)reportingData
+- (void) executeActionFollowUp:(WPActionFollowUp *)followUp withReportingData:(WPReportingData *)reportingData attributionReason:(NSString *)reason
 {
     WPLogDebug(@"Running followUp %@", followUp);
     @synchronized (self) {
@@ -275,12 +275,8 @@
             case WPActionFollowUpTypeTrackEvent: {
                 if (!followUp.event) return;
                 [self trackEvent:followUp.event
-                 eventData:@{@"campaignId": reportingData.campaignId ?: [NSNull null],
-                             @"notificationId": reportingData.notificationId ?: [NSNull null],
-                             @"viewId": reportingData.viewId ?: [NSNull null],
-                             @"reporting": reportingData.reporting ?: [NSNull null],
-                           }
-                 customData:followUp.custom];
+                       eventData:[reportingData filledEventData:@{} attributionReason:reason]
+                      customData:followUp.custom];
                 
             }
                 break;

@@ -30,7 +30,7 @@
     return nil;
 }
 
-- (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData
+- (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData attributionReason:(NSString *)reason
 {
     [self log:@"executeAction:withReportingData:"];
 }

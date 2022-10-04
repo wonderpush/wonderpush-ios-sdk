@@ -80,7 +80,7 @@ extern NSString * const WPTargetUrlModeExternal;
 
 @interface WonderPush (private)
 
-+ (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData;
++ (void) executeAction:(WPAction *)action withReportingData:(WPReportingData *)reportingData attributionReason:(NSString *)reason;
 
 + (void) updateInstallationCoreProperties;
 
