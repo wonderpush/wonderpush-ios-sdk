@@ -140,7 +140,9 @@
         diff = diff ?: @{};
         self.sdkState = [WPJsonUtil merge:self.sdkState with:diff];
         _putAccumulator = [WPJsonUtil merge:_putAccumulator with:diff nullFieldRemoves:NO];
-        [self schedulePatchCallAndSave];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [self schedulePatchCallAndSave];
+        });
     }
 }
 

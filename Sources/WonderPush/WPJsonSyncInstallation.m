@@ -16,6 +16,8 @@ static NSMutableDictionary *instancePerUserId = nil;
 
 static BOOL patchCallDisabled = NO;
 
+static NSObject *saveLock = nil;
+
 @interface WPJsonSyncInstallation ()
 
 
@@ -40,6 +42,7 @@ static BOOL patchCallDisabled = NO;
 
 + (void) initialize {
     instancePerUserId = [NSMutableDictionary new];
+    saveLock = [NSObject new];
     WPConfiguration *conf = [WPConfiguration sharedConfiguration];
     @synchronized (instancePerUserId) {
         // Populate entries
@@ -187,14 +190,18 @@ static BOOL patchCallDisabled = NO;
         // Prevent any block from running
         _blockId++;
     }
-    [self performScheduledPatchCall];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [self performScheduledPatchCall];
+    });
 }
 
 - (void) save:(NSDictionary *)state {
-    WPConfiguration *conf = [WPConfiguration sharedConfiguration];
-    NSMutableDictionary *installationCustomSyncStatePerUserId = [(conf.installationCustomSyncStatePerUserId ?: @{}) mutableCopy];
-    installationCustomSyncStatePerUserId[_userId ?: @""] = state ?: @{};
-    conf.installationCustomSyncStatePerUserId = [installationCustomSyncStatePerUserId copy];
+    @synchronized (saveLock) {
+        WPConfiguration *conf = [WPConfiguration sharedConfiguration];
+        NSMutableDictionary *installationCustomSyncStatePerUserId = [(conf.installationCustomSyncStatePerUserId ?: @{}) mutableCopy];
+        installationCustomSyncStatePerUserId[_userId ?: @""] = state ?: @{};
+        conf.installationCustomSyncStatePerUserId = [installationCustomSyncStatePerUserId copy];
+    }
 }
 
 - (void) scheduleServerPatchCallCallback {
@@ -215,7 +222,7 @@ static BOOL patchCallDisabled = NO;
         NSTimeInterval delay = MIN(CACHED_INSTALLATION_CUSTOM_PROPERTIES_MIN_DELAY,
                                    [_firstDelayedWriteDate timeIntervalSinceReferenceDate] + CACHED_INSTALLATION_CUSTOM_PROPERTIES_MAX_DELAY
                                    - [now timeIntervalSinceReferenceDate]);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             @synchronized (self->_blockId_lock) {
                 if (self->_blockId != currentBlockId) {
                     return;
