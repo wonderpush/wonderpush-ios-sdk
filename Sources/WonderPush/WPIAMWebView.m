@@ -12,7 +12,7 @@
 #import "WonderPush_constants.h"
 #import "WonderPush_private.h"
 #import "WPURLFollower.h"
-#import "WPNSUtil.h"
+#import <WonderPushCommon/WPNSUtil.h>
 #import <StoreKit/StoreKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
