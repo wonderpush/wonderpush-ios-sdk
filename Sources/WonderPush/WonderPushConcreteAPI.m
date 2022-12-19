@@ -23,13 +23,30 @@
 #import "WPAction_private.h"
 #import "WPBlackWhiteList.h"
 
+@interface WonderPushConcreteAPI () <CLLocationManagerDelegate>
+@property (atomic, assign) CLAuthorizationStatus locationManagerAuthorizationStatus;
+@end
+
 @implementation WonderPushConcreteAPI
 - (instancetype)init {
     self = [super init];
     if (self) {
         self.locationManager = [CLLocationManager new];
+        self.locationManager.delegate = self;
     }
     return self;
+}
+
+-(void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    self.locationManagerAuthorizationStatus = status;
+}
+
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
+    if (@available(iOS 14.0, *)) {
+        self.locationManagerAuthorizationStatus = manager.authorizationStatus;
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 - (void)dealloc {
@@ -165,10 +182,12 @@
         [body setValue:customData forKey:@"custom"];
     }
     
-    CLLocation *location = [WonderPush location];
-    if (location != nil) {
-        body[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
-                                @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
+    if (!body[@"location"]) {
+        CLLocation *location = [WonderPush location];
+        if (location != nil) {
+            body[@"location"] = @{@"lat": [NSNumber numberWithDouble:location.coordinate.latitude],
+                                    @"lon": [NSNumber numberWithDouble:location.coordinate.longitude]};
+        }
     }
 
     WPReportingData *reportingData = WonderPush.lastClickedNotificationReportingData;
@@ -480,7 +499,7 @@
 
 - (CLLocation *)location
 {
-    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    CLAuthorizationStatus status = self.locationManagerAuthorizationStatus;
     if (status != kCLAuthorizationStatusAuthorizedAlways
         && status != kCLAuthorizationStatusAuthorizedWhenInUse) {
         return nil;
