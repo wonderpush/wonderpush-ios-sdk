@@ -60,5 +60,9 @@ class ViewController: UIViewController {
             await activity?.end(using:finalContentState, dismissalPolicy: .default)
         }
     }
+    
+    @IBAction func touchTrackEventFoo(_ sender: Any) {
+        WonderPush.trackEvent("foo")
+    }
 
 }
