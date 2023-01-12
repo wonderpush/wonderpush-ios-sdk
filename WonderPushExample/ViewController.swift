@@ -39,7 +39,7 @@ class ViewController: UIViewController {
                 }
             }
         } catch (let error) {
-            print("Error requesting pizza delivery Live Activity \(error.localizedDescription).")
+            print("Error requesting Live Activity \(error.localizedDescription).")
         }
     }
     
