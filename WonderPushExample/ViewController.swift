@@ -28,22 +28,7 @@ class ViewController: UIViewController {
             activity = try Activity.request(attributes: activityAttributes, contentState: initialContentState, pushType: .token)
             if let activity = activity {
                 print("Requested a Live Activity \(String(describing: activity.id)).")
-                if let pushToken = activity.pushToken {
-                    WonderPush.trackEvent("NewLiveActivity", attributes: [
-                        "string_liveActivityId": activity.id,
-                        "ignore_liveActivityPushToken": WPNSUtil.hex(for: pushToken),
-                        "date_liveActivityExpiration": formatter.string(from: Date().addingTimeInterval(3600 * 8))
-                    ])
-                }
-                Task {
-                    for await update in activity.pushTokenUpdates {
-                        WonderPush.trackEvent("NewLiveActivity", attributes: [
-                            "string_liveActivityId": activity.id,
-                            "ignore_liveActivityPushToken": WPNSUtil.hex(for: update),
-                            "date_liveActivityExpiration": formatter.string(from: Date().addingTimeInterval(3600 * 8))
-                        ])
-                    }
-                }
+                WonderPush.upsertLiveActivity(activity: activity)
             }
         } catch (let error) {
             print("Error requesting Live Activity \(error.localizedDescription).")
@@ -68,10 +53,7 @@ class ViewController: UIViewController {
             if let activity = activity {
                 print("Stopping a Live Activity \(String(describing: activity.id)).")
                 await activity.end(using:finalContentState, dismissalPolicy: .default)
-                WonderPush.trackEvent("NewLiveActivity", attributes: [
-                    "string_liveActivityId": activity.id,
-                    "date_liveActivityExpiration": 0
-                ])
+                WonderPush.stopLiveActivity(activity: activity)
             }
         }
     }

@@ -12,6 +12,8 @@
 		3DB7A41B24B3340600204437 /* WPSPSegmenter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB7A41924B3340600204437 /* WPSPSegmenter.h */; };
 		3DB7A41C24B3340600204437 /* WPSPSegmenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB7A41A24B3340600204437 /* WPSPSegmenter.m */; };
 		3DB7A41E24B486DC00204437 /* WPSPSegmenterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB7A41D24B486DC00204437 /* WPSPSegmenterTests.m */; };
+		3DC7CDF82965EB8F00A02640 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DC7CDF72965EB8F00A02640 /* ActivityKit.framework */; };
+		3DC7CED8296C2C0200A02640 /* WonderPush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC7CED7296C2C0200A02640 /* WonderPush.swift */; };
 		9909CE1922215DD600F73A0B /* WonderPush.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99885AF92215CE71002CA269 /* WonderPush.storyboard */; };
 		9909CE5B2221602200F73A0B /* WPNotificationServiceExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9909CE5C2221602500F73A0B /* WPNotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 9998CB3D221D973D0028D955 /* WPNotificationServiceExtension.m */; };
@@ -440,6 +442,10 @@
 		3DB7A41924B3340600204437 /* WPSPSegmenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSPSegmenter.h; sourceTree = "<group>"; };
 		3DB7A41A24B3340600204437 /* WPSPSegmenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmenter.m; sourceTree = "<group>"; };
 		3DB7A41D24B486DC00204437 /* WPSPSegmenterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmenterTests.m; sourceTree = "<group>"; };
+		3DC7CDF72965EB8F00A02640 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		3DC7CED429673C5C00A02640 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = SOURCE_ROOT; };
+		3DC7CED7296C2C0200A02640 /* WonderPush.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WonderPush.swift; sourceTree = "<group>"; };
+		3DC7CED9296C2C4900A02640 /* Exports.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exports.swift; sourceTree = "<group>"; };
 		3DDE66D51B4AE73200B5DC44 /* WPLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPLog.m; sourceTree = "<group>"; };
 		3DDE66D61B4AE73200B5DC44 /* WPLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPLog.h; sourceTree = "<group>"; };
 		3DFEA88D1C46E09E00E27404 /* WPAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPAppDelegate.m; sourceTree = "<group>"; };
@@ -739,6 +745,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DC7CDF82965EB8F00A02640 /* ActivityKit.framework in Frameworks */,
 				9998CAA4221C74A60028D955 /* CoreLocation.framework in Frameworks */,
 				9998CAA3221C749F0028D955 /* CoreTelephony.framework in Frameworks */,
 				9998CAA2221C74980028D955 /* UIKit.framework in Frameworks */,
@@ -767,6 +774,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3DC7CED5296C2C0200A02640 /* SwiftSources */ = {
+			isa = PBXGroup;
+			children = (
+				3DC7CED6296C2C0200A02640 /* WonderPush */,
+			);
+			path = SwiftSources;
+			sourceTree = "<group>";
+		};
+		3DC7CED6296C2C0200A02640 /* WonderPush */ = {
+			isa = PBXGroup;
+			children = (
+				3DC7CED7296C2C0200A02640 /* WonderPush.swift */,
+				3DC7CED9296C2C4900A02640 /* Exports.swift */,
+			);
+			path = WonderPush;
+			sourceTree = "<group>";
+		};
 		9909CE1822215D1C00F73A0B /* WonderPushExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -1199,6 +1223,7 @@
 		99F5B4462760B667004F462E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				3DC7CED429673C5C00A02640 /* Package.swift */,
 				99F5B4482760B678004F462E /* WonderPushExtension */,
 				99F5B4472760B671004F462E /* WonderPush */,
 			);
@@ -1225,6 +1250,7 @@
 			isa = PBXGroup;
 			children = (
 				99F5B4462760B667004F462E /* Supporting Files */,
+				3DC7CED5296C2C0200A02640 /* SwiftSources */,
 				99536E90275FC07800EFC77E /* Sources */,
 				9942FD37246AA8F20002BEA0 /* WonderPushExample */,
 				9942FD53246AA8F40002BEA0 /* WonderPushExampleTests */,
@@ -1251,6 +1277,7 @@
 		A16E33A519C886A700E4E158 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3DC7CDF72965EB8F00A02640 /* ActivityKit.framework */,
 				A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */,
 				A189379D19C9E0C600F91DDD /* CoreTelephony.framework */,
 				A18937B119CB018F00F91DDD /* UIKit.framework */,
@@ -1546,6 +1573,7 @@
 					9998CA97221C74190028D955 = {
 						CreatedOnToolsVersion = 10.1;
 						DevelopmentTeam = N9ZG2P9A72;
+						LastSwiftMigration = 1410;
 						ProvisioningStyle = Automatic;
 					};
 					99A7B81725F7EB820091850C = {
@@ -1838,6 +1866,7 @@
 				99EF837623F4452C00B9B287 /* WPCore+InAppMessagingDisplay.m in Sources */,
 				995F14E824AA2A7D00CC499E /* WPSPISO8601Duration.m in Sources */,
 				995F14FA24AB7A8300CC499E /* WPSPGeoCircle.m in Sources */,
+				3DC7CED8296C2C0200A02640 /* WonderPush.swift in Sources */,
 				99EF838523F4452C00B9B287 /* WPIAMFetchResponseParser.m in Sources */,
 				9998CAC6221C75480028D955 /* WPJsonUtil.m in Sources */,
 				9998CAC7221C75480028D955 /* WPLog.m in Sources */,
@@ -2147,6 +2176,7 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
@@ -2170,9 +2200,12 @@
 				MACH_O_TYPE = mh_dylib;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "-verify-emitted-module-interface -Xfrontend -module-interface-preserve-types-as-written";
 				PRODUCT_BUNDLE_IDENTIFIER = com.wonderpush.WonderPush;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -2186,6 +2219,7 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
@@ -2206,9 +2240,11 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_SWIFT_FLAGS = "-verify-emitted-module-interface -Xfrontend -module-interface-preserve-types-as-written";
 				PRODUCT_BUNDLE_IDENTIFIER = com.wonderpush.WonderPush;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = NO;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

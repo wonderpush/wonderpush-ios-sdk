@@ -207,7 +207,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         return [NSBundle bundleWithPath:cocoaPodsBundlePath];
     }
     isDirectory = NO;
-    NSString *spmBundlePath = [[containerBundle resourcePath] stringByAppendingPathComponent:@"WonderPush_WonderPush.bundle"];
+    NSString *spmBundlePath = [[containerBundle resourcePath] stringByAppendingPathComponent:@"WonderPush_WonderPushObjC.bundle"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:spmBundlePath isDirectory:&isDirectory] && isDirectory) {
         return [NSBundle bundleWithPath:spmBundlePath];
     }
