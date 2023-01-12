@@ -48,6 +48,9 @@
         "SwiftSources/WonderPush/*.swift",
         "Sources/WonderPushCommon/*.{m,h}"
       ],
+      "exclude_files": [
+        "SwiftSources/WonderPush/Exports.swift"
+      ],
       "resource_bundles": {
         "WonderPush": [
           "Sources/WonderPush/Resources/*.{lproj,storyboard,png,json}",
