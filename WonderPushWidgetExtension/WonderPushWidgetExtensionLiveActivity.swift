@@ -14,6 +14,7 @@ struct WonderPushWidgetExtensionAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         // Dynamic stateful properties about your activity go here!
         var value: Int
+        var name: String
     }
 
     // Fixed non-changing properties about your activity go here!
@@ -25,7 +26,7 @@ struct WonderPushWidgetExtensionLiveActivity: Widget {
         ActivityConfiguration(for: WonderPushWidgetExtensionAttributes.self) { context in
             // Lock screen/banner UI goes here
             VStack {
-                Text("\(context.attributes.name): \(context.state.value)")
+                Text("\(context.attributes.name): \(context.state.value) \(context.state.name)")
             }
             .activityBackgroundTint(Color.cyan)
             .activitySystemActionForegroundColor(Color.black)

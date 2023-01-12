@@ -19,10 +19,9 @@ class ViewController: UIViewController {
 
         // Do any additional setup after loading the view.
     }
-    
 
     @IBAction func touchStartLiveActivity(_ sender: Any) {
-        let initialContentState = WonderPushWidgetExtensionAttributes.ContentState(value:123)
+        let initialContentState = WonderPushWidgetExtensionAttributes.ContentState(value:123, name:"started")
         let activityAttributes = WonderPushWidgetExtensionAttributes(name:"some name")
         do {
             activity = try Activity.request(attributes: activityAttributes, contentState: initialContentState, pushType: .token)
@@ -36,7 +35,6 @@ class ViewController: UIViewController {
                             "string_liveActivityId": id,
                             "date_liveActivityExpiration": formatter.string(from: Date().addingTimeInterval(3600 * 8))
                         ])
-
                     }
                 }
             }
@@ -48,7 +46,7 @@ class ViewController: UIViewController {
     @IBAction func touchUpdateLiveActivity(_ sender: Any) {
         Task {
             let value = 456
-            let updatedContentState = WonderPushWidgetExtensionAttributes.ContentState(value: value)
+            let updatedContentState = WonderPushWidgetExtensionAttributes.ContentState(value: value, name: "updated")
             let alertConfiguration = AlertConfiguration(title: "Activity Update", body: "Value has been updated to \(value)", sound: .default)
 
             await activity?.update(using: updatedContentState, alertConfiguration: alertConfiguration)
@@ -56,7 +54,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func touchStopLiveActivity(_ sender: Any) {
-        let finalContentState = WonderPushWidgetExtensionAttributes.ContentState(value: 789)
+        let finalContentState = WonderPushWidgetExtensionAttributes.ContentState(value: 789, name: "ended")
 
         Task {
             await activity?.end(using:finalContentState, dismissalPolicy: .default)
