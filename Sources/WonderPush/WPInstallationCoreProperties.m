@@ -14,6 +14,7 @@
 #import <sys/utsname.h>
 #import "WonderPush_private.h"
 #import <WonderPushCommon/WPNSUtil.h>
+#import <TargetConditionals.h>
 
 static NSDictionary *deviceNamesByCode = nil;
 static NSDictionary* gpsCapabilityByCode = nil;
@@ -220,6 +221,9 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (NSString *) getCarrierName
 {
+#if TARGET_IPHONE_SIMULATOR
+    return @"unknown";
+#else
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     CTCarrier *carrier = [netinfo subscriberCellularProvider];
     NSString *carrierName = [carrier carrierName];
@@ -229,6 +233,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
     }
     
     return carrierName;
+#endif
 }
 
 + (NSString *) getVersionString
