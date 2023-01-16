@@ -57,7 +57,11 @@ class ViewController: UIViewController {
             }
         }
     }
-    
+
+    @IBAction func touchSyncLiveActivities(_ sender: Any) {
+        WonderPush.syncLiveActivities(attributes: WonderPushWidgetExtensionAttributes.self)
+    }
+
     @IBAction func touchTrackEventFoo(_ sender: Any) {
         WonderPush.trackEvent("foo")
     }

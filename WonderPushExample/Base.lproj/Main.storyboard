@@ -47,11 +47,19 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lLh-It-nWy">
-                                <rect key="frame" x="136" y="596" width="142" height="35"/>
+                                <rect key="frame" x="136" y="595.5" width="142" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Track event foo"/>
                                 <connections>
                                     <action selector="touchTrackEventFoo:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Wrg-Po-6mN"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O0a-LD-D8m">
+                                <rect key="frame" x="121.5" y="638.5" width="171" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Sync Live Activities"/>
+                                <connections>
+                                    <action selector="touchSyncLiveActivities:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Orn-mG-oDB"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -63,8 +71,10 @@
                             <constraint firstItem="Mn8-EB-OzF" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="KKG-Ni-Zu0"/>
                             <constraint firstItem="aAm-Ze-NgG" firstAttribute="top" secondItem="LdB-25-bi5" secondAttribute="bottom" constant="8" id="NhG-OP-4pY"/>
                             <constraint firstItem="LdB-25-bi5" firstAttribute="top" secondItem="8GJ-qC-UoU" secondAttribute="bottom" constant="8" id="OM5-sW-S7M"/>
+                            <constraint firstItem="O0a-LD-D8m" firstAttribute="top" secondItem="lLh-It-nWy" secondAttribute="bottom" constant="8" id="UJA-K9-uNi"/>
                             <constraint firstItem="8GJ-qC-UoU" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="dPh-LA-Bui"/>
                             <constraint firstItem="lLh-It-nWy" firstAttribute="top" secondItem="Mn8-EB-OzF" secondAttribute="bottom" constant="8" id="gpd-C1-03X"/>
+                            <constraint firstItem="O0a-LD-D8m" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="kRH-Kv-C5a"/>
                             <constraint firstItem="Mn8-EB-OzF" firstAttribute="top" secondItem="aAm-Ze-NgG" secondAttribute="bottom" constant="8" id="qhH-pt-bhf"/>
                             <constraint firstItem="LdB-25-bi5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="sXw-Ma-HMp"/>
                             <constraint firstItem="aAm-Ze-NgG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="tWc-Nz-xLD"/>
