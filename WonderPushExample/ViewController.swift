@@ -28,7 +28,6 @@ class ViewController: UIViewController {
             activity = try Activity.request(attributes: activityAttributes, contentState: initialContentState, pushType: .token)
             if let activity = activity {
                 print("Requested a Live Activity \(String(describing: activity.id)).")
-                WonderPush.upsertLiveActivity(activity: activity)
             }
         } catch (let error) {
             print("Error requesting Live Activity \(error.localizedDescription).")
@@ -53,13 +52,18 @@ class ViewController: UIViewController {
             if let activity = activity {
                 print("Stopping a Live Activity \(String(describing: activity.id)).")
                 await activity.end(using:finalContentState, dismissalPolicy: .default)
-                WonderPush.stopLiveActivity(activity: activity)
             }
         }
     }
 
     @IBAction func touchSyncLiveActivities(_ sender: Any) {
-        WonderPush.syncLiveActivities(attributes: WonderPushWidgetExtensionAttributes.self)
+        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, customPropertiesExtractor: { activity in
+            return [
+                "string_foo": activity.attributes.name,
+                "string_bar": activity.contentState.name,
+                "int_foo": activity.contentState.value,
+            ]
+        })
     }
 
     @IBAction func touchTrackEventFoo(_ sender: Any) {
