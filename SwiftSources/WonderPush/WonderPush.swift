@@ -73,12 +73,24 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
     func start() -> Void {
         // Caller should call only once per Attributes
         print("ActivitySyncer<\(self.attributesTypeName)> starting()")
+        var unseenActivityIds = Set(persistedActivityStates.keys)
         print("ActivitySyncer<\(self.attributesTypeName)>: Current activities:")
         for activity in Activity<Attributes>.activities {
             print("ActivitySyncer<\(self.attributesTypeName)>: current activity: \(self.liveActivityDescription(activity))")
+            unseenActivityIds.remove(activity.id)
             self.monitorLiveActivity(activity: activity)
         }
         print("ActivitySyncer<\(self.attributesTypeName)>: Current activities EOL")
+        
+        // Remove persisted but no longer present Live Activities
+        for unseenActivityId in unseenActivityIds {
+            if let persistedActivityState = persistedActivityStates[unseenActivityId] {
+                WonderPush.removeLiveActivity(unseenActivityId, type: persistedActivityState.type, custom: persistedActivityState.custom)
+                persistedActivityStates.removeValue(forKey: unseenActivityId)
+            }
+        }
+        
+        // Monitor for newly created activities
         Task {
             for await updatedActivity in Activity<Attributes>.activityUpdates {
                 print("ActivitySyncer<\(self.attributesTypeName)>: activityUpdates yielded \(self.liveActivityDescription(updatedActivity))")
@@ -88,7 +100,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         }
     }
     
-    func monitorLiveActivity(activity: Activity<Attributes>) -> Void {
+    private func monitorLiveActivity(activity: Activity<Attributes>) -> Void {
         print("monitorLiveActivities for \(activity.id): Initial. Activity: \(self.liveActivityDescription(activity))")
         self.refreshActivity(activity)
         Task {
@@ -116,7 +128,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         }
     }
     
-    func refreshActivity(_ activity: Activity<Attributes>) -> Void {
+    private func refreshActivity(_ activity: Activity<Attributes>) -> Void {
         let previousPersistedState = self.persistedActivityStates[activity.id]
         let (type, custom) = propertiesExtractor.extractTypeAndProperties(activity: activity)
         
@@ -124,7 +136,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         persistedActivityStates[activity.id] = newPersistedState
     }
     
-    public func liveActivityDescription<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>) -> String {
+    private func liveActivityDescription<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>) -> String {
         return "Activity<\(String(describing: type(of: Attributes.self)))>(id: \(activity.id), state: \(activity.activityState), attributes:…, contentState: …, pushToken: \(activity.pushToken == nil ? "None" : "PRESENT")))"
 //        let encoder = JSONEncoder()
 //        let attributesJson = try? String(decoding: encoder.encode(activity.attributes), as: UTF8.self)
@@ -296,24 +308,29 @@ extension WonderPush {
     }
 
     @available(iOS 16.1, *)
+    fileprivate class func removeLiveActivity(_ id: String, type: String?, custom: Properties?) {
+        WPConfiguration.updatePersistedActivityStates { persistedActivtyStates in
+            persistedActivtyStates.removeValue(forKey: id)
+        }
+        let eventAttributes = (custom ?? [:]).merging([
+            "string_liveActivityId": id,
+            "string_liveActivityType": type ?? NSNull(),
+            "ignore_liveActivityPushToken": NSNull(),
+            "date_liveActivityExpiration": 0,
+        ]) { _, new in
+            new
+        }
+        print("WonderPush.trackEvent(\"NewLiveActivity\", attributes: \(eventAttributes))")
+        WonderPush.trackEvent("NewLiveActivity", attributes: eventAttributes)
+    }
+
+    @available(iOS 16.1, *)
     fileprivate class func updateLiveActivity<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>, type: String, custom: Properties?, previousPersistedState: PersistedActivityState?) -> PersistedActivityState? {
         let interesting = activity.activityState == .active && activity.pushToken != nil
         if !interesting {
             if previousPersistedState != nil {
                 print("updateLiveActivity(\(activity.id)) needs to be removed")
-                WPConfiguration.updatePersistedActivityStates { persistedActivtyStates in
-                    persistedActivtyStates.removeValue(forKey: activity.id)
-                }
-                let eventAttributes = (custom ?? [:]).merging([
-                    "string_liveActivityId": activity.id,
-                    "string_liveActivityType": type,
-                    "ignore_liveActivityPushToken": NSNull(),
-                    "date_liveActivityExpiration": 0,
-                ]) { _, new in
-                    new
-                }
-                print("WonderPush.trackEvent(\"NewLiveActivity\", attributes: \(eventAttributes))")
-                WonderPush.trackEvent("NewLiveActivity", attributes: eventAttributes)
+                removeLiveActivity(activity.id, type: type, custom: custom)
             } else {
                 print("updateLiveActivity(\(activity.id)) will simply ignore")
             }
