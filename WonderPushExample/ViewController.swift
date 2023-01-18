@@ -28,6 +28,7 @@ class ViewController: UIViewController {
             activity = try Activity.request(attributes: activityAttributes, contentState: initialContentState, pushType: .token)
             if let activity = activity {
                 print("Requested a Live Activity \(String(describing: activity.id)).")
+                WonderPush.registerLiveActivity(activity, custom: ["string_foo": "manual", "string_manual": "yes"])
             }
         } catch (let error) {
             print("Error requesting Live Activity \(error.localizedDescription).")
@@ -36,12 +37,15 @@ class ViewController: UIViewController {
     
     @IBAction func touchUpdateLiveActivity(_ sender: Any) {
         Task {
-            let value = 456
-            let updatedContentState = WonderPushWidgetExtensionAttributes.ContentState(value: value, name: "updated")
-            let alertConfiguration = AlertConfiguration(title: "Activity Update", body: "Value has been updated to \(value)", sound: .default)
-
-            print("Updating a Live Activity \(String(describing: activity?.id)).")
-            await activity?.update(using: updatedContentState, alertConfiguration: alertConfiguration)
+            if let activity = activity {
+                let value = 456
+                let updatedContentState = WonderPushWidgetExtensionAttributes.ContentState(value: value, name: "updated")
+                let alertConfiguration = AlertConfiguration(title: "Activity Update", body: "Value has been updated to \(value)", sound: .default)
+                
+                print("Updating a Live Activity \(activity.id).")
+                await activity.update(using: updatedContentState, alertConfiguration: alertConfiguration)
+                WonderPush.registerLiveActivity(activity, custom: ["string_foo": "manual", "string_manual": "yes"])
+            }
         }
     }
     
@@ -52,6 +56,7 @@ class ViewController: UIViewController {
             if let activity = activity {
                 print("Stopping a Live Activity \(String(describing: activity.id)).")
                 await activity.end(using:finalContentState, dismissalPolicy: .default)
+                WonderPush.registerLiveActivity(activity, custom: ["string_foo": "manual"])
             }
         }
     }

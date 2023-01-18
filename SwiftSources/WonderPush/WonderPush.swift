@@ -226,6 +226,33 @@ extension WonderPush {
     }
 
     @available(iOS 16.1, *)
+    public class func registerLiveActivity<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>, custom: Properties?) -> Void {
+        if activitySyncers[ObjectIdentifier(Attributes.self)] != nil {
+            // Already synced
+            return
+        }
+        let asyncStream = AsyncStream<Activity<Attributes>> { cont in
+            cont.yield(activity)
+            Task {
+                for await _ in activity.pushTokenUpdates {
+                    cont.yield(activity)
+                }
+            }
+            Task {
+                for await _ in activity.activityStateUpdates {
+                    cont.yield(activity)
+                }
+            }
+        }
+        Task {
+            var persistedActivityState = WPConfiguration.getPersistedActivityStates()[activity.id]
+            for await _ in asyncStream {
+                persistedActivityState = updateLiveActivity(activity, custom: custom, previousPersistedState: persistedActivityState)
+            }
+        }
+    }
+
+    @available(iOS 16.1, *)
     fileprivate class func updateLiveActivity<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>, custom: Properties?, previousPersistedState: PersistedActivityState?) -> PersistedActivityState? {
         let interesting = activity.activityState == .active && activity.pushToken != nil
         if !interesting {
