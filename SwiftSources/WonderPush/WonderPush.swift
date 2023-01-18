@@ -141,6 +141,7 @@ struct PersistedActivityState: Equatable & Codable {
     let creationDate: Date
     let activityState: ActivityState
     let pushToken: Data?
+    let userId: String? // WonderPush userId used during Live Activity creation
     let type: String // WonderPush type field
     let custom: Properties? // WonderPush custom properties
 
@@ -150,16 +151,18 @@ struct PersistedActivityState: Equatable & Codable {
         case creationDate
         case activityState
         case pushToken
+        case userId
         case type
         case customJson
     }
     
-    init(attributesTypeName: String, id: String, creationDate: Date, activityState: ActivityState, pushToken: Data?, type: String, custom: Properties?) {
+    init(attributesTypeName: String, id: String, creationDate: Date, activityState: ActivityState, pushToken: Data?, userId: String?, type: String, custom: Properties?) {
         self.attributesTypeName = attributesTypeName
         self.id = id
         self.creationDate = creationDate
         self.activityState = activityState
         self.pushToken = pushToken
+        self.userId = userId
         self.type = type
         self.custom = custom
     }
@@ -171,6 +174,7 @@ struct PersistedActivityState: Equatable & Codable {
         creationDate = try values.decode(Date.self, forKey: .creationDate)
         activityState = try values.decode(ActivityState.self, forKey: .activityState)
         pushToken = try values.decodeIfPresent(Data.self, forKey: .pushToken)
+        userId = try values.decodeIfPresent(String.self, forKey: .userId)
         type = try values.decode(String.self, forKey: .type)
         let customData = try values.decodeIfPresent(Data.self, forKey: .customJson)
         if let customData = customData {
@@ -187,6 +191,7 @@ struct PersistedActivityState: Equatable & Codable {
             lhs.creationDate == rhs.creationDate &&
             lhs.activityState == rhs.activityState &&
             lhs.pushToken == rhs.pushToken &&
+            lhs.userId == rhs.userId &&
             lhs.type == rhs.type &&
             NSDictionary(dictionary: lhs.custom ?? [:] as Properties).isEqual(to: rhs.custom ?? [:] as Properties)
     }
@@ -198,6 +203,7 @@ struct PersistedActivityState: Equatable & Codable {
         try container.encode(self.creationDate, forKey: .creationDate)
         try container.encode(self.activityState, forKey: .activityState)
         try container.encodeIfPresent(self.pushToken, forKey: .pushToken)
+        try container.encodeIfPresent(self.userId, forKey: .userId)
         try container.encode(self.type, forKey: .type)
         if let custom = custom {
             let data = try? JSONSerialization.data(withJSONObject: custom)
@@ -314,15 +320,17 @@ extension WonderPush {
             return nil
         }
         
+        var userId = WonderPush.userId()
         var creationDate = Date()
         print("updateLiveActivity(\(activity.id)) new custom: \(String(describing: custom))")
         if let previousPersistedState = previousPersistedState {
             print("updateLiveActivity(\(activity.id)) may need to be updated from \(previousPersistedState)")
             creationDate = previousPersistedState.creationDate
+            userId = previousPersistedState.userId
         } else {
             print("updateLiveActivity(\(activity.id)) needs to be created")
         }
-        let newPersistedState = PersistedActivityState(attributesTypeName: String(describing: Attributes.self), id: activity.id, creationDate: creationDate, activityState: activity.activityState, pushToken: activity.pushToken, type: type, custom: custom)
+        let newPersistedState = PersistedActivityState(attributesTypeName: String(describing: Attributes.self), id: activity.id, creationDate: creationDate, activityState: activity.activityState, pushToken: activity.pushToken, userId: userId, type: type, custom: custom)
         if let previousPersistedState = previousPersistedState {
             // Check for any change
             if newPersistedState == previousPersistedState {
