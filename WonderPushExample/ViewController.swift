@@ -38,7 +38,7 @@ class ViewController: UIViewController {
     @IBAction func touchUpdateLiveActivity(_ sender: Any) {
         Task {
             if let activity = activity {
-                let value = 456
+                let value = Int.random(in: 100..<1000)
                 let updatedContentState = WonderPushWidgetExtensionAttributes.ContentState(value: value, name: "updated")
                 let alertConfiguration = AlertConfiguration(title: "Activity Update", body: "Value has been updated to \(value)", sound: .default)
                 
