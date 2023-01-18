@@ -87,56 +87,10 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
     
     func refreshActivity(_ activity: Activity<Attributes>) -> Void {
         let previousPersistedState = self.persistedActivityStates[activity.id]
-
-        let interesting = activity.activityState == .active && activity.pushToken != nil
-        if !interesting {
-            if previousPersistedState != nil {
-                print("refreshActivity(\(activity.id)) needs to be removed")
-                // TODO
-                WPConfiguration.updatePersistedActivityStates { persistedActivtyStates in
-                    persistedActivtyStates.removeValue(forKey: activity.id)
-                }
-                WonderPush.trackEvent("NewLiveActivity", attributes: [
-                    "string_liveActivityId": activity.id,
-                    "ignore_liveActivityPushToken": NSNull(),
-                    "date_liveActivityExpiration": 0,
-                ])
-            } else {
-                print("refreshActivity(\(activity.id)) will simply ignore")
-            }
-            return
-        }
-
         let custom = self.customPropertiesExtractor(activity)
-        var creationDate = Date()
-        print("refreshActivity(\(activity.id)) new custom: \(String(describing: custom))")
-        if let previousPersistedState = previousPersistedState {
-            print("refreshActivity(\(activity.id)) may need to be updated from \(previousPersistedState)")
-            creationDate = previousPersistedState.creationDate
-        } else {
-            print("refreshActivity(\(activity.id)) needs to be created")
-        }
-        let newPersistedState = PersistedActivityState(attributesTypeName: self.attributesTypeName, id: activity.id, creationDate: creationDate, activityState: activity.activityState, pushToken: activity.pushToken, custom: custom)
-        if let previousPersistedState = previousPersistedState {
-            // Check for any change
-            if newPersistedState == previousPersistedState {
-                print("refreshActivity(\(activity.id)) did not change")
-                return
-            }
-        }
+        
+        let newPersistedState = WonderPush.updateLiveActivity(activity, custom: custom, previousPersistedState: previousPersistedState)
         persistedActivityStates[activity.id] = newPersistedState
-        print("refreshActivity(\(activity.id)) upserting \(String(describing: newPersistedState))")
-        WPConfiguration.updatePersistedActivityStates { persistedActivtyStates in
-            persistedActivtyStates[activity.id] = newPersistedState
-        }
-        // TODO upsert
-        WonderPush.trackEvent("NewLiveActivity", attributes: [
-            "string_liveActivityId": activity.id,
-            "ignore_liveActivityPushToken": activity.pushToken!.hexEncodedString(),
-            "date_liveActivityExpiration": ISO8601DateFormatter().string(from: creationDate.addingTimeInterval(3600 * 8)),
-        ].merging(custom ?? [:], uniquingKeysWith: { a, b in
-            return b
-        }))
     }
     
     public func liveActivityDescription<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>) -> String {
@@ -271,4 +225,59 @@ extension WonderPush {
         syncer.start()
     }
 
+    @available(iOS 16.1, *)
+    fileprivate class func updateLiveActivity<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>, custom: Properties?, previousPersistedState: PersistedActivityState?) -> PersistedActivityState? {
+        let interesting = activity.activityState == .active && activity.pushToken != nil
+        if !interesting {
+            if previousPersistedState != nil {
+                print("updateLiveActivity(\(activity.id)) needs to be removed")
+                WPConfiguration.updatePersistedActivityStates { persistedActivtyStates in
+                    persistedActivtyStates.removeValue(forKey: activity.id)
+                }
+                let eventAttributes = (custom ?? [:]).merging([
+                    "string_liveActivityId": activity.id,
+                    "ignore_liveActivityPushToken": NSNull(),
+                    "date_liveActivityExpiration": 0,
+                ]) { _, new in
+                    new
+                }
+                print("WonderPush.trackEvent(\"NewLiveActivity\", attributes: \(eventAttributes))")
+                WonderPush.trackEvent("NewLiveActivity", attributes: eventAttributes)
+            } else {
+                print("updateLiveActivity(\(activity.id)) will simply ignore")
+            }
+            return nil
+        }
+        
+        var creationDate = Date()
+        print("updateLiveActivity(\(activity.id)) new custom: \(String(describing: custom))")
+        if let previousPersistedState = previousPersistedState {
+            print("updateLiveActivity(\(activity.id)) may need to be updated from \(previousPersistedState)")
+            creationDate = previousPersistedState.creationDate
+        } else {
+            print("updateLiveActivity(\(activity.id)) needs to be created")
+        }
+        let newPersistedState = PersistedActivityState(attributesTypeName: String(describing: Attributes.self), id: activity.id, creationDate: creationDate, activityState: activity.activityState, pushToken: activity.pushToken, custom: custom)
+        if let previousPersistedState = previousPersistedState {
+            // Check for any change
+            if newPersistedState == previousPersistedState {
+                print("updateLiveActivity(\(activity.id)) did not change")
+                return newPersistedState
+            }
+        }
+        print("updateLiveActivity(\(activity.id)) upserting \(String(describing: newPersistedState))")
+        WPConfiguration.updatePersistedActivityStates { persistedActivtyStates in
+            persistedActivtyStates[activity.id] = newPersistedState
+        }
+        let eventAttributes = (custom ?? [:]).merging([
+            "string_liveActivityId": activity.id,
+            "ignore_liveActivityPushToken": activity.pushToken!.hexEncodedString(),
+            "date_liveActivityExpiration": ISO8601DateFormatter().string(from: creationDate.addingTimeInterval(3600 * 8)),
+        ]) { _, new in
+            new
+        }
+        print("WonderPush.trackEvent(\"NewLiveActivity\", attributes: \(eventAttributes))")
+        WonderPush.trackEvent("NewLiveActivity", attributes: eventAttributes)
+        return newPersistedState
+    }
 }
