@@ -28,7 +28,7 @@ class ViewController: UIViewController {
             activity = try Activity.request(attributes: activityAttributes, contentState: initialContentState, pushType: .token)
             if let activity = activity {
                 print("Requested a Live Activity \(String(describing: activity.id)).")
-                WonderPush.registerLiveActivity(activity, custom: ["string_foo": "manual", "string_manual": "yes"])
+                WonderPush.registerLiveActivity(activity, type: "WonderPushWidget", custom: ["string_foo": "manual", "string_manual": "yes"])
             }
         } catch (let error) {
             print("Error requesting Live Activity \(error.localizedDescription).")
@@ -44,7 +44,7 @@ class ViewController: UIViewController {
                 
                 print("Updating a Live Activity \(activity.id).")
                 await activity.update(using: updatedContentState, alertConfiguration: alertConfiguration)
-                WonderPush.registerLiveActivity(activity, custom: ["string_foo": "manual", "string_manual": "yes"])
+                WonderPush.registerLiveActivity(activity, type: "WonderPushWidget", custom: ["string_foo": "manual", "string_manual": "yes"])
             }
         }
     }
@@ -56,19 +56,21 @@ class ViewController: UIViewController {
             if let activity = activity {
                 print("Stopping a Live Activity \(String(describing: activity.id)).")
                 await activity.end(using:finalContentState, dismissalPolicy: .default)
-                WonderPush.registerLiveActivity(activity, custom: ["string_foo": "manual"])
+                WonderPush.registerLiveActivity(activity, type: "WonderPushWidget", custom: ["string_foo": "manual"])
             }
         }
     }
 
     @IBAction func touchSyncLiveActivities(_ sender: Any) {
-        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, customPropertiesExtractor: { activity in
-            return [
-                "string_foo": activity.attributes.name,
-                "string_bar": activity.contentState.name,
-                "int_foo": activity.contentState.value,
-            ]
-        })
+//        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: "WonderPushWidget"))
+//        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: "WonderPushWidget", properties: ["string_foo": "constant"]))
+//        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: { activity in "WonderPushWidget-\(activity.attributes.name)"}))
+//        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: { activity in "WonderPushWidget-\(activity.attributes.name)"}, properties: ["string_foo": "constant"]))
+        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: "WonderPushWidget", properties: { activity in [
+            "string_foo": activity.attributes.name,
+            "string_bar": activity.contentState.name,
+            "int_foo": activity.contentState.value,
+        ]}))
     }
 
     @IBAction func touchTrackEventFoo(_ sender: Any) {

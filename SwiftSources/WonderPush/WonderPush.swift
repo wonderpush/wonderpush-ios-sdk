@@ -18,20 +18,51 @@ extension Data {
 public typealias Properties = [AnyHashable : Any]
 
 @available(iOS 16.1, *)
+public class PropertiesExtractor<Attributes : ActivityAttributes> {
+
+    private let extractor: (Activity<Attributes>) -> (String, Properties?)
+
+    public init(type: String, properties: Properties? = nil) {
+        extractor = { _ in (type, properties) }
+    }
+
+    public init(type: @escaping (Activity<Attributes>) -> String, properties: Properties? = nil) {
+        extractor = { activity in (type(activity), properties) }
+    }
+
+    public init(type: String, properties: @escaping (Activity<Attributes>) -> Properties?) {
+        extractor = { activity in (type, properties(activity)) }
+    }
+
+    public init(type: @escaping (Activity<Attributes>) -> String, properties: @escaping (Activity<Attributes>) -> Properties?) {
+        extractor = { activity in (type(activity), properties(activity)) }
+    }
+    
+    public init(typeAndProperties: @escaping (Activity<Attributes>) -> (String, Properties?)) {
+        extractor = typeAndProperties
+    }
+    
+    func extractTypeAndProperties(activity: Activity<Attributes>) -> (String, Properties?) {
+        return extractor(activity)
+    }
+
+}
+
+@available(iOS 16.1, *)
 class ActivitySyncer<Attributes : ActivityAttributes> {
     
     let attributesType: Attributes.Type
     let attributesTypeIdentifier: ObjectIdentifier
     let attributesTypeName: String
-    let customPropertiesExtractor: (_ activity: Activity<Attributes>) -> Properties?
+    let propertiesExtractor: PropertiesExtractor<Attributes>
     var persistedActivityStates: [String: PersistedActivityState] = [:]
     var monitoredActivities: [Activity<Attributes>] = []
     
-    init(attributesType: Attributes.Type, customPropertiesExtractor: @escaping (_ activity: Activity<Attributes>) -> Properties?, persistedActivityStates: [String : PersistedActivityState]) {
+    init(attributesType: Attributes.Type, propertiesExtractor: PropertiesExtractor<Attributes>, persistedActivityStates: [String : PersistedActivityState]) {
         self.attributesType = attributesType
         self.attributesTypeIdentifier = ObjectIdentifier(attributesType)
         self.attributesTypeName = String(describing: attributesType)
-        self.customPropertiesExtractor = customPropertiesExtractor
+        self.propertiesExtractor = propertiesExtractor
         for (id, persistedActivityState) in persistedActivityStates {
             if persistedActivityState.attributesTypeName == self.attributesTypeName {
                 self.persistedActivityStates[id] = persistedActivityState
@@ -87,9 +118,9 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
     
     func refreshActivity(_ activity: Activity<Attributes>) -> Void {
         let previousPersistedState = self.persistedActivityStates[activity.id]
-        let custom = self.customPropertiesExtractor(activity)
+        let (type, custom) = propertiesExtractor.extractTypeAndProperties(activity: activity)
         
-        let newPersistedState = WonderPush.updateLiveActivity(activity, custom: custom, previousPersistedState: previousPersistedState)
+        let newPersistedState = WonderPush.updateLiveActivity(activity, type: type, custom: custom, previousPersistedState: previousPersistedState)
         persistedActivityStates[activity.id] = newPersistedState
     }
     
@@ -110,23 +141,26 @@ struct PersistedActivityState: Equatable & Codable {
     let creationDate: Date
     let activityState: ActivityState
     let pushToken: Data?
+    let type: String // WonderPush type field
     let custom: Properties? // WonderPush custom properties
-    
+
     enum CodingKeys: String, CodingKey {
         case attributesTypeName
         case id
         case creationDate
         case activityState
         case pushToken
+        case type
         case customJson
     }
     
-    init(attributesTypeName: String, id: String, creationDate: Date, activityState: ActivityState, pushToken: Data?, custom: Properties?) {
+    init(attributesTypeName: String, id: String, creationDate: Date, activityState: ActivityState, pushToken: Data?, type: String, custom: Properties?) {
         self.attributesTypeName = attributesTypeName
         self.id = id
         self.creationDate = creationDate
         self.activityState = activityState
         self.pushToken = pushToken
+        self.type = type
         self.custom = custom
     }
     
@@ -137,6 +171,7 @@ struct PersistedActivityState: Equatable & Codable {
         creationDate = try values.decode(Date.self, forKey: .creationDate)
         activityState = try values.decode(ActivityState.self, forKey: .activityState)
         pushToken = try values.decodeIfPresent(Data.self, forKey: .pushToken)
+        type = try values.decode(String.self, forKey: .type)
         let customData = try values.decodeIfPresent(Data.self, forKey: .customJson)
         if let customData = customData {
             let customDataDecoded = try JSONSerialization.jsonObject(with: customData)
@@ -152,6 +187,7 @@ struct PersistedActivityState: Equatable & Codable {
             lhs.creationDate == rhs.creationDate &&
             lhs.activityState == rhs.activityState &&
             lhs.pushToken == rhs.pushToken &&
+            lhs.type == rhs.type &&
             NSDictionary(dictionary: lhs.custom ?? [:] as Properties).isEqual(to: rhs.custom ?? [:] as Properties)
     }
     
@@ -162,6 +198,7 @@ struct PersistedActivityState: Equatable & Codable {
         try container.encode(self.creationDate, forKey: .creationDate)
         try container.encode(self.activityState, forKey: .activityState)
         try container.encodeIfPresent(self.pushToken, forKey: .pushToken)
+        try container.encode(self.type, forKey: .type)
         if let custom = custom {
             let data = try? JSONSerialization.data(withJSONObject: custom)
             if let data = data {
@@ -215,18 +252,18 @@ extension WonderPush {
     static var activitySyncers: [ObjectIdentifier: Any] = [:] // any ActivityAttributes.Type to ActivitySyncer<?>
 
     @available(iOS 16.1, *)
-    public class func syncLiveActivities<Attributes : ActivityAttributes>(attributesType: Attributes.Type, customPropertiesExtractor: @escaping (_ activity: Activity<Attributes>) -> Properties?) -> Void {
+    public class func syncLiveActivities<Attributes : ActivityAttributes>(attributesType: Attributes.Type, propertiesExtractor: PropertiesExtractor<Attributes>) -> Void {
         if self.activitySyncers[ObjectIdentifier(attributesType)] != nil {
             return
         }
         let persistedActivityStates = WPConfiguration.getPersistedActivityStates()
-        let syncer = ActivitySyncer(attributesType: attributesType, customPropertiesExtractor: customPropertiesExtractor, persistedActivityStates: persistedActivityStates)
+        let syncer = ActivitySyncer(attributesType: attributesType, propertiesExtractor: propertiesExtractor, persistedActivityStates: persistedActivityStates)
         activitySyncers[ObjectIdentifier(attributesType)] = syncer
         syncer.start()
     }
 
     @available(iOS 16.1, *)
-    public class func registerLiveActivity<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>, custom: Properties?) -> Void {
+    public class func registerLiveActivity<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>, type: String, custom: Properties?) -> Void {
         if activitySyncers[ObjectIdentifier(Attributes.self)] != nil {
             // Already synced
             return
@@ -247,13 +284,13 @@ extension WonderPush {
         Task {
             var persistedActivityState = WPConfiguration.getPersistedActivityStates()[activity.id]
             for await _ in asyncStream {
-                persistedActivityState = updateLiveActivity(activity, custom: custom, previousPersistedState: persistedActivityState)
+                persistedActivityState = updateLiveActivity(activity, type: type, custom: custom, previousPersistedState: persistedActivityState)
             }
         }
     }
 
     @available(iOS 16.1, *)
-    fileprivate class func updateLiveActivity<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>, custom: Properties?, previousPersistedState: PersistedActivityState?) -> PersistedActivityState? {
+    fileprivate class func updateLiveActivity<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>, type: String, custom: Properties?, previousPersistedState: PersistedActivityState?) -> PersistedActivityState? {
         let interesting = activity.activityState == .active && activity.pushToken != nil
         if !interesting {
             if previousPersistedState != nil {
@@ -263,6 +300,7 @@ extension WonderPush {
                 }
                 let eventAttributes = (custom ?? [:]).merging([
                     "string_liveActivityId": activity.id,
+                    "string_liveActivityType": type,
                     "ignore_liveActivityPushToken": NSNull(),
                     "date_liveActivityExpiration": 0,
                 ]) { _, new in
@@ -284,7 +322,7 @@ extension WonderPush {
         } else {
             print("updateLiveActivity(\(activity.id)) needs to be created")
         }
-        let newPersistedState = PersistedActivityState(attributesTypeName: String(describing: Attributes.self), id: activity.id, creationDate: creationDate, activityState: activity.activityState, pushToken: activity.pushToken, custom: custom)
+        let newPersistedState = PersistedActivityState(attributesTypeName: String(describing: Attributes.self), id: activity.id, creationDate: creationDate, activityState: activity.activityState, pushToken: activity.pushToken, type: type, custom: custom)
         if let previousPersistedState = previousPersistedState {
             // Check for any change
             if newPersistedState == previousPersistedState {
@@ -298,6 +336,7 @@ extension WonderPush {
         }
         let eventAttributes = (custom ?? [:]).merging([
             "string_liveActivityId": activity.id,
+            "string_liveActivityType": type,
             "ignore_liveActivityPushToken": activity.pushToken!.hexEncodedString(),
             "date_liveActivityExpiration": ISO8601DateFormatter().string(from: creationDate.addingTimeInterval(3600 * 8)),
         ]) { _, new in
