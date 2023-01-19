@@ -28,7 +28,6 @@ class ViewController: UIViewController {
             activity = try Activity.request(attributes: activityAttributes, contentState: initialContentState, pushType: .token)
             if let activity = activity {
                 print("Requested a Live Activity \(String(describing: activity.id)).")
-                WonderPush.registerLiveActivity(activity, type: "WonderPushWidget", custom: ["string_foo": "manual", "string_manual": "yes"])
             }
         } catch (let error) {
             print("Error requesting Live Activity \(error.localizedDescription).")
@@ -44,7 +43,6 @@ class ViewController: UIViewController {
                 
                 print("Updating a Live Activity \(activity.id).")
                 await activity.update(using: updatedContentState, alertConfiguration: alertConfiguration)
-                WonderPush.registerLiveActivity(activity, type: "WonderPushWidget", custom: ["string_foo": "manual", "string_manual": "yes"])
             }
         }
     }
@@ -56,7 +54,6 @@ class ViewController: UIViewController {
             if let activity = activity {
                 print("Stopping a Live Activity \(String(describing: activity.id)).")
                 await activity.end(using:finalContentState, dismissalPolicy: .default)
-                WonderPush.registerLiveActivity(activity, type: "WonderPushWidget", custom: ["string_foo": "manual"])
             }
         }
     }
