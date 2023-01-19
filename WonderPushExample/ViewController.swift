@@ -59,15 +59,26 @@ class ViewController: UIViewController {
     }
 
     @IBAction func touchSyncLiveActivities(_ sender: Any) {
-//        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: "WonderPushWidget"))
-//        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: "WonderPushWidget", properties: ["string_foo": "constant"]))
-//        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: { activity in "WonderPushWidget-\(activity.attributes.name)"}))
-//        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: { activity in "WonderPushWidget-\(activity.attributes.name)"}, properties: ["string_foo": "constant"]))
-        WonderPush.syncLiveActivities(attributesType: WonderPushWidgetExtensionAttributes.self, propertiesExtractor: PropertiesExtractor(type: "WonderPushWidget", properties: { activity in [
-            "string_foo": activity.attributes.name,
-            "string_bar": activity.contentState.name,
-            "int_foo": activity.contentState.value,
-        ]}))
+        WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
+                                              type: "WonderPushWidget")
+        WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
+                                              type: "WonderPushWidget",
+                                              properties: ["string_foo": "constant"])
+        WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
+                                              type: "WonderPushWidget",
+                                              properties: { activity in ["string_foo": activity.attributes.name] })
+        WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
+                                              type: { activity in "WonderPushWidget-\(activity.attributes.name)"})
+        WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
+                                              type: { activity in "WonderPushWidget-\(activity.attributes.name)"},
+                                              properties: ["string_foo": "constant"])
+        WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
+                                              type: { activity in "WonderPushWidget-\(activity.attributes.name)"},
+                                              properties: { activity in ["string_foo": activity.attributes.name] })
+        WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
+                                              typeAndProperties: { activity in
+            ("WonderPushWidget-\(activity.attributes.name)", ["string_foo": "constant"])
+        })
     }
 
     @IBAction func touchTrackEventFoo(_ sender: Any) {

@@ -18,7 +18,7 @@ extension Data {
 public typealias Properties = [AnyHashable : Any]
 
 @available(iOS 16.1, *)
-public class PropertiesExtractor<Attributes : ActivityAttributes> {
+class PropertiesExtractor<Attributes : ActivityAttributes> {
 
     private let extractor: (Activity<Attributes>) -> (String, Properties?)
 
@@ -270,13 +270,38 @@ extension WonderPush {
     static var activitySyncers: [ObjectIdentifier: Any] = [:] // any ActivityAttributes.Type to ActivitySyncer<?>
 
     @available(iOS 16.1, *)
-    public class func syncLiveActivities<Attributes : ActivityAttributes>(attributesType: Attributes.Type, propertiesExtractor: PropertiesExtractor<Attributes>) -> Void {
-        if self.activitySyncers[ObjectIdentifier(attributesType)] != nil {
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, type: String, properties: Properties? = nil) -> Void {
+        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(type: type, properties: properties))
+    }
+
+    @available(iOS 16.1, *)
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, type: @escaping (Activity<Attributes>) -> String, properties: Properties? = nil) -> Void {
+        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(type: type, properties: properties))
+    }
+
+    @available(iOS 16.1, *)
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, type: String, properties: @escaping (Activity<Attributes>) -> Properties?) -> Void {
+        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(type: type, properties: properties))
+    }
+
+    @available(iOS 16.1, *)
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, type: @escaping (Activity<Attributes>) -> String, properties: @escaping (Activity<Attributes>) -> Properties?) -> Void {
+        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(type: type, properties: properties))
+    }
+
+    @available(iOS 16.1, *)
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, typeAndProperties: @escaping (Activity<Attributes>) -> (String, Properties?)) -> Void {
+        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(typeAndProperties: typeAndProperties))
+    }
+
+    @available(iOS 16.1, *)
+    private class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, propertiesExtractor: PropertiesExtractor<Attributes>) -> Void {
+        if self.activitySyncers[ObjectIdentifier(activityAttributes)] != nil {
             return
         }
         let persistedActivityStates = WPConfiguration.getPersistedActivityStates()
-        let syncer = ActivitySyncer(attributesType: attributesType, propertiesExtractor: propertiesExtractor, persistedActivityStates: persistedActivityStates)
-        activitySyncers[ObjectIdentifier(attributesType)] = syncer
+        let syncer = ActivitySyncer(attributesType: activityAttributes, propertiesExtractor: propertiesExtractor, persistedActivityStates: persistedActivityStates)
+        activitySyncers[ObjectIdentifier(activityAttributes)] = syncer
         syncer.start()
     }
 
