@@ -18,47 +18,16 @@ extension Data {
 public typealias Properties = [AnyHashable : Any]
 
 @available(iOS 16.1, *)
-class PropertiesExtractor<Attributes : ActivityAttributes> {
-
-    private let extractor: (Activity<Attributes>) -> (String, Properties?)
-
-    public init(topic: String, properties: Properties? = nil) {
-        extractor = { _ in (topic, properties) }
-    }
-
-    public init(topic: @escaping (Activity<Attributes>) -> String, properties: Properties? = nil) {
-        extractor = { activity in (topic(activity), properties) }
-    }
-
-    public init(topic: String, properties: @escaping (Activity<Attributes>) -> Properties?) {
-        extractor = { activity in (topic, properties(activity)) }
-    }
-
-    public init(topic: @escaping (Activity<Attributes>) -> String, properties: @escaping (Activity<Attributes>) -> Properties?) {
-        extractor = { activity in (topic(activity), properties(activity)) }
-    }
-    
-    public init(topicAndProperties: @escaping (Activity<Attributes>) -> (String, Properties?)) {
-        extractor = topicAndProperties
-    }
-    
-    func extractTopicAndProperties(activity: Activity<Attributes>) -> (String, Properties?) {
-        return extractor(activity)
-    }
-
-}
-
-@available(iOS 16.1, *)
 class ActivitySyncer<Attributes : ActivityAttributes> {
     
     let attributesType: Attributes.Type
     let attributesTypeIdentifier: ObjectIdentifier
     let attributesTypeName: String
-    let propertiesExtractor: PropertiesExtractor<Attributes>
+    let propertiesExtractor: ActivityPropertiesExtractor<Attributes>
     var persistedActivityStates: [String: PersistedActivityState] = [:]
     var monitoredActivities: [Activity<Attributes>] = []
     
-    init(attributesType: Attributes.Type, propertiesExtractor: PropertiesExtractor<Attributes>, persistedActivityStates: [String : PersistedActivityState]) {
+    init(attributesType: Attributes.Type, propertiesExtractor: ActivityPropertiesExtractor<Attributes>, persistedActivityStates: [String : PersistedActivityState]) {
         self.attributesType = attributesType
         self.attributesTypeIdentifier = ObjectIdentifier(attributesType)
         self.attributesTypeName = String(describing: attributesType)
@@ -233,31 +202,31 @@ extension WonderPush {
 
     @available(iOS 16.1, *)
     public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: String, properties: Properties? = nil) -> Void {
-        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(topic: topic, properties: properties))
+        registerActivityAttributes(activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
     }
 
     @available(iOS 16.1, *)
     public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: @escaping (Activity<Attributes>) -> String, properties: Properties? = nil) -> Void {
-        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(topic: topic, properties: properties))
+        registerActivityAttributes(activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
     }
 
     @available(iOS 16.1, *)
     public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: String, properties: @escaping (Activity<Attributes>) -> Properties?) -> Void {
-        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(topic: topic, properties: properties))
+        registerActivityAttributes(activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
     }
 
     @available(iOS 16.1, *)
     public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: @escaping (Activity<Attributes>) -> String, properties: @escaping (Activity<Attributes>) -> Properties?) -> Void {
-        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(topic: topic, properties: properties))
+        registerActivityAttributes(activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
     }
 
     @available(iOS 16.1, *)
     public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topicAndProperties: @escaping (Activity<Attributes>) -> (String, Properties?)) -> Void {
-        registerActivityAttributes(activityAttributes, propertiesExtractor: PropertiesExtractor<Attributes>(topicAndProperties: topicAndProperties))
+        registerActivityAttributes(activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topicAndProperties: topicAndProperties))
     }
 
     @available(iOS 16.1, *)
-    private class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, propertiesExtractor: PropertiesExtractor<Attributes>) -> Void {
+    private class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, propertiesExtractor: ActivityPropertiesExtractor<Attributes>) -> Void {
         if self.activitySyncers[ObjectIdentifier(activityAttributes)] != nil {
             return
         }
