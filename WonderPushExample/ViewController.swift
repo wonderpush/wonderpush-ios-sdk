@@ -60,23 +60,23 @@ class ViewController: UIViewController {
 
     @IBAction func touchSyncLiveActivities(_ sender: Any) {
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
-                                              type: "WonderPushWidget")
+                                              topic: "WonderPushWidget")
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
-                                              type: "WonderPushWidget",
+                                              topic: "WonderPushWidget",
                                               properties: ["string_foo": "constant"])
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
-                                              type: "WonderPushWidget",
+                                              topic: "WonderPushWidget",
                                               properties: { activity in ["string_foo": activity.attributes.name] })
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
-                                              type: { activity in "WonderPushWidget-\(activity.attributes.name)"})
+                                              topic: { activity in "WonderPushWidget-\(activity.attributes.name)"})
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
-                                              type: { activity in "WonderPushWidget-\(activity.attributes.name)"},
+                                              topic: { activity in "WonderPushWidget-\(activity.attributes.name)"},
                                               properties: ["string_foo": "constant"])
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
-                                              type: { activity in "WonderPushWidget-\(activity.attributes.name)"},
+                                              topic: { activity in "WonderPushWidget-\(activity.attributes.name)"},
                                               properties: { activity in ["string_foo": activity.attributes.name] })
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
-                                              typeAndProperties: { activity in
+                                              topicAndProperties: { activity in
             ("WonderPushWidget-\(activity.attributes.name)", ["string_foo": "constant"])
         })
     }
