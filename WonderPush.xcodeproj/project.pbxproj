@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3D7D8A432989656800FC08D2 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A422989656800FC08D2 /* Configuration.swift */; };
 		3D7D8A452989687400FC08D2 /* ActivityPropertiesExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */; };
+		3D7D8A47298969BF00FC08D2 /* PersistedActivityState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A46298969BF00FC08D2 /* PersistedActivityState.swift */; };
 		3D80C83A25F14DED00D73A14 /* WPReportingData.m in Sources */ = {isa = PBXBuildFile; fileRef = 99C862C023F6F5AC00E37CE1 /* WPReportingData.m */; };
 		3D80C83E25F14DF300D73A14 /* WPReportingData.h in Headers */ = {isa = PBXBuildFile; fileRef = 99C862BF23F6F5AC00E37CE1 /* WPReportingData.h */; };
 		3DB7A41B24B3340600204437 /* WPSPSegmenter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB7A41924B3340600204437 /* WPSPSegmenter.h */; };
@@ -443,6 +444,7 @@
 		3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPNotificationCenterDelegate.m; sourceTree = "<group>"; };
 		3D7D8A422989656800FC08D2 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Configuration.swift; path = SwiftSources/WonderPush/Configuration.swift; sourceTree = SOURCE_ROOT; };
 		3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityPropertiesExtractor.swift; path = SwiftSources/ActivityPropertiesExtractor.swift; sourceTree = SOURCE_ROOT; };
+		3D7D8A46298969BF00FC08D2 /* PersistedActivityState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistedActivityState.swift; sourceTree = "<group>"; };
 		3DB7A41924B3340600204437 /* WPSPSegmenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSPSegmenter.h; sourceTree = "<group>"; };
 		3DB7A41A24B3340600204437 /* WPSPSegmenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmenter.m; sourceTree = "<group>"; };
 		3DB7A41D24B486DC00204437 /* WPSPSegmenterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmenterTests.m; sourceTree = "<group>"; };
@@ -793,6 +795,7 @@
 				3DC7CED9296C2C4900A02640 /* Exports.swift */,
 				3D7D8A422989656800FC08D2 /* Configuration.swift */,
 				3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */,
+				3D7D8A46298969BF00FC08D2 /* PersistedActivityState.swift */,
 			);
 			path = WonderPush;
 			sourceTree = "<group>";
@@ -1853,6 +1856,7 @@
 				9998CABF221C75480028D955 /* WPConfiguration.m in Sources */,
 				995F14CC24A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.m in Sources */,
 				99EF834723F4452C00B9B287 /* WPURLFollower.m in Sources */,
+				3D7D8A47298969BF00FC08D2 /* PersistedActivityState.swift in Sources */,
 				99FA78AF2847ADE0002B070F /* WPIAMWebView.m in Sources */,
 				9998CAC0221C75480028D955 /* WPDataManager.m in Sources */,
 				9998CAC1221C75480028D955 /* WPDialogButtonHandler.m in Sources */,
