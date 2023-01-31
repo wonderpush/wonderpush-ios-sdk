@@ -227,48 +227,6 @@ struct PersistedActivityState: Equatable & Codable {
     
 }
 
-class WPConfiguration {
-    
-    class func getDecodedFromJSON<T: Decodable>(_ type: T.Type, key: String) throws -> T? {
-        let data = UserDefaults.standard.data(forKey: key)
-        if data == nil {
-            return nil
-        }
-        return try JSONDecoder().decode(type, from: data!)
-    }
-    
-    class func setEncodedToJSON<T: Encodable>(_ value: T, key: String) -> Void {
-        let data = try? JSONEncoder().encode(value)
-        if data == nil {
-            UserDefaults.standard.removeObject(forKey: key)
-        } else {
-            UserDefaults.standard.set(data, forKey:key)
-        }
-    }
-    
-    @available(iOS 16.1, *)
-    class func getPersistedActivityStates() -> [String: PersistedActivityState] {
-        let earliestAcceptableCreationDate = Date(timeIntervalSinceNow: -8*60*60)
-        return (try? self.getDecodedFromJSON([String: PersistedActivityState].self, key: "__wonderpush_persistedActivityStates")) ?? ([:] as [String: PersistedActivityState])
-            .filter({ element in
-                element.value.creationDate > earliestAcceptableCreationDate
-            })
-    }
-    
-    @available(iOS 16.1, *)
-    class func setPersistedActivityStates(_ value: [String: PersistedActivityState]) -> Void {
-        self.setEncodedToJSON(value, key: "__wonderpush_persistedActivityStates")
-    }
-
-    @available(iOS 16.1, *)
-    class func updatePersistedActivityStates(_ callback: (inout [String: PersistedActivityState]) -> Void) -> Void {
-        var persistedActivityStates = self.getPersistedActivityStates()
-        callback(&persistedActivityStates)
-        self.setPersistedActivityStates(persistedActivityStates)
-    }
-
-}
-
 extension WonderPush {
     @available(iOS 16.1, *)
     static var activitySyncers: [ObjectIdentifier: Any] = [:] // any ActivityAttributes.Type to ActivitySyncer<?>
@@ -303,7 +261,7 @@ extension WonderPush {
         if self.activitySyncers[ObjectIdentifier(activityAttributes)] != nil {
             return
         }
-        let persistedActivityStates = WPConfiguration.getPersistedActivityStates()
+        let persistedActivityStates = Configuration.getPersistedActivityStates()
         let syncer = ActivitySyncer(attributesType: activityAttributes, propertiesExtractor: propertiesExtractor, persistedActivityStates: persistedActivityStates)
         activitySyncers[ObjectIdentifier(activityAttributes)] = syncer
         syncer.start()
@@ -311,7 +269,7 @@ extension WonderPush {
 
     @available(iOS 16.1, *)
     fileprivate class func removeLiveActivity(_ id: String, topic: String?, custom: Properties?) {
-        WPConfiguration.updatePersistedActivityStates { persistedActivtyStates in
+        Configuration.updatePersistedActivityStates { persistedActivtyStates in
             persistedActivtyStates.removeValue(forKey: id)
         }
         let eventAttributes = (custom ?? [:]).merging([
@@ -358,7 +316,7 @@ extension WonderPush {
             }
         }
         print("updateLiveActivity(\(activity.id)) upserting \(String(describing: newPersistedState))")
-        WPConfiguration.updatePersistedActivityStates { persistedActivtyStates in
+        Configuration.updatePersistedActivityStates { persistedActivtyStates in
             persistedActivtyStates[activity.id] = newPersistedState
         }
         let eventAttributes = (custom ?? [:]).merging([
