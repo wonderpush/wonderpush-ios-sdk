@@ -12,6 +12,11 @@ import ActivityKit
 public typealias Properties = [AnyHashable : Any]
 
 extension WonderPush {
+    
+    public class func testObjCInterop() -> Void {
+        print("Will call ObjC private interop")
+        WonderPushPrivateFactory().createWonderPushPrivate().doSomethingInternal(withSecretAttribute: 42)
+    }
 
     @available(iOS 16.1, *)
     public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: String, properties: Properties? = nil) -> Void {

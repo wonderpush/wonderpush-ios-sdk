@@ -11,6 +11,8 @@
 		3D7D8A452989687400FC08D2 /* ActivityPropertiesExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */; };
 		3D7D8A47298969BF00FC08D2 /* PersistedActivityState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A46298969BF00FC08D2 /* PersistedActivityState.swift */; };
 		3D7D8A4929896A0900FC08D2 /* ActivitySyncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */; };
+		3D7D8A4D298984D600FC08D2 /* ObjCInterop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */; };
+		3D7D8A502989863D00FC08D2 /* WPSwiftInterop.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A4F2989863D00FC08D2 /* WPSwiftInterop.m */; };
 		3D80C83A25F14DED00D73A14 /* WPReportingData.m in Sources */ = {isa = PBXBuildFile; fileRef = 99C862C023F6F5AC00E37CE1 /* WPReportingData.m */; };
 		3D80C83E25F14DF300D73A14 /* WPReportingData.h in Headers */ = {isa = PBXBuildFile; fileRef = 99C862BF23F6F5AC00E37CE1 /* WPReportingData.h */; };
 		3DB7A41B24B3340600204437 /* WPSPSegmenter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB7A41924B3340600204437 /* WPSPSegmenter.h */; };
@@ -447,6 +449,9 @@
 		3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityPropertiesExtractor.swift; path = SwiftSources/ActivityPropertiesExtractor.swift; sourceTree = SOURCE_ROOT; };
 		3D7D8A46298969BF00FC08D2 /* PersistedActivityState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistedActivityState.swift; sourceTree = "<group>"; };
 		3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySyncer.swift; sourceTree = "<group>"; };
+		3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjCInterop.swift; sourceTree = "<group>"; };
+		3D7D8A4E298985DE00FC08D2 /* WPSwiftInterop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSwiftInterop.h; sourceTree = "<group>"; };
+		3D7D8A4F2989863D00FC08D2 /* WPSwiftInterop.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSwiftInterop.m; sourceTree = "<group>"; };
 		3DB7A41924B3340600204437 /* WPSPSegmenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSPSegmenter.h; sourceTree = "<group>"; };
 		3DB7A41A24B3340600204437 /* WPSPSegmenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmenter.m; sourceTree = "<group>"; };
 		3DB7A41D24B486DC00204437 /* WPSPSegmenterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmenterTests.m; sourceTree = "<group>"; };
@@ -799,6 +804,7 @@
 				3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */,
 				3D7D8A46298969BF00FC08D2 /* PersistedActivityState.swift */,
 				3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */,
+				3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */,
 			);
 			path = WonderPush;
 			sourceTree = "<group>";
@@ -1129,6 +1135,8 @@
 				99EF82CD23F4452C00B9B287 /* WPURLFollower.m */,
 				A16E33F719C97CFA00E4E158 /* WPUtil.h */,
 				A16E33F819C97CFA00E4E158 /* WPUtil.m */,
+				3D7D8A4E298985DE00FC08D2 /* WPSwiftInterop.h */,
+				3D7D8A4F2989863D00FC08D2 /* WPSwiftInterop.m */,
 			);
 			path = WonderPush;
 			sourceTree = "<group>";
@@ -1807,6 +1815,7 @@
 				99EF837523F4452C00B9B287 /* WPIAMImageOnlyViewController.m in Sources */,
 				9979E0E824A640EC002BC6EE /* WPSPASTValueNode.m in Sources */,
 				99267894287EA34F00DB43E9 /* WPRateLimiter.m in Sources */,
+				3D7D8A502989863D00FC08D2 /* WPSwiftInterop.m in Sources */,
 				99EF837223F4452C00B9B287 /* WPIAMDefaultDisplayImpl.m in Sources */,
 				EDA0887F27F9D10B00134BB2 /* WPIAMWebViewViewController.m in Sources */,
 				99EF838023F4452C00B9B287 /* WPIAMBannerViewUIWindow.m in Sources */,
@@ -1862,6 +1871,7 @@
 				3D7D8A47298969BF00FC08D2 /* PersistedActivityState.swift in Sources */,
 				99FA78AF2847ADE0002B070F /* WPIAMWebView.m in Sources */,
 				9998CAC0221C75480028D955 /* WPDataManager.m in Sources */,
+				3D7D8A4D298984D600FC08D2 /* ObjCInterop.swift in Sources */,
 				9998CAC1221C75480028D955 /* WPDialogButtonHandler.m in Sources */,
 				99EF838623F4452C00B9B287 /* WPIAMRenderingEffectSetting.m in Sources */,
 				99EF834323F4452C00B9B287 /* WPInAppMessagingRenderingDataClasses.m in Sources */,
