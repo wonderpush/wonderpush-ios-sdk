@@ -30,15 +30,15 @@ SWIFT_PROTOCOL_NAMED("WonderPushPrivateProtocol")
 // Declares the existence of a factory class, implemented in Swift,
 // that ObjC will use to register the actual implementation of WonderPushPrivateProtocol.
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
-SWIFT_CLASS("ObjCInterop")
-@interface ObjCInterop : NSObject
+SWIFT_CLASS("WonderPushObjCInterop")
+@interface WonderPushObjCInterop : NSObject
 
 + (void) registerWonderPushPrivate:(Class<WonderPushPrivateProtocol> _Nonnull)type;
 
 @end
 
 
-// ObjC implementation of WonderPushPrivateProtocol, that will be exposed to Swift using ObjCInterop
+// ObjC implementation of WonderPushPrivateProtocol, that will be exposed to Swift using WonderPushObjCInterop
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
 @interface WPSwiftInterop : NSObject<WonderPushPrivateProtocol>
 
