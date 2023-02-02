@@ -40,7 +40,7 @@ SWIFT_CLASS("WonderPushObjCInterop")
 
 // ObjC implementation of WonderPushPrivateProtocol, that will be exposed to Swift using WonderPushObjCInterop
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
-@interface WPSwiftInterop : NSObject<WonderPushPrivateProtocol>
+@interface WonderPushPrivate : NSObject<WonderPushPrivateProtocol>
 
 - (void) doSomethingInternalWithSecretAttribute:(NSInteger)attribute;
 
