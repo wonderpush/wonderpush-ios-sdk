@@ -23,8 +23,8 @@ internal protocol WonderPushPrivate {
 // A private factory, receiving a type instance from the private ObjC part.
 // Upon building an instance in Swift, we can call ObjC methods on it.
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
-@objc(WonderPushPrivateFactory)
-internal class WonderPushPrivateFactory: NSObject {
+@objc(ObjCInterop)
+internal class ObjCInterop: NSObject {
     
     private(set) static var WonderPushPrivate: WonderPushPrivate! = nil
     

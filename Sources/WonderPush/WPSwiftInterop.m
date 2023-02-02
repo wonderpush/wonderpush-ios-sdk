@@ -9,14 +9,14 @@
 #import <Foundation/Foundation.h>
 #import "WPSwiftInterop.h"
 
-// ObjC implementation of WonderPushPrivateProtocol, that will be exposed to Swift using WonderPushPrivateFactory
+// ObjC implementation of WonderPushPrivateProtocol, that will be exposed to Swift using ObjCInterop
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
 @implementation WPSwiftInterop
 
 // The ObjC runtime will call this method automatically.
-// We register this class with WonderPushPrivateFactory to expose it to Swift as a WonderPushPrivateProtocol implementation.
+// We register this class with ObjCInterop to expose it to Swift as a WonderPushPrivateProtocol implementation.
 + (void)load {
-    [WonderPushPrivateFactory registerWonderPushPrivate:[WPSwiftInterop class]];
+    [ObjCInterop registerWonderPushPrivate:[WPSwiftInterop class]];
 }
 
 - (void)doSomethingInternalWithSecretAttribute:(NSInteger)attribute {
