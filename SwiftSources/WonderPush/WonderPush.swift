@@ -15,7 +15,9 @@ extension WonderPush {
     
     public class func testObjCInterop() -> Void {
         print("Will call ObjC private interop")
-        WonderPushObjCInterop.WonderPushPrivate.doSomethingInternal(withSecretAttribute: 42)
+        WonderPushObjCInterop.WonderPushPrivate.trackInternalEvent("@APP_OPEN", eventData: ["campaignId": "FAKE"], customData: ["string_foo": "bar"], sentCallback: {
+            print("Internal event sent")
+        })
     }
 
     @available(iOS 16.1, *)

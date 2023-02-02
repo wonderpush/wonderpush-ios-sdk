@@ -16,8 +16,8 @@ internal protocol WonderPushPrivate {
     // Implemented by the underlying ObjC class and returns a new instance of a class implementing this protocol
     init()
 
-    func doSomethingInternal(withSecretAttribute: Int)
-    
+    func trackInternalEvent(_ type: String, eventData: NSDictionary, customData: NSDictionary, sentCallback: @escaping () -> Void)
+
 }
 
 // A private factory, receiving a type instance from the private ObjC part.

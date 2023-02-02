@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "WonderPush_private.h"
 #import "WPSwiftInterop.h"
 
 // ObjC implementation of WonderPushPrivateProtocol, that will be exposed to Swift using WonderPushObjCInterop
@@ -19,8 +20,8 @@
     [WonderPushObjCInterop registerWonderPushPrivate:[WonderPushPrivate class]];
 }
 
-- (void)doSomethingInternalWithSecretAttribute:(NSInteger)attribute {
-    NSLog(@"INTERNAL METHOD CALLED WITH SUCCESS %ld", (long)attribute);
+- (void)trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void (^)(void))sentCallback {
+    [WonderPush trackInternalEvent:type eventData:data customData:customData sentCallback:sentCallback];
 }
 
 @end

@@ -22,7 +22,7 @@ SWIFT_PROTOCOL_NAMED("WonderPushPrivateProtocol")
 // This method is automatically implemented by classes, and it permits Swift to grab an instance directly from the protocol itself.
 - (nonnull instancetype)init;
 
-- (void)doSomethingInternalWithSecretAttribute:(NSInteger)attribute;
+- (void)trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void (^)(void))sentCallback;
 
 @end
 
@@ -42,7 +42,7 @@ SWIFT_CLASS("WonderPushObjCInterop")
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
 @interface WonderPushPrivate : NSObject<WonderPushPrivateProtocol>
 
-- (void) doSomethingInternalWithSecretAttribute:(NSInteger)attribute;
+- (void) trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void (^)(void))sentCallback;
 
 @end
 
