@@ -26,16 +26,11 @@ internal protocol WonderPushPrivate {
 @objc(WonderPushPrivateFactory)
 internal class WonderPushPrivateFactory: NSObject {
     
-    private static var privateClassType: WonderPushPrivate.Type!
+    private(set) static var WonderPushPrivate: WonderPushPrivate! = nil
     
     @objc static func registerWonderPushPrivate(_ type: WonderPushPrivate.Type) {
         print("REGISTRATION CALLED WITH TYPE = \(type)")
-        privateClassType = type
-    }
-    
-    func createWonderPushPrivate() -> WonderPushPrivate {
-        print("FACTORY METHOD CALLED TO CREATE INSTANCE OF \(String(describing: WonderPushPrivateFactory.privateClassType))")
-        return WonderPushPrivateFactory.privateClassType.init()
+        WonderPushPrivate = type.init()
     }
     
 }

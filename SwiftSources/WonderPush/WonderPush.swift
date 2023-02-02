@@ -15,7 +15,7 @@ extension WonderPush {
     
     public class func testObjCInterop() -> Void {
         print("Will call ObjC private interop")
-        WonderPushPrivateFactory().createWonderPushPrivate().doSomethingInternal(withSecretAttribute: 42)
+        WonderPushPrivateFactory.WonderPushPrivate.doSomethingInternal(withSecretAttribute: 42)
     }
 
     @available(iOS 16.1, *)
