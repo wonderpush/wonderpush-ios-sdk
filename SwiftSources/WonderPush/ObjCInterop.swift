@@ -28,7 +28,7 @@ internal class WonderPushPrivateFactory: NSObject {
     
     private static var privateClassType: WonderPushPrivate.Type!
     
-    @objc static func registerPrivateClassType(type: WonderPushPrivate.Type) {
+    @objc static func registerWonderPushPrivate(_ type: WonderPushPrivate.Type) {
         print("REGISTRATION CALLED WITH TYPE = \(type)")
         privateClassType = type
     }

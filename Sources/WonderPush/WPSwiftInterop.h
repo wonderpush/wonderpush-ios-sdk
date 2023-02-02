@@ -33,7 +33,7 @@ SWIFT_PROTOCOL_NAMED("WonderPushPrivateProtocol")
 SWIFT_CLASS("WonderPushPrivateFactory")
 @interface WonderPushPrivateFactory : NSObject
 
-+ (void) registerPrivateClassTypeWithType:(Class<WonderPushPrivateProtocol> _Nonnull)type;
++ (void) registerWonderPushPrivate:(Class<WonderPushPrivateProtocol> _Nonnull)type;
 
 @end
 

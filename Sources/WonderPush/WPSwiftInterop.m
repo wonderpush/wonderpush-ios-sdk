@@ -16,7 +16,7 @@
 // The ObjC runtime will call this method automatically.
 // We register this class with WonderPushPrivateFactory to expose it to Swift as a WonderPushPrivateProtocol implementation.
 + (void)load {
-    [WonderPushPrivateFactory registerPrivateClassTypeWithType:[WPSwiftInterop class]];
+    [WonderPushPrivateFactory registerWonderPushPrivate:[WPSwiftInterop class]];
 }
 
 - (void)doSomethingInternalWithSecretAttribute:(NSInteger)attribute {
