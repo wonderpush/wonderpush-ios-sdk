@@ -316,10 +316,10 @@ static NSObject *saveLock = nil;
 }
 
 - (void) scheduleServerPatchCallCallback {
-    //WPLogDebug(@"[%@] Scheduling a delayed update of Live Activity", self.logIdentifier);
+    //WPLogDebug(@"[%@] Scheduling a delayed update", self.logIdentifier);
     if (![WonderPush hasUserConsent]) {
         [WonderPush safeDeferWithConsent:^{
-            WPLogDebug(@"[%@] Now scheduling user consent delayed patch call for installation state for Live Activity id %@", self.logIdentifier, self.activityId);
+            WPLogDebug(@"[%@] Now scheduling user consent delayed patch call", self.logIdentifier);
             [self scheduleServerPatchCallCallback]; // NOTE: imposes this function to be somewhat reentrant
         }];
         return;
@@ -340,7 +340,7 @@ static NSObject *saveLock = nil;
                 }
                 self->_firstDelayedWriteDate = nil;
             }
-            //WPLogDebug(@"[%@] Performing delayed update of Live Activity", self.logIdentifier);
+            //WPLogDebug(@"[%@] Performing delayed update", self.logIdentifier);
             [self performScheduledPatchCall];
         });
     }
@@ -349,7 +349,7 @@ static NSObject *saveLock = nil;
 - (bool) performScheduledPatchCall
 {
     if (![WonderPush hasUserConsent]) {
-        WPLogDebug(@"[%@] Need consent, not performing scheduled patch call for Live Activity id %@", self.logIdentifier, self.activityId);
+        WPLogDebug(@"[%@] Need consent, not performing scheduled patch call", self.logIdentifier);
         return false;
     }
     return [super performScheduledPatchCall];
@@ -357,7 +357,7 @@ static NSObject *saveLock = nil;
 
 - (void) serverPatchCallbackWithDiff:(NSDictionary *)diff onSuccess:(WPJsonSyncCallback)onSuccess onFailure:(WPJsonSyncCallback)onFailure {
     if (patchCallDisabled) {
-        WPLogDebug(@"[%@] JsonSyncLiveActivity PATCH calls disabled.", self.logIdentifier);
+        WPLogDebug(@"[%@] JsonSync PATCH calls disabled.", self.logIdentifier);
         if (onFailure) onFailure();
         return;
     }
@@ -376,7 +376,7 @@ static NSObject *saveLock = nil;
     if (isActivityStateTerminal(diffMetaActivityState)) {
         // In the diff we're seeing the Live Activity no longer being active.
         // This means we must inform the server to delete the Live Activity.
-        WPLogDebug(@"[%@] Deleting Live Activity for diff: %@ for Live Activity id %@", self.logIdentifier, diff, _activityId);
+        WPLogDebug(@"[%@] Deleting for diff: %@", self.logIdentifier, diff);
         [WonderPush requestForUser:_userId
                             method:@"DELETE"
                           resource:[@"/liveActivities/" stringByAppendingString:_activityId]
@@ -384,34 +384,34 @@ static NSObject *saveLock = nil;
                            handler:^(WPResponse *response, NSError *error) {
             NSDictionary *responseJson = (NSDictionary *)response.object;
             if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[WPNSUtil numberForKey:@"success" inDictionary:responseJson] boolValue]) {
-                WPLogDebug(@"[%@] Succeded to delete Live Activity id %@: %@", self.logIdentifier, self->_activityId, responseJson);
+                WPLogDebug(@"[%@] Succeded to delete: %@", self.logIdentifier, responseJson);
                 onSuccess();
             } else {
                 if ([error.domain isEqualToString:WPErrorDomain]
                     && error.code == WPErrorClientDisabled) {
                     // Hide this error on released SDKs (it's just for us).
-                    //WPLogDebug(@"[%@] Failed to delete Live Activity id %@ because client is disabled: %@", self.logIdentifier, self->_userId, error.localizedDescription);
+                    //WPLogDebug(@"[%@] Failed to delete because client is disabled: %@", self.logIdentifier, error.localizedDescription);
                 } else {
-                    WPLogDebug(@"[%@] Failed to delete Live Activity id %@: error %@, response %@", self.logIdentifier, self->_activityId, error, response);
+                    WPLogDebug(@"[%@] Failed to delete: error %@, response %@", self.logIdentifier, error, response);
                 }
                 onFailure();
             }
         }];
     } else if (isActivityStateTerminal(serverMetaActivityState)) {
         // We have already removed the Live Activity server-side (otherwise we would be in the previous case), so now we're no longer interested in its modifications
-        WPLogDebug(@"[%@] Dropping Live Activity diff: %@ for Live Activity id %@ that is already deleted", self.logIdentifier, diff, _activityId);
+        WPLogDebug(@"[%@] Dropping diff: %@ because we are already deleted", self.logIdentifier, diff);
         onSuccess();
     } else if ([diff count] == 0) {
         // Meta-only change, there's nothing to send
-        WPLogDebug(@"[%@] Auto-applying Live Activity meta-only diff: %@ for Live Activity id %@", self.logIdentifier, diff, _activityId);
+        WPLogDebug(@"[%@] Auto-applying meta-only diff: %@", self.logIdentifier, diff);
         onSuccess();
     } else if (statePushTokenData == nil) {
         // We have modifications to send server-side, but we have no push token
-        WPLogDebug(@"[%@] Delaying Live Activity diff: %@ for Live Activity id %@ that has no push token yet", self.logIdentifier, diff, _activityId);
+        WPLogDebug(@"[%@] Delaying diff: %@ because we have no push token yet", self.logIdentifier, diff);
         onFailure();
     } else {
         // We have modifications to send server-side, and we have a push token
-        WPLogDebug(@"[%@] Sending Live Activity diff: %@ for Live Activity id %@", self.logIdentifier, diff, _activityId);
+        WPLogDebug(@"[%@] Sending diff: %@", self.logIdentifier, diff);
         [WonderPush requestForUser:_userId
                             method:@"PATCH"
                           resource:[@"/liveActivities/" stringByAppendingString:_activityId]
@@ -419,15 +419,15 @@ static NSObject *saveLock = nil;
                            handler:^(WPResponse *response, NSError *error) {
             NSDictionary *responseJson = (NSDictionary *)response.object;
             if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[WPNSUtil numberForKey:@"success" inDictionary:responseJson] boolValue]) {
-                WPLogDebug(@"[%@] Succeded to send diff for Live Activity id %@: %@", self.logIdentifier, self->_activityId, responseJson);
+                WPLogDebug(@"[%@] Succeded to send diff: %@", self.logIdentifier, responseJson);
                 onSuccess();
             } else {
                 if ([error.domain isEqualToString:WPErrorDomain]
                     && error.code == WPErrorClientDisabled) {
                     // Hide this error on released SDKs (it's just for us).
-                    //WPLogDebug(@"[%@] Failed to send diff for Live Activity id %@ because client is disabled: %@", self.logIdentifier, self->_userId, error.localizedDescription);
+                    //WPLogDebug(@"[%@] Failed to send diff because client is disabled: %@", self.logIdentifier, error.localizedDescription);
                 } else {
-                    WPLogDebug(@"[%@] Failed to send diff for Live Activity id %@: error %@, response %@", self.logIdentifier, self->_activityId, error, response);
+                    WPLogDebug(@"[%@] Failed to send diff: error %@, response %@", self.logIdentifier, error, response);
                 }
                 onFailure();
             }
