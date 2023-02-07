@@ -212,7 +212,7 @@ static NSObject *saveLock = nil;
     [self flush];
 }
 
-- (void) activityChangedWithAttributesType:(NSString *)attributesTypeName activityState:(NSString *)activityState pushToken:(nullable NSData *)pushToken staleDate:(nullable NSDate *)staleDate relevanceScore:(nullable NSNumber *)relevanceScore topic:(NSString *)topic custom:(nullable NSDictionary *)custom {
+- (void) activityChangedWithAttributesType:(nonnull NSString *)attributesTypeName activityState:(nonnull NSString *)activityState pushToken:(nullable NSData *)pushToken staleDate:(nullable NSDate *)staleDate relevanceScore:(nullable NSNumber *)relevanceScore topic:(nonnull NSString *)topic custom:(nullable NSDictionary *)custom {
     NSString *previousActivityState = self.sdkState[STATE_META][STATE_META_ACTIVITY_STATE];
     NSDate *creationDate = [NSDate date];
     NSNumber *creationDateNumber = [WPNSUtil numberForKey:STATE_META_CREATION_DATE inDictionary:self.sdkState[STATE_META]];
