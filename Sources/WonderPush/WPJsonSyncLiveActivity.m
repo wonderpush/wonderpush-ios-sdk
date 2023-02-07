@@ -200,6 +200,18 @@ static NSObject *saveLock = nil;
     });
 }
 
+- (void) activityNoLongerExists {
+    [self put:@{
+        STATE_META: @{
+            STATE_META_ACTIVITY_STATE: ACTIVITY_STATE_ENDED,
+        },
+        @"lifecycle": ACTIVITY_STATE_ENDED,
+    }];
+
+    // The activity no longer exists, flush right away
+    [self flush];
+}
+
 - (void) activityChangedWithAttributesType:(nullable NSString *)attributesTypeName creationDate:(nullable NSDate *)creationDate activityState:(nullable NSString *)activityState pushToken:(nullable NSData *)pushToken staleDate:(nullable NSDate *)staleDate relevanceScore:(nullable NSNumber *)relevanceScore topic:(nullable NSString *)topic custom:(nullable NSDictionary *)custom {
     NSString *previousActivityState = self.sdkState[STATE_META][STATE_META_ACTIVITY_STATE];
     if (creationDate == nil) {

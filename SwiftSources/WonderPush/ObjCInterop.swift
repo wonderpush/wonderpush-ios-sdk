@@ -35,6 +35,7 @@ internal protocol WPJsonSyncLiveActivity {
     func initWithActivityId(_ activityId: String, userId:String?, attributesTypeName:String) -> Self
 
     func flush() -> Void
+    func activityNoLongerExists() -> Void
     func activityChangedWithAttributesType(_ attributesTypeName:String?, creationDate:Date?, activityState:String?, pushToken:Data?, staleDate:Date?, relevanceScore:NSNumber?, topic:String?, custom:NSDictionary?) -> Void
 
     func put(_ diff: NSDictionary) -> Void

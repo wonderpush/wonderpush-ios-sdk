@@ -77,7 +77,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         // Remove persisted but no longer present Live Activities
         for unseenActivityId in unseenActivityIds {
             if let liveActivitySync = liveActivitySyncs[unseenActivityId] {
-                liveActivitySync.activityChangedWithAttributesType(nil, creationDate: nil, activityState: ActivitySyncer.activityStateToString(.ended), pushToken: nil, staleDate: nil, relevanceScore: nil, topic: nil, custom: nil)
+                liveActivitySync.activityNoLongerExists()
                 liveActivitySyncs.removeValue(forKey: unseenActivityId)
             }
         }

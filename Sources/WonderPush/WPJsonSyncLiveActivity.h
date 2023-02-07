@@ -21,6 +21,7 @@
 - (nonnull instancetype) initWithActivityId:(nonnull NSString *)activityId userId:(nullable NSString *)userId attributesTypeName:(nonnull NSString *)attributesTypeName;
 
 - (void) flush;
+- (void) activityNoLongerExists;
 - (void) activityChangedWithAttributesType:(nullable NSString *)attributesTypeName creationDate:(nullable NSDate *)creationDate activityState:(nullable NSString *)activityState pushToken:(nullable NSData *)pushToken staleDate:(nullable NSDate *)staleDate relevanceScore:(nullable NSNumber *)relevanceScore topic:(nullable NSString *)topic custom:(nullable NSDictionary *)custom;
 
 + (void) setDisabled:(BOOL)disabled;
