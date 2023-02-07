@@ -11,6 +11,8 @@
 #import <Foundation/Foundation.h>
 #import "WPConfiguration.h"
 #import "WonderPush_private.h"
+#import "WPInstallationCoreProperties.h"
+#import "WPUtil.h"
 #import <WonderPushCommon/WPLog.h>
 #import <WonderPushCommon/WPErrors.h>
 #import <WonderPushCommon/WPNSUtil.h>
@@ -207,12 +209,42 @@ static NSObject *saveLock = nil;
         }
     }
 
-    // TODO Add core properties.
-    //      Doing so here is probably a good idea, but exposing another well named method can help maintaining in sync when we refresh them on the installation too.
-
     NSMutableDictionary *stateDiff = [NSMutableDictionary new];
     NSMutableDictionary *stateDiffMeta = [NSMutableDictionary new];
     stateDiff[STATE_META] = stateDiffMeta;
+
+    // Add core properties.
+    NSNull *null = [NSNull null];
+    stateDiff[@"application"] = @{
+        @"version" : [WPInstallationCoreProperties getVersionString] ?: null,
+        @"sdkVersion": [WPInstallationCoreProperties getSDKVersionNumber] ?: null,
+        @"integrator": [WonderPush getIntegrator] ?: null,
+        @"apple": @{
+            @"apsEnvironment": [WPUtil getEntitlement:@"aps-environment"] ?: null,
+            @"appId": [WPUtil getEntitlement:@"application-identifier"] ?: null,
+        },
+    };
+    CGRect screenSize = [WPInstallationCoreProperties getScreenSize];
+    stateDiff[@"device"] = @{
+        @"id": [WPUtil deviceIdentifier] ?: null,
+        @"platform": @"iOS",
+        @"osVersion": [WPInstallationCoreProperties getOsVersion] ?: null,
+        @"brand": @"Apple",
+        @"category": @"mobile",
+        @"model": [WPInstallationCoreProperties getDeviceModel] ?: null,
+        @"screenWidth": [NSNumber numberWithInt:(int)screenSize.size.width] ?: null,
+        @"screenHeight": [NSNumber numberWithInt:(int)screenSize.size.height] ?: null,
+        @"screenDensity": [NSNumber numberWithInt:(int)[WPInstallationCoreProperties getScreenDensity]] ?: null,
+        @"configuration": @{
+            @"timeZone": [WPInstallationCoreProperties getTimezone] ?: null,
+            @"timeOffset": [WPInstallationCoreProperties getTimeOffset] ?: null,
+            @"carrier": [WPInstallationCoreProperties getCarrierName] ?: null,
+            @"country": [WPInstallationCoreProperties getCountry] ?: null,
+            @"currency": [WPInstallationCoreProperties getCurrency] ?: null,
+            @"locale": [WPInstallationCoreProperties getLocale] ?: null,
+        },
+    };
+
     if (attributesTypeName != nil) {
         stateDiff[@"type"] = attributesTypeName;
     }
@@ -225,7 +257,7 @@ static NSObject *saveLock = nil;
         stateDiff[@"pushToken"] = stateDiffPushToken;
         if (pushToken != nil) {
             if ([pushToken length] == 0) {
-                stateDiffPushToken[@"data"] = [NSNull null];
+                stateDiffPushToken[@"data"] = null;
             } else {
                 stateDiffPushToken[@"data"] = [WPNSUtil hexForData:pushToken];
             }
