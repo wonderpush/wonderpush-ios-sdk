@@ -20,6 +20,7 @@
 #import <WonderPushCommon/WPJsonUtil.h>
 #import "WPRequestVault.h"
 #import "WPUtil.h"
+#import "WPJsonSyncLiveActivity.h"
 #import <WonderPushCommon/WPNSUtil.h>
 
 static WPConfiguration *sharedConfiguration = nil;
@@ -1212,6 +1213,36 @@ static WPConfiguration *sharedConfiguration = nil;
     @synchronized (self) {
         [self _setNSArrayAsJSON:trackedEvents forKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
     }
+}
+
+- (NSDictionary *) liveActivitySyncStatePerActivityId {
+    @synchronized (self) {
+        return [self _getNSDictionaryFromJSONForKey:USER_DEFAULTS_LIVE_ACTIVITY_SYNC_STATE_PER_ACTIVITY_ID_KEY];
+    }
+}
+
+- (void) setLiveActivitySyncStatePerActivityId:(NSDictionary *)liveActivitySyncStatePerActivityId {
+    @synchronized (self) {
+        [self _setNSDictionaryAsJSON:liveActivitySyncStatePerActivityId forKey:USER_DEFAULTS_LIVE_ACTIVITY_SYNC_STATE_PER_ACTIVITY_ID_KEY];
+    }
+}
+
+- (NSDictionary<NSString *, NSArray<NSString *> *> *) liveActivitySyncActivityIdsPerAttributesTypeName {
+    NSMutableDictionary<NSString *, NSArray *> *rtn = [NSMutableDictionary new];
+    for (NSDictionary *savedState in [[self liveActivitySyncStatePerActivityId] allValues]) {
+        NSString *activityId = [WPJsonSyncLiveActivity activityIdFromSavedState:savedState];
+        NSString *attributesTypeName = [WPJsonSyncLiveActivity attributesTypeNameFromSavedState:savedState];
+        if (activityId == nil || attributesTypeName == nil) {
+            continue;
+        }
+        NSMutableArray *rtnForType = (NSMutableArray *) [WPNSUtil arrayForKey:attributesTypeName inDictionary:rtn];
+        if (rtnForType == nil) {
+            rtnForType = [NSMutableArray new];
+            rtn[attributesTypeName] = rtnForType;
+        }
+        [rtnForType addObject:activityId];
+    };
+    return rtn;
 }
 
 @end

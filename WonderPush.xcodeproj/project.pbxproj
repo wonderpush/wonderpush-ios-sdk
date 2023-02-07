@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		3D7D8A432989656800FC08D2 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A422989656800FC08D2 /* Configuration.swift */; };
 		3D7D8A452989687400FC08D2 /* ActivityPropertiesExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */; };
-		3D7D8A47298969BF00FC08D2 /* PersistedActivityState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A46298969BF00FC08D2 /* PersistedActivityState.swift */; };
 		3D7D8A4929896A0900FC08D2 /* ActivitySyncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */; };
 		3D7D8A4D298984D600FC08D2 /* ObjCInterop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */; };
 		3D7D8A502989863D00FC08D2 /* WPSwiftInterop.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7D8A4F2989863D00FC08D2 /* WPSwiftInterop.m */; };
@@ -18,6 +17,7 @@
 		3DB7A41B24B3340600204437 /* WPSPSegmenter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB7A41924B3340600204437 /* WPSPSegmenter.h */; };
 		3DB7A41C24B3340600204437 /* WPSPSegmenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB7A41A24B3340600204437 /* WPSPSegmenter.m */; };
 		3DB7A41E24B486DC00204437 /* WPSPSegmenterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB7A41D24B486DC00204437 /* WPSPSegmenterTests.m */; };
+		3DBCB4B4298C0681008DC6FA /* WPJsonSyncLiveActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DBCB4B3298C0681008DC6FA /* WPJsonSyncLiveActivity.m */; };
 		3DC7CDF82965EB8F00A02640 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DC7CDF72965EB8F00A02640 /* ActivityKit.framework */; };
 		3DC7CED8296C2C0200A02640 /* WonderPush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC7CED7296C2C0200A02640 /* WonderPush.swift */; };
 		9909CE1922215DD600F73A0B /* WonderPush.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99885AF92215CE71002CA269 /* WonderPush.storyboard */; };
@@ -447,7 +447,6 @@
 		3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPNotificationCenterDelegate.m; sourceTree = "<group>"; };
 		3D7D8A422989656800FC08D2 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Configuration.swift; path = SwiftSources/WonderPush/Configuration.swift; sourceTree = SOURCE_ROOT; };
 		3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityPropertiesExtractor.swift; path = SwiftSources/ActivityPropertiesExtractor.swift; sourceTree = SOURCE_ROOT; };
-		3D7D8A46298969BF00FC08D2 /* PersistedActivityState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistedActivityState.swift; sourceTree = "<group>"; };
 		3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySyncer.swift; sourceTree = "<group>"; };
 		3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjCInterop.swift; sourceTree = "<group>"; };
 		3D7D8A4E298985DE00FC08D2 /* WPSwiftInterop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSwiftInterop.h; sourceTree = "<group>"; };
@@ -455,6 +454,8 @@
 		3DB7A41924B3340600204437 /* WPSPSegmenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSPSegmenter.h; sourceTree = "<group>"; };
 		3DB7A41A24B3340600204437 /* WPSPSegmenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmenter.m; sourceTree = "<group>"; };
 		3DB7A41D24B486DC00204437 /* WPSPSegmenterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPSegmenterTests.m; sourceTree = "<group>"; };
+		3DBCB4B2298C0656008DC6FA /* WPJsonSyncLiveActivity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonSyncLiveActivity.h; sourceTree = "<group>"; };
+		3DBCB4B3298C0681008DC6FA /* WPJsonSyncLiveActivity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPJsonSyncLiveActivity.m; sourceTree = "<group>"; };
 		3DC7CDF72965EB8F00A02640 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		3DC7CED429673C5C00A02640 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = SOURCE_ROOT; };
 		3DC7CED7296C2C0200A02640 /* WonderPush.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WonderPush.swift; sourceTree = "<group>"; };
@@ -802,7 +803,6 @@
 				3DC7CED9296C2C4900A02640 /* Exports.swift */,
 				3D7D8A422989656800FC08D2 /* Configuration.swift */,
 				3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */,
-				3D7D8A46298969BF00FC08D2 /* PersistedActivityState.swift */,
 				3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */,
 				3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */,
 			);
@@ -1111,7 +1111,9 @@
 				3D0A92651E9D18D900784273 /* WPJsonSync.h */,
 				3D0A92631E9D18A800784273 /* WPJsonSync.m */,
 				3D0A92661E9D33AF00784273 /* WPJsonSyncInstallation.h */,
+				3DBCB4B2298C0656008DC6FA /* WPJsonSyncLiveActivity.h */,
 				3D0A92671E9D33AF00784273 /* WPJsonSyncInstallation.m */,
+				3DBCB4B3298C0681008DC6FA /* WPJsonSyncLiveActivity.m */,
 				99885AF52215BB37002CA269 /* WPMobileProvision.h */,
 				99885AF62215BB37002CA269 /* WPMobileProvision.m */,
 				99885AED22156F92002CA269 /* WPNetworkReachabilityManager.h */,
@@ -1868,7 +1870,7 @@
 				9998CABF221C75480028D955 /* WPConfiguration.m in Sources */,
 				995F14CC24A9D2C200CC499E /* WPSPDefaultCriterionNodeParser.m in Sources */,
 				99EF834723F4452C00B9B287 /* WPURLFollower.m in Sources */,
-				3D7D8A47298969BF00FC08D2 /* PersistedActivityState.swift in Sources */,
+				3DBCB4B4298C0681008DC6FA /* WPJsonSyncLiveActivity.m in Sources */,
 				99FA78AF2847ADE0002B070F /* WPIAMWebView.m in Sources */,
 				9998CAC0221C75480028D955 /* WPDataManager.m in Sources */,
 				3D7D8A4D298984D600FC08D2 /* ObjCInterop.swift in Sources */,

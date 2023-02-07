@@ -26,26 +26,5 @@ class Configuration {
             UserDefaults.standard.set(data, forKey:key)
         }
     }
-    
-    @available(iOS 16.1, *)
-    class func getPersistedActivityStates() -> [String: PersistedActivityState] {
-        let earliestAcceptableCreationDate = Date(timeIntervalSinceNow: -8*60*60)
-        return (try? self.getDecodedFromJSON([String: PersistedActivityState].self, key: "__wonderpush_persistedActivityStates")) ?? ([:] as [String: PersistedActivityState])
-            .filter({ element in
-                element.value.creationDate > earliestAcceptableCreationDate
-            })
-    }
-    
-    @available(iOS 16.1, *)
-    class func setPersistedActivityStates(_ value: [String: PersistedActivityState]) -> Void {
-        self.setEncodedToJSON(value, key: "__wonderpush_persistedActivityStates")
-    }
-
-    @available(iOS 16.1, *)
-    class func updatePersistedActivityStates(_ callback: (inout [String: PersistedActivityState]) -> Void) -> Void {
-        var persistedActivityStates = self.getPersistedActivityStates()
-        callback(&persistedActivityStates)
-        self.setPersistedActivityStates(persistedActivityStates)
-    }
 
 }

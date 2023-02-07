@@ -33,15 +33,16 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
     let attributesTypeIdentifier: ObjectIdentifier
     let attributesTypeName: String
     let propertiesExtractor: ActivityPropertiesExtractor<Attributes>
-    var persistedActivityStates: [String: PersistedActivityState] = [:]
+    var liveActivitySyncs: [String: WPJsonSyncLiveActivity] = [:]
     var monitoredActivities: [Activity<Attributes>] = []
     
     static func createIfNotExists(attributesType: Attributes.Type, propertiesExtractor: ActivityPropertiesExtractor<Attributes>) {
-        let persistedActivityStates = Configuration.getPersistedActivityStates()
+        let liveActivityIdsPerAttributesTypeName = WonderPushObjCInterop.WonderPushPrivate.liveActivityIdsPerAttributesTypeName()
         if let syncer = activitySyncersLock.withCriticalSection(block: {
             var rtn: ActivitySyncer<Attributes>?
             if activitySyncers[ObjectIdentifier(attributesType)] == nil {
-                let syncer = ActivitySyncer(attributesType: attributesType, propertiesExtractor: propertiesExtractor, persistedActivityStates: persistedActivityStates)
+                let knownActivityIds = liveActivityIdsPerAttributesTypeName[String(describing: attributesType)];
+                let syncer = ActivitySyncer(attributesType: attributesType, propertiesExtractor: propertiesExtractor, knownActivityIds: knownActivityIds)
                 activitySyncers[ObjectIdentifier(attributesType)] = syncer
                 rtn = syncer
             }
@@ -51,22 +52,20 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         }
     }
 
-    init(attributesType: Attributes.Type, propertiesExtractor: ActivityPropertiesExtractor<Attributes>, persistedActivityStates: [String : PersistedActivityState]) {
+    init(attributesType: Attributes.Type, propertiesExtractor: ActivityPropertiesExtractor<Attributes>, knownActivityIds: [String]?) {
         self.attributesType = attributesType
         self.attributesTypeIdentifier = ObjectIdentifier(attributesType)
         self.attributesTypeName = String(describing: attributesType)
         self.propertiesExtractor = propertiesExtractor
-        for (id, persistedActivityState) in persistedActivityStates {
-            if persistedActivityState.attributesTypeName == self.attributesTypeName {
-                self.persistedActivityStates[id] = persistedActivityState
-            }
+        for id in knownActivityIds ?? [] {
+            self.liveActivitySyncs[id] = WonderPushObjCInterop.initWPJsonSyncLiveActivityFromSavedStateForActivityId(id)
         }
     }
     
     private func start() -> Void {
         // Caller should call only once per Attributes
         print("ActivitySyncer<\(self.attributesTypeName)> starting()")
-        var unseenActivityIds = Set(persistedActivityStates.keys)
+        var unseenActivityIds = Set(liveActivitySyncs.keys)
         print("ActivitySyncer<\(self.attributesTypeName)>: Current activities:")
         for activity in Activity<Attributes>.activities {
             print("ActivitySyncer<\(self.attributesTypeName)>: current activity: \(self.liveActivityDescription(activity))")
@@ -77,9 +76,9 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         
         // Remove persisted but no longer present Live Activities
         for unseenActivityId in unseenActivityIds {
-            if let persistedActivityState = persistedActivityStates[unseenActivityId] {
-                ActivitySyncer.removeLiveActivity(unseenActivityId, topic: persistedActivityState.topic, custom: persistedActivityState.custom)
-                persistedActivityStates.removeValue(forKey: unseenActivityId)
+            if let liveActivitySync = liveActivitySyncs[unseenActivityId] {
+                liveActivitySync.activityChangedWithAttributesType(nil, creationDate: nil, activityState: ActivitySyncer.activityStateToString(.ended), pushToken: nil, topic: nil, custom: nil)
+                liveActivitySyncs.removeValue(forKey: unseenActivityId)
             }
         }
         
@@ -122,11 +121,13 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
     }
     
     private func refreshActivity(_ activity: Activity<Attributes>) -> Void {
-        let previousPersistedState = self.persistedActivityStates[activity.id]
+        var liveActivitySync = self.liveActivitySyncs[activity.id]
+        if liveActivitySync == nil {
+            liveActivitySync = WonderPushObjCInterop.initWPJsonSyncLiveActivityWithActivityId(activity.id, userId: WonderPush.userId(), attributesTypeName: self.attributesTypeName)
+            self.liveActivitySyncs[activity.id] = liveActivitySync
+        }
         let (topic, custom) = propertiesExtractor.extractTopicAndProperties(activity: activity)
-        
-        let newPersistedState = ActivitySyncer.updateLiveActivity(activity, topic: topic, custom: custom, previousPersistedState: previousPersistedState)
-        persistedActivityStates[activity.id] = newPersistedState
+        liveActivitySync?.activityChangedWithAttributesType(self.attributesTypeName, creationDate: nil, activityState: ActivitySyncer.activityStateToString(activity.activityState), pushToken: activity.pushToken, topic: topic, custom: custom.map({ custom in NSDictionary(dictionary: custom) }))
     }
     
     private func liveActivityDescription<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>) -> String {
@@ -137,69 +138,19 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         //        return "Activity<\(String(describing: type(of: Attributes.self)))>(id: \(activity.id), state: \(activity.activityState), attributes: \(attributesJson ?? "ERROR"), contentState: \(contentStateJson ?? "ERROR"), pushToken: \(String(describing: activity.pushToken?.hexEncodedString() ?? "None")))"
     }
     
-    @available(iOS 16.1, *)
-    private class func removeLiveActivity(_ id: String, topic: String?, custom: Properties?) {
-        Configuration.updatePersistedActivityStates { persistedActivtyStates in
-            persistedActivtyStates.removeValue(forKey: id)
+    private class func activityStateToString(_ activityState: ActivityState) -> String {
+        switch activityState {
+        case .active:
+            return "active"
+        case .dismissed:
+            return "dismissed"
+        case .ended:
+            return "ended"
+        case .stale:
+            return "stale"
+        default:
+            return String(describing: activityState)
         }
-        let eventAttributes = (custom ?? [:]).merging([
-            "string_liveActivityId": id,
-            "string_liveActivityTopic": topic ?? NSNull(),
-            "ignore_liveActivityPushToken": NSNull(),
-            "date_liveActivityExpiration": 0,
-        ]) { _, new in
-            new
-        }
-        print("WonderPush.trackEvent(\"NewLiveActivity\", attributes: \(eventAttributes))")
-        WonderPush.trackEvent("NewLiveActivity", attributes: eventAttributes)
-    }
-    
-    @available(iOS 16.1, *)
-    private class func updateLiveActivity<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>, topic: String, custom: Properties?, previousPersistedState: PersistedActivityState?) -> PersistedActivityState? {
-        let interesting = activity.activityState == .active && activity.pushToken != nil
-        if !interesting {
-            if previousPersistedState != nil {
-                print("updateLiveActivity(\(activity.id)) needs to be removed")
-                removeLiveActivity(activity.id, topic: topic, custom: custom)
-            } else {
-                print("updateLiveActivity(\(activity.id)) will simply ignore")
-            }
-            return nil
-        }
-        
-        var userId = WonderPush.userId()
-        var creationDate = Date()
-        print("updateLiveActivity(\(activity.id)) new custom: \(String(describing: custom))")
-        if let previousPersistedState = previousPersistedState {
-            print("updateLiveActivity(\(activity.id)) may need to be updated from \(previousPersistedState)")
-            creationDate = previousPersistedState.creationDate
-            userId = previousPersistedState.userId
-        } else {
-            print("updateLiveActivity(\(activity.id)) needs to be created")
-        }
-        let newPersistedState = PersistedActivityState(attributesTypeName: String(describing: Attributes.self), id: activity.id, creationDate: creationDate, activityState: activity.activityState, pushToken: activity.pushToken, userId: userId, topic: topic, custom: custom)
-        if let previousPersistedState = previousPersistedState {
-            // Check for any change
-            if newPersistedState == previousPersistedState {
-                print("updateLiveActivity(\(activity.id)) did not change")
-                return newPersistedState
-            }
-        }
-        print("updateLiveActivity(\(activity.id)) upserting \(String(describing: newPersistedState))")
-        Configuration.updatePersistedActivityStates { persistedActivtyStates in
-            persistedActivtyStates[activity.id] = newPersistedState
-        }
-        let eventAttributes = (custom ?? [:]).merging([
-            "string_liveActivityId": activity.id,
-            "string_liveActivityTopic": topic,
-            "ignore_liveActivityPushToken": activity.pushToken!.hexEncodedString(),
-            "date_liveActivityExpiration": ISO8601DateFormatter().string(from: creationDate.addingTimeInterval(3600 * 8)),
-        ]) { _, new in
-            new
-        }
-        print("WonderPush.trackEvent(\"NewLiveActivity\", attributes: \(eventAttributes))")
-        WonderPush.trackEvent("NewLiveActivity", attributes: eventAttributes)
-        return newPersistedState
     }
     
 }

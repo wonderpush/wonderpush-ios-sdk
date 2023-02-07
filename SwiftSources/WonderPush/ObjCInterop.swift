@@ -16,7 +16,30 @@ internal protocol WonderPushPrivate {
     // Implemented by the underlying ObjC class and returns a new instance of a class implementing this protocol
     init()
 
+    func liveActivityIdsPerAttributesTypeName() -> [String: Array<String>]
     func trackInternalEvent(_ type: String, eventData: NSDictionary, customData: NSDictionary, sentCallback: @escaping () -> Void)
+
+}
+
+// The protocol, exposed in ObjC, that enable Swift to call advertised methods.
+// See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
+@objc(WPJsonSyncLiveActivityProtocol)
+internal protocol WPJsonSyncLiveActivity {
+
+    init()
+
+    func initFromSavedStateForActivityId(_ activityId: String) -> Self?
+    func initWithActivityId(_ activityId: String, userId:String?, attributesTypeName:String) -> Self
+
+    func flush() -> Void
+    func activityChangedWithAttributesType(_ attributesTypeName:String?, creationDate:Date?, activityState:String?, pushToken:Data?, topic:String?, custom:NSDictionary?) -> Void
+
+    func put(_ diff: NSDictionary) -> Void
+    func receiveState(_ state: NSDictionary, resetSdkState: Bool) -> Void
+    func receiveServerState(_ state: NSDictionary) -> Void
+    func receiveDiff(_ diff: NSDictionary) -> Void
+
+    func performScheduledPatchCall() -> Bool
 
 }
 
@@ -27,10 +50,22 @@ internal protocol WonderPushPrivate {
 internal class WonderPushObjCInterop: NSObject {
     
     private(set) static var WonderPushPrivate: WonderPushPrivate! = nil
+    private static var WPJsonSyncLiveActivityType: WPJsonSyncLiveActivity.Type!
     
     @objc static func registerWonderPushPrivate(_ type: WonderPushPrivate.Type) {
-        print("REGISTRATION CALLED WITH TYPE = \(type)")
         WonderPushPrivate = type.init()
     }
     
+    @objc static func registerWPJsonSyncLiveActivity(_ type: WPJsonSyncLiveActivity.Type) {
+        WPJsonSyncLiveActivityType = type
+    }
+    
+    static func initWPJsonSyncLiveActivityFromSavedStateForActivityId(_ activityId: String) -> WPJsonSyncLiveActivity? {
+        return WPJsonSyncLiveActivityType.init().initFromSavedStateForActivityId(activityId)
+    }
+    
+    static func initWPJsonSyncLiveActivityWithActivityId(_ activityId: String, userId:String?, attributesTypeName:String) -> WPJsonSyncLiveActivity {
+        return WPJsonSyncLiveActivityType.init().initWithActivityId(activityId, userId: userId, attributesTypeName: attributesTypeName)
+    }
+
 }

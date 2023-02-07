@@ -60,6 +60,17 @@ class ViewController: UIViewController {
     }
 
     @IBAction func touchSyncLiveActivities(_ sender: Any) {
+        // Let's register a dynamic topic and properties
+        WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self, topic: { activity in
+            "WonderPushwidget-\(activity.attributes.name)-\(activity.contentState.name)"
+        }, properties: { activity in
+            [
+                "string_name": activity.attributes.name,
+                "string_state": activity.contentState.name,
+                "int_foo": activity.contentState.value
+            ]
+        })
+        // Other more focused ways of registering Live Activities
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
                                               topic: "WonderPushWidget")
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
