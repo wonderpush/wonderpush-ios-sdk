@@ -77,7 +77,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         // Remove persisted but no longer present Live Activities
         for unseenActivityId in unseenActivityIds {
             if let liveActivitySync = liveActivitySyncs[unseenActivityId] {
-                liveActivitySync.activityChangedWithAttributesType(nil, creationDate: nil, activityState: ActivitySyncer.activityStateToString(.ended), pushToken: nil, topic: nil, custom: nil)
+                liveActivitySync.activityChangedWithAttributesType(nil, creationDate: nil, activityState: ActivitySyncer.activityStateToString(.ended), pushToken: nil, staleDate: nil, relevanceScore: nil, topic: nil, custom: nil)
                 liveActivitySyncs.removeValue(forKey: unseenActivityId)
             }
         }
@@ -127,11 +127,23 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
             self.liveActivitySyncs[activity.id] = liveActivitySync
         }
         let (topic, custom) = propertiesExtractor.extractTopicAndProperties(activity: activity)
-        liveActivitySync?.activityChangedWithAttributesType(self.attributesTypeName, creationDate: nil, activityState: ActivitySyncer.activityStateToString(activity.activityState), pushToken: activity.pushToken, topic: topic, custom: custom.map({ custom in NSDictionary(dictionary: custom) }))
+        var staleDate: Date?
+        var relevanceScore: Double?
+        if #available(iOS 16.2, *) {
+            staleDate = activity.content.staleDate
+            relevanceScore = activity.content.relevanceScore
+        }
+        liveActivitySync?.activityChangedWithAttributesType(self.attributesTypeName, creationDate: nil, activityState: ActivitySyncer.activityStateToString(activity.activityState), pushToken: activity.pushToken, staleDate: staleDate, relevanceScore: relevanceScore as NSNumber?, topic: topic, custom: custom.map({ custom in NSDictionary(dictionary: custom) }))
     }
     
     private func liveActivityDescription<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>) -> String {
-        return "Activity<\(String(describing: type(of: Attributes.self)))>(id: \(activity.id), state: \(activity.activityState), attributes:…, contentState: …, pushToken: \(activity.pushToken == nil ? "None" : "PRESENT")))"
+        var staleDate: Date?
+        var relevanceScore: Double?
+        if #available(iOS 16.2, *) {
+            staleDate = activity.content.staleDate
+            relevanceScore = activity.content.relevanceScore
+        }
+        return "Activity<\(String(describing: type(of: Attributes.self)))>(id: \(activity.id), state: \(activity.activityState), attributes:…, contentState: …, staleDate: \(String(describing: staleDate)), relevanceScore: \(String(describing: relevanceScore)), pushToken: \(activity.pushToken == nil ? "None" : "PRESENT")))"
         //        let encoder = JSONEncoder()
         //        let attributesJson = try? String(decoding: encoder.encode(activity.attributes), as: UTF8.self)
         //        let contentStateJson = try? String(decoding: encoder.encode(activity.contentState), as: UTF8.self)

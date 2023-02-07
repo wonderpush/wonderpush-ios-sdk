@@ -25,7 +25,12 @@ class ViewController: UIViewController {
         let initialContentState = WonderPushWidgetExtensionAttributes.ContentState(value:123, name:"started")
         let activityAttributes = WonderPushWidgetExtensionAttributes(name:"some name")
         do {
-            activity = try Activity.request(attributes: activityAttributes, contentState: initialContentState, pushType: .token)
+            if #available(iOS 16.2, *) {
+                let initialContent = ActivityContent<WonderPushWidgetExtensionAttributes.ContentState>(state:initialContentState, staleDate: Date().addingTimeInterval(60), relevanceScore: Double.random(in: -1..<1))
+                activity = try Activity.request(attributes: activityAttributes, content: initialContent, pushType: .token)
+            } else {
+                activity = try Activity.request(attributes: activityAttributes, contentState: initialContentState, pushType: .token)
+            }
             if let activity = activity {
                 print("Requested a Live Activity \(String(describing: activity.id)).")
             }
@@ -42,7 +47,12 @@ class ViewController: UIViewController {
                 let alertConfiguration = AlertConfiguration(title: "Activity Update", body: "Value has been updated to \(value)", sound: .default)
                 
                 print("Updating a Live Activity \(activity.id).")
-                await activity.update(using: updatedContentState, alertConfiguration: alertConfiguration)
+                if #available(iOS 16.2, *) {
+                    let updatedContent = ActivityContent<WonderPushWidgetExtensionAttributes.ContentState>(state:updatedContentState, staleDate: Date().addingTimeInterval(60), relevanceScore: Double.random(in: -1..<1))
+                    await activity.update(updatedContent, alertConfiguration: alertConfiguration)
+                } else {
+                    await activity.update(using: updatedContentState, alertConfiguration: alertConfiguration)
+                }
             }
         }
     }

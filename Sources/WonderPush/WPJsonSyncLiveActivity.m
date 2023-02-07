@@ -200,7 +200,7 @@ static NSObject *saveLock = nil;
     });
 }
 
-- (void) activityChangedWithAttributesType:(nullable NSString *)attributesTypeName creationDate:(nullable NSDate *)creationDate activityState:(nullable NSString *)activityState pushToken:(nullable NSData *)pushToken topic:(nullable NSString *)topic custom:(nullable NSDictionary *)custom {
+- (void) activityChangedWithAttributesType:(nullable NSString *)attributesTypeName creationDate:(nullable NSDate *)creationDate activityState:(nullable NSString *)activityState pushToken:(nullable NSData *)pushToken staleDate:(nullable NSDate *)staleDate relevanceScore:(nullable NSNumber *)relevanceScore topic:(nullable NSString *)topic custom:(nullable NSDictionary *)custom {
     NSString *previousActivityState = self.sdkState[STATE_META][STATE_META_ACTIVITY_STATE];
     if (creationDate == nil) {
         NSNumber *creationDateNumber = [WPNSUtil numberForKey:STATE_META_CREATION_DATE inDictionary:self.sdkState[STATE_META]];
@@ -251,6 +251,12 @@ static NSObject *saveLock = nil;
     if (activityState != nil) {
         stateDiffMeta[STATE_META_ACTIVITY_STATE] = activityState;
         stateDiff[@"lifecycle"] = activityState;
+    }
+    if (staleDate != nil) {
+        stateDiff[@"staleDate"] = [NSNumber numberWithLong:[staleDate timeIntervalSince1970] * 1000];
+    }
+    if (relevanceScore != nil) {
+        stateDiff[@"relevanceScore"] = relevanceScore;
     }
     if (pushToken != nil || creationDate != nil) {
         NSMutableDictionary *stateDiffPushToken = [NSMutableDictionary new];
