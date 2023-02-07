@@ -145,10 +145,6 @@ static NSObject *saveLock = nil;
     ];
     if (self) {
         self = [self init_common];
-        if (self == nil) {
-            // Clean up old invalid entry
-            // TODO
-        }
     }
     return self;
 }

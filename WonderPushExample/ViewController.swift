@@ -19,7 +19,6 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        WonderPush.testObjCInterop()
     }
 
     @IBAction func touchStartLiveActivity(_ sender: Any) {

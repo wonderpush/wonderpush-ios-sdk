@@ -13,13 +13,6 @@ public typealias Properties = [AnyHashable : Any]
 
 extension WonderPush {
     
-    public class func testObjCInterop() -> Void {
-        print("Will call ObjC private interop")
-        WonderPushObjCInterop.WonderPushPrivate.trackInternalEvent("@APP_OPEN", eventData: ["campaignId": "FAKE"], customData: ["string_foo": "bar"], sentCallback: {
-            print("Internal event sent")
-        })
-    }
-
     @available(iOS 16.1, *)
     public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: String, properties: Properties? = nil) -> Void {
         ActivitySyncer.createIfNotExists(attributesType: activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
