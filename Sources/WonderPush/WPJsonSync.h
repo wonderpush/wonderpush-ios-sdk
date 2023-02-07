@@ -14,14 +14,15 @@ typedef void (^WPJsonSyncUpgradeCallback)(NSMutableDictionary *upgradeMeta, NSMu
 
 @interface WPJsonSync : NSObject
 
+@property (readonly) NSString *logIdentifier;
 @property (readonly) NSDictionary *sdkState;
 @property (readonly) NSDictionary *serverState;
 @property (readonly) bool scheduledPatchCall;
 @property (readonly) bool inflightPatchCall;
 
 
-- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback)upgradeCallback;
-- (instancetype) initFromSdkState:(NSDictionary *)sdkState andServerState:(NSDictionary *)serverState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback)upgradeCallback;
+- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback)upgradeCallback logIdentifier:(NSString *)logIdentifier;
+- (instancetype) initFromSdkState:(NSDictionary *)sdkState andServerState:(NSDictionary *)serverState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback)upgradeCallback logIdentifier:(NSString *)logIdentifier;
 
 
 - (void) put:(NSDictionary *)diff;

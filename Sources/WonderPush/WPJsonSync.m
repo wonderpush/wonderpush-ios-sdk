@@ -47,9 +47,10 @@
 
 @implementation WPJsonSync
 
-- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback _Nullable)upgradeCallback {
+- (instancetype) initFromSavedState:(NSDictionary *)savedState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback _Nullable)upgradeCallback logIdentifier:(nullable NSString *)logIdentifier {
     self = [super init];
     if (self) {
+        _logIdentifier = logIdentifier;
         _serverPatchCallback = serverPatchCallback;
         _saveCallback = saveCallback;
         _schedulePatchCallCallback = schedulePatchCallCallback;
@@ -80,9 +81,10 @@
     return self;
 }
 
-- (instancetype) initFromSdkState:(NSDictionary *)sdkState andServerState:(NSDictionary *)serverState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback)upgradeCallback {
+- (instancetype) initFromSdkState:(NSDictionary *)sdkState andServerState:(NSDictionary *)serverState saveCallback:(WPJsonSyncSaveCallback)saveCallback serverPatchCallback:(WPJsonSyncServerPatchCallback)serverPatchCallback schedulePatchCallCallback:(WPJsonSyncCallback)schedulePatchCallCallback upgradeCallback:(WPJsonSyncUpgradeCallback)upgradeCallback logIdentifier:(nullable NSString *)logIdentifier {
     self = [super init];
     if (self) {
+        _logIdentifier = logIdentifier;
         _serverPatchCallback = serverPatchCallback;
         _saveCallback = saveCallback;
         _schedulePatchCallCallback = schedulePatchCallCallback;
@@ -199,10 +201,10 @@
     @synchronized (self) {
         if (_inflightPatchCall) {
             if (!_scheduledPatchCall) {
-                WPLogDebug(@"Server PATCH call already inflight, scheduling a new one");
+                WPLogDebug(@"[%@] Server PATCH call already inflight, scheduling a new one", _logIdentifier);
                 [self schedulePatchCallAndSave];
             } else {
-                WPLogDebug(@"Server PATCH call already inflight, and already scheduled");
+                WPLogDebug(@"[%@] Server PATCH call already inflight, and already scheduled", _logIdentifier);
             }
             [self save];
             return;
@@ -211,7 +213,7 @@
 
         _inflightDiff = [WPJsonUtil diff:self.serverState with:self.sdkState];
         if (_inflightDiff.count == 0) {
-            WPLogDebug(@"No diff to send to server");
+            WPLogDebug(@"[%@] No diff to send to server", _logIdentifier);
             [self save];
             return;
         }

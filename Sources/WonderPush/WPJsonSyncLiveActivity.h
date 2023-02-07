@@ -15,6 +15,7 @@
 
 + (void) initialize;
 + (nullable NSString *) activityIdFromSavedState:(nullable NSDictionary *)savedState;
++ (nullable NSString *) userIdFromSavedState:(nullable NSDictionary *)savedState;
 + (nullable NSString *) attributesTypeNameFromSavedState:(nullable NSDictionary *)savedState;
 
 - (nullable instancetype) initFromSavedStateForActivityId:(nonnull NSString *)activityId;

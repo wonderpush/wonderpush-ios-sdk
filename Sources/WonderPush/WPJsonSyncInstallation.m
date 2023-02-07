@@ -156,6 +156,7 @@ static NSObject *saveLock = nil;
                          }
                          upgradeMeta[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_LATEST;
                      }
+                       logIdentifier:[NSString stringWithFormat:@"Installation(userId:%@)", userId ?: @""]
             ];
     if (self) {
         [self init_commonWithUserId:userId];
@@ -178,6 +179,7 @@ static NSObject *saveLock = nil;
                    upgradeCallback:^(NSMutableDictionary *upgradeMeta, NSMutableDictionary *sdkState, NSMutableDictionary *serverState, NSMutableDictionary *putAccumulator, NSMutableDictionary *inflightDiff, NSMutableDictionary *inflightPutAccumulator) {
                        upgradeMeta[UPGRADE_META_VERSION_KEY] = UPGRADE_META_VERSION_LATEST;
                    }
+                     logIdentifier:[NSString stringWithFormat:@"Installation(userId:%@)", userId ?: @""]
             ];
     if (self) {
         [self init_commonWithUserId:userId];
@@ -205,10 +207,10 @@ static NSObject *saveLock = nil;
 }
 
 - (void) scheduleServerPatchCallCallback {
-//    WPLogDebug(@"Scheduling a delayed update of installation");
+//    WPLogDebug(@"[%@] Scheduling a delayed update of installation", self.logIdentifier);
     if (![WonderPush hasUserConsent]) {
         [WonderPush safeDeferWithConsent:^{
-            WPLogDebug(@"Now scheduling user consent delayed patch call for installation state for userId %@", self.userId);
+            WPLogDebug(@"[%@] Now scheduling user consent delayed patch call for installation state for userId %@", self.logIdentifier, self.userId);
             [self scheduleServerPatchCallCallback]; // NOTE: imposes this function to be somewhat reentrant
         }];
         return;
@@ -229,7 +231,7 @@ static NSObject *saveLock = nil;
                 }
                 self->_firstDelayedWriteDate = nil;
             }
-//            WPLogDebug(@"Performing delayed update of installation");
+//            WPLogDebug(@"[%@] Performing delayed update of installation", self.logIdentifier);
             [self performScheduledPatchCall];
         });
     }
@@ -238,7 +240,7 @@ static NSObject *saveLock = nil;
 - (bool) performScheduledPatchCall
 {
     if (![WonderPush hasUserConsent]) {
-        WPLogDebug(@"Need consent, not performing scheduled patch call for user %@", self.userId);
+        WPLogDebug(@"[%@] Need consent, not performing scheduled patch call for user %@", self.logIdentifier, self.userId);
         return false;
     }
     return [super performScheduledPatchCall];
@@ -246,12 +248,12 @@ static NSObject *saveLock = nil;
 
 - (void) serverPatchCallbackWithDiff:(NSDictionary *)diff onSuccess:(WPJsonSyncCallback)onSuccess onFailure:(WPJsonSyncCallback)onFailure {
     if (patchCallDisabled) {
-        WPLogDebug(@"JsonSync PATCH calls disabled.");
+        WPLogDebug(@"[%@] JsonSync PATCH calls disabled.", self.logIdentifier);
         if (onFailure) onFailure();
         return;
     }
     if ([WonderPush subscriptionStatusIsOptIn]) {
-        WPLogDebug(@"Sending installation diff: %@ for user %@", diff, _userId);
+        WPLogDebug(@"[%@] Sending installation diff: %@ for user %@", self.logIdentifier, diff, _userId);
     }
     [WonderPush requestForUser:_userId
                         method:@"PATCH"
@@ -260,16 +262,16 @@ static NSObject *saveLock = nil;
                        handler:^(WPResponse *response, NSError *error) {
                            NSDictionary *responseJson = (NSDictionary *)response.object;
                            if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[WPNSUtil numberForKey:@"success" inDictionary:responseJson] boolValue]) {
-                               WPLogDebug(@"Succeded to send diff for user %@: %@", self->_userId, responseJson);
+                               WPLogDebug(@"[%@] Succeded to send diff for user %@: %@", self.logIdentifier, self->_userId, responseJson);
                                onSuccess();
                            } else {
                                if ([error.domain isEqualToString:WPErrorDomain]
                                    && error.code == WPErrorClientDisabled) {
                                    // Hide this error on released SDKs (it's just for us).
-//                                   WPLogDebug(@"Failed to send diff for user %@ because client is disabled: %@", self->_userId, error.localizedDescription);
+//                                   WPLogDebug(@"[%@] Failed to send diff for user %@ because client is disabled: %@", self.logIdentifier, self->_userId, error.localizedDescription);
 
                                } else {
-                                   WPLogDebug(@"Failed to send diff for user %@: error %@, response %@", self->_userId, error, response);
+                                   WPLogDebug(@"[%@] Failed to send diff for user %@: error %@, response %@", self.logIdentifier, self->_userId, error, response);
                                }
                                onFailure();
                            }
