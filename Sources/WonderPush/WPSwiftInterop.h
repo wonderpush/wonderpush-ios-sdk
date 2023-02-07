@@ -22,6 +22,8 @@ SWIFT_PROTOCOL_NAMED("WonderPushPrivateProtocol")
 // This method is automatically implemented by classes, and it permits Swift to grab an instance directly from the protocol itself.
 - (nonnull instancetype)init;
 
+- (NSDictionary<NSString *, NSArray<NSString *> *> *) liveActivityIdsPerAttributesTypeName;
+
 - (void)trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void (^)(void))sentCallback;
 
 @end
