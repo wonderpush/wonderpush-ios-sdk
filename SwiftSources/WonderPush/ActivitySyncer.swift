@@ -133,7 +133,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
             staleDate = activity.content.staleDate
             relevanceScore = activity.content.relevanceScore
         }
-        liveActivitySync?.activityChangedWithAttributesType(self.attributesTypeName, creationDate: nil, activityState: ActivitySyncer.activityStateToString(activity.activityState), pushToken: activity.pushToken, staleDate: staleDate, relevanceScore: relevanceScore as NSNumber?, topic: topic, custom: custom.map({ custom in NSDictionary(dictionary: custom) }))
+        liveActivitySync?.activityChangedWithAttributesType(self.attributesTypeName, activityState: ActivitySyncer.activityStateToString(activity.activityState), pushToken: activity.pushToken, staleDate: staleDate, relevanceScore: relevanceScore as NSNumber?, topic: topic, custom: custom.map({ custom in NSDictionary(dictionary: custom) }))
     }
     
     private func liveActivityDescription<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>) -> String {

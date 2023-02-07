@@ -212,13 +212,12 @@ static NSObject *saveLock = nil;
     [self flush];
 }
 
-- (void) activityChangedWithAttributesType:(nullable NSString *)attributesTypeName creationDate:(nullable NSDate *)creationDate activityState:(nullable NSString *)activityState pushToken:(nullable NSData *)pushToken staleDate:(nullable NSDate *)staleDate relevanceScore:(nullable NSNumber *)relevanceScore topic:(nullable NSString *)topic custom:(nullable NSDictionary *)custom {
+- (void) activityChangedWithAttributesType:(NSString *)attributesTypeName activityState:(NSString *)activityState pushToken:(nullable NSData *)pushToken staleDate:(nullable NSDate *)staleDate relevanceScore:(nullable NSNumber *)relevanceScore topic:(NSString *)topic custom:(nullable NSDictionary *)custom {
     NSString *previousActivityState = self.sdkState[STATE_META][STATE_META_ACTIVITY_STATE];
-    if (creationDate == nil) {
-        NSNumber *creationDateNumber = [WPNSUtil numberForKey:STATE_META_CREATION_DATE inDictionary:self.sdkState[STATE_META]];
-        if (creationDateNumber != nil) {
-            creationDate = [NSDate dateWithTimeIntervalSince1970:creationDateNumber.floatValue/1000.f];
-        }
+    NSDate *creationDate = [NSDate date];
+    NSNumber *creationDateNumber = [WPNSUtil numberForKey:STATE_META_CREATION_DATE inDictionary:self.sdkState[STATE_META]];
+    if (creationDateNumber != nil) {
+        creationDate = [NSDate dateWithTimeIntervalSince1970:creationDateNumber.floatValue/1000.f];
     }
 
     NSMutableDictionary *stateDiff = [NSMutableDictionary new];
@@ -257,43 +256,39 @@ static NSObject *saveLock = nil;
         },
     };
 
-    if (attributesTypeName != nil) {
-        stateDiff[@"type"] = attributesTypeName;
-    }
-    if (activityState != nil) {
-        stateDiffMeta[STATE_META_ACTIVITY_STATE] = activityState;
-        stateDiff[@"lifecycle"] = activityState;
-    }
-    if (staleDate != nil) {
-        stateDiff[@"staleDate"] = [NSNumber numberWithLong:[staleDate timeIntervalSince1970] * 1000];
-    }
-    if (relevanceScore != nil) {
-        stateDiff[@"relevanceScore"] = relevanceScore;
-    }
-    if (pushToken != nil || creationDate != nil) {
-        NSMutableDictionary *stateDiffPushToken = [NSMutableDictionary new];
-        stateDiff[@"pushToken"] = stateDiffPushToken;
-        if (pushToken != nil) {
-            if ([pushToken length] == 0) {
-                stateDiffPushToken[@"data"] = null;
-            } else {
-                stateDiffPushToken[@"data"] = [WPNSUtil hexForData:pushToken];
-            }
-        }
-        if (creationDate != nil) {
-            stateDiffMeta[STATE_META_CREATION_DATE] = [NSNumber numberWithLong:[creationDate timeIntervalSince1970] * 1000];
-            stateDiff[@"creationDate"] = [NSNumber numberWithLong:[creationDate timeIntervalSince1970] * 1000];
+    stateDiff[@"type"] = attributesTypeName;
+
+    stateDiffMeta[STATE_META_ACTIVITY_STATE] = activityState;
+    stateDiff[@"lifecycle"] = activityState;
+
+    stateDiff[@"staleDate"] = staleDate == nil ? null : [NSNumber numberWithLong:[staleDate timeIntervalSince1970] * 1000];
+    stateDiff[@"relevanceScore"] = relevanceScore ?: null;
+
+    if (pushToken != nil) {
+        // Let's not remove the push token (except if explicitly given as empty).
+        // In case iOS starts listing pre-existing Live Activities without one until is (suposedly) can get an updated value online,
+        // doing this way protects us from temporarily removing the push token in the JsonSync.
+        if ([pushToken length] == 0) {
+            stateDiff[@"pushToken"] = null;
+        } else {
+            NSMutableDictionary *stateDiffPushToken = [NSMutableDictionary new];
+            stateDiff[@"pushToken"] = stateDiffPushToken;
+            stateDiffPushToken[@"data"] = [WPNSUtil hexForData:pushToken];
             stateDiffPushToken[@"expirationDate"] = [NSNumber numberWithLong:[[creationDate dateByAddingTimeInterval:8*60*60] timeIntervalSince1970] * 1000];
         }
     }
-    if (topic != nil) {
-        stateDiff[@"topic"] = topic;
-    }
-    if (custom != nil) {
-        stateDiff[@"custom"] = custom;
-    }
+    stateDiffMeta[STATE_META_CREATION_DATE] = [NSNumber numberWithLong:[creationDate timeIntervalSince1970] * 1000];
+    stateDiff[@"creationDate"] = [NSNumber numberWithLong:[creationDate timeIntervalSince1970] * 1000];
+
+    stateDiff[@"topic"] = topic;
+    stateDiff[@"custom"] = null; // in order to replace the whole custom object, we first need to clear it
     
+    // Apply diff, temporarily clearing `custom`
     [self put:stateDiff];
+    // Re-apply `custom` to finish replacing it entirely (we're not given a diff but a full value to apply)
+    [self put:@{
+        @"custom": custom ?: null,
+    }];
 
     NSString *newActivityState = self.sdkState[STATE_META][STATE_META_ACTIVITY_STATE];
     if (isActivityStateTerminal(newActivityState) && !isActivityStateTerminal(previousActivityState)) {

@@ -73,11 +73,17 @@ class ViewController: UIViewController {
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self, topic: { activity in
             "WonderPushwidget-\(activity.attributes.name)-\(activity.contentState.name)"
         }, properties: { activity in
-            [
-                "string_name": activity.attributes.name,
-                "string_state": activity.contentState.name,
-                "int_foo": activity.contentState.value
-            ]
+            if (activity.contentState.value > 500) {
+                return [
+                    "int_foo": activity.contentState.value
+                ];
+            } else {
+                return [
+                    "string_name": activity.attributes.name,
+                    "string_state": activity.contentState.name,
+                    "int_foo": activity.contentState.value
+                ]
+            }
         })
         // Other more focused ways of registering Live Activities
         WonderPush.registerActivityAttributes(WonderPushWidgetExtensionAttributes.self,
