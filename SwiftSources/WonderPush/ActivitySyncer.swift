@@ -64,15 +64,15 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
     
     private func start() -> Void {
         // Caller should call only once per Attributes
-        print("ActivitySyncer<\(self.attributesTypeName)> starting()")
+        WPLogDebug("ActivitySyncer<\(self.attributesTypeName)> starting()")
         var unseenActivityIds = Set(liveActivitySyncs.keys)
-        print("ActivitySyncer<\(self.attributesTypeName)>: Current activities:")
+        WPLogDebug("ActivitySyncer<\(self.attributesTypeName)>: Current activities:")
         for activity in Activity<Attributes>.activities {
-            print("ActivitySyncer<\(self.attributesTypeName)>: current activity: \(self.liveActivityDescription(activity))")
+            WPLogDebug("ActivitySyncer<\(self.attributesTypeName)>: current activity: \(self.liveActivityDescription(activity))")
             unseenActivityIds.remove(activity.id)
             self.monitorLiveActivity(activity: activity)
         }
-        print("ActivitySyncer<\(self.attributesTypeName)>: Current activities EOL")
+        WPLogDebug("ActivitySyncer<\(self.attributesTypeName)>: Current activities EOL")
         
         // Remove persisted but no longer present Live Activities
         for unseenActivityId in unseenActivityIds {
@@ -85,38 +85,38 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         // Monitor for newly created activities
         Task {
             for await updatedActivity in Activity<Attributes>.activityUpdates {
-                print("ActivitySyncer<\(self.attributesTypeName)>: activityUpdates yielded \(self.liveActivityDescription(updatedActivity))")
+                WPLogDebug("ActivitySyncer<\(self.attributesTypeName)>: activityUpdates yielded \(self.liveActivityDescription(updatedActivity))")
                 self.monitorLiveActivity(activity: updatedActivity)
             }
-            print("ActivitySyncer<\(self.attributesTypeName)>: activityUpdates EOS")
+            WPLogDebug("ActivitySyncer<\(self.attributesTypeName)>: activityUpdates EOS")
         }
     }
     
     private func monitorLiveActivity(activity: Activity<Attributes>) -> Void {
-        print("monitorLiveActivities for \(activity.id): Initial. Activity: \(self.liveActivityDescription(activity))")
+        WPLogDebug("monitorLiveActivities for \(activity.id): Initial. Activity: \(self.liveActivityDescription(activity))")
         self.refreshActivity(activity)
         Task {
             for await activityState in activity.activityStateUpdates {
-                print("monitorLiveActivities for \(activity.id): Activity state update. New: \(activityState). Activity: \(self.liveActivityDescription(activity))")
+                WPLogDebug("monitorLiveActivities for \(activity.id): Activity state update. New: \(activityState). Activity: \(self.liveActivityDescription(activity))")
                 self.refreshActivity(activity)
             }
-            print("monitorLiveActivities for \(activity.id): Activity state update EOS")
+            WPLogDebug("monitorLiveActivities for \(activity.id): Activity state update EOS")
         }
         Task {
             for await pushToken in activity.pushTokenUpdates {
-                print("monitorLiveActivities for \(activity.id): Push token update. New: \(pushToken.hexEncodedString()). Activity: \(self.liveActivityDescription(activity))")
+                WPLogDebug("monitorLiveActivities for \(activity.id): Push token update. New: \(pushToken.hexEncodedString()). Activity: \(self.liveActivityDescription(activity))")
                 self.refreshActivity(activity)
             }
-            print("monitorLiveActivities for \(activity.id): Push token update EOS")
+            WPLogDebug("monitorLiveActivities for \(activity.id): Push token update EOS")
         }
         Task {
             let encoder = JSONEncoder()
             for await contentState in activity.contentStateUpdates {
                 let contentStateJson = try? String(decoding: encoder.encode(contentState), as: UTF8.self)
-                print("monitorLiveActivities for \(activity.id): Content state update. New: \(contentStateJson ?? "ERROR"). Activity: \(self.liveActivityDescription(activity))")
+                WPLogDebug("monitorLiveActivities for \(activity.id): Content state update. New: \(contentStateJson ?? "ERROR"). Activity: \(self.liveActivityDescription(activity))")
                 self.refreshActivity(activity)
             }
-            print("monitorLiveActivities for \(activity.id): Content state update EOS")
+            WPLogDebug("monitorLiveActivities for \(activity.id): Content state update EOS")
         }
     }
     

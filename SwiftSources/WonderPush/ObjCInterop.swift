@@ -16,6 +16,9 @@ internal protocol WonderPushPrivate {
     // Implemented by the underlying ObjC class and returns a new instance of a class implementing this protocol
     init()
 
+    func log(_ message: String) -> Void
+    func logDebug(_ message: String) -> Void
+
     func liveActivityIdsPerAttributesTypeName() -> [String: Array<String>]
     func trackInternalEvent(_ type: String, eventData: NSDictionary, customData: NSDictionary, sentCallback: @escaping () -> Void)
 
@@ -68,4 +71,12 @@ internal class WonderPushObjCInterop: NSObject {
         return WPJsonSyncLiveActivityType.init().initWithActivityId(activityId, userId: userId, attributesTypeName: attributesTypeName)
     }
 
+}
+
+internal func WPLog(_ message: String) -> Void {
+    WonderPushObjCInterop.WonderPushPrivate.log(message)
+}
+
+internal func WPLogDebug(_ message: String) -> Void {
+    WonderPushObjCInterop.WonderPushPrivate.logDebug(message)
 }

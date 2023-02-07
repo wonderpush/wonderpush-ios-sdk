@@ -11,6 +11,7 @@
 #import <Foundation/Foundation.h>
 
 #import "WonderPush_private.h"
+#import <WonderPushCommon/WPLog.h>
 #import "WPConfiguration.h"
 #import "WPJsonSyncLiveActivity.h"
 
@@ -28,6 +29,14 @@
 
 - (NSDictionary<NSString *, NSArray<NSString *> *> *) liveActivityIdsPerAttributesTypeName {
     return [[WPConfiguration sharedConfiguration] liveActivitySyncActivityIdsPerAttributesTypeName];
+}
+
+- (void)log:(NSString *)message {
+    WPLog(@"%@", message);
+}
+
+- (void)logDebug:(NSString *)message {
+    WPLogDebug(@"%@", message);
 }
 
 - (void)trackInternalEvent:(NSString *)type eventData:(NSDictionary *)data customData:(NSDictionary *)customData sentCallback:(void (^)(void))sentCallback {
