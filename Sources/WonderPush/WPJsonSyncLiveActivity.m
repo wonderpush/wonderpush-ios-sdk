@@ -223,10 +223,10 @@ static NSObject *saveLock = nil;
 
 - (void) activityChangedWithAttributesType:(nonnull NSString *)attributesTypeName activityState:(nonnull NSString *)activityState pushToken:(nullable NSData *)pushToken staleDate:(nullable NSDate *)staleDate relevanceScore:(nullable NSNumber *)relevanceScore topic:(nonnull NSString *)topic custom:(nullable NSDictionary *)custom {
     NSString *previousActivityState = self.sdkState[STATE_META][STATE_META_ACTIVITY_STATE];
-    NSDate *creationDate = [NSDate date];
+    NSDate *creationDate = NSDate.date;
     NSNumber *creationDateNumber = [WPNSUtil numberForKey:STATE_META_CREATION_DATE inDictionary:self.sdkState[STATE_META]];
     if (creationDateNumber != nil) {
-        creationDate = [NSDate dateWithTimeIntervalSince1970:creationDateNumber.floatValue/1000.f];
+        creationDate = [NSDate dateWithTimeIntervalSince1970:creationDateNumber.doubleValue/1000.];
     }
 
     NSMutableDictionary *stateDiff = [NSMutableDictionary new];
@@ -287,7 +287,7 @@ static NSObject *saveLock = nil;
         }
     }
     stateDiffMeta[STATE_META_CREATION_DATE] = [NSNumber numberWithLong:[creationDate timeIntervalSince1970] * 1000];
-    stateDiff[@"creationDate"] = [NSNumber numberWithLong:[creationDate timeIntervalSince1970] * 1000];
+    stateDiff[@"actionDate"] = [NSNumber numberWithLong:[creationDate timeIntervalSince1970] * 1000];
 
     stateDiff[@"topic"] = topic;
     stateDiff[@"custom"] = null; // in order to replace the whole custom object, we first need to clear it
