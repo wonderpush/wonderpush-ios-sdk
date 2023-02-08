@@ -265,6 +265,7 @@ static NSObject *saveLock = nil;
         },
     };
 
+    stateDiff[@"liveActivityId"] = _activityId; // this field also serves as a marker that the object has been created server-side or not yet
     stateDiff[@"type"] = attributesTypeName;
 
     stateDiffMeta[STATE_META_ACTIVITY_STATE] = activityState;
@@ -410,10 +411,11 @@ static NSObject *saveLock = nil;
         WPLogDebug(@"[%@] Delaying diff: %@ because we have no push token yet", self.logIdentifier, diff);
         onFailure();
     } else {
+        NSString *method = [WPNSUtil stringForKey:@"liveActivityId" inDictionary:diff] == nil ? @"PATCH" : @"PUT";
         // We have modifications to send server-side, and we have a push token
         WPLogDebug(@"[%@] Sending diff: %@", self.logIdentifier, diff);
         [WonderPush requestForUser:_userId
-                            method:@"PATCH"
+                            method:method
                           resource:[@"/liveActivities/" stringByAppendingString:_activityId]
                             params:@{@"body": diff}
                            handler:^(WPResponse *response, NSError *error) {
