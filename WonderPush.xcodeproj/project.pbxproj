@@ -449,7 +449,7 @@
 		3D77BBAF1E60760300CA7915 /* WPNotificationCenterDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationCenterDelegate.h; sourceTree = "<group>"; };
 		3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPNotificationCenterDelegate.m; sourceTree = "<group>"; };
 		3D7D8A422989656800FC08D2 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Configuration.swift; path = SwiftSources/WonderPush/Configuration.swift; sourceTree = SOURCE_ROOT; };
-		3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityPropertiesExtractor.swift; path = SwiftSources/ActivityPropertiesExtractor.swift; sourceTree = SOURCE_ROOT; };
+		3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityPropertiesExtractor.swift; path = SwiftSources/WonderPush/ActivityPropertiesExtractor.swift; sourceTree = SOURCE_ROOT; };
 		3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySyncer.swift; sourceTree = "<group>"; };
 		3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjCInterop.swift; sourceTree = "<group>"; };
 		3D7D8A4E298985DE00FC08D2 /* WPSwiftInterop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSwiftInterop.h; sourceTree = "<group>"; };
