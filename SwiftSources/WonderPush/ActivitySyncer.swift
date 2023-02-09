@@ -41,7 +41,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         if let syncer = activitySyncersLock.withCriticalSection(block: {
             var rtn: ActivitySyncer<Attributes>?
             if activitySyncers[ObjectIdentifier(attributesType)] == nil {
-                let knownActivityIds = liveActivityIdsPerAttributesTypeName[String(describing: attributesType)];
+                let knownActivityIds = liveActivityIdsPerAttributesTypeName[String(reflecting: attributesType)];
                 let syncer = ActivitySyncer(attributesType: attributesType, propertiesExtractor: propertiesExtractor, knownActivityIds: knownActivityIds)
                 activitySyncers[ObjectIdentifier(attributesType)] = syncer
                 rtn = syncer
@@ -55,7 +55,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
     init(attributesType: Attributes.Type, propertiesExtractor: ActivityPropertiesExtractor<Attributes>, knownActivityIds: [String]?) {
         self.attributesType = attributesType
         self.attributesTypeIdentifier = ObjectIdentifier(attributesType)
-        self.attributesTypeName = String(describing: attributesType)
+        self.attributesTypeName = String(reflecting: attributesType)
         self.propertiesExtractor = propertiesExtractor
         for id in knownActivityIds ?? [] {
             self.liveActivitySyncs[id] = WonderPushObjCInterop.initWPJsonSyncLiveActivityFromSavedStateForActivityId(id)
@@ -143,11 +143,11 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
             staleDate = activity.content.staleDate
             relevanceScore = activity.content.relevanceScore
         }
-        return "Activity<\(String(describing: type(of: Attributes.self)))>(id: \(activity.id), state: \(activity.activityState), attributes:…, contentState: …, staleDate: \(String(describing: staleDate)), relevanceScore: \(String(describing: relevanceScore)), pushToken: \(activity.pushToken == nil ? "None" : "PRESENT")))"
+        return "Activity<\(String(reflecting: type(of: Attributes.self)))>(id: \(activity.id), state: \(activity.activityState), attributes:…, contentState: …, staleDate: \(String(describing: staleDate)), relevanceScore: \(String(describing: relevanceScore)), pushToken: \(activity.pushToken == nil ? "None" : "PRESENT")))"
         //        let encoder = JSONEncoder()
         //        let attributesJson = try? String(decoding: encoder.encode(activity.attributes), as: UTF8.self)
         //        let contentStateJson = try? String(decoding: encoder.encode(activity.contentState), as: UTF8.self)
-        //        return "Activity<\(String(describing: type(of: Attributes.self)))>(id: \(activity.id), state: \(activity.activityState), attributes: \(attributesJson ?? "ERROR"), contentState: \(contentStateJson ?? "ERROR"), pushToken: \(String(describing: activity.pushToken?.hexEncodedString() ?? "None")))"
+        //        return "Activity<\(String(reflecting: type(of: Attributes.self)))>(id: \(activity.id), state: \(activity.activityState), attributes: \(attributesJson ?? "ERROR"), contentState: \(contentStateJson ?? "ERROR"), pushToken: \(String(describing: activity.pushToken?.hexEncodedString() ?? "None")))"
     }
     
     private class func activityStateToString(_ activityState: ActivityState) -> String {
