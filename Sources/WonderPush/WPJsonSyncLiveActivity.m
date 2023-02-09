@@ -22,6 +22,7 @@
 #define UPGRADE_META_VERSION_LATEST UPGRADE_META_VERSION_0_INITIAL
 
 #define STATE_META @"__jsonSyncLiveActivityMeta"
+#define STATE_META_DESTROYED @"destroyed"
 #define STATE_META_ACTIVITY_ID @"activityId"
 #define STATE_META_USER_ID @"userId"
 #define STATE_META_ACTIVITY_STATE @"activityState"
@@ -32,6 +33,8 @@
 #define ACTIVITY_STATE_DISMISSED @"dismissed"
 #define ACTIVITY_STATE_STALE @"stale"
 #define ACTIVITY_STATE_ENDED @"ended"
+
+#define MAXIMUM_LIFETIME_TIMEINTERVAL ((NSTimeInterval)12*60*60.)
 
 BOOL isActivityStateTerminal(NSString  * _Nullable activityState) {
     return [activityState isKindOfClass:NSString.class] &&
@@ -94,6 +97,24 @@ static NSObject *saveLock = nil;
 
 + (nullable NSString *) attributesTypeNameFromSavedState:(nullable NSDictionary *)savedState {
     return [WPNSUtil stringForKey:STATE_META_ATTRIBUTES_TYPE_NAME inDictionary:[self metaFromSavedState:savedState]];
+}
+
++ (BOOL) destroyedFromSavedState:(nullable NSDictionary *)savedState {
+    NSDictionary *meta = [self metaFromSavedState:savedState];
+    // Check if already destroyed
+    NSNumber *destroyed = [WPNSUtil numberForKey:STATE_META_DESTROYED inDictionary:meta];
+    if ([destroyed boolValue]) {
+        return true;
+    }
+    // If not, check whether it should be, according to it's creationDate.
+    // Note: This ignores the dismissal date, maximum 4 hours after being ended but it's good enough.
+    NSDate *creationDate = NSDate.date;
+    NSNumber *creationDateNumber = [WPNSUtil numberForKey:STATE_META_CREATION_DATE inDictionary:meta];
+    if (creationDateNumber != nil) {
+        creationDate = [NSDate dateWithTimeIntervalSince1970:creationDateNumber.doubleValue/1000.];
+    }
+    bool destroy = [creationDate compare:[NSDate.date dateByAddingTimeInterval:-(MAXIMUM_LIFETIME_TIMEINTERVAL)]] == NSOrderedAscending;
+    return destroy;
 }
 
 + (void)setDisabled:(BOOL)disabled {
@@ -210,8 +231,15 @@ static NSObject *saveLock = nil;
 }
 
 - (void) activityNoLongerExists {
+    NSDate *creationDate = NSDate.date;
+    NSNumber *creationDateNumber = [WPNSUtil numberForKey:STATE_META_CREATION_DATE inDictionary:self.sdkState[STATE_META]];
+    if (creationDateNumber != nil) {
+        creationDate = [NSDate dateWithTimeIntervalSince1970:creationDateNumber.doubleValue/1000.];
+    }
+    bool destroy = [creationDate compare:[NSDate.date dateByAddingTimeInterval:-(MAXIMUM_LIFETIME_TIMEINTERVAL)]] == NSOrderedAscending;
     [self put:@{
         STATE_META: @{
+            STATE_META_DESTROYED: destroy ? @YES : @NO,
             STATE_META_ACTIVITY_STATE: ACTIVITY_STATE_ENDED,
         },
         @"lifecycle": ACTIVITY_STATE_ENDED,
@@ -308,10 +336,15 @@ static NSObject *saveLock = nil;
 }
 
 - (void) save:(NSDictionary *)state {
+    NSNumber *destroyed = [WPNSUtil numberForKey:STATE_META_DESTROYED inDictionary:self.sdkState[STATE_META]];
     @synchronized (saveLock) {
         WPConfiguration *conf = [WPConfiguration sharedConfiguration];
         NSMutableDictionary *liveActivitySyncStatePerActivityId = [(conf.liveActivitySyncStatePerActivityId ?: @{}) mutableCopy];
-        liveActivitySyncStatePerActivityId[_activityId] = state ?: @{};
+        if ([destroyed boolValue]) {
+            [liveActivitySyncStatePerActivityId removeObjectForKey:_activityId];
+        } else {
+            liveActivitySyncStatePerActivityId[_activityId] = state ?: @{};
+        }
         conf.liveActivitySyncStatePerActivityId = [liveActivitySyncStatePerActivityId copy];
     }
 }

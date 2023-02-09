@@ -1222,6 +1222,10 @@ static WPConfiguration *sharedConfiguration = nil;
 }
 
 - (void) setLiveActivitySyncStatePerActivityId:(NSDictionary *)liveActivitySyncStatePerActivityId {
+    // Filter out any destroyed items
+    liveActivitySyncStatePerActivityId = [liveActivitySyncStatePerActivityId dictionaryWithValuesForKeys:[[liveActivitySyncStatePerActivityId keysOfEntriesPassingTest:^BOOL(id  _Nonnull activityId, id  _Nonnull savedState, BOOL * _Nonnull stop) {
+        return ![WPJsonSyncLiveActivity destroyedFromSavedState:savedState];
+    }] allObjects]];
     @synchronized (self) {
         [self _setNSDictionaryAsJSON:liveActivitySyncStatePerActivityId forKey:USER_DEFAULTS_LIVE_ACTIVITY_SYNC_STATE_PER_ACTIVITY_ID_KEY];
     }
