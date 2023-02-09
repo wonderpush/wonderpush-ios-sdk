@@ -9,14 +9,13 @@
 #ifndef WPSwiftInterop_h
 #define WPSwiftInterop_h
 
-#import <WonderPush/WonderPush-Swift.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 
 // The protocol, exposed from ObjC, that enable Swift to call advertised methods.
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
-SWIFT_PROTOCOL_NAMED("WonderPushPrivateProtocol")
 @protocol WonderPushPrivateProtocol
 
 // This method is automatically implemented by classes, and it permits Swift to grab an instance directly from the protocol itself.
@@ -34,7 +33,6 @@ SWIFT_PROTOCOL_NAMED("WonderPushPrivateProtocol")
 
 // The protocol, exposed from ObjC, that enable Swift to call advertised methods.
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
-SWIFT_PROTOCOL_NAMED("WPJsonSyncLiveActivityProtocol")
 @protocol WPJsonSyncLiveActivityProtocol
 
 // This method is automatically implemented by classes, and it permits Swift to grab an instance directly from the protocol itself.
@@ -60,7 +58,6 @@ SWIFT_PROTOCOL_NAMED("WPJsonSyncLiveActivityProtocol")
 // Declares the existence of a factory class, implemented in Swift,
 // that ObjC will use to register the actual implementation of WonderPushPrivateProtocol.
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
-SWIFT_CLASS("WonderPushObjCInterop")
 @interface WonderPushObjCInterop : NSObject
 
 + (void) registerWonderPushPrivate:(Class<WonderPushPrivateProtocol> _Nonnull)type;
