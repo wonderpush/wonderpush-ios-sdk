@@ -172,6 +172,16 @@ Called when receiving the full state of the installation
 + (void) requestForUser:(NSString *)userId method:(NSString *)method resource:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler;
 
 /**
+ Perform an authenticated without access token request to the WonderPush API for a specified userId
+ @param userId The userId the request should be bound to
+ @param method The HTTP method to use
+ @param resource The relative resource path, ommiting the first "/"
+ @param params a key value dictionary with the parameters for the request
+ @param handler the completion callback (optional)
+ */
++ (void) requestLiveActivityAPIForUser:(NSString *)userId method:(NSString *)method resource:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler;
+
+/**
  Perform an authenticated GET request to the WonderPush API
  @param resource The relative resource path, ommiting the first "/"
  @param params a key value dictionary with the parameters for the request

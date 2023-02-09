@@ -378,11 +378,11 @@ static NSObject *saveLock = nil;
         // In the diff we're seeing the Live Activity no longer being active.
         // This means we must inform the server to delete the Live Activity.
         WPLogDebug(@"[%@] Deleting for diff: %@", self.logIdentifier, diff);
-        [WonderPush requestForUser:_userId
-                            method:@"DELETE"
-                          resource:[@"/liveActivities/" stringByAppendingString:_activityId]
-                            params:@{}
-                           handler:^(WPResponse *response, NSError *error) {
+        [WonderPush requestLiveActivityAPIForUser:_userId
+                                           method:@"DELETE"
+                                         resource:[@"/liveActivities/" stringByAppendingString:_activityId]
+                                           params:@{}
+                                          handler:^(WPResponse *response, NSError *error) {
             NSDictionary *responseJson = (NSDictionary *)response.object;
             if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[WPNSUtil numberForKey:@"success" inDictionary:responseJson] boolValue]) {
                 WPLogDebug(@"[%@] Succeded to delete: %@", self.logIdentifier, responseJson);
@@ -414,11 +414,11 @@ static NSObject *saveLock = nil;
         NSString *method = [WPNSUtil stringForKey:@"liveActivityId" inDictionary:diff] == nil ? @"PATCH" : @"PUT";
         // We have modifications to send server-side, and we have a push token
         WPLogDebug(@"[%@] Sending diff: %@", self.logIdentifier, diff);
-        [WonderPush requestForUser:_userId
-                            method:method
-                          resource:[@"/liveActivities/" stringByAppendingString:_activityId]
-                            params:@{@"body": diff}
-                           handler:^(WPResponse *response, NSError *error) {
+        [WonderPush requestLiveActivityAPIForUser:_userId
+                                           method:method
+                                         resource:[@"/liveActivities/" stringByAppendingString:_activityId]
+                                           params:@{@"body": diff}
+                                          handler:^(WPResponse *response, NSError *error) {
             NSDictionary *responseJson = (NSDictionary *)response.object;
             if (!error && [responseJson isKindOfClass:[NSDictionary class]] && [[WPNSUtil numberForKey:@"success" inDictionary:responseJson] boolValue]) {
                 WPLogDebug(@"[%@] Succeded to send diff: %@", self.logIdentifier, responseJson);

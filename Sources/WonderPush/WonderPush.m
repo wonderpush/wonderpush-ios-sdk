@@ -41,6 +41,7 @@
 #import "WPConfiguration.h"
 #import "WPIAMWebView.h"
 #import "WPAnonymousAPIClient.h"
+#import "WPLiveActivityAPIClient.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
@@ -1428,6 +1429,31 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     }
 
     WPAPIClient *client = [WPAPIClient sharedClient];
+    WPRequest *request = [[WPRequest alloc] init];
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
+    request.userId = userId;
+    request.method = method;
+    request.resource = resource;
+    request.handler = handler;
+    request.params = [parameters copy];
+
+    [client executeRequest:request];
+}
+
++ (void) requestLiveActivityAPIForUser:(NSString *)userId method:(NSString *)method resource:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
+{
+    if (![WonderPush isInitialized]) {
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        if (handler) {
+            handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
+                                                    code:0
+                                                userInfo:@{NSLocalizedDescriptionKey: @"The SDK is not initialized"}]);
+        }
+        return;
+    }
+
+    WPLiveActivityAPIClient *client = [WPLiveActivityAPIClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
