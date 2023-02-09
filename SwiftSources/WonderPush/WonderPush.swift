@@ -9,32 +9,30 @@
 import Foundation
 import ActivityKit
 
-public typealias Properties = [AnyHashable : Any]
-
 extension WonderPush {
     
     @available(iOS 16.1, *)
-    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: String, properties: Properties? = nil) -> Void {
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: String, properties: [AnyHashable : Any]? = nil) -> Void {
         ActivitySyncer.createIfNotExists(attributesType: activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
     }
 
     @available(iOS 16.1, *)
-    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: @escaping (Activity<Attributes>) -> String, properties: Properties? = nil) -> Void {
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: @escaping (Activity<Attributes>) -> String, properties: [AnyHashable : Any]? = nil) -> Void {
         ActivitySyncer.createIfNotExists(attributesType: activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
     }
 
     @available(iOS 16.1, *)
-    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: String, properties: @escaping (Activity<Attributes>) -> Properties?) -> Void {
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: String, properties: @escaping (Activity<Attributes>) -> [AnyHashable : Any]?) -> Void {
         ActivitySyncer.createIfNotExists(attributesType: activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
     }
 
     @available(iOS 16.1, *)
-    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: @escaping (Activity<Attributes>) -> String, properties: @escaping (Activity<Attributes>) -> Properties?) -> Void {
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: @escaping (Activity<Attributes>) -> String, properties: @escaping (Activity<Attributes>) -> [AnyHashable : Any]?) -> Void {
         ActivitySyncer.createIfNotExists(attributesType: activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
     }
 
     @available(iOS 16.1, *)
-    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topicAndProperties: @escaping (Activity<Attributes>) -> (String, Properties?)) -> Void {
+    public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topicAndProperties: @escaping (Activity<Attributes>) -> (String, [AnyHashable : Any]?)) -> Void {
         ActivitySyncer.createIfNotExists(attributesType: activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topicAndProperties: topicAndProperties))
     }
 
