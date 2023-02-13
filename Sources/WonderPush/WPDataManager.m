@@ -186,8 +186,12 @@ static dispatch_queue_t dataManagerQueue;
         [[WPAPIClient sharedClient] executeRequest:request];
     }
 }
-- (void) clearInstallation:(NSString *)userId
-{
+
+- (void) clearInstallation:(NSString *)userId {
+    [self clearInstallation:userId handler:nil];
+}
+
+- (void) clearInstallation:(NSString *)userId handler:(WPRequestHandler)handler {
     WPJsonSyncInstallation *sync = [WPJsonSyncInstallation forUser:userId];
     [sync receiveState:@{} resetSdkState:YES];
     WPRequest *request = [WPRequest new];
@@ -195,7 +199,9 @@ static dispatch_queue_t dataManagerQueue;
     request.resource = @"/installation";
     request.method = @"DELETE";
     request.handler = ^(WPResponse *response, NSError *error) {
-        NSLog(@"response:%@ error:%@", response, error);
+        if (handler) {
+            handler(response, error);
+        }
     };
     [[WPAPIClient sharedClient] executeRequest:request];
 
@@ -206,10 +212,17 @@ static dispatch_queue_t dataManagerQueue;
 }
 - (void) clearAllData
 {
-    for (NSString *userId in [[WPConfiguration sharedConfiguration] listKnownUserIds]) {
-        [self clearInstallation:userId];
+    NSMutableSet *userIds = [NSMutableSet setWithArray:[[WPConfiguration sharedConfiguration] listKnownUserIds]];
+    for (NSString *userId in userIds) {
+        [self clearInstallation:userId handler:^(WPResponse *response, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [userIds removeObject:userId];
+                if (!userIds.count) {
+                    [self clearLocalStorage];
+                }
+            });
+        }];
     }
-    [self clearLocalStorage];
 }
 
 @end
