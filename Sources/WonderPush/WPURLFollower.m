@@ -215,9 +215,43 @@
             WPLogDebug( @"App handling acton URL returns NO.");
         }
         return handled;
-    } else {
-        return NO;
     }
+    
+    // Look for a scene delegate
+    // We'll check all the scenes, prioritizing the foregroundActive ones, then foregroundInactive, then background, finally unattached
+    NSMutableArray<UIScene *> *connectedScenes = [NSMutableArray arrayWithArray:self.mainApplication.connectedScenes.allObjects];
+    int(^priority)(UISceneActivationState) = ^(UISceneActivationState state) {
+        switch(state) {
+            case UISceneActivationStateForegroundActive: return 0;
+            case UISceneActivationStateForegroundInactive: return 1;
+            case UISceneActivationStateBackground: return 2;
+            case UISceneActivationStateUnattached: return 3;
+        }
+    };
+    [connectedScenes sortUsingComparator:^(id obj1, id obj2) {
+        UIScene *scene1 = obj1;
+        UIScene *scene2 = obj2;
+        int x1 = priority(scene1.activationState);
+        int x2 = priority(scene2.activationState);
+        if (x1 > x2) return NSOrderedDescending;
+        if (x1 < x2) return NSOrderedAscending;
+        return NSOrderedSame;
+    }];
+    if (connectedScenes.count > 0) {
+        UIScene *scene = connectedScenes.firstObject;
+        if ([scene.delegate respondsToSelector:@selector(scene:continueUserActivity:)]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSUserActivity *userActivity = [[NSUserActivity alloc] initWithActivityType:NSUserActivityTypeBrowsingWeb];
+                userActivity.webpageURL = url;
+                if ([scene.delegate respondsToSelector:@selector(scene:willContinueUserActivityWithType:)]) {
+                    [scene.delegate scene:scene willContinueUserActivityWithType:userActivity.activityType];
+                }
+                [scene.delegate scene:scene continueUserActivity:userActivity];
+            });
+            return YES;
+        }
+    }
+    return NO;
 }
 
 - (void)followURLViaIOS:(NSURL *)url withCompletionBlock:(void (^)(BOOL success))completion {
