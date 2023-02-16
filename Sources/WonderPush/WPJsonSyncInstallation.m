@@ -91,13 +91,17 @@ static NSObject *saveLock = nil;
 }
 
 + (void) flush {
+    [self flushSync:NO];
+}
+
++ (void) flushSync:(BOOL)sync {
     WPLogDebug(@"Flushing delayed updates of installation for all known users");
     @synchronized (instancePerUserId) {
         for (NSString *userId in instancePerUserId) {
             id obj = instancePerUserId[userId];
             if ([obj isKindOfClass:[WPJsonSyncInstallation class]]) {
                 WPJsonSyncInstallation *sync = (WPJsonSyncInstallation *) obj;
-                [sync flush];
+                [sync flushSync:sync];
             }
         }
     }
@@ -186,13 +190,21 @@ static NSObject *saveLock = nil;
 }
 
 - (void) flush {
+    [self flushSync:NO];
+}
+
+- (void) flushSync:(BOOL)sync {
     @synchronized (_blockId_lock) {
         // Prevent any block from running
         _blockId++;
     }
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    if (sync) {
         [self performScheduledPatchCall];
-    });
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [self performScheduledPatchCall];
+        });
+    }
 }
 
 - (void) save:(NSDictionary *)state {

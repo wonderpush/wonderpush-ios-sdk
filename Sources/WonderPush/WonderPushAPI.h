@@ -48,6 +48,7 @@
 - (BOOL) getNotificationEnabled;
 - (void) setNotificationEnabled:(BOOL)enabled;
 - (void) sendPreferences;
+- (void) sendPreferencesSync:(BOOL)sync;
 - (void) updateInstallationCoreProperties;
 - (NSDictionary *) getInstallationCustomProperties;
 - (void) putInstallationCustomProperties:(NSDictionary *)customProperties;

@@ -85,8 +85,10 @@ extern NSString * const WPTargetUrlModeExternal;
 + (void) updateInstallationCoreProperties;
 
 + (void) refreshPreferencesAndConfiguration;
++ (void) refreshPreferencesAndConfigurationSync:(BOOL)sync;
 
 + (void) sendPreferences;
++ (void) sendPreferencesSync:(BOOL)sync;
 
 + (void) setIsReachable:(BOOL)isReachable;
 

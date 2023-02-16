@@ -561,7 +561,7 @@
 - (void) setNotificationEnabled:(BOOL)enabled
 {
     [WPConfiguration sharedConfiguration].notificationEnabled = enabled;
-    [WonderPush refreshPreferencesAndConfiguration];
+    [WonderPush refreshPreferencesAndConfigurationSync:!enabled]; // when disabling, we use a sync flow to ensure we can withdraw user consent synchronously right after we return
 
     // Register to push notifications if enabled
     if (enabled) {
@@ -571,7 +571,12 @@
 
 - (void) sendPreferences
 {
-    [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:^(BOOL osNotificationsEnabled) {
+    [self sendPreferencesSync:NO];
+}
+
+- (void) sendPreferencesSync:(BOOL)sync
+{
+    void (^handler)(BOOL osNotificationsEnable) = ^(BOOL osNotificationsEnabled) {
         WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
         BOOL enabled = sharedConfiguration.notificationEnabled;
         NSString *subscriptionStatus = enabled && osNotificationsEnabled ? WPSubscriptionStatusOptIn : WPSubscriptionStatusOptOut;
@@ -596,7 +601,14 @@
                 } : nil];
             });
         }
-    }];
+    };
+
+    if (sync) {
+        WPConfiguration *sharedConfiguration = [WPConfiguration sharedConfiguration];
+        handler(sharedConfiguration.cachedOsNotificationEnabled);
+    } else {
+        [WonderPush hasAcceptedVisibleNotificationsWithCompletionHandler:handler];
+    }
 }
 
 - (BOOL) getNotificationEnabled

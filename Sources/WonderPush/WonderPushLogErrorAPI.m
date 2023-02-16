@@ -94,6 +94,11 @@
     [self log:@"sendPreferences"];
 }
 
+- (void) sendPreferencesSync:(BOOL)sync
+{
+    [self log:@"sendPreferencesSync:"];
+}
+
 - (void)trackEvent:(NSString *)type
 {
     [self log:@"trackEvent:"];

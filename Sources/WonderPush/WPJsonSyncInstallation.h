@@ -11,7 +11,9 @@
 + (WPJsonSyncInstallation *)forUser:(NSString *)userId;
 
 + (void) flush;
++ (void) flushSync:(BOOL)sync;
 - (void) flush;
+- (void) flushSync:(BOOL)sync;
 
 + (void) setDisabled:(BOOL)disabled;
 + (BOOL) disabled;

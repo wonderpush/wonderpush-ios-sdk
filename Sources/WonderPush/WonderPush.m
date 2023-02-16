@@ -230,7 +230,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 {
     BOOL hadUserConsent = [self hasUserConsent];
     if (hadUserConsent && !userConsent) {
-        [WPJsonSyncInstallation flush];
+        [WPJsonSyncInstallation flushSync:YES];
     }
     [[WPConfiguration sharedConfiguration] setUserConsent:userConsent];
     BOOL nowHasUserConsent = [self hasUserConsent];
@@ -457,6 +457,11 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
 + (void) refreshPreferencesAndConfiguration
 {
+    [self refreshPreferencesAndConfigurationSync:NO];
+}
+
++ (void) refreshPreferencesAndConfigurationSync:(BOOL)sync
+{
     // Refresh core properties
     [self updateInstallationCoreProperties];
 
@@ -465,12 +470,17 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     [self refreshDeviceTokenIfPossible];
 
     // Refresh preferences
-    [self sendPreferences];
+    [self sendPreferencesSync:sync];
 }
 
 + (void) sendPreferences
 {
-    [wonderPushAPI sendPreferences];
+    [self sendPreferencesSync:NO];
+}
+
++ (void) sendPreferencesSync:(BOOL)sync
+{
+    [wonderPushAPI sendPreferencesSync:sync];
 }
 
 + (BOOL) isNotificationForWonderPush:(NSDictionary *)userInfo
