@@ -242,7 +242,7 @@ static NSObject *saveLock = nil;
             STATE_META_DESTROYED: destroy ? @YES : @NO,
             STATE_META_ACTIVITY_STATE: ACTIVITY_STATE_ENDED,
         },
-        @"lifecycle": ACTIVITY_STATE_ENDED,
+        //@"lifecycle": ACTIVITY_STATE_ENDED,
     }];
 
     // The activity no longer exists, flush right away
@@ -297,10 +297,10 @@ static NSObject *saveLock = nil;
     stateDiff[@"type"] = attributesTypeName;
 
     stateDiffMeta[STATE_META_ACTIVITY_STATE] = activityState;
-    stateDiff[@"lifecycle"] = activityState;
+    //stateDiff[@"lifecycle"] = activityState;
 
-    stateDiff[@"staleDate"] = staleDate == nil ? null : [NSNumber numberWithLong:[staleDate timeIntervalSince1970] * 1000];
-    stateDiff[@"relevanceScore"] = relevanceScore ?: null;
+    //stateDiff[@"staleDate"] = staleDate == nil ? null : [NSNumber numberWithLong:[staleDate timeIntervalSince1970] * 1000];
+    //stateDiff[@"relevanceScore"] = relevanceScore ?: null;
 
     if (pushToken != nil) {
         // Let's not remove the push token (except if explicitly given as empty).
