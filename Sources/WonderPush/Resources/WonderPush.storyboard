@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment version="4096" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -81,6 +79,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="dX8-x6-3Kg"/>
                         <color key="backgroundColor" white="0.0" alpha="0.64993183724832215" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="WjF-NF-mLw" firstAttribute="centerY" secondItem="TR0-Qq-M8K" secondAttribute="centerY" id="4Lc-Sr-ICQ"/>
@@ -92,7 +91,6 @@
                             <constraint firstItem="dX8-x6-3Kg" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Rgp-u9-es8" secondAttribute="trailing" constant="30" id="dsq-9C-9bf"/>
                             <constraint firstItem="Rgp-u9-es8" firstAttribute="centerX" secondItem="TR0-Qq-M8K" secondAttribute="centerX" id="f8m-0u-MRs"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="dX8-x6-3Kg"/>
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="WjF-NF-mLw" id="Wgg-z1-mHY"/>

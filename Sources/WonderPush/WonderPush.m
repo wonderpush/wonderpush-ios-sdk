@@ -711,7 +711,10 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 + (void) application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+#pragma clang diagnostic pop
 {
     [self safeDeferWithConsent:^{
         [WonderPush refreshPreferencesAndConfiguration];

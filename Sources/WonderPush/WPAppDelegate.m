@@ -173,13 +173,19 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
     }
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+#pragma clang diagnostic pop
 {
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
     [WonderPush application:application didRegisterUserNotificationSettings:notificationSettings];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
         _WPAppDelegateAlreadyRunning = YES;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [self.nextDelegate application:application didRegisterUserNotificationSettings:notificationSettings];
+#pragma clang diagnostic pop
         _WPAppDelegateAlreadyRunning = NO;
     }
 }
