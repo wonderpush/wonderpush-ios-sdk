@@ -182,7 +182,11 @@ NS_ASSUME_NONNULL_BEGIN
  If not called, the last used user id it assumed. Defaulting to `nil` if none is known.
 
  Prefer calling this method just before calling `<setClientId:secret:>`, rather than just after.
- Upon changing userId, the access token is wiped, so avoid unnecessary calls, like calling with null just before calling with a user id.
+ Upon changing userId, the push token is wiped, so avoid unnecessary calls, like calling with null just before calling with a user id.
+ Successive calls with the same userId are fine.
+
+ Changing the user id is akin to loading a new profile. A new installation will be created and no tags, properties or events will be kept.
+ For more information, see <a href="https://docs.wonderpush.com/docs/user-ids" target="_blank">our documentation</a>.
 
  @param userId The user id, unique to your application. Use `nil` for anonymous users.
      You are strongly encouraged to use your own unique internal identifier.
