@@ -114,6 +114,28 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 - (void) wonderPushWillOpenURL:(NSURL *)url withCompletionHandler:(void (^)(NSURL * _Nullable url))completionHandler;
 
+/**
+ Lets you monitor the reception of push notifications with content-available=1.
+ In WonderPush, notifications with a JSON payload automatically have content-available set to 1.
+ The content-available=1 flag forces the app to be awaken upon reception.
+ Apple enforces a rate limiting of such notifications, so they might not be delivered.
+ See:
+ https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/pushing_background_updates_to_your_app
+ https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html
+ https://developer.apple.com/forums/thread/31296
+ @param notification The notification data dictionary
+ */
+@optional
+- (void) onNotificationReceived:(NSDictionary *)notification;
+
+/**
+Lets you monitor push notification clicks.
+@param notification The notification data dictionary
+@param buttonIndex The index of the button that was clicked, or -1 if the notification itself was clicked.
+ */
+@optional
+- (void) onNotificationOpened:(NSDictionary *)notification withButton:(NSInteger)buttonIndex;
+
 @end
 
 /**

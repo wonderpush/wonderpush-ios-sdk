@@ -1011,6 +1011,15 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
     [[NSNotificationCenter defaultCenter] postNotificationName:WP_NOTIFICATION_RECEIVED object:nil userInfo:notificationDictionary];
 
+    if (_delegate && [_delegate respondsToSelector:@selector(onNotificationReceived:)]) {
+        @try {
+            [_delegate onNotificationReceived:notificationDictionary];
+
+        } @catch (NSException *exception) {
+            WPLog(@"Exception occurred while calling delegate onNotificationReceived: %@", exception);
+        }
+    }
+
     UIApplicationState appState = [UIApplication sharedApplication].applicationState;
     WPLogDebug(@"handleNotification: appState=%ld", (long)appState);
 
@@ -1232,11 +1241,12 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     NSString *targetUrlMode = [WPNSUtil stringForKey:WP_TARGET_URL_MODE_KEY inDictionary:wonderpushData];
     id actionsToExecute = [WPNSUtil arrayForKey:@"actions" inDictionary:wonderpushData];
 
+    NSInteger indexOfButton = -1;
     if (@available(iOS 10.0, *)) {
         WPNotificationCategoryHelper *categoryHelper = [WPNotificationCategoryHelper sharedInstance];
         UNNotificationResponse *notificationResponse = [response isKindOfClass:UNNotificationResponse.class] ? (UNNotificationResponse *)response : nil;
         if (notificationResponse && notificationResponse.actionIdentifier && [categoryHelper isWonderPushActionIdentifier:notificationResponse.actionIdentifier]) {
-            NSInteger indexOfButton = [categoryHelper indexOfButtonWithActionIdentifier:notificationResponse.actionIdentifier];
+            indexOfButton = [categoryHelper indexOfButtonWithActionIdentifier:notificationResponse.actionIdentifier];
             NSDictionary *alertDict = [WPNSUtil dictionaryForKey:@"alert" inDictionary:wonderpushData];
             NSArray *buttons = [alertDict isKindOfClass:NSDictionary.class] ? [WPNSUtil arrayForKey:@"buttons" inDictionary:alertDict] : nil;
             if (buttons && indexOfButton >= 0 && indexOfButton < buttons.count) {
@@ -1254,6 +1264,14 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     if ([actionsToExecute isKindOfClass:NSArray.class]) {
         WPAction *action = [WPAction actionWithDictionaries:actionsToExecute];
         [self executeAction:action withReportingData:reportingData attributionReason:WPReportingAttributionReasonNotificationOpened];
+    }
+
+    if (_delegate && [_delegate respondsToSelector:@selector(onNotificationOpened:withButton:)]) {
+        @try {
+            [_delegate onNotificationOpened:notificationDictionary withButton:indexOfButton];
+        } @catch (NSException *exception) {
+            WPLog(@"Exception occurred while calling delegate onNotificationOpened:withButton: %@", exception);
+        }
     }
 
     if (!targetUrl)
