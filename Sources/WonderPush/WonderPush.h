@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Lets you monitor the reception of push notifications with content-available=1.
  In WonderPush, notifications with a JSON payload automatically have content-available set to 1.
- The content-available=1 flag forces the app to be awaken upon reception.
+ The content-available=1 flag forces the app to be awakened upon reception.
  Apple enforces a rate limiting of such notifications, so they might not be delivered.
  See:
  https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/pushing_background_updates_to_your_app
