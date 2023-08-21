@@ -272,9 +272,9 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
 @interface WPRemoteConfigManager ()
 @property (atomic) BOOL isFetching;
 @property (nonatomic, strong) NSMutableArray<WPRemoteConfigReadCompletionHandler> *queuedHandlers;
-@property (nonatomic, nullable, strong) NSDate *lastFetchDate;
-@property (nonatomic, nullable, strong) WPRemoteConfig *storedConfig;
-@property (nonatomic, nullable, strong) NSString *storedHighestVersion;
+@property (atomic, nullable, strong) NSDate *lastFetchDate;
+@property (atomic, nullable, strong) WPRemoteConfig *storedConfig;
+@property (atomic, nullable, strong) NSString *storedHighestVersion;
 - (void) readConfigAndHighestDeclaredVersionFromStorageWithCompletion:(void(^)(WPRemoteConfig * _Nullable, NSString * _Nullable, NSError * _Nullable))completion;
 - (void) fetchAndStoreConfigWithVersion:(NSString * _Nullable)version currentConfig:(WPRemoteConfig * _Nullable)currentConfig completion: (WPRemoteConfigReadCompletionHandler) completion;
 @end
@@ -412,7 +412,7 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
             if (config && !error) self.storedConfig = config;
             if (highestVersion && !error) self.storedHighestVersion = highestVersion;
             completion(config, highestVersion, error);
-    }];
+        }];
     }
 }
 
