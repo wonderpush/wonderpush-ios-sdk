@@ -1261,17 +1261,17 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
     [self trackNotificationOpened:[notificationOpenedEventData copy]];
 
-    if ([actionsToExecute isKindOfClass:NSArray.class]) {
-        WPAction *action = [WPAction actionWithDictionaries:actionsToExecute];
-        [self executeAction:action withReportingData:reportingData attributionReason:WPReportingAttributionReasonNotificationOpened];
-    }
-
     if (_delegate && [_delegate respondsToSelector:@selector(onNotificationOpened:withButton:)]) {
         @try {
             [_delegate onNotificationOpened:notificationDictionary withButton:indexOfButton];
         } @catch (NSException *exception) {
             WPLog(@"Exception occurred while calling delegate onNotificationOpened:withButton: %@", exception);
         }
+    }
+
+    if ([actionsToExecute isKindOfClass:NSArray.class]) {
+        WPAction *action = [WPAction actionWithDictionaries:actionsToExecute];
+        [self executeAction:action withReportingData:reportingData attributionReason:WPReportingAttributionReasonNotificationOpened];
     }
 
     if (!targetUrl)
