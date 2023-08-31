@@ -1859,6 +1859,9 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 #pragma clang diagnostic pop
                 completionHandler(newUrl);
             });
+        } else {
+            WPLogDebug(@"Has delegate, but does not respond to wonderPushWillOpenURL");
+            completionHandler(url);
         }
     }
 }
