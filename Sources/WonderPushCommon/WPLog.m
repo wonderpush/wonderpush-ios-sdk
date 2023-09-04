@@ -25,7 +25,7 @@ void WPLogEnable(BOOL enabled)
     _loggingEnabled = enabled;
 }
 
-BOOL WPLogEnabled()
+BOOL WPLogEnabled(void)
 {
     return _loggingEnabled;
 }
