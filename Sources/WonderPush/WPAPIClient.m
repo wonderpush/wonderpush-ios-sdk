@@ -122,20 +122,8 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 - (NSDictionary *)decorateRequestParams:(WPRequest *)request
 {
     NSDictionary *params = request.params;
-    // Add the language
-    params = [[self class] addParameterIfNotPresent:@"lang" value:[WonderPush languageCode] toParameters:params];
-
     // Add the sdk version
     params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WPInstallationCoreProperties getSDKVersionNumber] toParameters:params];
-
-    // Add the location
-    CLLocation *location = [WonderPush location];
-    if (location)
-        params = [[self class] addParameterIfNotPresent:@"location" value:[NSString stringWithFormat:@"%f,%f", location.coordinate.latitude, location.coordinate.longitude] toParameters:params];
-
-    // Add the sid for web resources
-    if ([request.resource hasPrefix:@"web/"])
-        params = [[self class] replaceParameter:@"sid" value:[WPConfiguration sharedConfiguration].sid toParameters:params];
     return params;
 }
 
