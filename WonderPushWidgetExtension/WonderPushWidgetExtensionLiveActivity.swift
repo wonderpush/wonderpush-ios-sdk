@@ -30,7 +30,6 @@ struct WonderPushWidgetExtensionLiveActivity: Widget {
             }
             .activityBackgroundTint(Color.cyan)
             .activitySystemActionForegroundColor(Color.black)
-            
         } dynamicIsland: { context in
             DynamicIsland {
                 // Expanded UI goes here.  Compose the expanded UI through

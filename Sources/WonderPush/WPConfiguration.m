@@ -663,7 +663,7 @@ static WPConfiguration *sharedConfiguration = nil;
 {
     @synchronized (self) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        
+
         NSMutableArray *queuedNotifications = [[self getQueuedNotifications] mutableCopy];
         [queuedNotifications addObject:notification];
         NSError *error = NULL;
@@ -673,7 +673,7 @@ static WPConfiguration *sharedConfiguration = nil;
             return;
         }
         NSString *queuedNotificationsJson = [[NSString alloc] initWithData:queuedNotificationsData encoding:NSUTF8StringEncoding];
-        
+
         [defaults setObject:queuedNotificationsJson forKey:USER_DEFAULTS_QUEUED_NOTIFICATIONS];
         [defaults synchronize];
     }
@@ -683,7 +683,7 @@ static WPConfiguration *sharedConfiguration = nil;
 {
     @synchronized (self) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        
+
         NSString *queuedNotificationsJson = [defaults stringForKey:USER_DEFAULTS_QUEUED_NOTIFICATIONS];
         if (queuedNotificationsJson != nil) {
             NSData *queuedNotificationsData = [queuedNotificationsJson dataUsingEncoding:NSUTF8StringEncoding];
@@ -990,13 +990,13 @@ static WPConfiguration *sharedConfiguration = nil;
                 if (hasPrefix) break;
             }
             if (!hasPrefix) return;
-            
+
             if (keepUserConsent && [key isEqualToString:USER_DEFAULTS_USER_CONSENT_KEY]) return;
             if (keepDeviceId && [key isEqualToString:USER_DEFAULTS_DEVICE_ID_KEY]) return;
             [defaults removeObjectForKey:key];
         }];
         [defaults synchronize];
-    
+
         _accessToken = nil;
         _deviceToken = nil;
         _sid = nil;
@@ -1035,17 +1035,16 @@ static WPConfiguration *sharedConfiguration = nil;
     // Note: It is assumed that the given event is more recent than any other already stored events
     NSString *type = eventParams[@"type"];
     if (!type) return;
-    
+
     NSString *campaignId = eventParams[@"campaignId"];
     NSString *collapsing = eventParams[@"collapsing"];
-    
+
     NSArray *oldTrackedEvents = self.trackedEvents;
     NSMutableArray *uncollapsedEvents = [[NSMutableArray alloc] initWithCapacity:oldTrackedEvents.count + 1]; // collapsing == null
     NSMutableArray *collapsedLastBuiltinEvents = [NSMutableArray new]; // collapsing.equals("last") && type.startsWith("@")
     NSMutableArray *collapsedLastCustomEvents = [NSMutableArray new]; // collapsing.equals("last") && !type.startsWith("@")
     NSMutableArray *collapsedOtherEvents  = [NSMutableArray new]; // collapsing != null && !collapsing.equals("last") // ie. collapsing.equals("campaign"), as of this writing
-    
-    
+
     NSInteger now = nowDate.timeIntervalSince1970 * 1000;
     NSInteger getMaximumUncollapsedTrackedEventsAgeMs = self.maximumUncollapsedTrackedEventsAgeMs;
     for (NSDictionary *oldTrackedEvent in oldTrackedEvents) {
@@ -1106,7 +1105,7 @@ static WPConfiguration *sharedConfiguration = nil;
             }
         }
     }
-    
+
     // Add the new event with collapsing
     // We default to collapsing=last, but we otherwise keep any existing collapsing
     {

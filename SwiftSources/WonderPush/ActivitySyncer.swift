@@ -28,14 +28,14 @@ var activitySyncers: [ObjectIdentifier: Any] = [:] // any ActivityAttributes.Typ
 
 @available(iOS 16.1, *)
 class ActivitySyncer<Attributes : ActivityAttributes> {
-    
+
     let attributesType: Attributes.Type
     let attributesTypeIdentifier: ObjectIdentifier
     let attributesTypeName: String
     let propertiesExtractor: ActivityPropertiesExtractor<Attributes>
     var liveActivitySyncs: [String: WPJsonSyncLiveActivity] = [:]
     var monitoredActivities: [Activity<Attributes>] = []
-    
+
     static func createIfNotExists(attributesType: Attributes.Type, propertiesExtractor: ActivityPropertiesExtractor<Attributes>) {
         let liveActivityIdsPerAttributesTypeName = WonderPushObjCInterop.WonderPushPrivate.liveActivityIdsPerAttributesTypeName()
         if let syncer = activitySyncersLock.withCriticalSection(block: {
@@ -61,7 +61,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
             self.liveActivitySyncs[id] = WonderPushObjCInterop.initWPJsonSyncLiveActivityFromSavedStateForActivityId(id)
         }
     }
-    
+
     private func start() -> Void {
         // Caller should call only once per Attributes
         WPLogDebug("ActivitySyncer<\(self.attributesTypeName)> starting()")
@@ -73,7 +73,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
             self.monitorLiveActivity(activity: activity)
         }
         WPLogDebug("ActivitySyncer<\(self.attributesTypeName)>: Current activities EOL")
-        
+
         // Remove persisted but no longer present Live Activities
         for unseenActivityId in unseenActivityIds {
             if let liveActivitySync = liveActivitySyncs[unseenActivityId] {
@@ -81,7 +81,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
                 liveActivitySyncs.removeValue(forKey: unseenActivityId)
             }
         }
-        
+
         // Monitor for newly created activities
         Task {
             for await updatedActivity in Activity<Attributes>.activityUpdates {
@@ -91,7 +91,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
             WPLogDebug("ActivitySyncer<\(self.attributesTypeName)>: activityUpdates EOS")
         }
     }
-    
+
     private func monitorLiveActivity(activity: Activity<Attributes>) -> Void {
         WPLogDebug("monitorLiveActivities for \(activity.id): Initial. Activity: \(self.liveActivityDescription(activity))")
         self.refreshActivity(activity)
@@ -119,7 +119,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
             WPLogDebug("monitorLiveActivities for \(activity.id): Content state update EOS")
         }
     }
-    
+
     private func refreshActivity(_ activity: Activity<Attributes>) -> Void {
         var liveActivitySync = self.liveActivitySyncs[activity.id]
         if liveActivitySync == nil {
@@ -135,7 +135,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         }
         liveActivitySync?.activityChangedWithAttributesType(self.attributesTypeName, activityState: ActivitySyncer.activityStateToString(activity.activityState), pushToken: activity.pushToken, staleDate: staleDate, relevanceScore: relevanceScore as NSNumber?, topic: topic, custom: custom.map({ custom in NSDictionary(dictionary: custom) }))
     }
-    
+
     private func liveActivityDescription<Attributes : ActivityAttributes>(_ activity: Activity<Attributes>) -> String {
         var staleDate: Date?
         var relevanceScore: Double?
@@ -149,7 +149,7 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
         //        let contentStateJson = try? String(decoding: encoder.encode(activity.contentState), as: UTF8.self)
         //        return "Activity<\(String(reflecting: type(of: Attributes.self)))>(id: \(activity.id), state: \(activity.activityState), attributes: \(attributesJson ?? "ERROR"), contentState: \(contentStateJson ?? "ERROR"), pushToken: \(String(describing: activity.pushToken?.hexEncodedString() ?? "None")))"
     }
-    
+
     private class func activityStateToString(_ activityState: ActivityState) -> String {
         switch activityState {
         case .active:
@@ -164,5 +164,5 @@ class ActivitySyncer<Attributes : ActivityAttributes> {
             return String(describing: activityState)
         }
     }
-    
+
 }

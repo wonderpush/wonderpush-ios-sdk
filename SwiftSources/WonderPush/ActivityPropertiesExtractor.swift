@@ -29,11 +29,11 @@ class ActivityPropertiesExtractor<Attributes : ActivityAttributes> {
     public init(topic: @escaping (Activity<Attributes>) -> String, properties: @escaping (Activity<Attributes>) -> [AnyHashable : Any]?) {
         extractor = { activity in (topic(activity), properties(activity)) }
     }
-    
+
     public init(topicAndProperties: @escaping (Activity<Attributes>) -> (String, [AnyHashable : Any]?)) {
         extractor = topicAndProperties
     }
-    
+
     func extractTopicAndProperties(activity: Activity<Attributes>) -> (String, [AnyHashable : Any]?) {
         return extractor(activity)
     }

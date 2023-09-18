@@ -52,22 +52,22 @@ internal protocol WPJsonSyncLiveActivity {
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
 @objc(WonderPushObjCInterop)
 internal class WonderPushObjCInterop: NSObject {
-    
+
     private(set) static var WonderPushPrivate: WonderPushPrivate! = nil
     private static var WPJsonSyncLiveActivityType: WPJsonSyncLiveActivity.Type!
-    
+
     @objc static func registerWonderPushPrivate(_ type: WonderPushPrivate.Type) {
         WonderPushPrivate = type.init()
     }
-    
+
     @objc static func registerWPJsonSyncLiveActivity(_ type: WPJsonSyncLiveActivity.Type) {
         WPJsonSyncLiveActivityType = type
     }
-    
+
     static func initWPJsonSyncLiveActivityFromSavedStateForActivityId(_ activityId: String) -> WPJsonSyncLiveActivity? {
         return WPJsonSyncLiveActivityType.init().initFromSavedStateForActivityId(activityId)
     }
-    
+
     static func initWPJsonSyncLiveActivityWithActivityId(_ activityId: String, userId:String?, attributesTypeName:String) -> WPJsonSyncLiveActivity {
         return WPJsonSyncLiveActivityType.init().initWithActivityId(activityId, userId: userId, attributesTypeName: attributesTypeName)
     }

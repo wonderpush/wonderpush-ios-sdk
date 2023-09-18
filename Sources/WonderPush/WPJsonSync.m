@@ -66,7 +66,7 @@
         _inflightPutAccumulator = [WPNSUtil dictionaryForKey:SAVED_STATE_FIELD_INFLIGHT_PUT_ACCUMULATOR inDictionary:savedState] ?: @{};
         _scheduledPatchCall     = [([WPNSUtil numberForKey:SAVED_STATE_FIELD_SCHEDULED_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
         _inflightPatchCall      = [([WPNSUtil numberForKey:SAVED_STATE_FIELD_INFLIGHT_PATCH_CALL inDictionary:savedState] ?: @NO) boolValue];
-        
+
         // Handle state version upgrades (syncStateVersion)
         // - 0 -> 1: No-op. 0 means no previous state.
         // - 1 -> 2: No-op. Only the "upgradeMeta" key has been added and it is read with proper default.

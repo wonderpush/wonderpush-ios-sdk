@@ -38,14 +38,14 @@ class ViewController: UIViewController {
             print("Error requesting Live Activity \(error.localizedDescription).")
         }
     }
-    
+
     @IBAction func touchUpdateLiveActivity(_ sender: Any) {
         Task {
             if let activity = activity {
                 let value = Int.random(in: 100..<1000)
                 let updatedContentState = WonderPushWidgetExtensionAttributes.ContentState(value: value, name: "updated")
                 let alertConfiguration = AlertConfiguration(title: "Activity Update", body: "Value has been updated to \(value)", sound: .default)
-                
+
                 print("Updating a Live Activity \(activity.id).")
                 if #available(iOS 16.2, *) {
                     let updatedContent = ActivityContent<WonderPushWidgetExtensionAttributes.ContentState>(state:updatedContentState, staleDate: Date().addingTimeInterval(60), relevanceScore: Double.random(in: -1..<1))
@@ -56,7 +56,7 @@ class ViewController: UIViewController {
             }
         }
     }
-    
+
     @IBAction func touchStopLiveActivity(_ sender: Any) {
         let finalContentState = WonderPushWidgetExtensionAttributes.ContentState(value: 789, name: "ended")
 

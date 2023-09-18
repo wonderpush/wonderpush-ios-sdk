@@ -9,7 +9,7 @@
 import Foundation
 
 class Configuration {
-    
+
     class func getDecodedFromJSON<T: Decodable>(_ type: T.Type, key: String) throws -> T? {
         let data = UserDefaults.standard.data(forKey: key)
         if data == nil {
@@ -17,7 +17,7 @@ class Configuration {
         }
         return try JSONDecoder().decode(type, from: data!)
     }
-    
+
     class func setEncodedToJSON<T: Encodable>(_ value: T, key: String) -> Void {
         let data = try? JSONEncoder().encode(value)
         if data == nil {

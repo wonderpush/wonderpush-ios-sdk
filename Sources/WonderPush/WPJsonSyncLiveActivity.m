@@ -320,7 +320,7 @@ static NSObject *saveLock = nil;
 
     stateDiff[@"topic"] = topic;
     stateDiff[@"custom"] = null; // in order to replace the whole custom object, we first need to clear it
-    
+
     // Apply diff, temporarily clearing `custom`
     [self put:stateDiff];
     // Re-apply `custom` to finish replacing it entirely (we're not given a diff but a full value to apply)
@@ -395,7 +395,7 @@ static NSObject *saveLock = nil;
         if (onFailure) onFailure();
         return;
     }
-    
+
     // Extract and remove STATE_META key from diff
     NSDictionary *diffMeta = [WPNSUtil dictionaryForKey:STATE_META inDictionary:diff];
     diff = [[NSMutableDictionary alloc] initWithDictionary:diff];

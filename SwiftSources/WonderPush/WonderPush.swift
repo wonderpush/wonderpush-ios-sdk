@@ -10,7 +10,7 @@ import Foundation
 import ActivityKit
 
 extension WonderPush {
-    
+
     @available(iOS 16.1, *)
     public class func registerActivityAttributes<Attributes : ActivityAttributes>(_ activityAttributes: Attributes.Type, topic: String, properties: [AnyHashable : Any]? = nil) -> Void {
         ActivitySyncer.createIfNotExists(attributesType: activityAttributes, propertiesExtractor: ActivityPropertiesExtractor<Attributes>(topic: topic, properties: properties))
