@@ -11,12 +11,12 @@
 #import "WPAPIClient.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WPAnonymousAPIClient : WPBaseAPIClient
+@interface WPLiveActivityAPIClient : WPBaseAPIClient
 
 /**
- The default `WPAnonymousAPIClient`, configured with the values you supplied to [WonderPush setClientId:secret:].
+ The default `WPLiveActivityAPIClient`, configured with the values you supplied to [WonderPush setClientId:secret:].
  */
-+ (WPAnonymousAPIClient *)sharedClient;
++ (WPLiveActivityAPIClient *)sharedClient;
 
 @end
 

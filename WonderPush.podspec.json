@@ -45,7 +45,11 @@
       ],
       "source_files": [
         "Sources/WonderPush/*.{m,h}",
+        "SwiftSources/WonderPush/*.swift",
         "Sources/WonderPushCommon/*.{m,h}"
+      ],
+      "exclude_files": [
+        "SwiftSources/WonderPush/Exports.swift"
       ],
       "resource_bundles": {
         "WonderPush": [

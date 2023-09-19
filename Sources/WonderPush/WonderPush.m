@@ -41,6 +41,7 @@
 #import "WPConfiguration.h"
 #import "WPIAMWebView.h"
 #import "WPAnonymousAPIClient.h"
+#import "WPLiveActivityAPIClient.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
@@ -160,7 +161,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         [center addObserverForName:UIApplicationWillResignActiveNotification object:UIApplication.sharedApplication queue:nil usingBlock:^(NSNotification *notification) {
             [WonderPush applicationWillResignActive_private:notification.object];
         }];
-        
+
         // Manage blocks by configuration: we're blocking JsonSyn and WPAPIClient right away, we'll unblock them when we have a configuration.
         WPJsonSyncInstallation.disabled = YES;
         WPAPIClient.sharedClient.disabled = YES;
@@ -168,7 +169,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         [[NSNotificationCenter defaultCenter] addObserverForName:WPRemoteConfigUpdatedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
             [self readConfigAndUpdateDisabledComponents];
         }];
-        
+
         // Listen to measurements API client responses and look for _configVersion
         [center addObserverForName:WPBasicApiClientResponseNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
             id response = notification.object; // WPResponse
@@ -207,7 +208,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         return [NSBundle bundleWithPath:cocoaPodsBundlePath];
     }
     isDirectory = NO;
-    NSString *spmBundlePath = [[containerBundle resourcePath] stringByAppendingPathComponent:@"WonderPush_WonderPush.bundle"];
+    NSString *spmBundlePath = [[containerBundle resourcePath] stringByAppendingPathComponent:@"WonderPush_WonderPushObjC.bundle"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:spmBundlePath isDirectory:&isDirectory] && isDirectory) {
         return [NSBundle bundleWithPath:spmBundlePath];
     }
@@ -384,7 +385,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     [self setIsInitialized:YES];
     [self initForNewUser:(_beforeInitializationUserIdSet ? _beforeInitializationUserId : configuration.userId)];
     [self hasUserConsentChanged:[self hasUserConsent]];
-    
+
     if (![self hasUserConsent]) {
         [[NSNotificationCenter defaultCenter] addObserverForName:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:self queue:nil usingBlock:^(NSNotification *notification) {
             BOOL hasUserConsent = [notification.userInfo[WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY] boolValue];
@@ -394,7 +395,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
             }
         }];
     }
-    
+
     // Block measurements API client right away
     [self measurementsApiClient].disabled = YES;
 
@@ -958,7 +959,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     controller.actions = [alertButtons copy];
     controller.modalPresentationStyle = UIModalPresentationOverFullScreen;
     controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    
+
     controller.HTMLString = [WPNSUtil stringForKey:@"message" inDictionary:wonderPushData];
     NSString *URLString = [WPNSUtil stringForKey:@"url" inDictionary:wonderPushData];
     if (URLString) {
@@ -1415,7 +1416,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
             conf.justOpenedNotification = nil;
         }
         if (presence) openInfo[@"presence"] = presence.toJSON;
-        
+
         // When user is not optIn, the SDK API client is disabled.
         // This @APP_OPEN will be sent at a later date or never, so we send an @VISIT right away and we tell the server not to synthesize @VISIT from this @APP_OPEN.
         // If user is optIn, we do NOT send @VISIT at all and rely on the server's behavior of synthesizing this event from @APP_OPEN events.
@@ -1459,6 +1460,31 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     }
 
     WPAPIClient *client = [WPAPIClient sharedClient];
+    WPRequest *request = [[WPRequest alloc] init];
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
+    parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
+    request.userId = userId;
+    request.method = method;
+    request.resource = resource;
+    request.handler = handler;
+    request.params = [parameters copy];
+
+    [client executeRequest:request];
+}
+
++ (void) requestLiveActivityAPIForUser:(NSString *)userId method:(NSString *)method resource:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
+{
+    if (![WonderPush isInitialized]) {
+        WPLog(@"%@: The SDK is not initialized.", NSStringFromSelector(_cmd));
+        if (handler) {
+            handler(nil, [[NSError alloc] initWithDomain:WPErrorDomain
+                                                    code:0
+                                                userInfo:@{NSLocalizedDescriptionKey: @"The SDK is not initialized"}]);
+        }
+        return;
+    }
+
+    WPLiveActivityAPIClient *client = [WPLiveActivityAPIClient sharedClient];
     WPRequest *request = [[WPRequest alloc] init];
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] initWithDictionary:params];
     parameters[@"timestamp"] = [NSString stringWithFormat:@"%lld", [WPUtil getServerDate]];
@@ -1981,10 +2007,10 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     dispatch_once(&onceToken, ^{
         managers = [NSMutableDictionary new];
     });
-    
+
     NSString *clientId = WPConfiguration.sharedConfiguration.clientId;
     if (!clientId) return nil;
-    
+
     @synchronized (self) {
         WPRemoteConfigManager *remoteConfigManager = managers[clientId];
         if (!remoteConfigManager) {
@@ -2023,11 +2049,11 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     dispatch_once(&onceToken, ^{
         vaults = [NSMutableDictionary new];
     });
-    
+
     NSString *clientId = WPConfiguration.sharedConfiguration.clientId;
     NSString *clientSecret = WPConfiguration.sharedConfiguration.clientSecret;
     if (!clientId || !clientSecret) return nil;
-    
+
     WPRequestVault *vault = vaults[clientId];
     if (!vault) {
         vault = [[WPRequestVault alloc] initWithRequestExecutor:[self measurementsApiClient]];
@@ -2041,11 +2067,11 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     dispatch_once(&onceToken, ^{
         clients = [NSMutableDictionary new];
     });
-    
+
     NSString *clientId = WPConfiguration.sharedConfiguration.clientId;
     NSString *clientSecret = WPConfiguration.sharedConfiguration.clientSecret;
     if (!clientId || !clientSecret) return nil;
-    
+
     WPMeasurementsApiClient *client = clients[clientId];
     if (!client) {
         client = [[WPMeasurementsApiClient alloc]

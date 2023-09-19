@@ -57,6 +57,7 @@
 #define USER_DEFAULTS_CURRENCY @"_wonderpush_currency"
 #define USER_DEFAULTS_LOCALE @"_wonderpush_locale"
 #define USER_DEFAULTS_TIME_ZONE @"_wonderpush_timeZone"
+#define USER_DEFAULTS_LIVE_ACTIVITY_SYNC_STATE_PER_ACTIVITY_ID_KEY @"__wonderpush_liveActivitySyncStatePerActivityId"
 
 #define DEFAULT_MAXIMUM_COLLAPSED_LAST_BUILTIN_TRACKED_EVENTS_COUNT 100
 #define DEFAULT_MAXIMUM_COLLAPSED_LAST_CUSTOM_TRACKED_EVENTS_COUNT 1000
@@ -142,6 +143,7 @@
 @property (nonatomic, assign) NSInteger maximumUncollapsedTrackedEventsCount;
 @property (nonatomic, assign) NSInteger maximumUncollapsedTrackedEventsAgeMs;
 
+@property (nonatomic, strong) NSDictionary *liveActivitySyncStatePerActivityId;
 
 - (void) changeUserId:(NSString *)newUserId;
 - (NSArray *) listKnownUserIds;
@@ -170,5 +172,7 @@
 - (void) rememberTrackedEvent:(NSDictionary *)eventParams occurrences:(NSDictionary **)occurrences;
 
 - (NSArray *) trackedEvents;
+
+- (NSDictionary<NSString *, NSArray<NSString *> *> *) liveActivitySyncActivityIdsPerAttributesTypeName;
 
 @end

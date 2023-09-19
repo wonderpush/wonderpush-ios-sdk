@@ -14,6 +14,7 @@
 #import <sys/utsname.h>
 #import "WonderPush_private.h"
 #import <WonderPushCommon/WPNSUtil.h>
+#import <TargetConditionals.h>
 
 static NSDictionary *deviceNamesByCode = nil;
 static NSDictionary* gpsCapabilityByCode = nil;
@@ -168,7 +169,7 @@ static NSDictionary* gpsCapabilityByCode = nil;
                                 @"i386"        : @NO,
                                 @"x86_64"      : @NO
                                 };
-        
+
     });
 }
 + (NSString *) getSDKVersionNumber
@@ -181,19 +182,19 @@ static NSDictionary* gpsCapabilityByCode = nil;
 + (NSString *) getDeviceModel
 {
     struct utsname systemInfo;
-    
+
     uname(&systemInfo);
-    
+
     NSString* code = [NSString stringWithCString:systemInfo.machine
                                         encoding:NSUTF8StringEncoding];
-    
+
     NSString* deviceName = [WPNSUtil stringForKey:code inDictionary:deviceNamesByCode];
-    
+
     if (!deviceName) {
         // Just use the code name so we don't lose any information
         deviceName = code;
     }
-    
+
     return deviceName;
 }
 
@@ -220,15 +221,19 @@ static NSDictionary* gpsCapabilityByCode = nil;
 
 + (NSString *) getCarrierName
 {
+#if TARGET_IPHONE_SIMULATOR
+    return @"unknown";
+#else
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     CTCarrier *carrier = [netinfo subscriberCellularProvider];
     NSString *carrierName = [carrier carrierName];
-    
+
     if (carrierName == nil) {
         return @"unknown";
     }
-    
+
     return carrierName;
+#endif
 }
 
 + (NSString *) getVersionString

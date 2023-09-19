@@ -3,7 +3,7 @@ echo Cleaning Build/ && rm -rf Build;
 
 for framework in WonderPush WonderPushExtension; do
   for sdk in iphoneos iphonesimulator; do
-    /usr/bin/xcodebuild -scheme $framework archive -archivePath Build/$framework-$sdk.xcarchive -sdk $sdk SKIP_INSTALL=NO;
+    /usr/bin/xcodebuild -scheme $framework archive -archivePath Build/$framework-$sdk.xcarchive -sdk $sdk SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES;
     if [ "$?" != "0" ]; then
       exit 1
     fi

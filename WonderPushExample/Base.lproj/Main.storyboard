@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="WonderPushExample" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -22,13 +22,63 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LdB-25-bi5">
+                                <rect key="frame" x="132" y="466.5" width="150" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Start live activity"/>
+                                <connections>
+                                    <action selector="touchStartLiveActivity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="HiR-4p-MTt"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mn8-EB-OzF">
+                                <rect key="frame" x="132.5" y="552.5" width="149" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Stop live activity"/>
+                                <connections>
+                                    <action selector="touchStopLiveActivity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Skc-TN-9g2"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aAm-Ze-NgG">
+                                <rect key="frame" x="122.5" y="509.5" width="169" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Update live activity"/>
+                                <connections>
+                                    <action selector="touchUpdateLiveActivity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="BOp-Dj-Fm0"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lLh-It-nWy">
+                                <rect key="frame" x="136" y="595.5" width="142" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Track event foo"/>
+                                <connections>
+                                    <action selector="touchTrackEventFoo:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Wrg-Po-6mN"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O0a-LD-D8m">
+                                <rect key="frame" x="121.5" y="638.5" width="171" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Sync Live Activities"/>
+                                <connections>
+                                    <action selector="touchSyncLiveActivities:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Orn-mG-oDB"/>
+                                </connections>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstItem="8GJ-qC-UoU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="9lQ-ib-Vby"/>
-                            <constraint firstItem="8GJ-qC-UoU" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="dPh-LA-Bui"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="lLh-It-nWy" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="6mS-FA-zxz"/>
+                            <constraint firstItem="8GJ-qC-UoU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="9lQ-ib-Vby"/>
+                            <constraint firstItem="Mn8-EB-OzF" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="KKG-Ni-Zu0"/>
+                            <constraint firstItem="aAm-Ze-NgG" firstAttribute="top" secondItem="LdB-25-bi5" secondAttribute="bottom" constant="8" id="NhG-OP-4pY"/>
+                            <constraint firstItem="LdB-25-bi5" firstAttribute="top" secondItem="8GJ-qC-UoU" secondAttribute="bottom" constant="8" id="OM5-sW-S7M"/>
+                            <constraint firstItem="O0a-LD-D8m" firstAttribute="top" secondItem="lLh-It-nWy" secondAttribute="bottom" constant="8" id="UJA-K9-uNi"/>
+                            <constraint firstItem="8GJ-qC-UoU" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="dPh-LA-Bui"/>
+                            <constraint firstItem="lLh-It-nWy" firstAttribute="top" secondItem="Mn8-EB-OzF" secondAttribute="bottom" constant="8" id="gpd-C1-03X"/>
+                            <constraint firstItem="O0a-LD-D8m" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="kRH-Kv-C5a"/>
+                            <constraint firstItem="Mn8-EB-OzF" firstAttribute="top" secondItem="aAm-Ze-NgG" secondAttribute="bottom" constant="8" id="qhH-pt-bhf"/>
+                            <constraint firstItem="LdB-25-bi5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="sXw-Ma-HMp"/>
+                            <constraint firstItem="aAm-Ze-NgG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="tWc-Nz-xLD"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -36,4 +86,9 @@
             <point key="canvasLocation" x="139" y="118"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>
