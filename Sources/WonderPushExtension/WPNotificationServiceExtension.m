@@ -286,7 +286,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
     NSString *secret = [self clientSecret];
     if (!secret) return nil;
 
-    WPBasicApiClient *client = [[WPBasicApiClient alloc] initWithBaseURL:[NSURL URLWithString:PRODUCTION_API_URL] clientSecret:secret];
+    WPBasicApiClient *client = [[WPBasicApiClient alloc] initWithBaseURL:[NSURL URLWithString:PRODUCTION_API_URL] clientId:[self clientId] clientSecret:secret];
     [client executeRequest:request];
     return request;
 }

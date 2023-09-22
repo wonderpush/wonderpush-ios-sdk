@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_END
 @implementation WPMeasurementsApiClient
 
 - (instancetype) initWithClientId:(NSString *)clientId secret:(nonnull NSString *)secret deviceId:(nonnull NSString *)deviceId {
-    if (self = [super initWithBaseURL:[NSURL URLWithString:MEASUREMENTS_API_URL] clientSecret:secret]) {
+    if (self = [super initWithBaseURL:[NSURL URLWithString:MEASUREMENTS_API_URL] clientId:clientId clientSecret:secret]) {
         _clientId = clientId;
         _deviceId = deviceId;
     }

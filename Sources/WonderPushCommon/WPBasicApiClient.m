@@ -9,6 +9,7 @@
 #import "WPBasicApiClient.h"
 #import "WPErrors.h"
 #import <WonderPushCommon/WPRequestSerializer.h>
+#import "WonderPush_constants.h"
 #import "WPNSUtil.h"
 
 NSString * const WPBasicApiClientResponseNotification = @"WPBasicApiClientResponseNotification";
@@ -26,13 +27,16 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
 
 @implementation WPBasicApiClient
 
-- (instancetype)initWithBaseURL:(NSURL *)baseURL clientSecret:(nonnull NSString *)clientSecret {
+- (instancetype)initWithBaseURL:(NSURL *)baseURL clientId:(nonnull NSString *)clientId clientSecret:(nonnull NSString *)clientSecret {
     if (self = [super init]) {
         _disabled = NO;
         _baseURL = baseURL;
         _clientSecret = clientSecret;
         // We don't need cache, persistence, etc.
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        NSMutableDictionary *headers = [configuration.HTTPAdditionalHeaders mutableCopy];
+        headers[@"User-Agent"] = [WPRequestSerializer userAgentWithClientId:clientId];
+        configuration.HTTPAdditionalHeaders = [NSDictionary dictionaryWithDictionary:headers];
         _URLSession = [NSURLSession sessionWithConfiguration:configuration];
     }
     return self;

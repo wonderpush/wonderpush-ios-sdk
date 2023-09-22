@@ -98,7 +98,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         [self.reachabilityManager startMonitoring];
         self.baseURL = url;
         self.requestSerializer = [WPRequestSerializer new];
-        self.URLSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+        // We don't need cache, persistence, etc.
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        self.URLSession = [NSURLSession sessionWithConfiguration:configuration];
     }
     return self;
 }
@@ -314,10 +316,12 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     NSError *error = nil;
     NSMutableURLRequest *mutableRequest = [NSMutableURLRequest requestWithURL:URL];
     mutableRequest.HTTPMethod = method;
+    NSString *clientId = [WPConfiguration sharedConfiguration].clientId;
     NSString *clientSecret = [WPConfiguration sharedConfiguration].clientSecret;
     NSURLRequest *request = [self.requestSerializer
                              requestBySerializingRequest:mutableRequest
                              withParameters:parameters
+                             clientId:clientId
                              clientSecret:clientSecret
                              error:&error];
     if (error) {

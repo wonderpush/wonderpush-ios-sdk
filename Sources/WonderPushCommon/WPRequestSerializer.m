@@ -11,6 +11,7 @@
 #import "WPNSUtil.h"
 #import "WPJsonUtil.h"
 #import "WPLog.h"
+#import "WonderPush_constants.h"
 
 @interface WPQueryStringPair : NSObject
 @property (readwrite, nonatomic, strong) id field;
@@ -89,6 +90,20 @@
     
     return escaped;
 }
+
++ (NSString *)userAgentWithClientId:(nullable NSString *)clientId {
+    NSBundle *mainBundle = [NSBundle mainBundle];
+    NSString *shortVersionString = [mainBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    NSString *bundleName = [mainBundle objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey];
+    NSString *bundleVersion = [mainBundle objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey];
+    NSString *bundleId = [mainBundle objectForInfoDictionaryKey:(NSString*)kCFBundleIdentifierKey]; // [WPUtil getEntitlement:@"application-identifier"]
+    NSBundle *cfNetworkBundle = [NSBundle bundleWithIdentifier:@"com.apple.CFNetwork"];
+    NSString *cfNetworkVersion = [cfNetworkBundle objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey];
+    NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+    NSOperatingSystemVersion systemVersion = [processInfo operatingSystemVersion];
+    return [NSString stringWithFormat:@"WonderPushSDK/%@ (bundleId:\"%@\"; appVersion:\"%@\" clientId:\"%@\") %@/%@ CFNetwork/%@ iOS/%d.%d.%d", SDK_VERSION, bundleId, shortVersionString, clientId, bundleName, bundleVersion, cfNetworkVersion, systemVersion.majorVersion, systemVersion.minorVersion, systemVersion.patchVersion];
+}
+
 + (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request clientSecret:(NSString *)secret
 {
     if (!secret) {
@@ -204,7 +219,7 @@
 }
 
 
-- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request withParameters:(id)parameters clientSecret:(NSString *)secret error:(NSError *__autoreleasing _Nullable *)error
+- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request withParameters:(id)parameters clientId:(NSString *)clientId clientSecret:(NSString *)secret error:(NSError *__autoreleasing _Nullable *)error
 {
     NSMutableURLRequest *mutableRequest = [request mutableCopy];
     NSMutableDictionary *mutableParameters = [parameters mutableCopy];
@@ -256,6 +271,8 @@
         [mutableRequest addValue:authorizationHeader forHTTPHeaderField:@"X-WonderPush-Authorization"];
     }
     
+    [mutableRequest addValue:[WPRequestSerializer userAgentWithClientId:clientId] forHTTPHeaderField:@"User-Agent"];
+
     return [mutableRequest copy];
 }
 
