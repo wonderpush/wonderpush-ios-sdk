@@ -101,7 +101,7 @@
     NSString *cfNetworkVersion = [cfNetworkBundle objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey];
     NSProcessInfo *processInfo = [NSProcessInfo processInfo];
     NSOperatingSystemVersion systemVersion = [processInfo operatingSystemVersion];
-    return [NSString stringWithFormat:@"WonderPushSDK/%@ (bundleId:\"%@\"; appVersion:\"%@\" clientId:\"%@\") %@/%@ CFNetwork/%@ iOS/%d.%d.%d", SDK_VERSION, bundleId, shortVersionString, clientId, bundleName, bundleVersion, cfNetworkVersion, systemVersion.majorVersion, systemVersion.minorVersion, systemVersion.patchVersion];
+    return [NSString stringWithFormat:@"WonderPushSDK/%@ (bundleId:%@; appVersion:%@; clientId:%@) %@/%@ CFNetwork/%@ iOS/%ld.%ld.%ld", SDK_VERSION, bundleId, shortVersionString, clientId, bundleName, bundleVersion, cfNetworkVersion, (long)systemVersion.majorVersion, (long)systemVersion.minorVersion, (long)systemVersion.patchVersion];
 }
 
 + (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request clientSecret:(NSString *)secret
