@@ -100,7 +100,10 @@ static WPRateLimiter *rateLimiter = nil;
                 if (@available(iOS 11.0, *)) {
                     limiterData = [NSKeyedUnarchiver unarchivedObjectOfClass:WPRateLimiterData.class fromData:data error:&error];
                 } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                     limiterData = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+#pragma clang diagnostic pop
                 }
                 if (error) {
                     WPLog(@"Error unarchiving: %@", error);
@@ -125,7 +128,10 @@ static WPRateLimiter *rateLimiter = nil;
             if (@available(iOS 11.0, *)) {
                 archivedData = [NSKeyedArchiver archivedDataWithRootObject:limiterData requiringSecureCoding:YES error:&error];
             } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 archivedData = [NSKeyedArchiver archivedDataWithRootObject:limiterData];
+#pragma clang diagnostic pop
             }
             if (error) {
                 NSLog(@"Error unarchiving: %@", error);

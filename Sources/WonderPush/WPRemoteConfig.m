@@ -200,7 +200,10 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
     if (@available(iOS 11.0, *)) {
         data = [NSKeyedArchiver archivedDataWithRootObject:remoteConfig requiringSecureCoding:YES error:&error];
     } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         data = [NSKeyedArchiver archivedDataWithRootObject:remoteConfig];
+#pragma clang diagnostic pop
     }
     if (error) {
         completion(error);
@@ -224,7 +227,10 @@ NSString * const WPRemoteConfigUpdatedNotification = @"WPRemoteConfigUpdatedNoti
         if (@available(iOS 11.0, *)) {
             config = [NSKeyedUnarchiver unarchivedObjectOfClass:WPRemoteConfig.class fromData:data error:&error];
         } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             config = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+#pragma clang diagnostic pop
         }
     }
     

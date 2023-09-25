@@ -175,6 +175,7 @@ static BOOL _WPAppDelegateAlreadyRunning = NO;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 #pragma clang diagnostic pop
 {

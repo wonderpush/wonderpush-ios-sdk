@@ -91,7 +91,18 @@
             requestQueue = @[];
 
         // Build a new queue by appending the given request, archived
-        requestQueue = [requestQueue arrayByAddingObject:[NSKeyedArchiver archivedDataWithRootObject:request]];
+        if (@available(iOS 11.0, *)) {
+            NSError *error = nil;
+            requestQueue = [requestQueue arrayByAddingObject:[NSKeyedArchiver archivedDataWithRootObject:request requiringSecureCoding:NO error:&error]];
+            if (error) {
+                NSLog(@"Error archiving: %@", error);
+            }
+        } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            requestQueue = [requestQueue arrayByAddingObject:[NSKeyedArchiver archivedDataWithRootObject:request]];
+#pragma clang diagnostic pop
+        }
 
         // Save
         [userDefaults setObject:requestQueue forKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
@@ -113,7 +124,21 @@
         for (NSData *archivedRequestData in requestQueue) {
             if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
             @try {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                // We should use:
+                //     [NSKeyedUnarchiver unarchivedObjectOfClass:WPRequest.class fromData:archivedRequestData error:&error]
+                // but the WPRequest class is shared between the WonderPush and WonderPushExtension frameworks,
+                // and this leads to the following warning when running the application:
+                //     objc[…]: Class WPRequest is implemented in both …/WonderPushExtension.framework/WonderPushExtension (0x101601ea8) and …/WonderPush.framework/WonderPush (0x101fa9310). One of the two will be used. Which one is undefined.
+                // and the following error when unarchiving:
+                //     Error Domain=NSCocoaErrorDomain Code=4864 "value for key 'root' was of unexpected class 'WPRequest' (0x101601ea8) […/WonderPushExtension.framework].
+                //     Allowed classes are:
+                //      {(
+                //         "'WPRequest' (0x101fa9310) […/WonderPush.framework]"
+                //     )}" UserInfo={NSDebugDescription=…}
                 WPRequest *archivedRequest = [NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData];
+#pragma clang diagnostic pop
 
                 // Skip the request to forget
                 if ([request.requestId isEqual:archivedRequest.requestId])
@@ -144,7 +169,21 @@
         for (NSData *archivedRequestData in requestQueue) {
             if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
             @try {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                // We should use:
+                //     [NSKeyedUnarchiver unarchivedObjectOfClass:WPRequest.class fromData:archivedRequestData error:&error]
+                // but the WPRequest class is shared between the WonderPush and WonderPushExtension frameworks,
+                // and this leads to the following warning when running the application:
+                //     objc[…]: Class WPRequest is implemented in both …/WonderPushExtension.framework/WonderPushExtension (0x101601ea8) and …/WonderPush.framework/WonderPush (0x101fa9310). One of the two will be used. Which one is undefined.
+                // and the following error when unarchiving:
+                //     Error Domain=NSCocoaErrorDomain Code=4864 "value for key 'root' was of unexpected class 'WPRequest' (0x101601ea8) […/WonderPushExtension.framework].
+                //     Allowed classes are:
+                //      {(
+                //         "'WPRequest' (0x101fa9310) […/WonderPush.framework]"
+                //     )}" UserInfo={NSDebugDescription=…}
                 result = [result arrayByAddingObject:[NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData]];
+#pragma clang diagnostic pop
             } @catch (id exception) {
                 WPLog(@"[savedRequests] Error deserializing request in queue, skipping: %@", exception);
             }
