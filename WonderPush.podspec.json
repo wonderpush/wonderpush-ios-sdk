@@ -2,7 +2,7 @@
   "name": "WonderPush",
   "module_name": "WonderPush",
   "documentation_url": "https://wonderpush.github.io/wonderpush-ios-sdk/",
-  "version": "4.1.6",
+  "version": "4.2.0",
   "license": {
     "type": "Apache-2.0",
     "file": "LICENSE.txt"
@@ -19,7 +19,7 @@
   },
   "source": {
     "git": "https://github.com/wonderpush/wonderpush-ios-sdk.git",
-    "tag": "v4.1.6"
+    "tag": "v4.2.0"
   },
   "requires_arc": true,
   "default_subspecs": ["Core"],

@@ -9,7 +9,7 @@
 #ifndef WonderPush_constants_h
 #define WonderPush_constants_h
 
-#define SDK_VERSION @"iOS-4.1.6"
+#define SDK_VERSION @"iOS-4.2.0"
 #define PRODUCTION_API_DOMAIN @"api.wonderpush.com"
 #define PRODUCTION_API_URL @"https://" PRODUCTION_API_DOMAIN @"/v1/"
 #define REMOTE_CONFIG_BASE_URL @"https://cdn.by.wonderpush.com/config/clientids/"
