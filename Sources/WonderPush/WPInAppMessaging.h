@@ -42,7 +42,7 @@ NS_SWIFT_NAME(InAppMessaging)
  * initialized to false at app startup. Once set to true, IAM SDK would stop rendering any
  * new messages until it's set back to false.
  */
-@property(nonatomic) BOOL messageDisplaySuppressed;
+@property(nonatomic, assign) BOOL messageDisplaySuppressed;
 
 /**
  * This is the display component that will be used by InAppMessaging to render messages.
@@ -52,7 +52,7 @@ NS_SWIFT_NAME(InAppMessaging)
  * the app. Any other custom implementation of WPInAppMessagingDisplay would need to set this
  * property so that it can be used for rendering IAM message UIs.
  */
-@property(nonatomic) id<WPInAppMessagingDisplay> messageDisplayComponent;
+@property(nonatomic, weak) id<WPInAppMessagingDisplay> messageDisplayComponent;
 
 /**
  * This delegate should be set on the app side to receive message lifecycle events in app runtime.
