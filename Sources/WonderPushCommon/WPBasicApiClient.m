@@ -34,7 +34,7 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
         _clientSecret = clientSecret;
         // We don't need cache, persistence, etc.
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        NSMutableDictionary *headers = [configuration.HTTPAdditionalHeaders mutableCopy];
+        NSMutableDictionary *headers = [configuration.HTTPAdditionalHeaders mutableCopy] ?: [NSMutableDictionary new];
         headers[@"User-Agent"] = [WPRequestSerializer userAgentWithClientId:clientId];
         configuration.HTTPAdditionalHeaders = [NSDictionary dictionaryWithDictionary:headers];
         _URLSession = [NSURLSession sessionWithConfiguration:configuration];
