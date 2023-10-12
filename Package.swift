@@ -21,6 +21,7 @@ let package = Package(
         .target(
             name: "WonderPush",
             dependencies: ["WonderPushCommon"],
+            path: "Sources/WonderPush",
             resources: [
               .process("Resources/close-with-transparency.png"),
               .process("Resources/close-with-transparency@2x.png"),
@@ -34,7 +35,8 @@ let package = Package(
         ),
         .target(
             name: "WonderPushExtension",
-            dependencies: ["WonderPushCommon"]
+            dependencies: ["WonderPushCommon"],
+            path: "Sources/WonderPushExtension"
         ),
     ]
 )
