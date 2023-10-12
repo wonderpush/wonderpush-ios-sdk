@@ -6,4 +6,4 @@
 //  Copyright © 2023 WonderPush. All rights reserved.
 //
 
-@_exported import WonderPushObjCCC
+@_exported import WonderPushObjC
