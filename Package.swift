@@ -19,7 +19,7 @@ let package = Package(
             name: "WonderPushCommon"
         ),
         .target(
-            name: "WonderPush",
+            name: "WonderPushObjC",
             dependencies: ["WonderPushCommon"],
             path: "Sources/WonderPush",
             resources: [
@@ -32,6 +32,11 @@ let package = Package(
               .headerSearchPath("Segmenter"),
               .headerSearchPath(".")
             ]
+        ),
+        .target(
+            name: "WonderPush",
+            dependencies: ["WonderPushObjC"],
+            path: "SwiftSources/WonderPush"
         ),
         .target(
             name: "WonderPushExtension",
