@@ -58,7 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Declares the existence of a factory class, implemented in Swift,
 // that ObjC will use to register the actual implementation of WonderPushPrivateProtocol.
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
-SWIFT_CLASS("WonderPushObjCInterop")
 @interface WonderPushObjCInterop : NSObject
 
 + (void) registerWonderPushPrivate:(Class<WonderPushPrivateProtocol> _Nonnull)type;
