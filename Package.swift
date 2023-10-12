@@ -19,7 +19,7 @@ let package = Package(
             name: "WonderPushCommon"
         ),
         .target(
-            name: "WonderPushObjC",
+            name: "WonderPushObjCCC",
             dependencies: ["WonderPushCommon"],
             path: "Sources/WonderPush",
             resources: [
@@ -35,7 +35,7 @@ let package = Package(
         ),
         .target(
             name: "WonderPush",
-            dependencies: ["WonderPushObjC"],
+            dependencies: ["WonderPushObjCCC"],
             path: "SwiftSources/WonderPush"
         ),
         .target(
