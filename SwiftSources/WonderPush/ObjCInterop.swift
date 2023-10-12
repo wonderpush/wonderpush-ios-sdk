@@ -51,7 +51,7 @@ internal protocol WPJsonSyncLiveActivity {
 // Upon building an instance in Swift, we can call ObjC methods on it.
 // See: https://github.com/amichnia/Swift-framework-with-private-ObjC-example
 @objc(WonderPushObjCInterop)
-internal class WonderPushObjCInterop: NSObject {
+class WonderPushObjCInterop: NSObject {
 
     private(set) static var WonderPushPrivate: WonderPushPrivate! = nil
     private static var WPJsonSyncLiveActivityType: WPJsonSyncLiveActivity.Type!
