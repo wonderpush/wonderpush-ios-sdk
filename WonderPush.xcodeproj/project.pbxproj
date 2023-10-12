@@ -448,8 +448,8 @@
 		3D663E601BA7B85A00BBAB45 /* WPJsonUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPJsonUtil.h; sourceTree = "<group>"; };
 		3D77BBAF1E60760300CA7915 /* WPNotificationCenterDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNotificationCenterDelegate.h; sourceTree = "<group>"; };
 		3D77BBB01E60761600CA7915 /* WPNotificationCenterDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPNotificationCenterDelegate.m; sourceTree = "<group>"; };
-		3D7D8A422989656800FC08D2 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Configuration.swift; path = SwiftSources/WonderPush/Configuration.swift; sourceTree = SOURCE_ROOT; };
-		3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityPropertiesExtractor.swift; path = SwiftSources/WonderPush/ActivityPropertiesExtractor.swift; sourceTree = SOURCE_ROOT; };
+		3D7D8A422989656800FC08D2 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Configuration.swift; path = Sources/WonderPush/Configuration.swift; sourceTree = SOURCE_ROOT; };
+		3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityPropertiesExtractor.swift; path = Sources/WonderPush/ActivityPropertiesExtractor.swift; sourceTree = SOURCE_ROOT; };
 		3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySyncer.swift; sourceTree = "<group>"; };
 		3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjCInterop.swift; sourceTree = "<group>"; };
 		3D7D8A4E298985DE00FC08D2 /* WPSwiftInterop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSwiftInterop.h; sourceTree = "<group>"; };
@@ -791,27 +791,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3DC7CED5296C2C0200A02640 /* SwiftSources */ = {
-			isa = PBXGroup;
-			children = (
-				3DC7CED6296C2C0200A02640 /* WonderPush */,
-			);
-			path = SwiftSources;
-			sourceTree = "<group>";
-		};
-		3DC7CED6296C2C0200A02640 /* WonderPush */ = {
-			isa = PBXGroup;
-			children = (
-				3DC7CED7296C2C0200A02640 /* WonderPush.swift */,
-				3DC7CED9296C2C4900A02640 /* Exports.swift */,
-				3D7D8A422989656800FC08D2 /* Configuration.swift */,
-				3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */,
-				3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */,
-				3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */,
-			);
-			path = WonderPush;
-			sourceTree = "<group>";
-		};
 		9909CE1822215D1C00F73A0B /* WonderPushExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -1081,6 +1060,12 @@
 				99B39794275FC98B00C26D73 /* include */,
 				9998CA8D221C55E20028D955 /* Resources */,
 				99791649276A4D9100A06846 /* Segmenter */,
+				3DC7CED7296C2C0200A02640 /* WonderPush.swift */,
+				3DC7CED9296C2C4900A02640 /* Exports.swift */,
+				3D7D8A422989656800FC08D2 /* Configuration.swift */,
+				3D7D8A442989687400FC08D2 /* ActivityPropertiesExtractor.swift */,
+				3D7D8A4829896A0900FC08D2 /* ActivitySyncer.swift */,
+				3D7D8A4C298984D600FC08D2 /* ObjCInterop.swift */,
 				994E63F0253494C900B9E367 /* WonderPush_constants.h */,
 				A120C1E419DD96A200370FE2 /* WonderPush_private.h */,
 				A1E3E0A319E425DB00A4EE09 /* WonderPush.h */,
@@ -1277,7 +1262,6 @@
 			isa = PBXGroup;
 			children = (
 				99F5B4462760B667004F462E /* Supporting Files */,
-				3DC7CED5296C2C0200A02640 /* SwiftSources */,
 				99536E90275FC07800EFC77E /* Sources */,
 				9942FD37246AA8F20002BEA0 /* WonderPushExample */,
 				9942FD53246AA8F40002BEA0 /* WonderPushExampleTests */,
