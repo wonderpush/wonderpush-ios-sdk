@@ -22,9 +22,16 @@
 // The ObjC runtime will call this method automatically.
 // We register this class with WonderPushObjCInterop to expose it to Swift as a WonderPushPrivateProtocol implementation.
 + (void)load {
-    [WonderPushObjCInterop registerWonderPushPrivate:[WonderPushPrivate class]];
+    // Here we use reflection to avoid a linker issue when archiving in Xcode (interestingly not when testing the application)
+    // ld: Undefined symbols:
+    //    _OBJC_CLASS_$_WonderPushObjCInterop, referenced from:
+    //         in WonderPushObjC.o
+    //  clang: error: linker command failed with exit code 1 (use -v to see invocation)
+    Class WonderPushObjCInteropClass = NSClassFromString(@"WonderPushObjCInterop");
+
+    [WonderPushObjCInteropClass registerWonderPushPrivate:[WonderPushPrivate class]];
     // Let's register other classes for Swift here too
-    [WonderPushObjCInterop registerWPJsonSyncLiveActivity:[WPJsonSyncLiveActivity class]];
+    [WonderPushObjCInteropClass registerWPJsonSyncLiveActivity:[WPJsonSyncLiveActivity class]];
 }
 
 - (NSDictionary<NSString *, NSArray<NSString *> *> *) liveActivityIdsPerAttributesTypeName {
