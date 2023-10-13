@@ -520,7 +520,7 @@
     @synchronized (self) {
         NSNull *null = [NSNull null];
         NSDictionary *apple = @{@"apsEnvironment": [WPUtil getEntitlement:@"aps-environment"] ?: null,
-                                @"appId": [WPUtil getEntitlement:@"application-identifier"] ?: null,
+                                @"appId": [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleIdentifierKey] ?: null, // NOTE: We're missing the Team ID to have a full App ID, but adding the App ID requires the developer to modify Info.plist
                                 @"backgroundModes": [WPUtil getBackgroundModes] ?: null,
                                 @"notificationServiceExtension": [WPUtil getNotificationServiceExtensionDict],
                                 };
