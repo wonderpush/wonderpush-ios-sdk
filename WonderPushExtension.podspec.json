@@ -30,7 +30,7 @@
       "name": "Extension",
       "resource_bundles": {
         "WonderPushExtension": [
-          "Sources/WonderPushExtension/Resources/*.{lproj,storyboard,png,json,xcprivacy}",
+          "Sources/WonderPushExtension/Resources/*.{lproj,storyboard,png,json,xcprivacy}"
         ]
       },
       "source_files": [
