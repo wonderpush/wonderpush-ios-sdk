@@ -322,6 +322,8 @@
 		ED875F14280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED875F12280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.m */; };
 		EDA0887E27F9D10B00134BB2 /* WPIAMWebViewViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = EDA0887C27F9D10B00134BB2 /* WPIAMWebViewViewController.h */; };
 		EDA0887F27F9D10B00134BB2 /* WPIAMWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EDA0887D27F9D10B00134BB2 /* WPIAMWebViewViewController.m */; };
+		EFCD4BE42BD2729B00A2AB6D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EFCD4BE32BD2729B00A2AB6D /* PrivacyInfo.xcprivacy */; };
+		EFCD4C742BD2828E00A2AB6D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EFCD4C732BD2828E00A2AB6D /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -731,6 +733,8 @@
 		ED875F12280EDE260038AC8B /* WPIAMWebViewPreloaderViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMWebViewPreloaderViewController.m; sourceTree = "<group>"; };
 		EDA0887C27F9D10B00134BB2 /* WPIAMWebViewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPIAMWebViewViewController.h; sourceTree = "<group>"; };
 		EDA0887D27F9D10B00134BB2 /* WPIAMWebViewViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPIAMWebViewViewController.m; sourceTree = "<group>"; };
+		EFCD4BE32BD2729B00A2AB6D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		EFCD4C732BD2828E00A2AB6D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -815,6 +819,7 @@
 		9909CE1822215D1C00F73A0B /* WonderPushExtension */ = {
 			isa = PBXGroup;
 			children = (
+				EFCD4C722BD2827700A2AB6D /* Resources */,
 				99B39793275FC97900C26D73 /* include */,
 				99536E88275FA9D600EFC77E /* WPURLConstants.h */,
 				9998CB3C221D973D0028D955 /* WPNotificationServiceExtension.h */,
@@ -1151,6 +1156,7 @@
 		9998CA8D221C55E20028D955 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				EFCD4BE32BD2729B00A2AB6D /* PrivacyInfo.xcprivacy */,
 				ED398679280C647200863EBE /* javascript */,
 				99EF82BA23F4452C00B9B287 /* WPInAppMessageDisplayStoryboard.storyboard */,
 				99EF82BB23F4452C00B9B287 /* close-with-transparency@2x.png */,
@@ -1322,6 +1328,14 @@
 				ED39867A280C647E00863EBE /* webViewBridgeJavascriptFileToInject.js */,
 			);
 			path = javascript;
+			sourceTree = "<group>";
+		};
+		EFCD4C722BD2827700A2AB6D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EFCD4C732BD2828E00A2AB6D /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1676,6 +1690,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFCD4C742BD2828E00A2AB6D /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1739,6 +1754,7 @@
 				99232AEF23708D100064381B /* WonderPushLocalizable.strings in Resources */,
 				99232AF023708D100064381B /* WonderPushLocalizable.strings in Resources */,
 				99EF833A23F4452C00B9B287 /* close-with-transparency.png in Resources */,
+				EFCD4BE42BD2729B00A2AB6D /* PrivacyInfo.xcprivacy in Resources */,
 				99232AF123708D100064381B /* WonderPushLocalizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

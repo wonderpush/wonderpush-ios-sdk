@@ -28,6 +28,11 @@
   "subspecs": [
     {
       "name": "Extension",
+      "resource_bundles": {
+        "WonderPushExtension": [
+          "Sources/WonderPushExtension/Resources/*.{lproj,storyboard,png,json,xcprivacy}",
+        ]
+      },
       "source_files": [
         "Sources/WonderPushExtension/*.{m,h}",
         "Sources/WonderPushCommon/*.{m,h}",
