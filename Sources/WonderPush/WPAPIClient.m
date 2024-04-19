@@ -142,9 +142,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:[self decorateRequestParams:request]];
 
     // The success handler
-    NSTimeInterval timeRequestStart = [[NSProcessInfo processInfo] systemUptime];
+    NSTimeInterval timeRequestStart = NSDate.date.timeIntervalSince1970;
     void(^success)(NSURLSessionTask *, id) = ^(NSURLSessionTask *task, id response) {
-        NSTimeInterval timeRequestStop = [[NSProcessInfo processInfo] systemUptime];
+        NSTimeInterval timeRequestStop = NSDate.date.timeIntervalSince1970;
         if ([response isKindOfClass:[NSDictionary class]]) {
             NSDictionary *responseJSON = (NSDictionary *)response;
 

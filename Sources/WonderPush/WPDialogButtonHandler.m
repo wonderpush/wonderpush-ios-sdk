@@ -25,7 +25,7 @@
 
 - (id)init
 {
-    self.showTime = [[NSProcessInfo processInfo] systemUptime];
+    self.showTime = NSDate.date.timeIntervalSince1970;
     return self;
 }
 
@@ -45,7 +45,7 @@
         if (![clickedButton isKindOfClass:[NSDictionary class]]) clickedButton = nil;
     }
 
-    NSNumber *shownTime = [[NSNumber alloc] initWithLong:(long)(([[NSProcessInfo processInfo] systemUptime] - self.showTime) * 1000)];
+    NSNumber *shownTime = [[NSNumber alloc] initWithLong:(long)((NSDate.date.timeIntervalSince1970 - self.showTime) * 1000)];
     WPReportingData *reportingData = [WPReportingData extract:notificationConfiguration];
     [WonderPush trackInternalEvent:@"@NOTIFICATION_ACTION"
                          eventData:[reportingData filledEventData:@{

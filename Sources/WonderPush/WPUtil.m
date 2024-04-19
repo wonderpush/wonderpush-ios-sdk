@@ -231,7 +231,7 @@ static NSNumber *hasImplementedDidReceiveRemoteNotificationWithFetchCompletionHa
         // Not synced, use device time
         return (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
     }
-    return (long long) (([[NSProcessInfo processInfo] systemUptime] + configuration.timeOffset) * 1000);
+    return (long long) ((NSDate.date.timeIntervalSince1970 + configuration.timeOffset) * 1000);
 }
 
 
