@@ -23,6 +23,7 @@ let package = Package(
             dependencies: ["WonderPushCommon"],
             path: "Sources/WonderPush",
             resources: [
+              .process("Resources/PrivacyInfo.xcprivacy"),
               .process("Resources/close-with-transparency.png"),
               .process("Resources/close-with-transparency@2x.png"),
               .process("Resources/javascript/webViewBridgeJavascriptFileToInject.js")
@@ -41,7 +42,10 @@ let package = Package(
         .target(
             name: "WonderPushExtension",
             dependencies: ["WonderPushCommon"],
-            path: "Sources/WonderPushExtension"
+            path: "Sources/WonderPushExtension",
+            resources: [
+              .process("Resources/PrivacyInfo.xcprivacy")
+            ]
         ),
     ]
 )
