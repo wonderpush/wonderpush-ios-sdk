@@ -114,7 +114,7 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         __block dispatch_semaphore_t measurementsApiSemaphore = nil;
         __block dispatch_semaphore_t installationApiSemaphore = nil;
         WPLog(@"didReceiveNotificationRequest:%@", request);
-        WPLog(@"                     userInfo:%@", request.content.userInfo);
+        WPLog(@"userInfo:%@", request.content.userInfo);
 
         UNMutableNotificationContent *content = [request.content mutableCopy];
         [self setContentHandler:contentHandler forExtension:extension];

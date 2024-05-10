@@ -11,6 +11,7 @@
 #import <WonderPushCommon/WPRequestSerializer.h>
 #import "WonderPush_constants.h"
 #import "WPNSUtil.h"
+#import "WPLog.h"
 
 NSString * const WPBasicApiClientResponseNotification = @"WPBasicApiClientResponseNotification";
 NSString * const WPBasicApiClientResponseNotificationRequestKey = @"request";
@@ -55,8 +56,15 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
                 WPBasicApiClientResponseNotificationClientKey : self,
                 WPBasicApiClientResponseNotificationRequestKey : request,
             }];
-            if (error) userInfo[WPBasicApiClientResponseNotificationErrorKey] = error;
-            
+            if (URLResponse
+                && [URLResponse isKindOfClass:NSHTTPURLResponse.class]
+                && ((NSHTTPURLResponse *)URLResponse).statusCode >= 400) {
+                WPLog(@"Request failed for resource %@ with status %ld", request.resource, (long)((NSHTTPURLResponse *)URLResponse).statusCode);
+            }
+            if (error) {
+                WPLog(@"Request failed for resource %@ with error %@", request.resource, error);
+                userInfo[WPBasicApiClientResponseNotificationErrorKey] = error;
+            }
             [NSNotificationCenter.defaultCenter postNotificationName:WPBasicApiClientResponseNotification object:response userInfo:[NSDictionary dictionaryWithDictionary:userInfo]];
         });
     }];
