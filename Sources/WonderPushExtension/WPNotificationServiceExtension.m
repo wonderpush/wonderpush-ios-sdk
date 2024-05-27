@@ -50,6 +50,7 @@ static NSString *deviceId = nil;
 
 + (WPMeasurementsApiClient * _Nullable) measurementsApiClient {
     if (!measurementsApiClient && [self clientId] && [self clientSecret]) {
+        WPLog(@"Initializing measurements API with clientId: %@ secret: %@...", [self clientId], [[self clientSecret] substringToIndex:3]);
         measurementsApiClient = [[WPMeasurementsApiClient alloc] initWithClientId:[self clientId] secret:[self clientSecret] deviceId:[self deviceId]];
     }
     return measurementsApiClient;
