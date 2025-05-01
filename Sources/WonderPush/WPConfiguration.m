@@ -1040,10 +1040,30 @@ static WPConfiguration *sharedConfiguration = nil;
     NSString *collapsing = eventParams[@"collapsing"];
 
     NSArray *oldTrackedEvents = self.trackedEvents;
-    NSMutableArray *uncollapsedEvents = [[NSMutableArray alloc] initWithCapacity:oldTrackedEvents.count + 1]; // collapsing == null
-    NSMutableArray *collapsedLastBuiltinEvents = [NSMutableArray new]; // collapsing.equals("last") && type.startsWith("@")
-    NSMutableArray *collapsedLastCustomEvents = [NSMutableArray new]; // collapsing.equals("last") && !type.startsWith("@")
-    NSMutableArray *collapsedOtherEvents  = [NSMutableArray new]; // collapsing != null && !collapsing.equals("last") // ie. collapsing.equals("campaign"), as of this writing
+    uint uncollapsedEventsEstimate = 0; // collapsing == null
+    uint collapsedLastBuiltinEventsEstimate = 0; // collapsing.equals("last") && type.startsWith("@")
+    uint collapsedLastCustomEventsEstimate = 0; // collapsing.equals("last") && !type.startsWith("@")
+    uint collapsedOtherEventsEstimate = 0; // collapsing != null && !collapsing.equals("last") // ie.
+    for (NSDictionary *oldTrackedEvent in oldTrackedEvents) {
+        NSString *oldTrackedEventCollapsing = oldTrackedEvent[@"collapsing"];
+        NSString *oldTrackedEventType = oldTrackedEvent[@"type"];
+        if (!oldTrackedEventCollapsing) {
+            uncollapsedEventsEstimate++;
+        } else if ([@"last" isEqualToString:oldTrackedEventCollapsing]) {
+            if ([oldTrackedEventType hasPrefix:@"@"]) {
+                collapsedLastBuiltinEventsEstimate++;
+            } else {
+                collapsedLastCustomEventsEstimate++;
+            }
+        } else {
+            collapsedOtherEventsEstimate++;
+        }
+    }
+
+    NSMutableArray *uncollapsedEvents = [[NSMutableArray alloc] initWithCapacity:uncollapsedEventsEstimate + 1]; // collapsing == null
+    NSMutableArray *collapsedLastBuiltinEvents = [[NSMutableArray alloc] initWithCapacity:collapsedLastBuiltinEventsEstimate + 1]; // collapsing.equals("last") && type.startsWith("@")
+    NSMutableArray *collapsedLastCustomEvents = [[NSMutableArray alloc] initWithCapacity:collapsedLastCustomEventsEstimate + 1]; // collapsing.equals("last") && !type.startsWith("@")
+    NSMutableArray *collapsedOtherEvents  = [[NSMutableArray alloc] initWithCapacity:collapsedOtherEventsEstimate + 1]; // collapsing != null && !collapsing.equals("last") // ie. collapsing.equals("campaign"), as of this writing
 
     NSInteger now = nowDate.timeIntervalSince1970 * 1000;
     NSInteger getMaximumUncollapsedTrackedEventsAgeMs = self.maximumUncollapsedTrackedEventsAgeMs;
@@ -1085,6 +1105,7 @@ static WPConfiguration *sharedConfiguration = nil;
             [collapsedOtherEvents addObject:oldTrackedEvent];
         }
     }
+    oldTrackedEvents = nil; // let GC collect this
 
     // Add the new event, uncollapsed
     NSMutableDictionary *uncollapsedEventData;
@@ -1176,6 +1197,10 @@ static WPConfiguration *sharedConfiguration = nil;
             if (numberOfDaysSinceNow <= 90) ++last90days;
         }
     }
+    uncollapsedEvents = nil; // let GC collect this
+    collapsedLastBuiltinEvents = nil; // let GC collect this
+    collapsedLastCustomEvents = nil; // let GC collect this
+    collapsedOtherEvents = nil; // let GC collect this
 
     occurrences[@"allTime"] = @(MAX(uncollapsedCount, allTime));
     occurrences[@"last1days"] = @(last1days);
@@ -1190,20 +1215,23 @@ static WPConfiguration *sharedConfiguration = nil;
     [uncollapsedEventData setObject:occurrences forKey:@"occurrences"];
 
     // Store the new list
-    [self setTrackedEvents:[storeTrackedEvents copy]];
+    [self setTrackedEvents:storeTrackedEvents];
 
     if (occurrencesOut != nil) *occurrencesOut = [NSDictionary dictionaryWithDictionary:occurrences];
 }
 
 - (NSArray *)trackedEvents {
-    NSMutableArray *result = [NSMutableArray new];
     NSArray *storedTrackedEvents = [self _getNSArrayFromJSONForKey:USER_DEFAULTS_TRACKED_EVENTS_KEY];
+    NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:[storedTrackedEvents count]];
     for (NSInteger i = 0; storedTrackedEvents && i < storedTrackedEvents.count; i++) {
-        NSMutableDictionary *event = [[storedTrackedEvents objectAtIndex:i] mutableCopy];
+        id event = [storedTrackedEvents objectAtIndex:i];
         if (!event[@"creationDate"] && event[@"actionDate"]) {
-            event[@"creationDate"] = event[@"actionDate"];
+            NSMutableDictionary *event2 = [event mutableCopy];
+            event2[@"creationDate"] = event2[@"actionDate"];
+            [result addObject:event2];
+        } else {
+            [result addObject:event];
         }
-        [result addObject:event];
     }
     return result;
 }
