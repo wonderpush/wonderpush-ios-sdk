@@ -75,7 +75,9 @@
         [self applyUpgradeCallback:upgradeCallback];
 
         if (_inflightPatchCall) {
-            [self onFailure];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self onFailure];
+            });
         }
     }
     return self;
