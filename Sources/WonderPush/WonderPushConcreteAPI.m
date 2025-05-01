@@ -230,7 +230,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:WPEventFiredNotification object:nil userInfo:@{
                 WPEventFiredNotificationEventTypeKey : type,
                 WPEventFiredNotificationEventDataKey : [NSDictionary dictionaryWithDictionary:body],
-                WPEventFiredNotificationEventOccurrencesKey : occurrences,
+                WPEventFiredNotificationEventOccurrencesKey : occurrences ?: @{},
             }];
         });
         
