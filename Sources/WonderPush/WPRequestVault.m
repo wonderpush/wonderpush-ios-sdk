@@ -120,7 +120,7 @@
         if (![requestQueue isKindOfClass:[NSArray class]])
             return;
 
-        NSArray *newRequestQueue = @[];
+        NSMutableArray *newRequestQueue = [NSMutableArray arrayWithCapacity:[requestQueue count]];
         for (NSData *archivedRequestData in requestQueue) {
             if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
             @try {
@@ -149,11 +149,11 @@
             }
 
             // Add the archivedRequestData to the new queue
-            newRequestQueue = [newRequestQueue arrayByAddingObject:archivedRequestData];
+            [newRequestQueue addObject:archivedRequestData];
         }
 
         // Save
-        [userDefaults setObject:newRequestQueue forKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
+        [userDefaults setObject:[NSArray arrayWithArray:newRequestQueue] forKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
         [userDefaults synchronize];
     }
 }
@@ -163,34 +163,34 @@
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 
     NSArray *requestQueue = [userDefaults objectForKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
-    NSArray *result = @[];
+    if (![requestQueue isKindOfClass:[NSArray class]])
+        return @[];
 
-    if ([requestQueue isKindOfClass:[NSArray class]]) {
-        for (NSData *archivedRequestData in requestQueue) {
-            if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
-            @try {
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:[requestQueue count]];
+    for (NSData *archivedRequestData in requestQueue) {
+        if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
+        @try {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                // We should use:
-                //     [NSKeyedUnarchiver unarchivedObjectOfClass:WPRequest.class fromData:archivedRequestData error:&error]
-                // but the WPRequest class is shared between the WonderPush and WonderPushExtension frameworks,
-                // and this leads to the following warning when running the application:
-                //     objc[…]: Class WPRequest is implemented in both …/WonderPushExtension.framework/WonderPushExtension (0x101601ea8) and …/WonderPush.framework/WonderPush (0x101fa9310). One of the two will be used. Which one is undefined.
-                // and the following error when unarchiving:
-                //     Error Domain=NSCocoaErrorDomain Code=4864 "value for key 'root' was of unexpected class 'WPRequest' (0x101601ea8) […/WonderPushExtension.framework].
-                //     Allowed classes are:
-                //      {(
-                //         "'WPRequest' (0x101fa9310) […/WonderPush.framework]"
-                //     )}" UserInfo={NSDebugDescription=…}
-                result = [result arrayByAddingObject:[NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData]];
+            // We should use:
+            //     [NSKeyedUnarchiver unarchivedObjectOfClass:WPRequest.class fromData:archivedRequestData error:&error]
+            // but the WPRequest class is shared between the WonderPush and WonderPushExtension frameworks,
+            // and this leads to the following warning when running the application:
+            //     objc[…]: Class WPRequest is implemented in both …/WonderPushExtension.framework/WonderPushExtension (0x101601ea8) and …/WonderPush.framework/WonderPush (0x101fa9310). One of the two will be used. Which one is undefined.
+            // and the following error when unarchiving:
+            //     Error Domain=NSCocoaErrorDomain Code=4864 "value for key 'root' was of unexpected class 'WPRequest' (0x101601ea8) […/WonderPushExtension.framework].
+            //     Allowed classes are:
+            //      {(
+            //         "'WPRequest' (0x101fa9310) […/WonderPush.framework]"
+            //     )}" UserInfo={NSDebugDescription=…}
+            [result addObject:[NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData]];
 #pragma clang diagnostic pop
-            } @catch (id exception) {
-                WPLog(@"[savedRequests] Error deserializing request in queue, skipping: %@", exception);
-            }
+        } @catch (id exception) {
+            WPLog(@"[savedRequests] Error deserializing request in queue, skipping: %@", exception);
         }
     }
 
-    return result;
+    return [NSArray arrayWithArray:result];
 }
 
 - (void) reset
