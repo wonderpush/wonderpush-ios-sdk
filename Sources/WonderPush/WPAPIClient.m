@@ -65,6 +65,8 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 /// The request vault
 @property (strong, nonatomic) WPRequestVault *requestVault;
 
+@property (strong, nonatomic) NSObject<OS_dispatch_queue_global> *dispatchQueue;
+
 - (void) checkMethod:(WPRequest *)request;
 
 @end
@@ -87,6 +89,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 - (id)initWithBaseURL:(NSURL *)url
 {
     if (self = [super init]) {
+        self.dispatchQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         WPRequestVault *wpRequestVault = [[WPRequestVault alloc] initWithRequestExecutor:self];
         self.requestVault = wpRequestVault;
         self.reachabilityManager = [WPNetworkReachabilityManager managerForDomain:PRODUCTION_API_DOMAIN];
@@ -298,12 +301,12 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         return;
     }
     SuccessBlock callSuccessBlock = ^(NSURLSessionTask *task, id result) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(self.dispatchQueue, ^{
             successBlock(task, result);
         });
     };
     FailureBlock callFailureBlock = ^(NSURLSessionTask *task, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(self.dispatchQueue, ^{
             failureBlock(task, error);
         });
     };
