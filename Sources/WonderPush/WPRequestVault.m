@@ -261,6 +261,7 @@
 - (id) initWithRequest:(WPRequest *)request vault:(WPRequestVault *)vault
 {
     if (self = [super init]) {
+        self.queuePriority = NSOperationQueuePriorityLow;
         self.request = request;
         self.vault = vault;
     }
