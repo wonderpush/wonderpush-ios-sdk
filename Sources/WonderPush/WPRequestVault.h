@@ -19,20 +19,20 @@
 #import "WPAPIClient.h"
 #import "WPNetworkReachabilityManager.h"
 
-#define USER_DEFAULTS_REQUEST_VAULT_QUEUE @"__wonderpush_request_vault"
+#define USER_DEFAULTS_REQUEST_VAULT_QUEUE_PREFIX @"__wonderpush_request_vault_"
 
 @interface WPRequestVault : NSObject
 
 @property (nonatomic, weak) id<WPRequestExecutor> requestExecutor;
 
-- (id) initWithRequestExecutor:(id<WPRequestExecutor>)requestExecutor;
+- (id) initWithRequestExecutor:(id<WPRequestExecutor>)requestExecutor userDefaultsKey:(NSString *)userDefaultsKey;
+
+- (void) restoreQueue;
 
 - (void) reachabilityChanged:(WPNetworkReachabilityStatus)status;
 
 - (void) add:(WPRequest *)request;
 
 - (void) reset;
-
-+ (NSArray *) savedRequests;
 
 @end

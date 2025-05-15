@@ -412,8 +412,14 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         }
         // API client
         WPAPIClient.sharedClient.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_API_CLIENT_KEY inDictionary:config.data] boolValue];
+        if (!WPAPIClient.sharedClient.disabled) {
+            [WPAPIClient.sharedClient restoreQueue];
+        }
         // Anonymous API client
         WPAnonymousAPIClient.sharedClient.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_ANONYMOUS_API_CLIENT_KEY inDictionary:config.data] boolValue];
+        if (!WPAnonymousAPIClient.sharedClient.disabled) {
+            [WPAnonymousAPIClient.sharedClient restoreQueue];
+        }
         // JSONSync
         WPJsonSyncInstallation.disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_JSON_SYNC_KEY inDictionary:config.data] boolValue];
         if (!WPJsonSyncInstallation.disabled) {
@@ -421,6 +427,10 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         }
         // Measurements API
         [self measurementsApiClient].disabled = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_DISABLE_MEASUREMENTS_API_CLIENT_KEY inDictionary:config.data] boolValue];
+        if (![self measurementsApiClient].disabled) {
+            // Ensure request vault is started
+            [[self measurementsApiRequestVault] restoreQueue];
+        }
         // Events collapsing
         WPConfiguration.sharedConfiguration.maximumUncollapsedTrackedEventsAgeMs = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_UNCOLLAPSED_MAXIMUM_AGE_MS_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_UNCOLLAPSED_TRACKED_EVENTS_AGE_MS]] integerValue];
         WPConfiguration.sharedConfiguration.maximumUncollapsedTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_UNCOLLAPSED_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_UNCOLLAPSED_TRACKED_EVENTS_COUNT]] integerValue];
@@ -2056,7 +2066,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
     WPRequestVault *vault = vaults[clientId];
     if (!vault) {
-        vault = [[WPRequestVault alloc] initWithRequestExecutor:[self measurementsApiClient]];
+        vault = [[WPRequestVault alloc] initWithRequestExecutor:[self measurementsApiClient] userDefaultsKey:[NSString stringWithFormat:@"%@_measurementsapiclient_clientid:%@", USER_DEFAULTS_REQUEST_VAULT_QUEUE_PREFIX, clientId]];
         vaults[clientId] = vault;
     }
     return vault;

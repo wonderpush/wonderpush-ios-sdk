@@ -31,7 +31,12 @@ FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
  The designated initializer
  @param url The base URL for this client
  */
-- (id) initWithBaseURL:(NSURL *)url;
+- (id) initWithBaseURL:(NSURL *)url userDefaultsKey:(NSString *)userDefaultsKey;
+
+/**
+ Ensures the request vault resumes its operations for save requests
+ */
+- (void) restoreQueue;
 
 /**
   Adds common parameters to the provided request

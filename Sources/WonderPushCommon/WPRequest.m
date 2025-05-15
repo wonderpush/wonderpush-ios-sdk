@@ -18,14 +18,14 @@
 
 @interface WPRequest ()
 
-@property (nonatomic, strong) NSString *requestId;
+@property (nonatomic, strong, nonnull) NSString *requestId;
 
 @end
 
 
 @implementation WPRequest
 
-- (id) init
+- (instancetype _Nullable) init
 {
     if (self = [super init]) {
         self.requestId = [[NSUUID UUID] UUIDString];
@@ -33,9 +33,10 @@
     return self;
 }
 
-- (id) copyWithZone:(NSZone *)zone
+- (nonnull id)copyWithZone:(nullable NSZone *)zone
 {
     WPRequest *copy = [[WPRequest allocWithZone:zone] init];
+    copy.requestId = self.requestId;
     copy.userId = self.userId;
     copy.method = self.method;
     copy.handler = self.handler;
@@ -44,9 +45,54 @@
     return copy;
 }
 
+- (instancetype _Nullable) initFromJSON:(NSDictionary *)dict
+{
+    if (self = [super init]) {
+        id value;
+
+        value = dict[@"requestId"];
+        if ([value isKindOfClass:[NSString class]]) {
+            self.requestId = value;
+        } else {
+            self.requestId = [[NSUUID UUID] UUIDString];
+        }
+
+        value = dict[@"userId"];
+        if ([value isKindOfClass:[NSString class]]) {
+            self.userId = value;
+        } else {
+            self.userId = nil;
+        }
+
+        value = dict[@"method"];
+        if ([value isKindOfClass:[NSString class]]) {
+            self.method = value;
+        } else {
+            return nil;
+        }
+
+        value = dict[@"resource"];
+        if ([value isKindOfClass:[NSString class]]) {
+            self.resource = value;
+        } else {
+            return nil;
+        }
+
+        value = dict[@"params"];
+        if ([value isKindOfClass:[NSDictionary class]]) {
+            self.params = value;
+        } else {
+            self.params = @{};
+        }
+
+        self.handler = nil;
+    }
+    return self;
+}
+
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<WPRequest userId=%@ method=%@ resource=%@ params=%@", self.userId, self.method, self.resource, self.params];
+    return [NSString stringWithFormat:@"<WPRequest requestId=%@ userId=%@ method=%@ resource=%@ params=%@", self.requestId, self.userId, self.method, self.resource, self.params];
 }
 
 - (BOOL) isEqual:(id)object
@@ -63,43 +109,22 @@
     return [super isEqual:object];
 }
 
-- (void) encodeWithCoder:(NSCoder *)aCoder
-{
-    [aCoder encodeObject:self.resource];
-    [aCoder encodeObject:self.params];
-    [aCoder encodeObject:self.method];
-    [aCoder encodeObject:self.requestId];
-    [aCoder encodeObject:self.userId];
-}
-
-- (id) initWithCoder:(NSCoder *)aDecoder
-{
-    if (self = [self init]) {
-        self.resource = [aDecoder decodeObject];
-        self.params = [aDecoder decodeObject];
-        self.method = [aDecoder decodeObject];
-        self.requestId = [aDecoder decodeObject];
-        self.userId = [aDecoder decodeObject];
-    }
-    return self;
-}
-
-- (NSDictionary *) toJSON
+- (NSDictionary * _Nonnull) toJSON
 {
     return @{
-             @"requestId": self.requestId ?: [NSNull null],
-             @"userId": self.userId ?: [NSNull null],
-             @"method": self.method ?: [NSNull null],
-             @"resource": self.resource ?: [NSNull null],
-             @"params": self.params ?: [NSNull null],
-             };
+        @"requestId": self.requestId ?: [NSNull null],
+        @"userId":    self.userId    ?: [NSNull null],
+        @"method":    self.method    ?: [NSNull null],
+        @"resource":  self.resource  ?: [NSNull null],
+        @"params":    self.params    ?: [NSNull null],
+    };
 }
 
 
 
 #pragma mark - Resource
 
-- (void) setResource:(NSString *)resource
+- (void) setResource:(NSString * _Nonnull)resource
 {
     // Remove any leading /
     if (resource && [resource rangeOfString:@"/"].location == 0)

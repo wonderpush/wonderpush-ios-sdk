@@ -86,11 +86,11 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     });
 }
 
-- (id)initWithBaseURL:(NSURL *)url
+- (id)initWithBaseURL:(NSURL *)url userDefaultsKey:(NSString *)userDefaultsKey
 {
     if (self = [super init]) {
         self.dispatchQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        WPRequestVault *wpRequestVault = [[WPRequestVault alloc] initWithRequestExecutor:self];
+        WPRequestVault *wpRequestVault = [[WPRequestVault alloc] initWithRequestExecutor:self userDefaultsKey:userDefaultsKey];
         self.requestVault = wpRequestVault;
         self.reachabilityManager = [WPNetworkReachabilityManager managerForDomain:PRODUCTION_API_DOMAIN];
         [self.reachabilityManager setReachabilityStatusChangeBlock:^(WPNetworkReachabilityStatus status) {
@@ -122,6 +122,11 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     [self checkMethod:request];
 
     [self.requestVault add:request];
+}
+
+- (void) restoreQueue
+{
+    [self.requestVault restoreQueue];
 }
 
 - (NSDictionary *)decorateRequestParams:(WPRequest *)request
@@ -356,7 +361,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         NSError *JSONError = nil;
         id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:&JSONError];
         if (JSONError) {
-            callFailureBlock(task, error);
+            callFailureBlock(task, JSONError);
             return;
         }
         if ([result isKindOfClass:NSDictionary.class]) {
@@ -414,7 +419,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 - (id)initWithBaseURL:(NSURL *)url
 {
-    if (self = [super initWithBaseURL:url]) {
+    if (self = [super initWithBaseURL:url userDefaultsKey:[NSString stringWithFormat:@"%@_apiclient", USER_DEFAULTS_REQUEST_VAULT_QUEUE_PREFIX]]) {
         self.isFetchingAccessToken = false;
         self.tokenFetchedHandlers = [[NSMutableArray alloc] init];
         WPRequestVault *vault = self.requestVault;

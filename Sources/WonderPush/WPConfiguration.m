@@ -200,16 +200,6 @@ static WPConfiguration *sharedConfiguration = nil;
 {
     NSMutableDictionary *rtn = [NSMutableDictionary new];
     [[[NSUserDefaults standardUserDefaults] dictionaryRepresentation] enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        if ([USER_DEFAULTS_REQUEST_VAULT_QUEUE isEqualToString:key]) {
-            NSArray *requests = [WPRequestVault savedRequests];
-            NSMutableArray *value = [[NSMutableArray alloc] initWithCapacity:[(NSArray *)obj count]];
-            [requests enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                if ([obj isKindOfClass:[WPRequest class]]) {
-                    [value addObject:[(WPRequest *)obj toJSON]];
-                }
-            }];
-            obj = [[NSArray alloc] initWithArray:value];
-        }
         if ([key hasPrefix:@"_wonderpush"] || [key hasPrefix:@"__wonderpush"]) {
             rtn[key] = [WPJsonUtil ensureJSONEncodable:obj];
         }

@@ -24,7 +24,7 @@
     dispatch_once(&onceToken, ^{
         NSURL *baseURL = [WPConfiguration sharedConfiguration].baseURL;
         WPLogDebug(@"WonderPush base URL: %@", baseURL);
-        sharedClient = [[WPAnonymousAPIClient alloc] initWithBaseURL:baseURL];
+        sharedClient = [[WPAnonymousAPIClient alloc] initWithBaseURL:baseURL userDefaultsKey:[NSString stringWithFormat:@"%@_anonymousapiclient", USER_DEFAULTS_REQUEST_VAULT_QUEUE_PREFIX]];
     });
     return sharedClient;
 }

@@ -36,168 +36,149 @@
 
 @interface WPRequestVault ()
 
-- (void) save:(WPRequest *)request;
+- (void) saveRequest:(WPRequest *)request;
 
-- (void) forget:(WPRequest *)request;
+- (void) forgetRequest:(WPRequest *)request;
 
 - (void) addToQueue:(WPRequest *)request delay:(NSTimeInterval)delay;
 
 - (void) addToQueue:(WPRequest *)request;
 
-@property (readonly) NSArray *savedRequests;
+@property (readonly, strong, nonatomic) NSString *userDefaultsKey;
+
+@property (atomic) bool queueRestored;
 
 @property (strong, nonatomic) NSOperationQueue *operationQueue;
 
 - (void) updateOperationQueueStatus;
 
+- (NSMutableArray<NSDictionary *> *) loadQueue;
+
 @end
 
 
 @implementation WPRequestVault
-- (id)initWithRequestExecutor:(id<WPRequestExecutor>)requestExecutor
+- (id)initWithRequestExecutor:(id<WPRequestExecutor>)requestExecutor userDefaultsKey:(NSString *)userDefaultsKey
 {
     if (self = [super init]) {
         self.requestExecutor = requestExecutor;
+        _userDefaultsKey = userDefaultsKey;
+        _queueRestored = false;
         self.operationQueue = [[NSOperationQueue alloc] init];
-        self.operationQueue.name = @"WonderPush-RequestVault";
+        self.operationQueue.name = [NSString stringWithFormat:@"WonderPush-RequestVault:%@", userDefaultsKey];
         self.operationQueue.maxConcurrentOperationCount = 1;
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userConsentChangedNotification:) name:WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED object:nil];
         // Set initial reachability
         [self reachabilityChanged:[WonderPush isReachable]];
-
-        // Add saved operations to queue
-        for (WPRequest *request in self.savedRequests) {
-            if (![request isKindOfClass:[WPRequest class]]) continue;
-            [self addToQueue:request];
-        }
     }
     return self;
 }
 
+// Load initial requests. Do not call from constructor so that requestExecutor can construct this very request vault within its init method and have time to finish its initialization.
+- (void) restoreQueue
+{
+    @synchronized(self) {
+        if (_queueRestored == false) {
+            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+            [userDefaults removeObjectForKey:@"__wonderpush_request_vault"]; // cleanup older name
+            [userDefaults synchronize];
+
+            // Add saved operations to queue
+            NSMutableArray<NSDictionary *> *requestQueue = [self loadQueue];
+            NSUInteger requestQueueInitialCount = [requestQueue count];
+            [requestQueue filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+                WPRequest *request = [[WPRequest alloc] initFromJSON:evaluatedObject];
+                if (!request) return false;
+                [self addToQueue:request];
+                return true;
+            }]];
+            if (requestQueueInitialCount != [requestQueue count]) {
+                // Some requests were not valid and got removed, save new queue
+                [self saveQueue:requestQueue];
+            }
+
+            _queueRestored = true;
+        }
+    }
+}
 
 #pragma mark - Persistence
 
-- (void) save:(WPRequest *)request
+- (void) saveRequest:(WPRequest *)request
 {
     @synchronized(self) {
-        // Save in NSUserDefaults
+        NSMutableArray<NSDictionary *> *requestQueue = [self loadQueue];
+        [requestQueue addObject:[request toJSON]];
+        [self saveQueue:requestQueue];
+    }
+}
+
+- (void) forgetRequest:(WPRequest *)request
+{
+    @synchronized(self) {
+        NSMutableArray<NSDictionary *> *requestQueue = [self loadQueue];
+        [requestQueue filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+            return [evaluatedObject isKindOfClass:[NSDictionary class]] // keep objects of the right class
+                && ![evaluatedObject[@"requestId"] isEqualToString:request.requestId] // keep requestIds different from the one we want to forget
+            ;
+        }]];
+        [self saveQueue:requestQueue];
+    }
+}
+
+// Returns NSDictionary not parsed into WPRequests
+- (NSMutableArray<NSDictionary *> *) loadQueue
+{
+    @synchronized(self) {
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 
-        NSArray *requestQueue = [userDefaults objectForKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
+        NSMutableArray<NSDictionary *> *requestQueue = nil;
 
-        // Create queue if doesn't exist
-        if (![requestQueue isKindOfClass:[NSArray class]])
-            requestQueue = @[];
-
-        // Build a new queue by appending the given request, archived
-        if (@available(iOS 11.0, *)) {
-            NSError *error = nil;
-            requestQueue = [requestQueue arrayByAddingObject:[NSKeyedArchiver archivedDataWithRootObject:request requiringSecureCoding:NO error:&error]];
+        NSData *queueJson = [userDefaults dataForKey:self.userDefaultsKey];
+        if (queueJson != nil) {
+            NSError *error = NULL;
+            requestQueue = [NSJSONSerialization JSONObjectWithData:queueJson options:NSJSONReadingMutableContainers error:&error];
             if (error) {
-                NSLog(@"Error archiving: %@", error);
+                WPLogDebug(@"Error while reading request vault %@: %@", self.userDefaultsKey, error);
             }
-        } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            requestQueue = [requestQueue arrayByAddingObject:[NSKeyedArchiver archivedDataWithRootObject:request]];
-#pragma clang diagnostic pop
         }
 
-        // Save
-        [userDefaults setObject:requestQueue forKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
-        [userDefaults synchronize];
+        if (![requestQueue isKindOfClass:[NSMutableArray class]]) {
+            if (requestQueue != nil) {
+                WPLogDebug(@"Error while reading request vault %@: unexpected value of class %@: %@", self.userDefaultsKey, [requestQueue class], requestQueue);
+            }
+            requestQueue = [[NSMutableArray alloc] init];
+        }
+
+        return requestQueue;
     }
 }
 
-- (void) forget:(WPRequest *)request
+- (void) saveQueue:(NSArray<NSDictionary *> *)requestQueue
 {
     @synchronized(self) {
-        // Save in NSUserDefaults
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-
-        NSArray *requestQueue = [userDefaults objectForKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
-        if (![requestQueue isKindOfClass:[NSArray class]])
+        // Save
+        NSError *error = NULL;
+        NSData *queueJson = [NSJSONSerialization dataWithJSONObject:requestQueue options:0 error:&error];
+        if (error) {
+            WPLogDebug(@"Error while serializing request vault %@: %@", self.userDefaultsKey, error);
             return;
-
-        NSMutableArray *newRequestQueue = [NSMutableArray arrayWithCapacity:[requestQueue count]];
-        for (NSData *archivedRequestData in requestQueue) {
-            if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
-            @try {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                // We should use:
-                //     [NSKeyedUnarchiver unarchivedObjectOfClass:WPRequest.class fromData:archivedRequestData error:&error]
-                // but the WPRequest class is shared between the WonderPush and WonderPushExtension frameworks,
-                // and this leads to the following warning when running the application:
-                //     objc[…]: Class WPRequest is implemented in both …/WonderPushExtension.framework/WonderPushExtension (0x101601ea8) and …/WonderPush.framework/WonderPush (0x101fa9310). One of the two will be used. Which one is undefined.
-                // and the following error when unarchiving:
-                //     Error Domain=NSCocoaErrorDomain Code=4864 "value for key 'root' was of unexpected class 'WPRequest' (0x101601ea8) […/WonderPushExtension.framework].
-                //     Allowed classes are:
-                //      {(
-                //         "'WPRequest' (0x101fa9310) […/WonderPush.framework]"
-                //     )}" UserInfo={NSDebugDescription=…}
-                WPRequest *archivedRequest = [NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData];
-#pragma clang diagnostic pop
-
-                // Skip the request to forget
-                if ([request.requestId isEqual:archivedRequest.requestId])
-                    continue;
-            } @catch (id exception) {
-                WPLog(@"[forget] Error deserializing request in queue, skipping: %@", exception);
-                continue;
-            }
-
-            // Add the archivedRequestData to the new queue
-            [newRequestQueue addObject:archivedRequestData];
         }
 
-        // Save
-        [userDefaults setObject:[NSArray arrayWithArray:newRequestQueue] forKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults setObject:queueJson forKey:self.userDefaultsKey];
         [userDefaults synchronize];
     }
-}
-
-+ (NSArray *) savedRequests
-{
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-
-    NSArray *requestQueue = [userDefaults objectForKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
-    if (![requestQueue isKindOfClass:[NSArray class]])
-        return @[];
-
-    NSMutableArray *result = [NSMutableArray arrayWithCapacity:[requestQueue count]];
-    for (NSData *archivedRequestData in requestQueue) {
-        if (![archivedRequestData isKindOfClass:[NSData class]]) continue;
-        @try {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            // We should use:
-            //     [NSKeyedUnarchiver unarchivedObjectOfClass:WPRequest.class fromData:archivedRequestData error:&error]
-            // but the WPRequest class is shared between the WonderPush and WonderPushExtension frameworks,
-            // and this leads to the following warning when running the application:
-            //     objc[…]: Class WPRequest is implemented in both …/WonderPushExtension.framework/WonderPushExtension (0x101601ea8) and …/WonderPush.framework/WonderPush (0x101fa9310). One of the two will be used. Which one is undefined.
-            // and the following error when unarchiving:
-            //     Error Domain=NSCocoaErrorDomain Code=4864 "value for key 'root' was of unexpected class 'WPRequest' (0x101601ea8) […/WonderPushExtension.framework].
-            //     Allowed classes are:
-            //      {(
-            //         "'WPRequest' (0x101fa9310) […/WonderPush.framework]"
-            //     )}" UserInfo={NSDebugDescription=…}
-            [result addObject:[NSKeyedUnarchiver unarchiveObjectWithData:archivedRequestData]];
-#pragma clang diagnostic pop
-        } @catch (id exception) {
-            WPLog(@"[savedRequests] Error deserializing request in queue, skipping: %@", exception);
-        }
-    }
-
-    return [NSArray arrayWithArray:result];
 }
 
 - (void) reset
 {
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults removeObjectForKey:USER_DEFAULTS_REQUEST_VAULT_QUEUE];
-    [userDefaults synchronize];
+    @synchronized(self) {
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults removeObjectForKey:self.userDefaultsKey];
+        [userDefaults synchronize];
+    }
 }
 
 
@@ -205,9 +186,9 @@
 
 - (void) add:(WPRequest *)request
 {
-    [self save:request];
+    [self restoreQueue]; // ensure queue is restored at first use, even though the creator of the current instance should have done so already
+    [self saveRequest:request];
     [self addToQueue:request];
-
 }
 
 - (void) addToQueue:(WPRequest *)request {
@@ -310,7 +291,7 @@
             return;
         }
 
-        [self.vault forget:self.request];
+        [self.vault forgetRequest:self.request];
     };
 
     [self.vault.requestExecutor executeRequest:requestCopy];

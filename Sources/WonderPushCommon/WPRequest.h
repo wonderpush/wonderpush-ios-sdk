@@ -17,7 +17,7 @@
 #import <Foundation/Foundation.h>
 #import "WPResponse.h"
 
-typedef void(^WPRequestHandler)(WPResponse *response, NSError *error);
+typedef void(^WPRequestHandler)(WPResponse * _Nullable response, NSError * _Nullable error);
 
 /**
  WPRequest is a JSON serializable representation of a request to the WonderPush API.
@@ -30,24 +30,26 @@ typedef void(^WPRequestHandler)(WPResponse *response, NSError *error);
  - The handler to be invoked when the request is run.
 
  */
-@interface WPRequest : NSObject <NSCopying, NSCoding>
+@interface WPRequest : NSObject <NSCopying>
 
-@property (strong, nonatomic) NSString *userId;
+@property (strong, nonatomic, nullable) NSString *userId;
 
-@property (strong, nonatomic) NSString *resource;
+@property (strong, nonatomic, nonnull) NSString *resource;
 
-@property (strong, nonatomic) WPRequestHandler handler;
+@property (strong, nonatomic, nullable) WPRequestHandler handler;
 
-@property (strong, nonatomic) NSDictionary *params;
+@property (strong, nonatomic, nonnull) NSDictionary *params;
 
-@property (strong, nonatomic) NSString *method;
+@property (strong, nonatomic, nonnull) NSString *method;
 
-@property (readonly) NSString *requestId;
+@property (readonly, nonnull) NSString *requestId;
 
-- (NSDictionary *) toJSON;
+- (instancetype _Nullable) init;
+- (instancetype _Nullable) initFromJSON:(NSDictionary * _Nullable)dict;
+- (NSDictionary * _Nonnull) toJSON;
 
 @end
 
 @protocol WPRequestExecutor
-- (void) executeRequest:(WPRequest *)request;
+- (void) executeRequest:(WPRequest * _Nonnull)request;
 @end
