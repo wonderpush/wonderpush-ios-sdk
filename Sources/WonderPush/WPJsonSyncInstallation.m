@@ -96,13 +96,15 @@ static NSObject *saveLock = nil;
 
 + (void) flushSync:(BOOL)sync {
     WPLogDebug(@"Flushing delayed updates of installation for all known users");
+    NSDictionary *instancePerUserIdCopy;
     @synchronized (instancePerUserId) {
-        for (NSString *userId in instancePerUserId) {
-            id obj = instancePerUserId[userId];
-            if ([obj isKindOfClass:[WPJsonSyncInstallation class]]) {
-                WPJsonSyncInstallation *jsonSync = (WPJsonSyncInstallation *) obj;
-                [jsonSync flushSync:sync];
-            }
+        instancePerUserIdCopy = [instancePerUserId copy];
+    }
+    for (NSString *userId in instancePerUserIdCopy) {
+        id obj = instancePerUserIdCopy[userId];
+        if ([obj isKindOfClass:[WPJsonSyncInstallation class]]) {
+            WPJsonSyncInstallation *jsonSync = (WPJsonSyncInstallation *) obj;
+            [jsonSync flushSync:sync];
         }
     }
 }
@@ -264,9 +266,7 @@ static NSObject *saveLock = nil;
         if (onFailure) onFailure();
         return;
     }
-    if ([WonderPush subscriptionStatusIsOptIn]) {
-        WPLogDebug(@"[%@] Sending diff: %@", self.logIdentifier, diff);
-    }
+    WPLogDebug(@"[%@] Sending diff: %@", self.logIdentifier, diff);
     [WonderPush requestForUser:_userId
                         method:@"PATCH"
                       resource:@"/installation"
