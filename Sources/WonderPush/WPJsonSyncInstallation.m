@@ -100,8 +100,8 @@ static NSObject *saveLock = nil;
         for (NSString *userId in instancePerUserId) {
             id obj = instancePerUserId[userId];
             if ([obj isKindOfClass:[WPJsonSyncInstallation class]]) {
-                WPJsonSyncInstallation *sync = (WPJsonSyncInstallation *) obj;
-                [sync flushSync:sync];
+                WPJsonSyncInstallation *jsonSync = (WPJsonSyncInstallation *) obj;
+                [jsonSync flushSync:sync];
             }
         }
     }
