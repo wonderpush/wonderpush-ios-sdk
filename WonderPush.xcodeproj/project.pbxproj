@@ -207,8 +207,6 @@
 		99A7B81B25F7EB820091850C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99A7B81A25F7EB820091850C /* NotificationService.swift */; };
 		99A7B81F25F7EB820091850C /* WonderPushNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 99A7B81825F7EB820091850C /* WonderPushNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		99A7B82725F7EB910091850C /* WonderPushExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */; };
-		99A7B82C25F7EBA10091850C /* WonderPushExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */; };
-		99A7B82D25F7EBA10091850C /* WonderPushExtension.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9909CE5922215FFC00F73A0B /* WonderPushExtension.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		99C862C123F6F5AC00E37CE1 /* WPReportingData.h in Headers */ = {isa = PBXBuildFile; fileRef = 99C862BF23F6F5AC00E37CE1 /* WPReportingData.h */; };
 		99C862C223F6F5AC00E37CE1 /* WPReportingData.m in Sources */ = {isa = PBXBuildFile; fileRef = 99C862C023F6F5AC00E37CE1 /* WPReportingData.m */; };
 		99D16F202463E68C00C14989 /* WPMeasurementsApiClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 99D16F1E2463E68C00C14989 /* WPMeasurementsApiClient.h */; };
@@ -362,13 +360,6 @@
 			remoteGlobalIDString = 9909CE1C22215FFC00F73A0B;
 			remoteInfo = WonderPushExtension;
 		};
-		99A7B82E25F7EBA10091850C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A16E339B19C886A700E4E158 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9909CE1C22215FFC00F73A0B;
-			remoteInfo = WonderPushExtension;
-		};
 		99E53C89291A70CF00726C99 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A16E339B19C886A700E4E158 /* Project object */;
@@ -386,7 +377,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				9942FD5E246AAA590002BEA0 /* WonderPush.framework in Embed Frameworks */,
-				99A7B82D25F7EBA10091850C /* WonderPushExtension.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -750,7 +740,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9942FD5D246AAA590002BEA0 /* WonderPush.framework in Frameworks */,
-				99A7B82C25F7EBA10091850C /* WonderPushExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1510,7 +1499,6 @@
 			dependencies = (
 				9942FD60246AAA590002BEA0 /* PBXTargetDependency */,
 				99A7B81E25F7EB820091850C /* PBXTargetDependency */,
-				99A7B82F25F7EBA10091850C /* PBXTargetDependency */,
 				99E53C8A291A70CF00726C99 /* PBXTargetDependency */,
 			);
 			name = WonderPushExample;
@@ -1982,11 +1970,6 @@
 			isa = PBXTargetDependency;
 			target = 9909CE1C22215FFC00F73A0B /* WonderPushExtension */;
 			targetProxy = 99A7B82925F7EB910091850C /* PBXContainerItemProxy */;
-		};
-		99A7B82F25F7EBA10091850C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9909CE1C22215FFC00F73A0B /* WonderPushExtension */;
-			targetProxy = 99A7B82E25F7EBA10091850C /* PBXContainerItemProxy */;
 		};
 		99E53C8A291A70CF00726C99 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
