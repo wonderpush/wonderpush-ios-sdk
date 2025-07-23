@@ -200,7 +200,11 @@ static WPConfiguration *sharedConfiguration = nil;
 {
     NSMutableDictionary *rtn = [NSMutableDictionary new];
     [[[NSUserDefaults standardUserDefaults] dictionaryRepresentation] enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        if ([key hasPrefix:@"_wonderpush"] || [key hasPrefix:@"__wonderpush"]) {
+        if (
+            ([key hasPrefix:@"_wonderpush"] || [key hasPrefix:@"__wonderpush"])
+            && !([key hasPrefix:@"_wonderpush_sensitive"] || [key hasPrefix:@"__wonderpush_sensitive"])
+            && ![key isEqualToString:USER_DEFAULTS_CLIENT_ID_KEY]
+        ) {
             rtn[key] = [WPJsonUtil ensureJSONEncodable:obj];
         }
     }];
