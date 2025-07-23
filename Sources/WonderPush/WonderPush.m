@@ -162,9 +162,11 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
             [WonderPush applicationWillResignActive_private:notification.object];
         }];
 
-        // Manage blocks by configuration: we're blocking JsonSyn and WPAPIClient right away, we'll unblock them when we have a configuration.
+        // Manage blocks by configuration: we're blocking JsonSync and WPAPIClient right away, we'll unblock them when we have a configuration.
         WPJsonSyncInstallation.disabled = YES;
         WPAPIClient.sharedClient.disabled = YES;
+        WPAnonymousAPIClient.sharedClient.disabled = YES;
+        // MeasurementsApiClient is not disabled here as it is by clientId, and is disabled as soon as the clientId is known
 
         [[NSNotificationCenter defaultCenter] addObserverForName:WPRemoteConfigUpdatedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
             [self readConfigAndUpdateDisabledComponents];
