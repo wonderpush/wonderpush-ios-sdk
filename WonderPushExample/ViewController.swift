@@ -20,6 +20,52 @@ class ViewController: UIViewController {
 
         // Do any additional setup after loading the view.
     }
+    
+    @IBOutlet var lblIntFoo: UILabel!
+
+    @IBAction func touchGetRememberedCredentials(_ sender: Any) {
+        print("Remembered Client ID: \(WonderPush.getRememberedClientId() ?? "nil")")
+        let alert = UIAlertController(title: "Credentials", message: WonderPush.getRememberedClientId() ?? "nil", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
+    }
+    
+    @IBAction func touchGetInstallationId(_ sender: Any) {
+        print("Installation ID: \(WonderPush.installationId() ?? "nil")")
+        let alert = UIAlertController(title: "Installation ID", message: WonderPush.installationId() ?? "nil", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
+    }
+    
+    @IBAction func touchGetIntfoo(_ sender: Any) {
+        lblIntFoo.text = "\(WonderPush.getPropertyValue("int_foo"))"
+    }
+    
+    @IBAction func touchIncrIntFoo(_ sender: Any) {
+        let intFooAny: Int? = WonderPush.getPropertyValue("int_foo") as? Int
+        WonderPush.setProperty("int_foo", value: (intFooAny ?? 0) + 1)
+        touchGetIntfoo(sender)
+    }
+    
+    @IBAction func touchInitializeWithRemembered(_ sender: Any) {
+        WonderPush.setClientId(nil, secret: nil)
+    }
+
+    @IBAction func touchInitializeExample(_ sender: Any) {
+        WonderPush.setClientId("47d9054ece4faca1882ba05abcf60163941597f4", secret: "f7864cc6cffc9eea85f1dac4788978434f5325e06cdfe32c1b3139b3d5c18f30")
+    }
+
+    @IBAction func touchInitializeAndRememberExample(_ sender: Any) {
+        WonderPush.setAndRememberClientId("47d9054ece4faca1882ba05abcf60163941597f4", secret: "f7864cc6cffc9eea85f1dac4788978434f5325e06cdfe32c1b3139b3d5c18f30")
+    }
+
+    @IBAction func touchInitializeDemo(_ sender: Any) {
+        WonderPush.setClientId("7524c8a317c1794c0b23895dce3a3314d6a24105", secret: "b43a2d0fbdb54d24332b4d70736954eab5d24d29012b18ef6d214ff0f51e7901")
+    }
+
+    @IBAction func touchInitializeAndRememberDemo(_ sender: Any) {
+        WonderPush.setAndRememberClientId("7524c8a317c1794c0b23895dce3a3314d6a24105", secret: "b43a2d0fbdb54d24332b4d70736954eab5d24d29012b18ef6d214ff0f51e7901")
+    }
 
     @IBAction func touchStartLiveActivity(_ sender: Any) {
         let initialContentState = WonderPushWidgetExtensionAttributes.ContentState(value:123, name:"started")

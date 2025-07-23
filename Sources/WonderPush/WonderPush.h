@@ -190,13 +190,37 @@ Lets you monitor push notification clicks.
 
  Initialization should occur at the earliest possible time, when your application starts.
  A good place is the `application:didFinishLaunchingWithOptions:` method of your `AppDelegate`.
+ 
+ To use credentials remembered prior using `setAndRememberClientId:secret:`, give `nil` to both `clientId` and `secret`.
+ Alternatively you can give the `@"USE_REMEMBERED"` value instead of `nil`.
+ This is the prefered way to make sure the SDK is properly initialized as early as possible *if* remembered credentials are available,
+ or wait until `setAndRememberClientId:secret:` happens to be called.
+ This method merely logs and returns if no remembered credentials are available.
 
- Please refer to the step entitled *Initialize the SDK* from [the guide](../index.html).
-
- @param clientId Your WonderPush client id
+ @param clientId Your WonderPush client id.
  @param secret Your WonderPush client secret
  */
-+ (void) setClientId:(NSString *)clientId secret:(NSString *)secret;
++ (void) setClientId:(nullable NSString *)clientId secret:(nullable NSString *)secret;
+
+/**
+ Remembers the given Client ID and Client Secret and initializes the WonderPush SDK.
+ 
+ If a value is `nil`, it will be removed from storage, and the SDK won't be initialized.
+
+ Initialization should occur at the earliest possible time, when your application starts.
+ A good place is the `application:didFinishLaunchingWithOptions:` method of your `AppDelegate`.
+
+ @param clientId Your WonderPush client id to store and use, or `nil` to forget it.
+ @param secret Your WonderPush client secret to store and use, or `nil` to forget it.
+ */
++ (void) setAndRememberClientId:(nullable NSString *)clientId secret:(nullable NSString *)secret;
+
+/**
+ Returns the remembered Client ID given to `<setAndRememberClientId:secret:>`.
+ There is no similar getter for the Client Secret.
+ @returns The remembered Client ID if both a non-empty Client ID and Client Secret were last remembered, `nil` otherwise.
+ */
++ (nullable NSString *) getRememberedClientId;
 
 /**
  Sets the user id, used to identify a single identity across multiple devices, and to correctly identify multiple users on a single device.

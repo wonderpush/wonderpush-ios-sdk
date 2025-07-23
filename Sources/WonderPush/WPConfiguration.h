@@ -17,6 +17,8 @@
 #import <Foundation/Foundation.h>
 
 #define USER_DEFAULTS_CLIENT_ID_KEY @"__wonderpush_client_id"
+#define USER_DEFAULTS_SENSITIVE_REMEMBERED_CLIENT_ID_KEY @"__wonderpush_sensitive_remembered_client_id"
+#define USER_DEFAULTS_SENSITIVE_REMEMBERED_CLIENT_SECRET_KEY @"__wonderpush_sensitive_remembered_client_secret"
 #define USER_DEFAULTS_QUEUED_NOTIFICATIONS @"__wonderpush_queued_notifications"
 #define USER_DEFAULTS_EVENT_RECEIVED_HISTORY @"__wonderpush_event_received_history"
 #define USER_DEFAULTS_DEVICE_TOKEN_KEY @"__wonderpush_device_token"
@@ -154,8 +156,12 @@
 - (void) setDeviceTokenAssociatedToUserId:(NSString *)userId;
 
 - (void) setStoredClientId:(NSString *)clientId;
-
 - (NSString *) getStoredClientId;
+
+- (void) setRememberedClientId:(NSString *)clientId;
+- (NSString *) getRememberedClientId;
+- (void) setRememberedClientSecret:(NSString *)clientSecret;
+- (NSString *) getRememberedClientSecret;
 
 - (void) addToQueuedNotifications:(NSDictionary *)notification;
 

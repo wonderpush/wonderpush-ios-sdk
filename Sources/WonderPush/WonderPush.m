@@ -356,24 +356,35 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 + (void) setClientId:(NSString *)clientId secret:(NSString *)secret
 {
     WPLogDebug(@"setClientId:%@ secret:<redacted>", clientId);
-    NSException* invalidArgumentException = nil;
-
-    if (clientId == nil) {
-        invalidArgumentException = [NSException
-                                    exceptionWithName:@"InvalidArgumentException"
-                                    reason:@"Please set 'clientId' argument of [WonderPush setClientId:secret] method"
-                                    userInfo:nil];
-    } else if (secret == nil) {
-        invalidArgumentException = [NSException
-                                    exceptionWithName:@"InvalidArgumentException"
-                                    reason:@"Please set 'secret' argument of [WonderPush setClientId:secret] method"
-                                    userInfo:nil];
-    }
-    if (invalidArgumentException != nil) {
-        @throw invalidArgumentException;
+    if ((clientId == nil) != (secret == nil)) {
+        @throw [NSException
+                exceptionWithName:@"InvalidArgumentException"
+                reason:@"Please set both 'clientId' and 'secret' arguments of [WonderPush setClientId:secret:] method, or leave both nil to use remembered credentials"
+                userInfo:nil];
     }
 
     WPConfiguration *configuration = [WPConfiguration sharedConfiguration];
+    if (clientId == nil || [clientId isEqualToString:@"USE_REMEMBERED"]) {
+        clientId = [configuration getRememberedClientId];
+        WPLogDebug(@"Using remembered clientId:%@", clientId);
+    }
+    if (secret == nil || [secret isEqualToString:@"USE_REMEMBERED"]) {
+        secret = [configuration getRememberedClientSecret];
+    }
+    if (clientId == nil || secret == nil) {
+        WPLog(@"[WonderPush setClientId:secret:] has no remembered Client ID and Client Secret available for use. To this end, [WonderPush setAndRememberClientId:secret:] needs to be called at some point.");
+        return;
+    }
+    if (clientId != nil && configuration.clientId != nil && [clientId isEqualToString:configuration.clientId]
+        && secret != nil && configuration.clientSecret != nil && [secret isEqualToString:configuration.clientSecret]) {
+        // We were probably initialized using `WonderPush.setClientId("USE_REMEMBERED", secret: "USE_REMEMBERED")`
+        // during `application:willFinishLaunchingWithOptions:` and then again called with the proper values when they were determined,
+        // which is the approach we recommend. In such case drop the second call.
+        // Another possibility is that we were called multiple times the same way. (like using "USE_REMEMBERED", or using `setAndRememberClientId:secret:`)
+        WPLogDebug(@"SDK already initialized with the same credentials. Ignoring");
+        return;
+    }
+
     configuration.clientId = clientId;
     configuration.clientSecret = secret;
     if ((configuration.clientId == nil && [configuration getStoredClientId] != nil)
@@ -402,6 +413,24 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     [self measurementsApiClient].disabled = YES;
 
     [self readConfigAndUpdateDisabledComponents];
+}
+
++ (void) setAndRememberClientId:(NSString *)clientId secret:(NSString *)secret
+{
+    if ([clientId length] == 0) clientId = nil;
+    if ([secret length] == 0) secret = nil;
+    WPConfiguration *sharedConf = [WPConfiguration sharedConfiguration];
+    [sharedConf setRememberedClientId:clientId];
+    [sharedConf setRememberedClientSecret:secret];
+    if (clientId != nil && secret != nil) {
+        [WonderPush setClientId:clientId secret:secret];
+    }
+}
+
++ (NSString *) getRememberedClientId
+{
+    WPConfiguration *sharedConf = [WPConfiguration sharedConfiguration];
+    return [sharedConf getRememberedClientId];
 }
 
 + (void) readConfigAndUpdateDisabledComponents {

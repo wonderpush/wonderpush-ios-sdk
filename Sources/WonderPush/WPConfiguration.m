@@ -455,6 +455,34 @@ static WPConfiguration *sharedConfiguration = nil;
     }
 }
 
+- (void) setRememberedClientId:(NSString *)clientId
+{
+    @synchronized (self) {
+        [self _setNSString:clientId forKey:USER_DEFAULTS_SENSITIVE_REMEMBERED_CLIENT_ID_KEY];
+    }
+}
+
+- (NSString *) getRememberedClientId
+{
+    @synchronized (self) {
+        return [self _getNSStringForKey:USER_DEFAULTS_SENSITIVE_REMEMBERED_CLIENT_ID_KEY];
+    }
+}
+
+- (void) setRememberedClientSecret:(NSString *)clientSecret
+{
+    @synchronized (self) {
+        [self _setNSString:clientSecret forKey:USER_DEFAULTS_SENSITIVE_REMEMBERED_CLIENT_SECRET_KEY];
+    }
+}
+
+- (NSString *) getRememberedClientSecret
+{
+    @synchronized (self) {
+        return [self _getNSStringForKey:USER_DEFAULTS_SENSITIVE_REMEMBERED_CLIENT_SECRET_KEY];
+    }
+}
+
 - (NSString *) getAccessTokenForUserId:(NSString *)userId
 {
     if (((userId == nil || [userId isEqualToString:@""]) && self.userId == nil)
@@ -987,6 +1015,8 @@ static WPConfiguration *sharedConfiguration = nil;
 
             if (keepUserConsent && [key isEqualToString:USER_DEFAULTS_USER_CONSENT_KEY]) return;
             if (keepDeviceId && [key isEqualToString:USER_DEFAULTS_DEVICE_ID_KEY]) return;
+            if ([key isEqualToString:USER_DEFAULTS_SENSITIVE_REMEMBERED_CLIENT_ID_KEY]) return;
+            if ([key isEqualToString:USER_DEFAULTS_SENSITIVE_REMEMBERED_CLIENT_SECRET_KEY]) return;
             [defaults removeObjectForKey:key];
         }];
         [defaults synchronize];

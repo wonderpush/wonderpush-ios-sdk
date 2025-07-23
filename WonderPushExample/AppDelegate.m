@@ -24,7 +24,7 @@
 #endif
 
     // Replace with real values
-    [WonderPush setClientId:@"ENTER_CLIENT_ID" secret:@"ENTER_CLIENT_SECRET"];
+    [WonderPush setClientId:@"USE_REMEMBERED" secret:@"USE_REMEMBERED"];
     
     [WonderPush setupDelegateForApplication:application];
     [WonderPush setupDelegateForUserNotificationCenter];
