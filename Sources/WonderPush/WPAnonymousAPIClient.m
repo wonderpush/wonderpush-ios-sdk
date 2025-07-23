@@ -9,6 +9,7 @@
 #import "WPAnonymousAPIClient.h"
 #import <WonderPushCommon/WPLog.h>
 #import "WPConfiguration.h"
+#import "WPUtil.h"
 #import <WonderPushCommon/WPRequestSerializer.h>
 #import "WPRequestVault.h"
 #import "WonderPush_constants.h"
@@ -52,7 +53,7 @@
     NSMutableDictionary *mutable = [super decorateRequestParams:request].mutableCopy;
     mutable[@"clientId"] = WPConfiguration.sharedConfiguration.clientId;
     mutable[@"clientSecret"] = WPConfiguration.sharedConfiguration.clientSecret;
-    mutable[@"deviceId"] = WPConfiguration.sharedConfiguration.deviceId;
+    mutable[@"deviceId"] = [WPUtil deviceIdentifier];
     mutable[@"devicePlatform"] = @"iOS";
     mutable[@"userId"] = WPConfiguration.sharedConfiguration.userId ?: @"";
     return [NSDictionary dictionaryWithDictionary:mutable];
