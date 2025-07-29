@@ -13,15 +13,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^CompletionHandler)(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error);
 @interface WPMeasurementsApiClient ()
-@property (nonatomic, strong, nonnull) NSString *clientId;
-@property (nonatomic, strong, nonnull) NSString *deviceId;
+@property (nonatomic, strong, nullable) NSString *clientId;
+@property (nonatomic, strong, nullable) NSString *deviceId;
 @end
 
 NS_ASSUME_NONNULL_END
 
 @implementation WPMeasurementsApiClient
 
-- (instancetype) initWithClientId:(NSString *)clientId secret:(nonnull NSString *)secret deviceId:(nonnull NSString *)deviceId {
+- (instancetype) initWithClientId:(nullable NSString *)clientId secret:(nullable NSString *)secret deviceId:(nullable NSString *)deviceId {
     if (self = [super initWithBaseURL:[NSURL URLWithString:MEASUREMENTS_API_URL] clientId:clientId clientSecret:secret]) {
         _clientId = clientId;
         _deviceId = deviceId;

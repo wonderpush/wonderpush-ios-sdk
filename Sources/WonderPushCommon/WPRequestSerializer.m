@@ -104,7 +104,7 @@
     return [NSString stringWithFormat:@"WonderPushSDK/%@ (bundleId:%@; appVersion:%@; clientId:%@) %@/%@ CFNetwork/%@ iOS/%ld.%ld.%ld", SDK_VERSION, bundleId, shortVersionString, clientId, bundleName, bundleVersion, cfNetworkVersion, (long)systemVersion.majorVersion, (long)systemVersion.minorVersion, (long)systemVersion.patchVersion];
 }
 
-+ (NSString *) wonderPushAuthorizationHeaderValueForRequest:(NSURLRequest *)request clientSecret:(NSString *)secret
++ (NSString *) wonderPushAuthorizationHeaderValueForRequest:(nonnull NSURLRequest *)request clientSecret:(nullable NSString *)secret
 {
     if (!secret) {
         return nil;

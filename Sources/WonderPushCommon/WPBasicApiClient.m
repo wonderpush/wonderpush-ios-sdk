@@ -28,7 +28,7 @@ NSString * const WPBasicApiClientResponseNotificationErrorKey = @"error";
 
 @implementation WPBasicApiClient
 
-- (instancetype)initWithBaseURL:(NSURL *)baseURL clientId:(nonnull NSString *)clientId clientSecret:(nonnull NSString *)clientSecret {
+- (instancetype)initWithBaseURL:(NSURL *)baseURL clientId:(nullable NSString *)clientId clientSecret:(nullable NSString *)clientSecret {
     if (self = [super init]) {
         _disabled = NO;
         _baseURL = baseURL;

@@ -15,9 +15,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPMeasurementsApiClient : WPBasicApiClient
-- (instancetype) initWithClientId:(NSString *)clientId
-                           secret:(NSString *)secret
-                         deviceId:(NSString *)deviceId;
+- (instancetype) initWithClientId:(nullable NSString *)clientId
+                           secret:(nullable NSString *)secret
+                         deviceId:(nullable NSString *)deviceId;
 @end
 
 NS_ASSUME_NONNULL_END
