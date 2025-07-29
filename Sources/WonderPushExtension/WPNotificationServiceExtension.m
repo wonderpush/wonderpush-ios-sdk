@@ -49,20 +49,22 @@ static NSString *deviceId = nil;
 @implementation WPNotificationServiceExtension
 
 + (WPMeasurementsApiClient * _Nullable) measurementsApiClient {
-    if (!measurementsApiClient && [self clientId] && [self clientSecret]) {
-        WPLog(@"Initializing measurements API with clientId: %@ secret: %@...", [self clientId], [[self clientSecret] substringToIndex:3]);
-        measurementsApiClient = [[WPMeasurementsApiClient alloc] initWithClientId:[self clientId] secret:[self clientSecret] deviceId:[self deviceId]];
+    if (!measurementsApiClient) {
+        NSString *clientId = [self clientId];
+        NSString *clientSecret = [self clientSecret];
+        if ([clientId isEqualToString:@"USE_REMEMBERED"]) clientId = nil;
+        if ([clientSecret isEqualToString:@"USE_REMEMBERED"]) clientSecret = nil;
+        WPLog(@"Initializing measurements API with clientId: %@ secret: %@...", clientId, [clientSecret substringToIndex:3]);
+        measurementsApiClient = [[WPMeasurementsApiClient alloc] initWithClientId:clientId secret:clientSecret deviceId:[self deviceId]];
     }
     return measurementsApiClient;
 }
 
 + (NSString *)clientId {
-    WPLog(@"WARNING: clientId not supplied, you will not get an accurate count of notifications received");
     return nil;
 }
 
 + (NSString *)clientSecret {
-    WPLog(@"WARNING: clientSecret not supplied, you will not get an accurate count of notifications received");
     return nil;
 }
 
@@ -127,11 +129,12 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         }
         
         NSDictionary * _Nullable wpData = [WPNSUtil dictionaryForKey:WP_PUSH_NOTIFICATION_KEY inDictionary:content.userInfo];
+        NSString *accessToken = [WPNSUtil stringForKey:@"accessToken" inDictionary:wpData];
         NSDictionary * _Nullable alertData = [WPNSUtil dictionaryForKey:@"alert" inDictionary:wpData];
         WPReportingData *reportingData = [WPReportingData extract:wpData];
         BOOL receiptUsingMeasurements = [[WPNSUtil numberForKey:@"receiptUsingMeasurements" inDictionary:wpData] boolValue];
         if (receiptUsingMeasurements) {
-            WPRequest *request = [self reportNotificationReceivedWithReportingData:reportingData completion:^(NSError *error) {
+            WPRequest *request = [self reportNotificationReceivedWithReportingData:reportingData accessToken:accessToken completion:^(NSError *error) {
                 dispatch_semaphore_signal(measurementsApiSemaphore);
             }];
             if (request) {
@@ -140,7 +143,6 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
         }
         
         NSTimeInterval lastReceivedNotificationCheckDelay = [([WPNSUtil numberForKey:@"lastReceivedNotificationCheckDelay" inDictionary:wpData] ?: [NSNumber numberWithDouble:DEFAULT_LAST_RECEIVED_NOTIFICATION_CHECK_DELAY * 1000]) doubleValue] / 1000;
-        NSString *accessToken = [WPNSUtil stringForKey:@"accessToken" inDictionary:wpData];
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSDate *lastReceivedNotificationCheckDate = [defaults objectForKey:LAST_RECEIVED_NOTIFICATION_CHECK_DATE_USER_DEFAULTS_KEY];
         NSDate *now = [NSDate date];
@@ -249,16 +251,23 @@ const char * const WPNOTIFICATIONSERVICEEXTENSION_CONTENT_ASSOCIATION_KEY = "com
     }
 }
 
-+ (WPRequest * _Nullable)reportNotificationReceivedWithReportingData:(WPReportingData *)reportingData completion:(void(^ _Nullable)(NSError * _Nullable))completion {
++ (WPRequest * _Nullable)reportNotificationReceivedWithReportingData:(WPReportingData *)reportingData accessToken:(nullable NSString *)accessToken completion:(void(^ _Nullable)(NSError * _Nullable))completion {
     WPRequest *request = [WPRequest new];
     request.resource = @"events";
     request.method = @"POST";
-    request.params = @{
-        @"body" : [reportingData filledEventData:@{
-                @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],
-                @"type" : @"@NOTIFICATION_RECEIVED",
-        }],
-    };
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    params[@"body"] = [reportingData filledEventData:@{
+        @"actionDate" : [NSNumber numberWithLongLong:((long long) [[NSDate date] timeIntervalSince1970] * 1000)],
+        @"type" : @"@NOTIFICATION_RECEIVED",
+    }];
+    if ([accessToken isKindOfClass:[NSString class]]) {
+        // Note: The presence of accessToken from the notification makes the clientId, clientSecret and deviceId Measurements API parameters ignored,
+        //       although it can only be used to report the receipt of a notification.
+        //       It was done so, so that it is no longer necessary to have the Notification Service Extension aware of the Client ID and Client Secret,
+        //       which is especially challenging for scenarios using `setAndRememberClientId:secret:` in the main target, without resorting to App Groups.
+        params[@"accessToken"] = accessToken;
+    }
+    request.params = [params copy];
     request.userId = nil; // We don't have that here
     request.handler = ^(WPResponse *response, NSError *error) {
         if (completion) completion(error);
