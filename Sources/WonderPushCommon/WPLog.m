@@ -33,11 +33,22 @@ BOOL WPLogEnabled(void)
 void WPLogv(NSString *format, va_list args)
 {
     NSString *content = [[NSString alloc] initWithFormat:format arguments:args];
-    if ([content length] > 900) {
-        NSLog(@"[WonderPush] ↵");
-        printf("%s\n", [content UTF8String]);
-    } else {
+    if ([content length] < 900) {
+        // Output seems to truncate with `<…>` after 1020 characters
         NSLog(@"[WonderPush] %@", content);
+    } else {
+        NSArray<NSString *> *lines = [content componentsSeparatedByString:@"\n"];
+        NSInteger lineCount = [lines count];
+        NSInteger maxLines = MIN(lineCount, 100);
+
+        for (NSInteger i = 0; i < maxLines; i++) {
+            NSString *leftChar = i == 0 ? @"┌" : (i == lineCount-1 ? @"└" : @"│");
+            NSLog(@"[WonderPush] %@ %@", leftChar, lines[i]);
+        }
+
+        if (lineCount > 100) {
+            NSLog(@"[WonderPush] └ … (%ld more lines truncated)", (long)(lineCount - 100));
+        }
     }
 }
 
