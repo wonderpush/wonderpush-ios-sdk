@@ -781,7 +781,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 }
 
 
-+ (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
++ (BOOL)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
     WPLogDebug(@"userNotificationCenter:%@ willPresentNotification:%@ withCompletionHandler:", center, notification);
     NSDictionary *userInfo = notification.request.content.userInfo;
@@ -791,8 +791,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
     if (![self isNotificationForWonderPush:userInfo]) {
         WPLogDebug(@"Notification is not for WonderPush");
-        completionHandler(presentationOptions);
-        return;
+        return false;
     }
 
     // Ensure that we display the notification even if the application is in foreground
@@ -813,6 +812,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     }
 
     completionHandler(presentationOptions);
+    return true;
 }
 
 + (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler

@@ -851,8 +851,9 @@ Lets you monitor push notification clicks.
  @param center Same parameter as in the forwarded delegate method.
  @param notification Same parameter as in the forwarded delegate method.
  @param completionHandler Same parameter as in the forwarded delegate method.
+ @return `true` if the completion handler was called, `false` otherwise
  */
-+ (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler __IOS_AVAILABLE(10.0);
++ (BOOL) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler __IOS_AVAILABLE(10.0);
 
 /**
  Forwards a UserNotificationCenter delegate to the SDK.

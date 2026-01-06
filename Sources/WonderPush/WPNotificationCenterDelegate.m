@@ -56,11 +56,18 @@ static BOOL _WPNotificationCenterDelegateAlreadyRunning = NO;
 // The method will be called on the delegate only if the application is in the foreground. If the method is not implemented or the handler is not called in a timely manner then the notification will not be presented. The application can choose to have the notification presented as a sound, badge, alert and/or in the notification list. This decision should be based on whether the information in the notification is otherwise visible to the user.
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler __IOS_AVAILABLE(10.0) {
     WPLogDebug(@"%@", NSStringFromSelector(_cmd));
-    [WonderPush userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
+    BOOL completionHandlerCalled = [WonderPush userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
     if ([self.nextDelegate respondsToSelector:_cmd]) {
+        if (completionHandlerCalled) {
+            WPLogDebug(@"%@: Giving dummy completion handler to the other delegates as WonderPush already called it", NSStringFromSelector(_cmd));
+            completionHandler = ^(UNNotificationPresentationOptions options){};
+        }
         _WPNotificationCenterDelegateAlreadyRunning = YES;
         [self.nextDelegate userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
         _WPNotificationCenterDelegateAlreadyRunning = NO;
+    } else if (!completionHandlerCalled) {
+        WPLogDebug(@"%@: Calling completion handler anyway as no delegate in the chain handles this method", NSStringFromSelector(_cmd));
+        completionHandler(UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert);
     }
 }
 
