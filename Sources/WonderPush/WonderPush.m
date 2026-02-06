@@ -2095,12 +2095,14 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     NSString *clientSecret = WPConfiguration.sharedConfiguration.clientSecret;
     if (!clientId || !clientSecret) return nil;
 
-    WPRequestVault *vault = vaults[clientId];
-    if (!vault) {
-        vault = [[WPRequestVault alloc] initWithRequestExecutor:[self measurementsApiClient] userDefaultsKey:[NSString stringWithFormat:@"%@_measurementsapiclient_clientid:%@", USER_DEFAULTS_REQUEST_VAULT_QUEUE_PREFIX, clientId]];
-        vaults[clientId] = vault;
+    @synchronized (vaults) {
+        WPRequestVault *vault = vaults[clientId];
+        if (!vault) {
+            vault = [[WPRequestVault alloc] initWithRequestExecutor:[self measurementsApiClient] userDefaultsKey:[NSString stringWithFormat:@"%@_measurementsapiclient_clientid:%@", USER_DEFAULTS_REQUEST_VAULT_QUEUE_PREFIX, clientId]];
+            vaults[clientId] = vault;
+        }
+        return vault;
     }
-    return vault;
 }
 + (WPMeasurementsApiClient *)measurementsApiClient {
     static NSMutableDictionary *clients;
