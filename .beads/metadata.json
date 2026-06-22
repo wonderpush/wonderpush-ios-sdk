@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "wonderpush_ios_sdk",
+  "project_id": "d56558fb-9309-4cff-bfb2-05b2423fec4f"
+}
