@@ -17,6 +17,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class WPSyncSourceState;
+
 @interface WPSyncKnobs : NSObject <NSCopying>
 
 /// WEAK_SYNC_SIGNAL_DEBOUNCE: minimum delay since last fetch for a weak-signal-triggered fetch.
@@ -50,6 +52,20 @@ NS_ASSUME_NONNULL_BEGIN
 /// (the SyncKnobs field names; INFINITY must already be mapped from the "Infinity" sentinel).
 + (instancetype)knobsWithDictionary:(nullable NSDictionary *)dict;
 - (NSDictionary *)toDictionary;
+
+/// The canonical default knob values (DEFAULT_KNOBS in sync-knobs.ts:29-56).
++ (instancetype)defaultKnobs;
+
+/// Merge remote-config overrides on top of the defaults. Reads the `sync*`-prefixed keys; any field
+/// absent or non-numeric falls back to the default. The kill switch `syncOpportunisticInjection`
+/// disables injection only on an explicit boolean false (anything else keeps it on). Pure.
++ (instancetype)mergeKnobsFromDefaults:(WPSyncKnobs *)defaults
+                          remoteConfig:(nullable NSDictionary *)remoteConfig;
+
+/// Should the SDK force a fetch because the source's state is too old? True when a finite age cap is
+/// exceeded for lastSyncDate or lastReadDate. Both checks are gated on the field being > 0 (a
+/// never-fetched source is never "stale"). Pure — tests inject `now`.
++ (BOOL)isStateStale:(WPSyncSourceState *)state knobs:(WPSyncKnobs *)knobs now:(long long)now;
 
 @end
 
