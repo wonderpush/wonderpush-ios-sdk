@@ -37,6 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
                      lastVersionId:(nullable id)lastVersionId
                       lastReadDate:(long long)lastReadDate;
 
+/// True iff data is {} (empty object) or [] (empty array). Used by the empty-reset detection.
++ (BOOL)isEmptyDataPayload:(nullable id)data;
+
 @end
 
 NS_ASSUME_NONNULL_END

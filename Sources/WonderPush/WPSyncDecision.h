@@ -46,6 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSString *triggerFetch;
 /// The head hint to echo on the explicit request; set only for known*-triggered fetches.
 @property (nonatomic, strong, nullable) WPSyncFetchHint *fetchHint;
+/// On the explicit path, set when a head hint sits above the page we just applied (more pages
+/// remain) — the orchestrator continues paging immediately, floor-exempt. Serialized as
+/// "continuePaging": true when set.
+@property (nonatomic, assign) BOOL continuePaging;
 
 /// Minimal dictionary matching the JS decision shape (omits unset fields). Used by the
 /// conformance harness for deep-equality against the vectors' `expected`.

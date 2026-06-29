@@ -33,6 +33,7 @@
     if (self.hasApplyDelta) dict[@"applyDelta"] = self.applyDelta ?: [NSNull null];
     if (self.triggerFetch != nil) dict[@"triggerFetch"] = self.triggerFetch;
     if (self.fetchHint != nil) dict[@"fetchHint"] = [self.fetchHint toDictionary];
+    if (self.continuePaging) dict[@"continuePaging"] = @YES;
     return dict;
 }
 
