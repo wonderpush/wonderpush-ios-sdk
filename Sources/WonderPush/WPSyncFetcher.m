@@ -64,8 +64,8 @@
 
     // Step 2: acquire the per-source fetch mutex (non-blocking — skip if already in flight).
     WPSyncMutex *mutex = [WPSyncMutex mutexNamed:[@"sync:" stringByAppendingString:source]];
-    NSUInteger token = [mutex tryLock];
-    if (token == 0) { done(NO); return; }
+    NSUInteger token = [mutex tryLockAtTime:now ttlMs:knobs.mutexTtlMs];
+    if (token == 0) { done(NO); return; }   // a fetch is already in flight (or its hold not yet expired)
 
     // Step 3: stamp the attempt + compute backoff + bump the failure count, persisted BEFORE the call.
     double sleepMs = [WPSyncFetchPolicy computeBackoffSleepWithAttemptCount:state.lastFetchUnsuccessfulAttemptCount
@@ -81,7 +81,7 @@
     // Step 4: backoff sleep, then Step 5: the GET.
     self.scheduler(sleepMs, ^{
         WPSyncFetcher *self2 = weakSelf;
-        if (!self2) { [mutex unlock:token]; done(YES); return; }
+        if (!self2) { [mutex unlock:token]; done(NO); return; }   // deallocated mid-backoff: no GET issued
         [self2.transport fetchSource:source path:path params:params completion:^(BOOL success) {
             // Step 6: on success reset the failure count (re-load: the response interceptor may have
             // advanced lastVersion/lastReadDate). On failure leave the count (longer next backoff).

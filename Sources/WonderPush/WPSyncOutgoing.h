@@ -23,8 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WPSyncOutgoing : NSObject
 
-/// Whether sync params may be injected onto a request to this path (POST /events, PATCH /installation).
-+ (BOOL)shouldInjectForPath:(nullable NSString *)path;
+/// Whether sync params may be injected onto this request — true exactly for the opportunistic
+/// endpoints (POST /events, PATCH /installation). Method matters: a GET /installation (the explicit
+/// fetch) must NOT get opportunistic injection. Mirrors WPSyncProcessor's classifier by delegating to it.
++ (BOOL)shouldInjectForPath:(nullable NSString *)path method:(nullable NSString *)method;
 
 /// Build the params to inject. `identifiers` is a dict with optional keys userId/deviceId/
 /// installationId/visitorId (NEVER contactId — the server resolves it). `statePerSource` maps a

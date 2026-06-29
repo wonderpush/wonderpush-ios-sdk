@@ -8,9 +8,10 @@
 #import "WPSyncMutex.h"
 
 @implementation WPSyncMutex {
-    NSLock *_guard;        // protects _held/_token; held only for the brief flag check/flip
+    NSLock *_guard;        // protects _held/_token/_heldSince; held only for the brief flag check/flip
     BOOL _held;
     NSUInteger _token;     // identifies the current acquisition; bumped on each successful tryLock
+    long long _heldSince;  // ms timestamp of the current acquisition, for TTL reclaim
 }
 
 + (instancetype)mutexNamed:(NSString *)name {
@@ -36,16 +37,19 @@
         _guard = [NSLock new];
         _held = NO;
         _token = 0;
+        _heldSince = 0;
     }
     return self;
 }
 
-- (NSUInteger)tryLock {
+- (NSUInteger)tryLockAtTime:(long long)now ttlMs:(double)ttlMs {
     [_guard lock];
     NSUInteger token = 0;
-    if (!_held) {
+    BOOL expired = _held && ttlMs > 0 && (double)(now - _heldSince) >= ttlMs;
+    if (!_held || expired) {
         _held = YES;
-        if (++_token == 0) _token = ++_token;   // never hand out 0 (the "failed" sentinel) on wrap
+        _heldSince = now;
+        if (++_token == 0) _token = 1;   // never hand out 0 (the "failed" sentinel) on wrap
         token = _token;
     }
     [_guard unlock];

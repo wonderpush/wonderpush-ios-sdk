@@ -19,19 +19,22 @@
 #pragma mark - shouldInjectForPath
 
 - (void)testShouldInjectForPath {
-    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/events"]);
-    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/v1/events"]);
-    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/installation"]);
-    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"https://measurements-api.wonderpush.com/v1/events"]);
+    // Opportunistic endpoints: POST /events and PATCH /installation (host-agnostic).
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/events" method:@"POST"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/v1/events" method:@"POST"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/installation" method:@"PATCH"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"https://measurements-api.wonderpush.com/v1/events" method:@"POST"]);
 
-    // Nested paths are NOT injected — must mirror the classifier (exact/hasSuffix), else identifiers
-    // would leak onto a request whose response is never classified.
-    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/v1/events/123"]);
-    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/installation/42/details"]);
-    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/configuration"]);
-    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/access-token"]);
-    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@""]);
-    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:nil]);
+    // Right path, WRONG method -> NO. Crucially the explicit GET /installation fetch is not injected.
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/installation" method:@"GET"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/events" method:@"GET"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/installation" method:@"PUT"]);
+
+    // Nested paths / other endpoints -> NO.
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/v1/events/123" method:@"POST"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/configuration" method:@"GET"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"" method:@"POST"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:nil method:@"POST"]);
 }
 
 #pragma mark - buildOutgoingParams: identifiers

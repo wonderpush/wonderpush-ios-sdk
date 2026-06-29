@@ -7,24 +7,15 @@
 
 #import "WPSyncOutgoing.h"
 #import "WPSyncSourceState.h"
+#import "WPSyncProcessor.h"
 
 @implementation WPSyncOutgoing
 
-+ (BOOL)shouldInjectForPath:(NSString *)path {
-    static NSArray<NSString *> *suffixes;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{ suffixes = @[@"/events", @"/installation"]; });
-
-    if (![path isKindOfClass:[NSString class]] || path.length == 0) return NO;
-    for (NSString *suffix in suffixes) {
-        // Exact or suffix match only — host-agnostic (covers SDK API + Measurements API), and MUST
-        // mirror WPSyncProcessor's classifier (exact/hasSuffix). Injecting on a path the classifier
-        // won't classify would leak identifiers + state onto a request whose response is never
-        // processed. (Deliberately narrower than the JS reference's defensive "contains <suffix>/"
-        // clause, which only matched nested paths the WonderPush API does not expose.)
-        if ([path isEqualToString:suffix] || [path hasSuffix:suffix]) return YES;
-    }
-    return NO;
++ (BOOL)shouldInjectForPath:(NSString *)path method:(NSString *)method {
+    // Inject iff the response would be classified opportunistic — i.e. POST /events or
+    // PATCH /installation (host-agnostic). Delegating to the classifier guarantees the inject set and
+    // the processed set are identical, and that a GET/PUT/DELETE on those suffixes is NOT injected.
+    return [[WPSyncProcessor classifyResponsePath:path method:method].mode isEqualToString:@"opportunistic"];
 }
 
 + (NSDictionary *)buildOutgoingParamsWithIdentifiers:(NSDictionary *)identifiers

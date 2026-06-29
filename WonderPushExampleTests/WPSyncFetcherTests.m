@@ -109,7 +109,7 @@ static const long long kNow = 1000000;
 
 - (void)testMutexBusyAborts {
     WPSyncMutex *m = [WPSyncMutex mutexNamed:@"sync:popups"];
-    NSUInteger t = [m tryLock];   // a fetch is "already in flight"
+    NSUInteger t = [m tryLockAtTime:kNow ttlMs:600000];   // a fetch is "already in flight" (not expired)
     XCTAssertFalse([self fetch:@"popups" weak:NO]);
     XCTAssertEqual(_transport.callCount, 0);
     [m unlock:t];
@@ -165,7 +165,7 @@ static const long long kNow = 1000000;
 - (void)testMutexReleasedAfterFetch {
     XCTAssertTrue([self fetch:@"contact" weak:NO]);
     WPSyncMutex *m = [WPSyncMutex mutexNamed:@"sync:contact"];
-    NSUInteger t = [m tryLock];
+    NSUInteger t = [m tryLockAtTime:kNow ttlMs:600000];
     XCTAssertNotEqual(t, 0u);   // released by the completion -> acquirable again
     [m unlock:t];
 }
