@@ -6,6 +6,7 @@
 //
 
 #import "WPSyncStateStore.h"
+#import <WonderPushCommon/WPLog.h>
 
 // Single NSUserDefaults key holding {storageKey: stateDict}. The `__wonderpush_` prefix keeps it
 // inside the SDK's namespace (picked up by WPConfiguration's state dump / clear logic).
@@ -18,7 +19,15 @@ static NSString * const kWPSyncStateUserDefaultsKey = @"__wonderpush_syncStatePe
 @implementation WPSyncStateStore
 
 + (instancetype)defaultStore {
-    return [[WPSyncStateStore alloc] initWithUserDefaults:[NSUserDefaults standardUserDefaults]];
+    // A shared singleton so the @synchronized(self) read-modify-write guard actually serializes
+    // concurrent writes from different sources to the single shared NSUserDefaults blob. (A per-call
+    // factory would lock on distinct instances and let writes interleave -> last-writer-wins.)
+    static WPSyncStateStore *shared;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        shared = [[WPSyncStateStore alloc] initWithUserDefaults:[NSUserDefaults standardUserDefaults]];
+    });
+    return shared;
 }
 
 - (instancetype)initWithUserDefaults:(NSUserDefaults *)userDefaults {
@@ -46,10 +55,13 @@ static NSString * const kWPSyncStateUserDefaultsKey = @"__wonderpush_syncStatePe
 }
 
 - (void)writeRootDictionary:(NSDictionary *)root {
-    NSData *data = [NSJSONSerialization dataWithJSONObject:root options:0 error:nil];
+    NSError *error = nil;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:root options:0 error:&error];
     if (data) {
         [self.userDefaults setObject:data forKey:kWPSyncStateUserDefaultsKey];
         [self.userDefaults synchronize];
+    } else {
+        WPLog(@"WPSyncStateStore: failed to serialize sync state; not persisted: %@", error);
     }
 }
 

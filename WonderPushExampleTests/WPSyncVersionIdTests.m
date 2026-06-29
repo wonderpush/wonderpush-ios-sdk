@@ -56,6 +56,20 @@
     XCTAssertEqual([self cmp:@"Z" :@"a"], NSOrderedAscending);       // case-sensitive: 'Z'(0x5A) < 'a'(0x61)
 }
 
+- (void)testStringEmbeddedNulNotTruncated {
+    // Strings sharing a prefix up to an embedded NUL must still compare by what follows it.
+    NSString *ab = [[NSString alloc] initWithBytes:"a\0b" length:3 encoding:NSUTF8StringEncoding];
+    NSString *ac = [[NSString alloc] initWithBytes:"a\0c" length:3 encoding:NSUTF8StringEncoding];
+    XCTAssertEqual([self cmp:ab :ac], NSOrderedAscending);   // 'b' < 'c' after the NUL (would be Same with strcmp)
+    XCTAssertEqual([self cmp:ab :ab], NSOrderedSame);
+}
+
+- (void)testStringNonAsciiCodeUnitOrder {
+    // Code-unit ordering (matches the JS reference): 'a'(0x61) < 'é'(0xE9).
+    XCTAssertEqual([self cmp:@"a" :@"é"], NSOrderedAscending);
+    XCTAssertEqual([self cmp:@"é" :@"a"], NSOrderedDescending);
+}
+
 #pragma mark - acceptsResponse
 
 - (BOOL)accept:(long long)v vid:(id)vid rd:(long long)rd data:(id)data

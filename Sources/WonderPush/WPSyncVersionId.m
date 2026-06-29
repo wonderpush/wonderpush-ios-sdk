@@ -6,7 +6,6 @@
 //
 
 #import "WPSyncVersionId.h"
-#import <string.h>
 
 /// nil and NSNull are both the null-missing sentinel.
 static BOOL WPSyncVersionIdMissing(id _Nullable v) {
@@ -35,13 +34,12 @@ static BOOL WPSyncVersionIdMissing(id _Nullable v) {
         return NSOrderedSame;
     }
 
-    // Both strings: byte-wise UTF-8, case-sensitive (algorithm.md:264).
-    const char *sa = [(NSString *)a UTF8String];
-    const char *sb = [(NSString *)b UTF8String];
-    int c = strcmp(sa, sb);
-    if (c < 0) return NSOrderedAscending;
-    if (c > 0) return NSOrderedDescending;
-    return NSOrderedSame;
+    // Both strings: case-sensitive, non-localized, code-unit-wise comparison. NSLiteralSearch
+    // compares UTF-16 code units, matching the JS reference's `<` (the conformance authority) — incl.
+    // for supplementary-plane chars — and unlike strcmp(UTF8String) it does not truncate at an
+    // embedded NUL. algorithm.md:264 phrases this as byte-wise UTF-8; that agrees for the ASCII ids
+    // used in practice, and we follow the JS reference where the two encodings would differ.
+    return [(NSString *)a compare:(NSString *)b options:NSLiteralSearch];
 }
 
 + (BOOL)acceptsResponseWithVersion:(long long)version

@@ -9,6 +9,7 @@
 #import "WPSyncKnobs.h"
 #import "WPSyncSourceState.h"
 #import "WPSyncDecision.h"   // WPSyncFetchHint
+#import <WonderPushCommon/WPLog.h>
 #import <math.h>
 
 NSString * _Nullable WPSyncExplicitPathForSource(NSString *source) {
@@ -65,8 +66,13 @@ static BOOL nWPSyncNonEmptyString(id value) {
     params[@"lastVersion"] = @(state.lastVersion);
     params[@"lastReadDate"] = @(state.lastReadDate);
     if (state.lastSyncMeta != nil) {
-        NSData *json = [NSJSONSerialization dataWithJSONObject:state.lastSyncMeta options:0 error:nil];
-        if (json) params[@"lastSyncMeta"] = [[NSString alloc] initWithData:json encoding:NSUTF8StringEncoding];
+        NSError *error = nil;
+        NSData *json = [NSJSONSerialization dataWithJSONObject:state.lastSyncMeta options:0 error:&error];
+        if (json) {
+            params[@"lastSyncMeta"] = [[NSString alloc] initWithData:json encoding:NSUTF8StringEncoding];
+        } else {
+            WPLog(@"WPSyncFetchPolicy: failed to serialize lastSyncMeta; omitting from fetch: %@", error);
+        }
     }
     if (state.lastVersionId != nil) params[@"lastVersionId"] = state.lastVersionId;
 

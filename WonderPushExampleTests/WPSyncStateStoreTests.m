@@ -45,6 +45,12 @@ static NSString * const kSuite = @"com.wonderpush.test.syncstatestore";
     return s;
 }
 
+- (void)testDefaultStoreIsSingleton {
+    // Shared instance so the @synchronized read-modify-write guard serializes writes from all
+    // sources to the one shared NSUserDefaults blob (regression guard for the per-instance-lock bug).
+    XCTAssertTrue([WPSyncStateStore defaultStore] == [WPSyncStateStore defaultStore]);
+}
+
 - (void)testStorageKeyFormat {
     XCTAssertEqualObjects([WPSyncStateStore storageKeyForSource:@"contact" userId:@"alice" deviceId:@"D1"], @"sync:contact:alice:D1");
     XCTAssertEqualObjects([WPSyncStateStore storageKeyForSource:@"contact" userId:nil deviceId:@"D1"], @"sync:contact::D1");

@@ -33,25 +33,32 @@ static id _Nullable nWPSyncDenull(id _Nullable v) {
 #pragma mark - classifyResponse
 
 + (WPSyncResponseClassification *)classifyResponsePath:(NSString *)path method:(NSString *)method {
+    // Immutable lookup tables, built once — classifyResponse runs on every API response.
+    static NSDictionary<NSString *, NSArray<NSString *> *> *opportunisticPathsByMethod;
+    static NSDictionary<NSString *, NSString *> *explicitSourceByPath;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        opportunisticPathsByMethod = @{ @"POST": @[@"/events"], @"PATCH": @[@"/installation"] };
+        explicitSourceByPath = @{
+            @"/contact": @"contact", @"/user": @"user", @"/installation": @"installation",
+            @"/popups": @"popups", @"/inbox": @"inbox",
+        };
+    });
+
     WPSyncResponseClassification *c = [WPSyncResponseClassification new];
     c.mode = @"none";
     if (![path isKindOfClass:[NSString class]] || path.length == 0) return c;
     NSString *m = [(method ?: @"") uppercaseString];
 
-    NSArray<NSString *> *oppPaths = @{ @"POST": @[@"/events"], @"PATCH": @[@"/installation"] }[m];
-    for (NSString *suffix in oppPaths) {
+    for (NSString *suffix in opportunisticPathsByMethod[m]) {
         if (nWPSyncPathMatchesSuffix(path, suffix)) { c.mode = @"opportunistic"; return c; }
     }
 
     if ([m isEqualToString:@"GET"]) {
-        NSDictionary<NSString *, NSString *> *explicit = @{
-            @"/contact": @"contact", @"/user": @"user", @"/installation": @"installation",
-            @"/popups": @"popups", @"/inbox": @"inbox",
-        };
-        for (NSString *suffix in explicit) {  // suffixes are mutually exclusive; iteration order is irrelevant
+        for (NSString *suffix in explicitSourceByPath) {  // suffixes are mutually exclusive; iteration order is irrelevant
             if (nWPSyncPathMatchesSuffix(path, suffix)) {
                 c.mode = @"explicit";
-                c.explicitSource = explicit[suffix];
+                c.explicitSource = explicitSourceByPath[suffix];
                 return c;
             }
         }
