@@ -29,6 +29,7 @@ SYNC_CLASSES=(
   WPSyncStateStoreTests
   WPSyncMutexTests
   WPSyncOutgoingTests
+  WPSyncFetcherTests
 )
 
 VERBOSE=0
