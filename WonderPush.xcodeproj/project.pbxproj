@@ -78,6 +78,8 @@
 		9942FD48246AA8F40002BEA0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9942FD46246AA8F40002BEA0 /* LaunchScreen.storyboard */; };
 		9942FD4B246AA8F40002BEA0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD4A246AA8F40002BEA0 /* main.m */; };
 		9942FD55246AA8F40002BEA0 /* WonderPushExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */; };
+		FACE0000000000000000005E /* WPSyncOutgoingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000005D /* WPSyncOutgoingTests.m */; };
+		FACE0000000000000000005C /* WPSyncMutexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000005B /* WPSyncMutexTests.m */; };
 		FACE00000000000000000052 /* WPSyncKnobsProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000051 /* WPSyncKnobsProviderTests.m */; };
 		FACE0000000000000000004C /* WPSyncStateStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000004B /* WPSyncStateStoreTests.m */; };
 		FACE0000000000000000002E /* WPSyncConformanceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000002D /* WPSyncConformanceTests.m */; };
@@ -91,6 +93,10 @@
 		9942FD5E246AAA590002BEA0 /* WonderPush.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9998CA98221C74190028D955 /* WonderPush.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9942FD7B246BDAB20002BEA0 /* WPRemoteConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 9942FD79246BDAB20002BEA0 /* WPRemoteConfig.h */; };
 		9942FD7C246BDAB20002BEA0 /* WPRemoteConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD7A246BDAB20002BEA0 /* WPRemoteConfig.m */; };
+		FACE00000000000000000058 /* WPSyncOutgoing.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000057 /* WPSyncOutgoing.h */; };
+		FACE0000000000000000005A /* WPSyncOutgoing.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000059 /* WPSyncOutgoing.m */; };
+		FACE00000000000000000054 /* WPSyncMutex.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000053 /* WPSyncMutex.h */; };
+		FACE00000000000000000056 /* WPSyncMutex.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000055 /* WPSyncMutex.m */; };
 		FACE0000000000000000004E /* WPSyncKnobsProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000004D /* WPSyncKnobsProvider.h */; };
 		FACE00000000000000000050 /* WPSyncKnobsProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000004F /* WPSyncKnobsProvider.m */; };
 		FACE00000000000000000048 /* WPSyncStateStore.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000047 /* WPSyncStateStore.h */; };
@@ -533,6 +539,8 @@
 		9942FD4A246AA8F40002BEA0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9942FD50246AA8F40002BEA0 /* WonderPushExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WonderPushExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPushExampleTests.m; sourceTree = "<group>"; };
+		FACE0000000000000000005D /* WPSyncOutgoingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncOutgoingTests.m; sourceTree = "<group>"; };
+		FACE0000000000000000005B /* WPSyncMutexTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncMutexTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000051 /* WPSyncKnobsProviderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncKnobsProviderTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000004B /* WPSyncStateStoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncStateStoreTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000002D /* WPSyncConformanceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncConformanceTests.m; sourceTree = "<group>"; };
@@ -546,6 +554,10 @@
 		9942FD78246AAB9B0002BEA0 /* WonderPushExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WonderPushExample.entitlements; sourceTree = "<group>"; };
 		9942FD79246BDAB20002BEA0 /* WPRemoteConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPRemoteConfig.h; sourceTree = "<group>"; };
 		9942FD7A246BDAB20002BEA0 /* WPRemoteConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPRemoteConfig.m; sourceTree = "<group>"; };
+		FACE00000000000000000057 /* WPSyncOutgoing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSyncOutgoing.h; sourceTree = "<group>"; };
+		FACE00000000000000000059 /* WPSyncOutgoing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncOutgoing.m; sourceTree = "<group>"; };
+		FACE00000000000000000053 /* WPSyncMutex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSyncMutex.h; sourceTree = "<group>"; };
+		FACE00000000000000000055 /* WPSyncMutex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncMutex.m; sourceTree = "<group>"; };
 		FACE0000000000000000004D /* WPSyncKnobsProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSyncKnobsProvider.h; sourceTree = "<group>"; };
 		FACE0000000000000000004F /* WPSyncKnobsProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncKnobsProvider.m; sourceTree = "<group>"; };
 		FACE00000000000000000047 /* WPSyncStateStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSyncStateStore.h; sourceTree = "<group>"; };
@@ -925,6 +937,8 @@
 			isa = PBXGroup;
 			children = (
 				9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */,
+				FACE0000000000000000005D /* WPSyncOutgoingTests.m */,
+				FACE0000000000000000005B /* WPSyncMutexTests.m */,
 				FACE00000000000000000051 /* WPSyncKnobsProviderTests.m */,
 				FACE0000000000000000004B /* WPSyncStateStoreTests.m */,
 				FACE0000000000000000002D /* WPSyncConformanceTests.m */,
@@ -1230,6 +1244,10 @@
 				99267892287EA34F00DB43E9 /* WPRateLimiter.m */,
 				9942FD79246BDAB20002BEA0 /* WPRemoteConfig.h */,
 				9942FD7A246BDAB20002BEA0 /* WPRemoteConfig.m */,
+				FACE00000000000000000057 /* WPSyncOutgoing.h */,
+				FACE00000000000000000059 /* WPSyncOutgoing.m */,
+				FACE00000000000000000053 /* WPSyncMutex.h */,
+				FACE00000000000000000055 /* WPSyncMutex.m */,
 				FACE0000000000000000004D /* WPSyncKnobsProvider.h */,
 				FACE0000000000000000004F /* WPSyncKnobsProvider.m */,
 				FACE00000000000000000047 /* WPSyncStateStore.h */,
@@ -1511,6 +1529,8 @@
 				9979E0E224A63B69002BC6EE /* WPSPDataSource.h in Headers */,
 				9998CAAB221C75370028D955 /* WPDataManager.h in Headers */,
 				9942FD7B246BDAB20002BEA0 /* WPRemoteConfig.h in Headers */,
+				FACE00000000000000000058 /* WPSyncOutgoing.h in Headers */,
+				FACE00000000000000000054 /* WPSyncMutex.h in Headers */,
 				FACE0000000000000000004E /* WPSyncKnobsProvider.h in Headers */,
 				FACE00000000000000000048 /* WPSyncStateStore.h in Headers */,
 				FACE00000000000000000028 /* WPSyncContactStore.h in Headers */,
@@ -1960,6 +1980,8 @@
 				99ED541624B3308F00EECDE0 /* WPSPParsingContextTests.m in Sources */,
 				9942FD7E246BF1420002BEA0 /* WPRemoteConfigTests.m in Sources */,
 				9942FD55246AA8F40002BEA0 /* WonderPushExampleTests.m in Sources */,
+				FACE0000000000000000005E /* WPSyncOutgoingTests.m in Sources */,
+				FACE0000000000000000005C /* WPSyncMutexTests.m in Sources */,
 				FACE00000000000000000052 /* WPSyncKnobsProviderTests.m in Sources */,
 				FACE0000000000000000004C /* WPSyncStateStoreTests.m in Sources */,
 				FACE0000000000000000002E /* WPSyncConformanceTests.m in Sources */,
@@ -2049,6 +2071,8 @@
 				3D7D8A4929896A0900FC08D2 /* ActivitySyncer.swift in Sources */,
 				990F269B23FD4B0E0015F8DE /* WPAction.m in Sources */,
 				9942FD7C246BDAB20002BEA0 /* WPRemoteConfig.m in Sources */,
+				FACE0000000000000000005A /* WPSyncOutgoing.m in Sources */,
+				FACE00000000000000000056 /* WPSyncMutex.m in Sources */,
 				FACE00000000000000000050 /* WPSyncKnobsProvider.m in Sources */,
 				FACE0000000000000000004A /* WPSyncStateStore.m in Sources */,
 				FACE0000000000000000002A /* WPSyncContactStore.m in Sources */,
