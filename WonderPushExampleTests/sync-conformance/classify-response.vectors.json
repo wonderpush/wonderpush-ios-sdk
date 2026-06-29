@@ -1,0 +1,80 @@
+{
+  "generatedFrom": "wonderpush-javascript-sdk",
+  "spec": "algorithm.md",
+  "function": "classifyResponse",
+  "signature": "classifyResponse(path, method) -> { mode, explicitSource? }",
+  "cases": [
+    {
+      "name": "POST /events opportunistic",
+      "input": {
+        "path": "/events",
+        "method": "POST"
+      },
+      "expected": {
+        "mode": "opportunistic"
+      }
+    },
+    {
+      "name": "POST /v1/events opportunistic",
+      "input": {
+        "path": "/v1/events",
+        "method": "POST"
+      },
+      "expected": {
+        "mode": "opportunistic"
+      }
+    },
+    {
+      "name": "PATCH /installation opportunistic",
+      "input": {
+        "path": "/installation",
+        "method": "PATCH"
+      },
+      "expected": {
+        "mode": "opportunistic"
+      }
+    },
+    {
+      "name": "GET /contact explicit",
+      "input": {
+        "path": "/contact",
+        "method": "GET"
+      },
+      "expected": {
+        "mode": "explicit",
+        "explicitSource": "contact"
+      }
+    },
+    {
+      "name": "GET /v1/popups explicit",
+      "input": {
+        "path": "/v1/popups",
+        "method": "GET"
+      },
+      "expected": {
+        "mode": "explicit",
+        "explicitSource": "popups"
+      }
+    },
+    {
+      "name": "GET /configuration none",
+      "input": {
+        "path": "/configuration",
+        "method": "GET"
+      },
+      "expected": {
+        "mode": "none"
+      }
+    },
+    {
+      "name": "undefined none",
+      "input": {
+        "path": null,
+        "method": null
+      },
+      "expected": {
+        "mode": "none"
+      }
+    }
+  ]
+}

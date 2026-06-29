@@ -1,0 +1,657 @@
+{
+  "generatedFrom": "wonderpush-javascript-sdk",
+  "spec": "algorithm.md",
+  "function": "compareVersionId",
+  "signature": "compareVersionId(a: VersionId, b: VersionId) -> -1 | 0 | 1",
+  "note": "null and undefined are both the null-missing sentinel; encode as JSON null.",
+  "cases": [
+    {
+      "name": "cmp(null, null)",
+      "input": {
+        "a": null,
+        "b": null
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(null, undefined)",
+      "input": {
+        "a": null,
+        "b": null
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(null, 0)",
+      "input": {
+        "a": null,
+        "b": 0
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(null, 1)",
+      "input": {
+        "a": null,
+        "b": 1
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(null, 100)",
+      "input": {
+        "a": null,
+        "b": 100
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(null, \"a\")",
+      "input": {
+        "a": null,
+        "b": "a"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(null, \"b\")",
+      "input": {
+        "a": null,
+        "b": "b"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(null, \"v100\")",
+      "input": {
+        "a": null,
+        "b": "v100"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(null, \"v200\")",
+      "input": {
+        "a": null,
+        "b": "v200"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(undefined, null)",
+      "input": {
+        "a": null,
+        "b": null
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(undefined, undefined)",
+      "input": {
+        "a": null,
+        "b": null
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(undefined, 0)",
+      "input": {
+        "a": null,
+        "b": 0
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(undefined, 1)",
+      "input": {
+        "a": null,
+        "b": 1
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(undefined, 100)",
+      "input": {
+        "a": null,
+        "b": 100
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(undefined, \"a\")",
+      "input": {
+        "a": null,
+        "b": "a"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(undefined, \"b\")",
+      "input": {
+        "a": null,
+        "b": "b"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(undefined, \"v100\")",
+      "input": {
+        "a": null,
+        "b": "v100"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(undefined, \"v200\")",
+      "input": {
+        "a": null,
+        "b": "v200"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(0, null)",
+      "input": {
+        "a": 0,
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(0, undefined)",
+      "input": {
+        "a": 0,
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(0, 0)",
+      "input": {
+        "a": 0,
+        "b": 0
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(0, 1)",
+      "input": {
+        "a": 0,
+        "b": 1
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(0, 100)",
+      "input": {
+        "a": 0,
+        "b": 100
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(0, \"a\")",
+      "input": {
+        "a": 0,
+        "b": "a"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(0, \"b\")",
+      "input": {
+        "a": 0,
+        "b": "b"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(0, \"v100\")",
+      "input": {
+        "a": 0,
+        "b": "v100"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(0, \"v200\")",
+      "input": {
+        "a": 0,
+        "b": "v200"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(1, null)",
+      "input": {
+        "a": 1,
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(1, undefined)",
+      "input": {
+        "a": 1,
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(1, 0)",
+      "input": {
+        "a": 1,
+        "b": 0
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(1, 1)",
+      "input": {
+        "a": 1,
+        "b": 1
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(1, 100)",
+      "input": {
+        "a": 1,
+        "b": 100
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(1, \"a\")",
+      "input": {
+        "a": 1,
+        "b": "a"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(1, \"b\")",
+      "input": {
+        "a": 1,
+        "b": "b"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(1, \"v100\")",
+      "input": {
+        "a": 1,
+        "b": "v100"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(1, \"v200\")",
+      "input": {
+        "a": 1,
+        "b": "v200"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(100, null)",
+      "input": {
+        "a": 100,
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(100, undefined)",
+      "input": {
+        "a": 100,
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(100, 0)",
+      "input": {
+        "a": 100,
+        "b": 0
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(100, 1)",
+      "input": {
+        "a": 100,
+        "b": 1
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(100, 100)",
+      "input": {
+        "a": 100,
+        "b": 100
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(100, \"a\")",
+      "input": {
+        "a": 100,
+        "b": "a"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(100, \"b\")",
+      "input": {
+        "a": 100,
+        "b": "b"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(100, \"v100\")",
+      "input": {
+        "a": 100,
+        "b": "v100"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(100, \"v200\")",
+      "input": {
+        "a": 100,
+        "b": "v200"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(\"a\", null)",
+      "input": {
+        "a": "a",
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"a\", undefined)",
+      "input": {
+        "a": "a",
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"a\", 0)",
+      "input": {
+        "a": "a",
+        "b": 0
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"a\", 1)",
+      "input": {
+        "a": "a",
+        "b": 1
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"a\", 100)",
+      "input": {
+        "a": "a",
+        "b": 100
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"a\", \"a\")",
+      "input": {
+        "a": "a",
+        "b": "a"
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(\"a\", \"b\")",
+      "input": {
+        "a": "a",
+        "b": "b"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(\"a\", \"v100\")",
+      "input": {
+        "a": "a",
+        "b": "v100"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(\"a\", \"v200\")",
+      "input": {
+        "a": "a",
+        "b": "v200"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(\"b\", null)",
+      "input": {
+        "a": "b",
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"b\", undefined)",
+      "input": {
+        "a": "b",
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"b\", 0)",
+      "input": {
+        "a": "b",
+        "b": 0
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"b\", 1)",
+      "input": {
+        "a": "b",
+        "b": 1
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"b\", 100)",
+      "input": {
+        "a": "b",
+        "b": 100
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"b\", \"a\")",
+      "input": {
+        "a": "b",
+        "b": "a"
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"b\", \"b\")",
+      "input": {
+        "a": "b",
+        "b": "b"
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(\"b\", \"v100\")",
+      "input": {
+        "a": "b",
+        "b": "v100"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(\"b\", \"v200\")",
+      "input": {
+        "a": "b",
+        "b": "v200"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(\"v100\", null)",
+      "input": {
+        "a": "v100",
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v100\", undefined)",
+      "input": {
+        "a": "v100",
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v100\", 0)",
+      "input": {
+        "a": "v100",
+        "b": 0
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v100\", 1)",
+      "input": {
+        "a": "v100",
+        "b": 1
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v100\", 100)",
+      "input": {
+        "a": "v100",
+        "b": 100
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v100\", \"a\")",
+      "input": {
+        "a": "v100",
+        "b": "a"
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v100\", \"b\")",
+      "input": {
+        "a": "v100",
+        "b": "b"
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v100\", \"v100\")",
+      "input": {
+        "a": "v100",
+        "b": "v100"
+      },
+      "expected": 0
+    },
+    {
+      "name": "cmp(\"v100\", \"v200\")",
+      "input": {
+        "a": "v100",
+        "b": "v200"
+      },
+      "expected": -1
+    },
+    {
+      "name": "cmp(\"v200\", null)",
+      "input": {
+        "a": "v200",
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v200\", undefined)",
+      "input": {
+        "a": "v200",
+        "b": null
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v200\", 0)",
+      "input": {
+        "a": "v200",
+        "b": 0
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v200\", 1)",
+      "input": {
+        "a": "v200",
+        "b": 1
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v200\", 100)",
+      "input": {
+        "a": "v200",
+        "b": 100
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v200\", \"a\")",
+      "input": {
+        "a": "v200",
+        "b": "a"
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v200\", \"b\")",
+      "input": {
+        "a": "v200",
+        "b": "b"
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v200\", \"v100\")",
+      "input": {
+        "a": "v200",
+        "b": "v100"
+      },
+      "expected": 1
+    },
+    {
+      "name": "cmp(\"v200\", \"v200\")",
+      "input": {
+        "a": "v200",
+        "b": "v200"
+      },
+      "expected": 0
+    }
+  ]
+}

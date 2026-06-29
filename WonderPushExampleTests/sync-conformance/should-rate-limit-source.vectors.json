@@ -1,0 +1,71 @@
+{
+  "generatedFrom": "wonderpush-javascript-sdk",
+  "spec": "algorithm.md",
+  "function": "shouldRateLimitSource",
+  "signature": "shouldRateLimitSource(now, lastFetchAttemptedDate, minIntervalMs) -> boolean",
+  "cases": [
+    {
+      "name": "within interval -> limit",
+      "input": {
+        "now": 10000,
+        "lastFetchAttemptedDate": 9000,
+        "minIntervalMs": 2000
+      },
+      "expected": true
+    },
+    {
+      "name": "older than interval -> allow",
+      "input": {
+        "now": 10000,
+        "lastFetchAttemptedDate": 7000,
+        "minIntervalMs": 2000
+      },
+      "expected": false
+    },
+    {
+      "name": "exact boundary -> allow",
+      "input": {
+        "now": 10000,
+        "lastFetchAttemptedDate": 8000,
+        "minIntervalMs": 2000
+      },
+      "expected": false
+    },
+    {
+      "name": "just inside -> limit",
+      "input": {
+        "now": 10000,
+        "lastFetchAttemptedDate": 8001,
+        "minIntervalMs": 2000
+      },
+      "expected": true
+    },
+    {
+      "name": "never fetched -> allow",
+      "input": {
+        "now": 10000,
+        "lastFetchAttemptedDate": 0,
+        "minIntervalMs": 2000
+      },
+      "expected": false
+    },
+    {
+      "name": "interval 0 disables",
+      "input": {
+        "now": 10000,
+        "lastFetchAttemptedDate": 9999,
+        "minIntervalMs": 0
+      },
+      "expected": false
+    },
+    {
+      "name": "interval negative disables",
+      "input": {
+        "now": 10000,
+        "lastFetchAttemptedDate": 9999,
+        "minIntervalMs": -1
+      },
+      "expected": false
+    }
+  ]
+}

@@ -78,6 +78,7 @@
 		9942FD48246AA8F40002BEA0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9942FD46246AA8F40002BEA0 /* LaunchScreen.storyboard */; };
 		9942FD4B246AA8F40002BEA0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD4A246AA8F40002BEA0 /* main.m */; };
 		9942FD55246AA8F40002BEA0 /* WonderPushExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */; };
+		FACE0000000000000000002E /* WPSyncConformanceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000002D /* WPSyncConformanceTests.m */; };
 		FACE0000000000000000002C /* WPSyncContactStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000002B /* WPSyncContactStoreTests.m */; };
 		FACE00000000000000000026 /* WPSyncProcessorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000025 /* WPSyncProcessorTests.m */; };
 		FACE00000000000000000020 /* WPSyncFetchPolicyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000001F /* WPSyncFetchPolicyTests.m */; };
@@ -173,6 +174,18 @@
 		9979E0F524A659D9002BC6EE /* WPSPConfigurableValueNodeParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 9979E0F324A659D9002BC6EE /* WPSPConfigurableValueNodeParser.h */; };
 		9979E0F624A659D9002BC6EE /* WPSPConfigurableValueNodeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9979E0F424A659D9002BC6EE /* WPSPConfigurableValueNodeParser.m */; };
 		997D8835246D4D330095CCA7 /* remote-config-example.json in Resources */ = {isa = PBXBuildFile; fileRef = 997D8834246D4D330095CCA7 /* remote-config-example.json */; };
+		FACE00000000000000000030 /* accepts-response.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000002F /* accepts-response.vectors.json */; };
+		FACE00000000000000000032 /* classify-response.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000031 /* classify-response.vectors.json */; };
+		FACE00000000000000000034 /* compare-version-id.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000033 /* compare-version-id.vectors.json */; };
+		FACE00000000000000000036 /* compute-backoff-sleep.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000035 /* compute-backoff-sleep.vectors.json */; };
+		FACE00000000000000000038 /* contact-store.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000037 /* contact-store.vectors.json */; };
+		FACE0000000000000000003A /* default-knobs.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000039 /* default-knobs.json */; };
+		FACE0000000000000000003C /* index.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000003B /* index.json */; };
+		FACE0000000000000000003E /* is-state-stale.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000003D /* is-state-stale.vectors.json */; };
+		FACE00000000000000000040 /* merge-knobs.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000003F /* merge-knobs.vectors.json */; };
+		FACE00000000000000000042 /* process-source-block.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000041 /* process-source-block.vectors.json */; };
+		FACE00000000000000000044 /* should-debounce-weak-signal.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000043 /* should-debounce-weak-signal.vectors.json */; };
+		FACE00000000000000000046 /* should-rate-limit-source.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000045 /* should-rate-limit-source.vectors.json */; };
 		9998CAA0221C74890028D955 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */; };
 		9998CAA1221C74930028D955 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937WPAF19CAEC0700F91DDD /* CoreGraphics.framework */; };
 		9998CAA2221C74980028D955 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B119CB018F00F91DDD /* UIKit.framework */; };
@@ -514,6 +527,7 @@
 		9942FD4A246AA8F40002BEA0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9942FD50246AA8F40002BEA0 /* WonderPushExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WonderPushExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPushExampleTests.m; sourceTree = "<group>"; };
+		FACE0000000000000000002D /* WPSyncConformanceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncConformanceTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000002B /* WPSyncContactStoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncContactStoreTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000025 /* WPSyncProcessorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncProcessorTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000001F /* WPSyncFetchPolicyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncFetchPolicyTests.m; sourceTree = "<group>"; };
@@ -617,6 +631,18 @@
 		9979E0F324A659D9002BC6EE /* WPSPConfigurableValueNodeParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSPConfigurableValueNodeParser.h; sourceTree = "<group>"; };
 		9979E0F424A659D9002BC6EE /* WPSPConfigurableValueNodeParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSPConfigurableValueNodeParser.m; sourceTree = "<group>"; };
 		997D8834246D4D330095CCA7 /* remote-config-example.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "remote-config-example.json"; sourceTree = "<group>"; };
+		FACE0000000000000000002F /* accepts-response.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/accepts-response.vectors.json"; sourceTree = "<group>"; };
+		FACE00000000000000000031 /* classify-response.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/classify-response.vectors.json"; sourceTree = "<group>"; };
+		FACE00000000000000000033 /* compare-version-id.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/compare-version-id.vectors.json"; sourceTree = "<group>"; };
+		FACE00000000000000000035 /* compute-backoff-sleep.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/compute-backoff-sleep.vectors.json"; sourceTree = "<group>"; };
+		FACE00000000000000000037 /* contact-store.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/contact-store.vectors.json"; sourceTree = "<group>"; };
+		FACE00000000000000000039 /* default-knobs.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/default-knobs.json"; sourceTree = "<group>"; };
+		FACE0000000000000000003B /* index.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/index.json"; sourceTree = "<group>"; };
+		FACE0000000000000000003D /* is-state-stale.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/is-state-stale.vectors.json"; sourceTree = "<group>"; };
+		FACE0000000000000000003F /* merge-knobs.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/merge-knobs.vectors.json"; sourceTree = "<group>"; };
+		FACE00000000000000000041 /* process-source-block.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/process-source-block.vectors.json"; sourceTree = "<group>"; };
+		FACE00000000000000000043 /* should-debounce-weak-signal.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/should-debounce-weak-signal.vectors.json"; sourceTree = "<group>"; };
+		FACE00000000000000000045 /* should-rate-limit-source.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/should-rate-limit-source.vectors.json"; sourceTree = "<group>"; };
 		99885AED22156F92002CA269 /* WPNetworkReachabilityManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNetworkReachabilityManager.h; sourceTree = "<group>"; };
 		99885AEE22156F92002CA269 /* WPNetworkReachabilityManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNetworkReachabilityManager.m; sourceTree = "<group>"; };
 		99885AF122157F98002CA269 /* WPRequestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPRequestSerializer.h; sourceTree = "<group>"; };
@@ -887,6 +913,7 @@
 			isa = PBXGroup;
 			children = (
 				9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */,
+				FACE0000000000000000002D /* WPSyncConformanceTests.m */,
 				FACE0000000000000000002B /* WPSyncContactStoreTests.m */,
 				FACE00000000000000000025 /* WPSyncProcessorTests.m */,
 				FACE0000000000000000001F /* WPSyncFetchPolicyTests.m */,
@@ -896,6 +923,18 @@
 				9942FD56246AA8F40002BEA0 /* Info.plist */,
 				9942FD7D246BF1420002BEA0 /* WPRemoteConfigTests.m */,
 				997D8834246D4D330095CCA7 /* remote-config-example.json */,
+				FACE0000000000000000002F /* accepts-response.vectors.json */,
+				FACE00000000000000000031 /* classify-response.vectors.json */,
+				FACE00000000000000000033 /* compare-version-id.vectors.json */,
+				FACE00000000000000000035 /* compute-backoff-sleep.vectors.json */,
+				FACE00000000000000000037 /* contact-store.vectors.json */,
+				FACE00000000000000000039 /* default-knobs.json */,
+				FACE0000000000000000003B /* index.json */,
+				FACE0000000000000000003D /* is-state-stale.vectors.json */,
+				FACE0000000000000000003F /* merge-knobs.vectors.json */,
+				FACE00000000000000000041 /* process-source-block.vectors.json */,
+				FACE00000000000000000043 /* should-debounce-weak-signal.vectors.json */,
+				FACE00000000000000000045 /* should-rate-limit-source.vectors.json */,
 				995F14E924AA493600CC499E /* WPSPISO8601DurationTests.m */,
 				99EE9ACB24AF5BBB00EC2A28 /* WPSPGeohashTests.m */,
 				99ED541524B3308F00EECDE0 /* WPSPParsingContextTests.m */,
@@ -1771,6 +1810,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				997D8835246D4D330095CCA7 /* remote-config-example.json in Resources */,
+				FACE00000000000000000030 /* accepts-response.vectors.json in Resources */,
+				FACE00000000000000000032 /* classify-response.vectors.json in Resources */,
+				FACE00000000000000000034 /* compare-version-id.vectors.json in Resources */,
+				FACE00000000000000000036 /* compute-backoff-sleep.vectors.json in Resources */,
+				FACE00000000000000000038 /* contact-store.vectors.json in Resources */,
+				FACE0000000000000000003A /* default-knobs.json in Resources */,
+				FACE0000000000000000003C /* index.json in Resources */,
+				FACE0000000000000000003E /* is-state-stale.vectors.json in Resources */,
+				FACE00000000000000000040 /* merge-knobs.vectors.json in Resources */,
+				FACE00000000000000000042 /* process-source-block.vectors.json in Resources */,
+				FACE00000000000000000044 /* should-debounce-weak-signal.vectors.json in Resources */,
+				FACE00000000000000000046 /* should-rate-limit-source.vectors.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1889,6 +1940,7 @@
 				99ED541624B3308F00EECDE0 /* WPSPParsingContextTests.m in Sources */,
 				9942FD7E246BF1420002BEA0 /* WPRemoteConfigTests.m in Sources */,
 				9942FD55246AA8F40002BEA0 /* WonderPushExampleTests.m in Sources */,
+				FACE0000000000000000002E /* WPSyncConformanceTests.m in Sources */,
 				FACE0000000000000000002C /* WPSyncContactStoreTests.m in Sources */,
 				FACE00000000000000000026 /* WPSyncProcessorTests.m in Sources */,
 				FACE00000000000000000020 /* WPSyncFetchPolicyTests.m in Sources */,

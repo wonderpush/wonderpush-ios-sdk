@@ -1,0 +1,545 @@
+{
+  "generatedFrom": "wonderpush-javascript-sdk",
+  "spec": "algorithm.md",
+  "function": "processSourceBlock",
+  "signature": "processSourceBlock(block, serverTime, state: SyncSourceState, mode: \"opportunistic\"|\"explicit\") -> decision",
+  "note": "state and decision.newState are full SyncSourceState structs; compare by deep equality.",
+  "cases": [
+    {
+      "name": "block missing",
+      "input": {
+        "block": null,
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {}
+    },
+    {
+      "name": "empty block opportunistic -> weak fetch",
+      "input": {
+        "block": {},
+        "serverTime": 500,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "triggerFetch": "weak"
+      }
+    },
+    {
+      "name": "empty block explicit -> noop",
+      "input": {
+        "block": {},
+        "serverTime": 500,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "explicit"
+      },
+      "expected": {}
+    },
+    {
+      "name": "meta-only echo",
+      "input": {
+        "block": {
+          "meta": {
+            "x": 2
+          }
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "newState": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "x": 2
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        }
+      }
+    },
+    {
+      "name": "data accepted (replace)",
+      "input": {
+        "block": {
+          "version": 200,
+          "versionId": "v200",
+          "readDate": 2000,
+          "data": {
+            "firstName": "Bob"
+          }
+        },
+        "serverTime": 6000,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "applyData": {
+          "firstName": "Bob"
+        },
+        "newState": {
+          "lastSyncDate": 6000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 200,
+          "lastVersionId": "v200",
+          "lastReadDate": 2000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        }
+      }
+    },
+    {
+      "name": "delta accepted (patch)",
+      "input": {
+        "block": {
+          "version": 200,
+          "versionId": "v200",
+          "readDate": 2000,
+          "delta": {
+            "lastName": "Smith"
+          }
+        },
+        "serverTime": 6000,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "applyDelta": {
+          "lastName": "Smith"
+        },
+        "newState": {
+          "lastSyncDate": 6000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 200,
+          "lastVersionId": "v200",
+          "lastReadDate": 2000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        }
+      }
+    },
+    {
+      "name": "stale payload rejected",
+      "input": {
+        "block": {
+          "version": 50,
+          "versionId": "v50",
+          "readDate": 10,
+          "data": {
+            "x": 1
+          }
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {}
+    },
+    {
+      "name": "empty-reset wipes",
+      "input": {
+        "block": {
+          "version": 0,
+          "versionId": null,
+          "readDate": 3000,
+          "data": {}
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "clearState": true,
+        "applyData": {},
+        "newState": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 0,
+          "lastVersionId": null,
+          "lastReadDate": 3000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        }
+      }
+    },
+    {
+      "name": "no-change-confirmed advances readDate",
+      "input": {
+        "block": {
+          "version": 100,
+          "versionId": "v100",
+          "readDate": 2000
+        },
+        "serverTime": 6000,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "explicit"
+      },
+      "expected": {
+        "newState": {
+          "lastSyncDate": 6000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 2000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        }
+      }
+    },
+    {
+      "name": "no-payload strictly-higher -> firm fetch",
+      "input": {
+        "block": {
+          "version": 300,
+          "versionId": "v300"
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "triggerFetch": "firm"
+      }
+    },
+    {
+      "name": "degenerate readDate-only",
+      "input": {
+        "block": {
+          "readDate": 2000
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "newState": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 2000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        }
+      }
+    },
+    {
+      "name": "firm head hint",
+      "input": {
+        "block": {
+          "knownVersion": 200,
+          "knownVersionId": "v200",
+          "knownReadDate": 2000
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "triggerFetch": "firm",
+        "fetchHint": {
+          "knownVersion": 200,
+          "knownVersionId": "v200",
+          "knownReadDate": 2000
+        }
+      }
+    },
+    {
+      "name": "head hint equal to lastVersion -> no fetch",
+      "input": {
+        "block": {
+          "knownVersion": 100,
+          "knownVersionId": "v100",
+          "knownReadDate": 2000
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {}
+    },
+    {
+      "name": "weak head hint (readDate only)",
+      "input": {
+        "block": {
+          "knownReadDate": 2000
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "triggerFetch": "weak",
+        "fetchHint": {
+          "knownReadDate": 2000
+        }
+      }
+    },
+    {
+      "name": "head hint vs just-updated version -> no fetch",
+      "input": {
+        "block": {
+          "version": 200,
+          "versionId": "v200",
+          "readDate": 2000,
+          "data": {
+            "x": 1
+          },
+          "knownVersion": 200,
+          "knownVersionId": "v200",
+          "knownReadDate": 2000
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "applyData": {
+          "x": 1
+        },
+        "newState": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 200,
+          "lastVersionId": "v200",
+          "lastReadDate": 2000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        }
+      }
+    }
+  ]
+}

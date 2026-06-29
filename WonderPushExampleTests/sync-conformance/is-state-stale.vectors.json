@@ -1,0 +1,132 @@
+{
+  "generatedFrom": "wonderpush-javascript-sdk",
+  "spec": "algorithm.md",
+  "function": "isStateStale",
+  "signature": "isStateStale(state: SyncSourceState, knobs: SyncKnobs, now) -> boolean",
+  "cases": [
+    {
+      "name": "infinite caps -> never stale",
+      "input": {
+        "state": {
+          "lastSyncDate": 1,
+          "lastSyncMeta": null,
+          "lastVersion": 0,
+          "lastVersionId": null,
+          "lastReadDate": 1,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": null
+        },
+        "knobs": {
+          "weakSyncSignalDebounceMs": 5000,
+          "maxLastSyncDateAgeMs": "Infinity",
+          "maxLastReadDateAgeMs": "Infinity",
+          "maxPopupsEntries": 1000,
+          "maxInboxEntries": 1000,
+          "exponentialBackoffMinMs": 1000,
+          "exponentialBackoffMaxMs": 300000,
+          "exponentialBackoffRatio": 2,
+          "exponentialBackoffJitterRatio": 0.5,
+          "mutexTtlMs": 600000,
+          "opportunisticInjectionEnabled": true,
+          "minSourceFetchIntervalMs": 2000
+        },
+        "now": 999999999
+      },
+      "expected": false
+    },
+    {
+      "name": "finite readDate cap, old -> stale",
+      "input": {
+        "state": {
+          "lastSyncDate": 1,
+          "lastSyncMeta": null,
+          "lastVersion": 0,
+          "lastVersionId": null,
+          "lastReadDate": 1,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": null
+        },
+        "knobs": {
+          "weakSyncSignalDebounceMs": 5000,
+          "maxLastSyncDateAgeMs": "Infinity",
+          "maxLastReadDateAgeMs": 5000,
+          "maxPopupsEntries": 1000,
+          "maxInboxEntries": 1000,
+          "exponentialBackoffMinMs": 1000,
+          "exponentialBackoffMaxMs": 300000,
+          "exponentialBackoffRatio": 2,
+          "exponentialBackoffJitterRatio": 0.5,
+          "mutexTtlMs": 600000,
+          "opportunisticInjectionEnabled": true,
+          "minSourceFetchIntervalMs": 2000
+        },
+        "now": 999999999
+      },
+      "expected": true
+    },
+    {
+      "name": "finite readDate cap, fresh -> not stale",
+      "input": {
+        "state": {
+          "lastSyncDate": 1,
+          "lastSyncMeta": null,
+          "lastVersion": 0,
+          "lastVersionId": null,
+          "lastReadDate": 999996000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": null
+        },
+        "knobs": {
+          "weakSyncSignalDebounceMs": 5000,
+          "maxLastSyncDateAgeMs": "Infinity",
+          "maxLastReadDateAgeMs": 5000,
+          "maxPopupsEntries": 1000,
+          "maxInboxEntries": 1000,
+          "exponentialBackoffMinMs": 1000,
+          "exponentialBackoffMaxMs": 300000,
+          "exponentialBackoffRatio": 2,
+          "exponentialBackoffJitterRatio": 0.5,
+          "mutexTtlMs": 600000,
+          "opportunisticInjectionEnabled": true,
+          "minSourceFetchIntervalMs": 2000
+        },
+        "now": 999999999
+      },
+      "expected": false
+    },
+    {
+      "name": "never-read (0) -> not stale even with finite cap",
+      "input": {
+        "state": {
+          "lastSyncDate": 0,
+          "lastSyncMeta": null,
+          "lastVersion": 0,
+          "lastVersionId": null,
+          "lastReadDate": 0,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "data": null
+        },
+        "knobs": {
+          "weakSyncSignalDebounceMs": 5000,
+          "maxLastSyncDateAgeMs": "Infinity",
+          "maxLastReadDateAgeMs": 5000,
+          "maxPopupsEntries": 1000,
+          "maxInboxEntries": 1000,
+          "exponentialBackoffMinMs": 1000,
+          "exponentialBackoffMaxMs": 300000,
+          "exponentialBackoffRatio": 2,
+          "exponentialBackoffJitterRatio": 0.5,
+          "mutexTtlMs": 600000,
+          "opportunisticInjectionEnabled": true,
+          "minSourceFetchIntervalMs": 2000
+        },
+        "now": 999999999
+      },
+      "expected": false
+    }
+  ]
+}

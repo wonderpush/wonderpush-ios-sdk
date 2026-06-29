@@ -1,0 +1,6 @@
+sdk-sync conformance vectors vendored into this repo.
+Source: Brevo/sdk-sync docs/docs/sync/sdk-conformance
+Pinned to commit: 68345a9e9c1fe264fc389efb8212e64ae0726cd9
+Vendored: 2026-06-29
+Regenerate upstream with: GEN_CONFORMANCE=1 npx jest sync-conformance-gen (in wonderpush-javascript-sdk)
+A non-empty diff after re-vendoring means the reference behavior changed; update the spec + all SDK ports in lockstep.
