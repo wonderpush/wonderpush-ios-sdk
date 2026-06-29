@@ -6,6 +6,7 @@
 //
 
 #import "WPSyncSourceState.h"
+#import <WonderPushCommon/WPLog.h>
 
 /// Two values are considered equal if they are both nil or `isEqual:`.
 static BOOL WPSyncNilSafeEqual(id _Nullable a, id _Nullable b) {
@@ -58,6 +59,25 @@ static long long WPSyncLongLong(NSDictionary *dict, NSString *key) {
         @"lastFetchUnsuccessfulAttemptCount": @(self.lastFetchUnsuccessfulAttemptCount),
         @"data": self.data ?: [NSNull null],
     };
+}
+
+- (void)writeWireParamsWithPrefix:(NSString *)prefix into:(NSMutableDictionary *)params {
+    NSString *p = prefix ?: @"";
+    params[[p stringByAppendingString:@"lastSyncDate"]] = @(self.lastSyncDate);
+    params[[p stringByAppendingString:@"lastVersion"]] = @(self.lastVersion);
+    params[[p stringByAppendingString:@"lastReadDate"]] = @(self.lastReadDate);
+    if (self.lastSyncMeta != nil) {
+        NSError *error = nil;
+        NSData *json = [NSJSONSerialization dataWithJSONObject:self.lastSyncMeta options:0 error:&error];
+        if (json) {
+            params[[p stringByAppendingString:@"lastSyncMeta"]] = [[NSString alloc] initWithData:json encoding:NSUTF8StringEncoding];
+        } else {
+            WPLog(@"WPSyncSourceState: failed to serialize lastSyncMeta; omitting: %@", error);
+        }
+    }
+    if (self.lastVersionId != nil) {
+        params[[p stringByAppendingString:@"lastVersionId"]] = self.lastVersionId;
+    }
 }
 
 - (id)copyWithZone:(NSZone *)zone {

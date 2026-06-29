@@ -7,7 +7,6 @@
 
 #import "WPSyncOutgoing.h"
 #import "WPSyncSourceState.h"
-#import <WonderPushCommon/WPLog.h>
 
 @implementation WPSyncOutgoing
 
@@ -18,12 +17,12 @@
 
     if (![path isKindOfClass:[NSString class]] || path.length == 0) return NO;
     for (NSString *suffix in suffixes) {
-        // Exact, suffix, or contains "<suffix>/" — host-agnostic (covers SDK API + Measurements API).
-        if ([path isEqualToString:suffix]
-            || [path hasSuffix:suffix]
-            || [path rangeOfString:[suffix stringByAppendingString:@"/"]].location != NSNotFound) {
-            return YES;
-        }
+        // Exact or suffix match only — host-agnostic (covers SDK API + Measurements API), and MUST
+        // mirror WPSyncProcessor's classifier (exact/hasSuffix). Injecting on a path the classifier
+        // won't classify would leak identifiers + state onto a request whose response is never
+        // processed. (Deliberately narrower than the JS reference's defensive "contains <suffix>/"
+        // clause, which only matched nested paths the WonderPush API does not expose.)
+        if ([path isEqualToString:suffix] || [path hasSuffix:suffix]) return YES;
     }
     return NO;
 }
@@ -44,26 +43,10 @@
         }
     }
 
-    // 2. Per-source state under _<source>Sync.* keys (algorithm.md:87-91). Always send the int64 trio;
-    // omit lastSyncMeta (JSON-encoded) and lastVersionId when nil — the server defaults them.
+    // 2. Per-source state under _<source>Sync.* keys (algorithm.md:87-91), via the shared encoder.
     for (NSString *source in statePerSource) {
-        WPSyncSourceState *state = statePerSource[source];
         NSString *prefix = [NSString stringWithFormat:@"_%@Sync.", source];
-        out[[prefix stringByAppendingString:@"lastSyncDate"]] = @(state.lastSyncDate);
-        out[[prefix stringByAppendingString:@"lastVersion"]] = @(state.lastVersion);
-        out[[prefix stringByAppendingString:@"lastReadDate"]] = @(state.lastReadDate);
-        if (state.lastSyncMeta != nil) {
-            NSError *error = nil;
-            NSData *json = [NSJSONSerialization dataWithJSONObject:state.lastSyncMeta options:0 error:&error];
-            if (json) {
-                out[[prefix stringByAppendingString:@"lastSyncMeta"]] = [[NSString alloc] initWithData:json encoding:NSUTF8StringEncoding];
-            } else {
-                WPLog(@"WPSyncOutgoing: failed to serialize lastSyncMeta for %@; omitting: %@", source, error);
-            }
-        }
-        if (state.lastVersionId != nil) {
-            out[[prefix stringByAppendingString:@"lastVersionId"]] = state.lastVersionId;
-        }
+        [statePerSource[source] writeWireParamsWithPrefix:prefix into:out];
     }
 
     return out;

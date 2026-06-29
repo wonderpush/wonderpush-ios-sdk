@@ -23,8 +23,11 @@
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/v1/events"]);
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/installation"]);
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"https://measurements-api.wonderpush.com/v1/events"]);
-    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/v1/events/123"]);   // contains "/events/"
 
+    // Nested paths are NOT injected — must mirror the classifier (exact/hasSuffix), else identifiers
+    // would leak onto a request whose response is never classified.
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/v1/events/123"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/installation/42/details"]);
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/configuration"]);
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/access-token"]);
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@""]);

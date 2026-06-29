@@ -8,8 +8,9 @@
 #import "WPSyncMutex.h"
 
 @implementation WPSyncMutex {
-    NSLock *_guard;   // protects _held; held only for the brief flag check/flip
+    NSLock *_guard;        // protects _held/_token; held only for the brief flag check/flip
     BOOL _held;
+    NSUInteger _token;     // identifies the current acquisition; bumped on each successful tryLock
 }
 
 + (instancetype)mutexNamed:(NSString *)name {
@@ -34,22 +35,29 @@
     if (self = [super init]) {
         _guard = [NSLock new];
         _held = NO;
+        _token = 0;
     }
     return self;
 }
 
-- (BOOL)tryLock {
+- (NSUInteger)tryLock {
     [_guard lock];
-    BOOL acquired = !_held;
-    if (acquired) _held = YES;
+    NSUInteger token = 0;
+    if (!_held) {
+        _held = YES;
+        if (++_token == 0) _token = ++_token;   // never hand out 0 (the "failed" sentinel) on wrap
+        token = _token;
+    }
     [_guard unlock];
-    return acquired;
+    return token;
 }
 
-- (void)unlock {
+- (BOOL)unlock:(NSUInteger)token {
     [_guard lock];
-    _held = NO;
+    BOOL released = (_held && token != 0 && token == _token);
+    if (released) _held = NO;
     [_guard unlock];
+    return released;
 }
 
 @end

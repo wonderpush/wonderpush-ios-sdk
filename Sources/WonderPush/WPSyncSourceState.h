@@ -46,6 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)stateWithDictionary:(nullable NSDictionary *)dict;
 - (NSDictionary *)toDictionary;
 
+/// Write this state's outbound wire params into `params`, each key prefixed by `prefix`:
+/// always the int64 trio (lastSyncDate/lastVersion/lastReadDate); lastSyncMeta JSON-encoded and
+/// lastVersionId only when set. Used by both opportunistic injection (prefix @"_<source>Sync.") and
+/// explicit fetch (prefix @""), so the field->param mapping lives in one place.
+- (void)writeWireParamsWithPrefix:(NSString *)prefix into:(NSMutableDictionary *)params;
+
 @end
 
 NS_ASSUME_NONNULL_END

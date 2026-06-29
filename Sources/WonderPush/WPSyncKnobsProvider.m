@@ -29,7 +29,10 @@
 
 - (void)readKnobs:(void (^)(WPSyncKnobs *))completion {
     [self.manager read:^(WPRemoteConfig *config, NSError *error) {
-        completion([WPSyncKnobsProvider knobsFromRemoteConfig:(error ? nil : config)]);
+        // Use the config whenever one is available, even alongside a transient error — only a
+        // genuinely absent config (nil) falls back to defaults. Reverting to defaults on a
+        // config-refresh blip would momentarily defeat a server-side kill switch / overrides.
+        completion([WPSyncKnobsProvider knobsFromRemoteConfig:config]);
     }];
 }
 

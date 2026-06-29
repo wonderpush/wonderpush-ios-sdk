@@ -9,7 +9,6 @@
 #import "WPSyncKnobs.h"
 #import "WPSyncSourceState.h"
 #import "WPSyncDecision.h"   // WPSyncFetchHint
-#import <WonderPushCommon/WPLog.h>
 #import <math.h>
 
 NSString * _Nullable WPSyncExplicitPathForSource(NSString *source) {
@@ -61,20 +60,9 @@ static BOOL nWPSyncNonEmptyString(id value) {
         if (nWPSyncNonEmptyString(value)) params[key] = value;
     }
 
-    // Sync state at the top level (explicit-fetch shape, no `_<source>Sync.` prefix).
-    params[@"lastSyncDate"] = @(state.lastSyncDate);
-    params[@"lastVersion"] = @(state.lastVersion);
-    params[@"lastReadDate"] = @(state.lastReadDate);
-    if (state.lastSyncMeta != nil) {
-        NSError *error = nil;
-        NSData *json = [NSJSONSerialization dataWithJSONObject:state.lastSyncMeta options:0 error:&error];
-        if (json) {
-            params[@"lastSyncMeta"] = [[NSString alloc] initWithData:json encoding:NSUTF8StringEncoding];
-        } else {
-            WPLog(@"WPSyncFetchPolicy: failed to serialize lastSyncMeta; omitting from fetch: %@", error);
-        }
-    }
-    if (state.lastVersionId != nil) params[@"lastVersionId"] = state.lastVersionId;
+    // Sync state at the top level (explicit-fetch shape, no `_<source>Sync.` prefix), via the
+    // shared encoder also used by the opportunistic injection path (WPSyncOutgoing).
+    [state writeWireParamsWithPrefix:@"" into:params];
 
     // Echoed head hints, when the fetch was triggered by one. Skip absent / null fields.
     if (hint != nil) {
