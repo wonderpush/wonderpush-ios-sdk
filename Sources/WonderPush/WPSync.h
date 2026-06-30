@@ -22,6 +22,7 @@
 // lock) so two responses for the same source can't interleave and clobber state.
 
 #import <Foundation/Foundation.h>
+#import "WPSyncRequestObserver.h"
 
 @class WPSyncStateStore, WPSyncKnobs;
 @protocol WPSyncFetching;
@@ -42,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)dataByApplyingDelta:(nullable id)delta toCurrentData:(nullable id)currentData;
 @end
 
-@interface WPSync : NSObject
+@interface WPSync : NSObject <WPSyncRequestObserver>
 
 - (instancetype)initWithStateStore:(WPSyncStateStore *)stateStore
                            fetcher:(id<WPSyncFetching>)fetcher NS_DESIGNATED_INITIALIZER;

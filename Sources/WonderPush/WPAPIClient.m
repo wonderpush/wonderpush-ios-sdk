@@ -20,6 +20,7 @@
 #import <WonderPushCommon/WPNSUtil.h>
 #import "WPAPIClient.h"
 #import "WPConfiguration.h"
+#import "WPSyncRequestObserver.h"
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
 #import <WonderPushCommon/WPLog.h>
@@ -134,6 +135,19 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     NSDictionary *params = request.params;
     // Add the sdk version
     params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WPInstallationCoreProperties getSDKVersionNumber] toParameters:params];
+    // sdk-sync opportunistic injection (inert unless a sync observer is installed). Never overwrites
+    // existing keys, and the observer only returns params for POST /events & PATCH /installation.
+    id<WPSyncRequestObserver> syncObserver = [WPSyncHook observer];
+    if (syncObserver) {
+        NSDictionary *syncParams = [syncObserver prepareOutgoingParamsForPath:request.resource method:request.method];
+        if (syncParams.count > 0) {
+            NSMutableDictionary *merged = params ? [params mutableCopy] : [NSMutableDictionary new];
+            for (NSString *key in syncParams) {
+                if (merged[key] == nil) merged[key] = syncParams[key];
+            }
+            params = merged;
+        }
+    }
     return params;
 }
 
@@ -155,6 +169,12 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         NSTimeInterval timeRequestStop = NSDate.date.timeIntervalSince1970;
         if ([response isKindOfClass:[NSDictionary class]]) {
             NSDictionary *responseJSON = (NSDictionary *)response;
+
+            // sdk-sync incoming interception (inert unless a sync observer is installed; best-effort).
+            id<WPSyncRequestObserver> syncObserver = [WPSyncHook observer];
+            if (syncObserver) {
+                [syncObserver consumeIncomingResponseForPath:request.resource method:request.method response:responseJSON];
+            }
 
             NSError *wpError = [WPUtil errorFromJSON:responseJSON];
             if (wpError) {
