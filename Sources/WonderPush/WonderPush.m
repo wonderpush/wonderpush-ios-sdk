@@ -42,6 +42,7 @@
 #import "WPIAMWebView.h"
 #import "WPAnonymousAPIClient.h"
 #import "WPLiveActivityAPIClient.h"
+#import "WPSyncManager.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
@@ -170,6 +171,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
         [[NSNotificationCenter defaultCenter] addObserverForName:WPRemoteConfigUpdatedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
             [self readConfigAndUpdateDisabledComponents];
+            [self refreshSyncManager];
         }];
 
         // Listen to measurements API client responses and look for _configVersion
@@ -1487,6 +1489,27 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 }
 
 #pragma mark - REST API Access
+
++ (void) refreshSyncManager
+{
+    WPRemoteConfigManager *manager = [self remoteConfigManager];
+    if (!manager) return;
+    NSDictionary *(^identifiersProvider)(void) = ^NSDictionary *{
+        NSMutableDictionary *ids = [NSMutableDictionary new];
+        NSString *userId = [WonderPush userId];                 if (userId.length) ids[@"userId"] = userId;
+        NSString *deviceId = [WonderPush deviceId];             if (deviceId.length) ids[@"deviceId"] = deviceId;
+        NSString *installationId = [WonderPush installationId]; if (installationId.length) ids[@"installationId"] = installationId;
+        return ids;
+    };
+    WPSyncAPIRequestSender sender = ^(NSString *userId, NSString *path, NSDictionary *params, WPSyncAPIResponseHandler handler) {
+        [WonderPush requestForUser:userId method:@"GET" resource:path params:params handler:^(WPResponse *response, NSError *error) {
+            handler(response.object, error);
+        }];
+    };
+    [[WPSyncManager sharedManager] refreshWithRemoteConfigManager:manager
+                                              identifiersProvider:identifiersProvider
+                                                           sender:sender];
+}
 
 + (void) requestForUser:(NSString *)userId method:(NSString *)method resource:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
