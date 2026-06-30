@@ -43,6 +43,7 @@
 #import "WPAnonymousAPIClient.h"
 #import "WPLiveActivityAPIClient.h"
 #import "WPSyncManager.h"
+#import "WPSyncRequestObserver.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
@@ -184,6 +185,12 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
                     [WonderPush.remoteConfigManager declareVersion:configVersion];
                 } else if ([configVersion isKindOfClass:NSNumber.class]) {
                     [WonderPush.remoteConfigManager declareVersion:[configVersion stringValue]];
+                }
+                // sdk-sync incoming interception for the Measurements carrier (.25): this client only
+                // issues POST /events (countEvent). Inert unless a sync observer is installed.
+                id<WPSyncRequestObserver> syncObserver = [WPSyncHook observer];
+                if (syncObserver) {
+                    [syncObserver consumeIncomingResponseForPath:@"/events" method:@"POST" response:result];
                 }
             }
 
