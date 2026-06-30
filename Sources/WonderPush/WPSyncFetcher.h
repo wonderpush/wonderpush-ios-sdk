@@ -38,7 +38,19 @@ NS_ASSUME_NONNULL_BEGIN
          completion:(void (^)(BOOL success))completion;
 @end
 
-@interface WPSyncFetcher : NSObject
+/// The fetch-triggering surface the orchestrator depends on (lets it be tested with a fake fetcher).
+@protocol WPSyncFetching <NSObject>
+- (void)fetchSource:(NSString *)source
+             userId:(nullable NSString *)userId
+           deviceId:(NSString *)deviceId
+        identifiers:(NSDictionary *)identifiers
+              knobs:(WPSyncKnobs *)knobs
+               weak:(BOOL)weak
+               hint:(nullable WPSyncFetchHint *)hint
+         completion:(nullable void (^)(BOOL attempted))completion;
+@end
+
+@interface WPSyncFetcher : NSObject <WPSyncFetching>
 
 - (instancetype)initWithStateStore:(WPSyncStateStore *)stateStore
                          transport:(id<WPSyncFetchTransport>)transport NS_DESIGNATED_INITIALIZER;
