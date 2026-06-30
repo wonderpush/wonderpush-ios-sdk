@@ -21,16 +21,15 @@ static NSString * const kSuite = @"com.wonderpush.test.wpsync";
 static const long long kNow = 1000000;
 
 @interface FakePlugin : NSObject <WPSyncSourcePlugin>
-@property (nonatomic) NSInteger clearCount;
 @property (nonatomic) BOOL applyDataCalled;
 @property (nonatomic, strong, nullable) id lastData;
 @property (nonatomic) BOOL applyDeltaCalled;
 @property (nonatomic, strong, nullable) id lastDelta;
 @end
 @implementation FakePlugin
-- (void)clearState { self.clearCount++; }
-- (void)applyData:(id)data { self.applyDataCalled = YES; self.lastData = data; }
-- (void)applyDelta:(id)delta { self.applyDeltaCalled = YES; self.lastDelta = delta; }
+// Pure transformers: record the call and return the payload so the orchestrator stores it.
+- (id)dataByApplyingData:(id)data toCurrentData:(id)current { self.applyDataCalled = YES; self.lastData = data; return data; }
+- (id)dataByApplyingDelta:(id)delta toCurrentData:(id)current { self.applyDeltaCalled = YES; self.lastDelta = delta; return delta; }
 @end
 
 @interface FakeFetching : NSObject <WPSyncFetching>
@@ -121,6 +120,7 @@ static const long long kNow = 1000000;
     WPSyncSourceState *s = [self state:@"contact"];
     XCTAssertEqual(s.lastVersion, 200LL);
     XCTAssertEqual(s.lastSyncDate, 6000LL);
+    XCTAssertEqualObjects([_sync dataForSource:@"contact"], (@{@"firstName": @"Bob"}));   // orchestrator persisted the data
 }
 
 - (void)testConsumeExplicitProjectsTopLevelBlock {
@@ -132,6 +132,7 @@ static const long long kNow = 1000000;
     XCTAssertTrue(plugin.applyDataCalled);
     XCTAssertEqualObjects(plugin.lastData, (@{@"x": @1}));
     XCTAssertEqual([self state:@"contact"].lastVersion, 100LL);
+    XCTAssertEqualObjects([_sync dataForSource:@"contact"], (@{@"x": @1}));
 }
 
 - (void)testConsumeIgnoresNonSyncResponse {

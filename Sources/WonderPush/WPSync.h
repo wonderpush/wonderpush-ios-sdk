@@ -28,13 +28,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// A source's optional callbacks, invoked by the processor's decision (clearState, then applyData,
-/// then applyDelta). All optional — a source may register with no plugin (state-only).
+/// A source's optional data transforms. PURE functions: given the source's current stored data and a
+/// payload, return the new data. The orchestrator owns persistence — it folds the result into the
+/// source's state and saves once, under the response's captured profile + per-source lock — so the
+/// plug-in never re-reads the profile or touches storage (avoids the cross-profile split bug).
+///   - dataByApplyingData:   full reset (single-object: replace; multi-object: full list).
+///   - dataByApplyingDelta:  patch (single-object: merge; multi-object: merge items).
+/// A clear (empty-reset) sets data to nil before applying, handled by the orchestrator. A source may
+/// register with no plug-in (state-only) or implement neither (full-data defaults to a raw replace).
 @protocol WPSyncSourcePlugin <NSObject>
 @optional
-- (void)clearState;
-- (void)applyData:(nullable id)data;
-- (void)applyDelta:(nullable id)delta;
+- (nullable id)dataByApplyingData:(nullable id)data toCurrentData:(nullable id)currentData;
+- (nullable id)dataByApplyingDelta:(nullable id)delta toCurrentData:(nullable id)currentData;
 @end
 
 @interface WPSync : NSObject

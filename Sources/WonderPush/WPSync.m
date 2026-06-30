@@ -14,6 +14,7 @@
 #import "WPSyncResponseBlock.h"
 #import "WPSyncDecision.h"
 #import "WPSyncFetcher.h"   // WPSyncFetching
+#import <WonderPushCommon/WPLog.h>
 #import <math.h>
 
 @interface WPSync ()
@@ -71,112 +72,119 @@
     return (plugin == [NSNull null]) ? nil : plugin;
 }
 
+#pragma mark - helpers
+
+/// Effective knobs, failing open to defaults (a nil provider result must not read 0.0 age caps and
+/// turn into a fetch storm — mirrors the JS getKnobs fail-open).
+- (WPSyncKnobs *)effectiveKnobs {
+    return self.knobsProvider() ?: [WPSyncKnobs defaultKnobs];
+}
+
+/// The current identifiers, or nil when there's no usable deviceId yet (the deviceId invariant —
+/// deviceId is established at SDK init; before then sync is a no-op). Centralizes the guard.
+- (nullable NSDictionary *)currentValidIdentifiers {
+    NSDictionary *ids = self.identifiersProvider() ?: @{};
+    NSString *deviceId = ids[@"deviceId"];
+    return ([deviceId isKindOfClass:[NSString class]] && deviceId.length > 0) ? ids : nil;
+}
+
 #pragma mark - outgoing
 
 - (NSDictionary *)prepareOutgoingParamsForPath:(NSString *)path method:(NSString *)method {
-    if (![WPSyncOutgoing shouldInjectForPath:path method:method]) return @{};
-    WPSyncKnobs *knobs = self.knobsProvider();
-    if (!knobs.opportunisticInjectionEnabled) return @{};
-    NSDictionary *ids = self.identifiersProvider() ?: @{};
-    NSString *userId = ids[@"userId"];
-    NSString *deviceId = ids[@"deviceId"];
-    if (![deviceId isKindOfClass:[NSString class]] || deviceId.length == 0) return @{};   // deviceId invariant
-
-    NSMutableDictionary<NSString *, WPSyncSourceState *> *statePerSource = [NSMutableDictionary new];
-    for (NSString *source in [self registeredSources]) {
-        statePerSource[source] = [self.stateStore loadSource:source userId:userId deviceId:deviceId];
+    @try {
+        if (![WPSyncOutgoing shouldInjectForPath:path method:method]) return @{};
+        if (![self effectiveKnobs].opportunisticInjectionEnabled) return @{};
+        NSDictionary *ids = [self currentValidIdentifiers];
+        if (ids == nil) return @{};
+        NSString *userId = ids[@"userId"], *deviceId = ids[@"deviceId"];
+        NSMutableDictionary<NSString *, WPSyncSourceState *> *statePerSource = [NSMutableDictionary new];
+        for (NSString *source in [self registeredSources]) {
+            statePerSource[source] = [self.stateStore loadSource:source userId:userId deviceId:deviceId];
+        }
+        return [WPSyncOutgoing buildOutgoingParamsWithIdentifiers:ids statePerSource:statePerSource];
+    } @catch (NSException *e) {
+        WPLog(@"WPSync: prepareOutgoingParams failed, skipping injection: %@", e);
+        return @{};   // best-effort: never break the host request
     }
-    return [WPSyncOutgoing buildOutgoingParamsWithIdentifiers:ids statePerSource:statePerSource];
 }
 
 #pragma mark - incoming
 
 - (void)consumeIncomingResponseForPath:(NSString *)path method:(NSString *)method response:(NSDictionary *)response {
-    if (![response isKindOfClass:[NSDictionary class]]) return;
-    WPSyncResponseClassification *c = [WPSyncProcessor classifyResponsePath:path method:method];
-    if ([c.mode isEqualToString:@"none"]) return;
+    @try {
+        if (![response isKindOfClass:[NSDictionary class]]) return;
+        WPSyncResponseClassification *c = [WPSyncProcessor classifyResponsePath:path method:method];
+        if ([c.mode isEqualToString:@"none"]) return;
+        NSDictionary *ids = [self currentValidIdentifiers];
+        if (ids == nil) return;
+        NSString *userId = ids[@"userId"], *deviceId = ids[@"deviceId"];
+        NSNumber *serverTime = [response[@"_serverTime"] isKindOfClass:[NSNumber class]] ? response[@"_serverTime"] : nil;
 
-    NSDictionary *ids = self.identifiersProvider() ?: @{};
-    NSString *userId = ids[@"userId"];
-    NSString *deviceId = ids[@"deviceId"];
-    if (![deviceId isKindOfClass:[NSString class]] || deviceId.length == 0) return;   // deviceId invariant
-
-    NSNumber *serverTime = [response[@"_serverTime"] isKindOfClass:[NSNumber class]] ? response[@"_serverTime"] : nil;
-
-    if ([c.mode isEqualToString:@"opportunistic"]) {
-        // Iterate ALL registered sources (the processor handles a missing block correctly).
-        for (NSString *source in [self registeredSources]) {
-            id block = response[[NSString stringWithFormat:@"_%@Sync", source]];
-            [self processSource:source blockDict:block serverTime:serverTime ids:ids
-                         userId:userId deviceId:deviceId mode:@"opportunistic"];
+        if ([c.mode isEqualToString:@"opportunistic"]) {
+            // Iterate ALL registered sources (the processor handles a missing block correctly).
+            for (NSString *source in [self registeredSources]) {
+                id block = response[[NSString stringWithFormat:@"_%@Sync", source]];
+                [self processSource:source blockDict:block serverTime:serverTime ids:ids userId:userId deviceId:deviceId mode:@"opportunistic"];
+            }
+        } else if (c.explicitSource) {
+            // The response root IS the block; WPSyncResponseBlock reads only recognized keys (ignores _serverTime etc.).
+            [self processSource:c.explicitSource blockDict:response serverTime:serverTime ids:ids userId:userId deviceId:deviceId mode:@"explicit"];
         }
-    } else if (c.explicitSource) {
-        [self processSource:c.explicitSource blockDict:[self extractExplicitBlock:response] serverTime:serverTime
-                        ids:ids userId:userId deviceId:deviceId mode:@"explicit"];
+        [self checkMaxAgeForcingWithIdentifiers:ids userId:userId deviceId:deviceId];
+    } @catch (NSException *e) {
+        WPLog(@"WPSync: consumeIncomingResponse failed: %@", e);   // best-effort: never break the host callback chain
     }
-
-    [self checkMaxAgeForcingWithIdentifiers:ids userId:userId deviceId:deviceId];
 }
 
-/// Project the recognized block fields out of an explicit response root.
-- (NSDictionary *)extractExplicitBlock:(NSDictionary *)response {
-    static NSArray *fields;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        fields = @[@"meta", @"version", @"versionId", @"readDate", @"data", @"delta",
-                   @"knownVersion", @"knownVersionId", @"knownReadDate"];
-    });
-    NSMutableDictionary *block = [NSMutableDictionary new];
-    for (NSString *k in fields) {
-        id v = response[k];
-        if (v != nil) block[k] = v;
-    }
-    return block;
-}
-
-/// Serialized per source: load -> process -> execute decision. The per-source lock spans the whole
-/// read-modify-write so concurrent responses for the same source can't clobber state.
+/// Serialized per source: load -> process -> apply (save + data) under the per-source lock. The fetch
+/// trigger fires AFTER releasing the lock — a synchronous transport completion would otherwise
+/// re-enter this same (recursive) lock and nest the read-modify-write on partially-applied state.
 - (void)processSource:(NSString *)source blockDict:(id)blockDict serverTime:(NSNumber *)serverTime
                   ids:(NSDictionary *)ids userId:(NSString *)userId deviceId:(NSString *)deviceId mode:(NSString *)mode {
+    WPSyncDecision *decision;
     @synchronized ([self procLockForSource:source]) {
         WPSyncSourceState *state = [self.stateStore loadSource:source userId:userId deviceId:deviceId];
         WPSyncResponseBlock *block = [blockDict isKindOfClass:[NSDictionary class]]
             ? [WPSyncResponseBlock blockWithDictionary:blockDict] : nil;
-        WPSyncDecision *decision = [WPSyncProcessor processSourceBlock:block serverTime:serverTime state:state mode:mode];
-        [self executeDecision:decision source:source ids:ids userId:userId deviceId:deviceId];
-    }
-}
-
-/// Apply a decision: save state, run plug-in callbacks (clearState -> applyData -> applyDelta), fetch.
-- (void)executeDecision:(WPSyncDecision *)decision source:(NSString *)source
-                    ids:(NSDictionary *)ids userId:(NSString *)userId deviceId:(NSString *)deviceId {
-    if (decision.nextState != nil) {
-        [self.stateStore saveState:decision.nextState forSource:source userId:userId deviceId:deviceId];
-    }
-    id<WPSyncSourcePlugin> plugin = [self pluginForSource:source];
-    if (decision.clearState && [plugin respondsToSelector:@selector(clearState)]) {
-        [plugin clearState];
-    }
-    if (decision.hasApplyData && [plugin respondsToSelector:@selector(applyData:)]) {
-        [plugin applyData:decision.applyData];
-    }
-    if (decision.hasApplyDelta && [plugin respondsToSelector:@selector(applyDelta:)]) {
-        [plugin applyDelta:decision.applyDelta];
+        decision = [WPSyncProcessor processSourceBlock:block serverTime:serverTime state:state mode:mode];
+        [self applyDecision:decision source:source userId:userId deviceId:deviceId];
     }
     if (decision.triggerFetch != nil) {
-        // Fire-and-forget; forward the head hint so the explicit request can echo known* fields.
+        // Fire-and-forget, outside the lock; forward the head hint so the explicit request echoes known*.
         [self.fetcher fetchSource:source userId:userId deviceId:deviceId identifiers:ids
-                            knobs:self.knobsProvider()
+                            knobs:[self effectiveKnobs]
                              weak:[decision.triggerFetch isEqualToString:@"weak"]
                              hint:decision.fetchHint completion:nil];
     }
     // decision.continuePaging (multi-object paging) is wired with the popups/inbox sources (.23/.24).
 }
 
+/// Fold the decision's data transforms into the new state and persist once, under the captured
+/// profile. The plug-in supplies PURE transforms; the orchestrator owns the data + its persistence,
+/// so metadata and data can never split across profiles.
+- (void)applyDecision:(WPSyncDecision *)decision source:(NSString *)source
+                userId:(NSString *)userId deviceId:(NSString *)deviceId {
+    WPSyncSourceState *next = decision.nextState;
+    if (next == nil) return;   // no state change (and thus no data to apply)
+    id<WPSyncSourcePlugin> plugin = [self pluginForSource:source];
+    if (decision.clearState) {
+        next.data = nil;
+    }
+    if (decision.hasApplyData) {
+        next.data = [plugin respondsToSelector:@selector(dataByApplyingData:toCurrentData:)]
+            ? [plugin dataByApplyingData:decision.applyData toCurrentData:next.data]
+            : decision.applyData;   // no plug-in transform: raw replace
+    }
+    if (decision.hasApplyDelta && [plugin respondsToSelector:@selector(dataByApplyingDelta:toCurrentData:)]) {
+        next.data = [plugin dataByApplyingDelta:decision.applyDelta toCurrentData:next.data];
+    }
+    [self.stateStore saveState:next forSource:source userId:userId deviceId:deviceId];
+}
+
 #pragma mark - max-age forcing
 
 - (void)checkMaxAgeForcingWithIdentifiers:(NSDictionary *)ids userId:(NSString *)userId deviceId:(NSString *)deviceId {
-    WPSyncKnobs *knobs = self.knobsProvider();
+    WPSyncKnobs *knobs = [self effectiveKnobs];
     if (!isfinite(knobs.maxLastSyncDateAgeMs) && !isfinite(knobs.maxLastReadDateAgeMs)) return;   // fast path: no forcing
     long long now = self.nowProvider();
     for (NSString *source in [self registeredSources]) {
@@ -191,10 +199,9 @@
 #pragma mark - read
 
 - (id)dataForSource:(NSString *)source {
-    NSDictionary *ids = self.identifiersProvider() ?: @{};
-    NSString *deviceId = ids[@"deviceId"];
-    if (![deviceId isKindOfClass:[NSString class]] || deviceId.length == 0) return nil;
-    return [self.stateStore loadSource:source userId:ids[@"userId"] deviceId:deviceId].data;
+    NSDictionary *ids = [self currentValidIdentifiers];
+    if (ids == nil) return nil;
+    return [self.stateStore loadSource:source userId:ids[@"userId"] deviceId:ids[@"deviceId"]].data;
 }
 
 @end

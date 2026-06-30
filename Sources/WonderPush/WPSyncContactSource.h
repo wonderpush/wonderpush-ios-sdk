@@ -5,28 +5,20 @@
 //  Copyright © 2026 WonderPush. All rights reserved.
 //
 // The `contact` source plug-in (issue .19). Ported from sync-contact.js. Registered with the WPSync
-// orchestrator under the name "contact"; its callbacks (invoked by the processor's decision) apply
-// the synced payload to the source's stored `data` using WPSyncContactStore's single-object
-// transforms (full reset / delta patch / clear), persisting under the current profile.
+// orchestrator under the name "contact". It is a PURE transformer: given the source's current stored
+// data and a synced payload, it returns the new data (single-object reset / delta-patch via
+// WPSyncContactStore). The orchestrator owns persistence — it folds the result into the source's
+// state and saves under the response's captured profile — so this plug-in is stateless and never
+// touches storage or the profile.
 //
-// The synced contact object is then readable via WPSync.dataForSource:@"contact" — that's what the
-// segmentation/popup engines consume (issue .26).
+// The synced contact object is read via WPSync.dataForSource:@"contact" (the segmentation engine, .26).
 
 #import <Foundation/Foundation.h>
 #import "WPSync.h"   // WPSyncSourcePlugin
 
-@class WPSyncStateStore;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WPSyncContactSource : NSObject <WPSyncSourcePlugin>
-
-/// `identifiersProvider` returns the current {userId?, deviceId, …} — it MUST be the same provider
-/// (and `stateStore` the same instance) the orchestrator uses, so they read/write the same slot.
-- (instancetype)initWithStateStore:(WPSyncStateStore *)stateStore
-                identifiersProvider:(NSDictionary *(^)(void))identifiersProvider NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -4,9 +4,9 @@
 //
 //  Copyright © 2026 WonderPush. All rights reserved.
 //
-// Tests for WPSyncContactSource (issue wonderpush-ios-sdk-i2x.19): the plug-in's apply/delta/clear
-// persistence, and an end-to-end path through the WPSync orchestrator (response -> plugin -> store ->
-// dataForSource).
+// Tests for WPSyncContactSource (issue wonderpush-ios-sdk-i2x.19): the stateless transformer's
+// reset/delta semantics, and an end-to-end path through the WPSync orchestrator (response ->
+// orchestrator applies the transform under the captured profile -> dataForSource).
 
 #import <XCTest/XCTest.h>
 #import "WPSyncContactSource.h"
@@ -34,73 +34,63 @@ static NSString * const kSuite = @"com.wonderpush.test.contactsource";
     NSUserDefaults *_defaults;
     WPSyncStateStore *_store;
     WPSyncContactSource *_source;
-    NSDictionary *(^_ids)(void);
 }
 
 - (void)setUp {
     [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:kSuite];
     _defaults = [[NSUserDefaults alloc] initWithSuiteName:kSuite];
     _store = [[WPSyncStateStore alloc] initWithUserDefaults:_defaults];
-    _ids = ^NSDictionary *{ return @{@"userId": @"alice", @"deviceId": @"D1"}; };
-    _source = [[WPSyncContactSource alloc] initWithStateStore:_store identifiersProvider:_ids];
+    _source = [WPSyncContactSource new];
 }
 
 - (void)tearDown { [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:kSuite]; }
 
-- (id)contactData { return [_store loadSource:@"contact" userId:@"alice" deviceId:@"D1"].data; }
+#pragma mark - the stateless transforms
 
-#pragma mark - plug-in directly
-
-- (void)testApplyDataSetsContact {
-    [_source applyData:@{@"firstName": @"Alice", @"age": @30}];
-    XCTAssertEqualObjects([self contactData], (@{@"firstName": @"Alice", @"age": @30}));
+- (void)testApplyDataReplaces {
+    XCTAssertEqualObjects([_source dataByApplyingData:(@{@"firstName": @"Alice", @"age": @30}) toCurrentData:nil],
+                          (@{@"firstName": @"Alice", @"age": @30}));
+    // full reset drops old fields
+    XCTAssertEqualObjects([_source dataByApplyingData:@{@"firstName": @"Bob"} toCurrentData:(@{@"firstName": @"Alice", @"nickname": @"Al"})],
+                          (@{@"firstName": @"Bob"}));
 }
 
-- (void)testApplyDeltaMergesOntoCurrent {
-    [_source applyData:@{@"firstName": @"Alice"}];
-    [_source applyDelta:@{@"lastName": @"Smith"}];
-    XCTAssertEqualObjects([self contactData], (@{@"firstName": @"Alice", @"lastName": @"Smith"}));
+- (void)testApplyDeltaMerges {
+    XCTAssertEqualObjects([_source dataByApplyingDelta:@{@"lastName": @"Smith"} toCurrentData:@{@"firstName": @"Alice"}],
+                          (@{@"firstName": @"Alice", @"lastName": @"Smith"}));
 }
 
-- (void)testDeltaNullRemovesField {
-    [_source applyData:@{@"firstName": @"Alice", @"nickname": @"Al"}];
-    [_source applyDelta:@{@"nickname": [NSNull null]}];
-    XCTAssertEqualObjects([self contactData], (@{@"firstName": @"Alice"}));
-}
-
-- (void)testClearStateWipes {
-    [_source applyData:@{@"firstName": @"Alice"}];
-    [_source clearState];
-    XCTAssertNil([self contactData]);
-}
-
-- (void)testDeviceIdMissingNoOp {
-    WPSyncContactSource *src = [[WPSyncContactSource alloc] initWithStateStore:_store
-                                                          identifiersProvider:^NSDictionary *{ return @{@"userId": @"alice"}; }];
-    [src applyData:@{@"firstName": @"Alice"}];
-    XCTAssertNil([self contactData]);   // nothing persisted without a deviceId
+- (void)testApplyDeltaNullRemovesField {
+    XCTAssertEqualObjects([_source dataByApplyingDelta:@{@"nickname": [NSNull null]} toCurrentData:(@{@"firstName": @"Alice", @"nickname": @"Al"})],
+                          (@{@"firstName": @"Alice"}));
 }
 
 #pragma mark - end to end through the orchestrator
 
-- (void)testEndToEndResponseAppliesThenReadable {
+- (void)testEndToEndResetDeltaAndClear {
     WPSync *sync = [[WPSync alloc] initWithStateStore:_store fetcher:[NoopFetching new]];
-    sync.identifiersProvider = _ids;
+    sync.identifiersProvider = ^NSDictionary *{ return @{@"userId": @"alice", @"deviceId": @"D1"}; };
     [sync registerSource:@"contact" plugin:_source];
 
-    // Full reset via an opportunistic response.
+    // Full reset via opportunistic response.
     [sync consumeIncomingResponseForPath:@"/events" method:@"POST" response:@{
         @"_serverTime": @6000,
         @"_contactSync": @{@"version": @200, @"versionId": @"v200", @"readDate": @2000, @"data": @{@"firstName": @"Bob"}},
     }];
     XCTAssertEqualObjects([sync dataForSource:@"contact"], (@{@"firstName": @"Bob"}));
-    XCTAssertEqual([_store loadSource:@"contact" userId:@"alice" deviceId:@"D1"].lastVersion, 200LL);
 
-    // A later delta builds on it (explicit GET /contact response).
+    // Delta builds on it (explicit GET /contact).
     [sync consumeIncomingResponseForPath:@"/contact" method:@"GET" response:@{
         @"version": @201, @"versionId": @"v201", @"readDate": @2001, @"delta": @{@"lastName": @"Jones"}, @"_serverTime": @6001,
     }];
     XCTAssertEqualObjects([sync dataForSource:@"contact"], (@{@"firstName": @"Bob", @"lastName": @"Jones"}));
+
+    // Empty-reset wipes to {} (version 0 + empty data + newer readDate).
+    [sync consumeIncomingResponseForPath:@"/contact" method:@"GET" response:@{
+        @"version": @0, @"versionId": [NSNull null], @"readDate": @3000, @"data": @{}, @"_serverTime": @6002,
+    }];
+    XCTAssertEqualObjects([sync dataForSource:@"contact"], @{});
+    XCTAssertEqual([_store loadSource:@"contact" userId:@"alice" deviceId:@"D1"].lastVersion, 0LL);
 }
 
 @end
