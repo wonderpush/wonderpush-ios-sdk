@@ -31,6 +31,7 @@ SYNC_CLASSES=(
   WPSyncOutgoingTests
   WPSyncFetcherTests
   WPSyncTests
+  WPSyncContactSourceTests
 )
 
 VERBOSE=0
