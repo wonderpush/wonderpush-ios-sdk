@@ -82,7 +82,7 @@
     self.scheduler(sleepMs, ^{
         WPSyncFetcher *self2 = weakSelf;
         if (!self2) { [mutex unlock:token]; done(NO); return; }   // deallocated mid-backoff: no GET issued
-        [self2.transport fetchSource:source path:path params:params completion:^(BOOL success) {
+        [self2.transport fetchSource:source userId:userId path:path params:params completion:^(BOOL success) {
             // Step 6: on success reset the failure count (re-load: the response interceptor may have
             // advanced lastVersion/lastReadDate). On failure leave the count (longer next backoff).
             if (success) {

@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// the incoming interceptor separately). Completion may run on any thread.
 @protocol WPSyncFetchTransport <NSObject>
 - (void)fetchSource:(NSString *)source
+             userId:(nullable NSString *)userId
                path:(NSString *)path
              params:(NSDictionary *)params
          completion:(void (^)(BOOL success))completion;

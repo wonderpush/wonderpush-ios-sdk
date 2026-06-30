@@ -26,7 +26,7 @@ static const long long kNow = 1000000;
 @property (nonatomic) BOOL nextSuccess;
 @end
 @implementation FakeFetchTransport
-- (void)fetchSource:(NSString *)source path:(NSString *)path params:(NSDictionary *)params
+- (void)fetchSource:(NSString *)source userId:(NSString *)userId path:(NSString *)path params:(NSDictionary *)params
          completion:(void (^)(BOOL))completion {
     self.callCount++;
     self.lastSource = source; self.lastPath = path; self.lastParams = params;
