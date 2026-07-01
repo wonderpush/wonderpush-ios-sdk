@@ -100,7 +100,7 @@ static const long long kNow = 1000000;
 
 - (void)testPrepareOutgoingSkipsNonOpportunisticAndKillSwitch {
     [_sync registerSource:@"contact" plugin:nil];
-    XCTAssertEqualObjects([_sync prepareOutgoingParamsForPath:@"/installation" method:@"GET"], @{});   // explicit fetch, not opp
+    XCTAssertEqualObjects([_sync prepareOutgoingParamsForPath:@"/installation" method:@"GET"], @{});   // GET /installation classifies as none (explicit moved to /sync/), never opp
     XCTAssertEqualObjects([_sync prepareOutgoingParamsForPath:@"/configuration" method:@"GET"], @{});
     _knobs.opportunisticInjectionEnabled = NO;
     XCTAssertEqualObjects([_sync prepareOutgoingParamsForPath:@"/events" method:@"POST"], @{});         // kill switch
@@ -126,7 +126,7 @@ static const long long kNow = 1000000;
 - (void)testConsumeExplicitProjectsTopLevelBlock {
     FakePlugin *plugin = [FakePlugin new];
     [_sync registerSource:@"contact" plugin:plugin];
-    [_sync consumeIncomingResponseForPath:@"/contact" method:@"GET" response:@{
+    [_sync consumeIncomingResponseForPath:@"/sync/contact" method:@"GET" response:@{
         @"version": @100, @"versionId": @"v100", @"readDate": @1000, @"data": @{@"x": @1}, @"_serverTime": @5000,
     }];
     XCTAssertTrue(plugin.applyDataCalled);

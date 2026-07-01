@@ -35,9 +35,9 @@
       }
     },
     {
-      "name": "GET /contact explicit",
+      "name": "GET /sync/contact explicit",
       "input": {
-        "path": "/contact",
+        "path": "/sync/contact",
         "method": "GET"
       },
       "expected": {
@@ -46,9 +46,9 @@
       }
     },
     {
-      "name": "GET /v1/popups explicit",
+      "name": "GET /v1/sync/popups explicit",
       "input": {
-        "path": "/v1/popups",
+        "path": "/v1/sync/popups",
         "method": "GET"
       },
       "expected": {

@@ -39,9 +39,12 @@ static id _Nullable nWPSyncDenull(id _Nullable v) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         opportunisticPathsByMethod = @{ @"POST": @[@"/events"], @"PATCH": @[@"/installation"] };
+        // Explicit sync fetches: GET /v1/sync/{source}. The dedicated `/sync/` namespace keeps these
+        // distinct from opportunistic resource paths — so GET /v1/installation (no /sync) classifies
+        // as none, removing the old GET-vs-PATCH ambiguity on /installation.
         explicitSourceByPath = @{
-            @"/contact": @"contact", @"/user": @"user", @"/installation": @"installation",
-            @"/popups": @"popups", @"/inbox": @"inbox",
+            @"/sync/contact": @"contact", @"/sync/user": @"user", @"/sync/installation": @"installation",
+            @"/sync/popups": @"popups", @"/sync/inbox": @"inbox",
         };
     });
 

@@ -1,6 +1,14 @@
 sdk-sync conformance vectors vendored into this repo.
 Source: Brevo/sdk-sync docs/docs/sync/sdk-conformance
-Pinned to commit: 68345a9e9c1fe264fc389efb8212e64ae0726cd9
-Vendored: 2026-06-29
+
+Most vectors pinned to sdk-sync commit: 68345a9e9c1fe264fc389efb8212e64ae0726cd9 (vendored 2026-06-29).
+
+Re-vendored 2026-07-01 for the "/v1/sync/{source}" explicit-endpoint move — classify-response.vectors.json
+and process-source-block.vectors.json were regenerated directly from the wonderpush-javascript-sdk
+working tree at commit d1a10bd6246b721cdc7159b194abd46ef0e63560 ("Move sync explicit fetch endpoints to
+/v1/sync/{source}"), because the canonical sdk-sync repo is still at 68345a9 and has NOT yet been
+regenerated for that change. Re-pin fully to a single sdk-sync commit once the vectors are regenerated
+and committed there.
+
 Regenerate upstream with: GEN_CONFORMANCE=1 npx jest sync-conformance-gen (in wonderpush-javascript-sdk)
 A non-empty diff after re-vendoring means the reference behavior changed; update the spec + all SDK ports in lockstep.

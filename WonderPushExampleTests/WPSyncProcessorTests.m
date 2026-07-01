@@ -51,8 +51,10 @@ static NSDictionary *M(NSDictionary *base, NSDictionary *overrides) {
     [self assertClassifyPath:@"/events" method:@"POST" expects:@{@"mode": @"opportunistic"}];
     [self assertClassifyPath:@"/v1/events" method:@"POST" expects:@{@"mode": @"opportunistic"}];
     [self assertClassifyPath:@"/installation" method:@"PATCH" expects:@{@"mode": @"opportunistic"}];
-    [self assertClassifyPath:@"/contact" method:@"GET" expects:@{@"mode": @"explicit", @"explicitSource": @"contact"}];
-    [self assertClassifyPath:@"/v1/popups" method:@"GET" expects:@{@"mode": @"explicit", @"explicitSource": @"popups"}];
+    [self assertClassifyPath:@"/sync/contact" method:@"GET" expects:@{@"mode": @"explicit", @"explicitSource": @"contact"}];
+    [self assertClassifyPath:@"/v1/sync/popups" method:@"GET" expects:@{@"mode": @"explicit", @"explicitSource": @"popups"}];
+    // Explicit endpoints moved under /sync/ — GET /installation (no /sync) is now `none`, not explicit.
+    [self assertClassifyPath:@"/installation" method:@"GET" expects:@{@"mode": @"none"}];
     [self assertClassifyPath:@"/configuration" method:@"GET" expects:@{@"mode": @"none"}];
     [self assertClassifyPath:[NSNull null] method:[NSNull null] expects:@{@"mode": @"none"}];
 }

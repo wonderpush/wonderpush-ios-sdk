@@ -121,7 +121,7 @@ static const long long kNow = 1000000;
     XCTAssertTrue([self fetch:@"inbox" weak:NO]);
     XCTAssertEqual(_transport.callCount, 1);
     XCTAssertEqualObjects(_transport.lastSource, @"inbox");
-    XCTAssertEqualObjects(_transport.lastPath, @"/inbox");
+    XCTAssertEqualObjects(_transport.lastPath, @"/sync/inbox");
     XCTAssertEqualObjects(_transport.lastParams[@"deviceId"], @"D1");
     XCTAssertEqualObjects(_transport.lastParams[@"installationId"], @"I1");
     XCTAssertNil(_transport.lastParams[@"userId"]);            // userId added by the request layer, not here

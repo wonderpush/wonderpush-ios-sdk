@@ -79,14 +79,14 @@ static NSString * const kSuite = @"com.wonderpush.test.contactsource";
     }];
     XCTAssertEqualObjects([sync dataForSource:@"contact"], (@{@"firstName": @"Bob"}));
 
-    // Delta builds on it (explicit GET /contact).
-    [sync consumeIncomingResponseForPath:@"/contact" method:@"GET" response:@{
+    // Delta builds on it (explicit GET /sync/contact).
+    [sync consumeIncomingResponseForPath:@"/sync/contact" method:@"GET" response:@{
         @"version": @201, @"versionId": @"v201", @"readDate": @2001, @"delta": @{@"lastName": @"Jones"}, @"_serverTime": @6001,
     }];
     XCTAssertEqualObjects([sync dataForSource:@"contact"], (@{@"firstName": @"Bob", @"lastName": @"Jones"}));
 
     // Empty-reset wipes to {} (version 0 + empty data + newer readDate).
-    [sync consumeIncomingResponseForPath:@"/contact" method:@"GET" response:@{
+    [sync consumeIncomingResponseForPath:@"/sync/contact" method:@"GET" response:@{
         @"version": @0, @"versionId": [NSNull null], @"readDate": @3000, @"data": @{}, @"_serverTime": @6002,
     }];
     XCTAssertEqualObjects([sync dataForSource:@"contact"], @{});

@@ -23,12 +23,12 @@
             handler(@{@"_serverTime": @1}, nil);   // success: a response, no error
         }];
     __block BOOL success = NO, called = NO;
-    [t fetchSource:@"contact" userId:@"alice" path:@"/contact" params:@{@"lastVersion": @5}
+    [t fetchSource:@"contact" userId:@"alice" path:@"/sync/contact" params:@{@"lastVersion": @5}
         completion:^(BOOL s) { success = s; called = YES; }];
     XCTAssertTrue(called);
     XCTAssertTrue(success);
     XCTAssertEqualObjects(gotUserId, @"alice");
-    XCTAssertEqualObjects(gotPath, @"/contact");
+    XCTAssertEqualObjects(gotPath, @"/sync/contact");
     XCTAssertEqualObjects(gotParams[@"lastVersion"], @5);
 }
 
@@ -38,7 +38,7 @@
             handler(nil, [NSError errorWithDomain:@"test" code:1 userInfo:nil]);
         }];
     __block BOOL success = YES, called = NO;
-    [t fetchSource:@"contact" userId:nil path:@"/contact" params:@{} completion:^(BOOL s) { success = s; called = YES; }];
+    [t fetchSource:@"contact" userId:nil path:@"/sync/contact" params:@{} completion:^(BOOL s) { success = s; called = YES; }];
     XCTAssertTrue(called);
     XCTAssertFalse(success);
 }

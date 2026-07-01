@@ -92,14 +92,14 @@ static NSString * const kSuite = @"com.wonderpush.test.syncintegration";
 #pragma mark - firm head hint -> explicit fetch -> apply
 
 - (void)testFirmHintTriggersExplicitFetchThatAppliesAndResetsBackoff {
-    // The explicit GET /contact will return the full contact.
+    // The explicit GET /sync/contact will return the full contact.
     _getResponse = @{@"version": @300, @"versionId": @"v300", @"readDate": @3000, @"data": @{@"firstName": @"Carol"}, @"_serverTime": @7000};
     // An opportunistic head hint above our cursor triggers the firm fetch.
     [_sync consumeIncomingResponseForPath:@"/events" method:@"POST" response:@{
         @"_contactSync": @{@"knownVersion": @300, @"knownVersionId": @"v300", @"knownReadDate": @3000},
     }];
     XCTAssertEqual(_getCount, 1);
-    XCTAssertEqualObjects(_lastGetPath, @"/contact");
+    XCTAssertEqualObjects(_lastGetPath, @"/sync/contact");
     XCTAssertEqualObjects([_sync dataForSource:@"contact"], (@{@"firstName": @"Carol"}));   // GET response applied
     XCTAssertEqual([self contactStateFor:@"alice"].lastFetchUnsuccessfulAttemptCount, 0);    // success reset backoff
 }

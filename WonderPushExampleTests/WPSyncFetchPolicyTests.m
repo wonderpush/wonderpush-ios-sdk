@@ -104,8 +104,8 @@
 }
 
 - (void)testExplicitPathForSource {
-    XCTAssertEqualObjects(WPSyncExplicitPathForSource(@"contact"), @"/contact");
-    XCTAssertEqualObjects(WPSyncExplicitPathForSource(@"inbox"), @"/inbox");
+    XCTAssertEqualObjects(WPSyncExplicitPathForSource(@"contact"), @"/sync/contact");
+    XCTAssertEqualObjects(WPSyncExplicitPathForSource(@"inbox"), @"/sync/inbox");
     XCTAssertNil(WPSyncExplicitPathForSource(@"nope"));
 }
 

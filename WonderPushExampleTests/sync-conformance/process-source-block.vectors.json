@@ -425,12 +425,12 @@
         "mode": "opportunistic"
       },
       "expected": {
-        "triggerFetch": "firm",
         "fetchHint": {
           "knownVersion": 200,
           "knownVersionId": "v200",
           "knownReadDate": 2000
-        }
+        },
+        "triggerFetch": "firm"
       }
     },
     {

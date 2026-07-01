@@ -15,8 +15,11 @@ NSString * _Nullable WPSyncExplicitPathForSource(NSString *source) {
     static NSDictionary *map;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        map = @{ @"contact": @"/contact", @"user": @"/user", @"installation": @"/installation",
-                 @"popups": @"/popups", @"inbox": @"/inbox" };
+        // Explicit sync endpoints live under the dedicated `/sync/` namespace (GET /v1/sync/{source}),
+        // keeping them distinct from the opportunistic resource paths (POST /v1/events, PATCH
+        // /v1/installation). No `/v1` prefix — Rest prepends the version segment.
+        map = @{ @"contact": @"/sync/contact", @"user": @"/sync/user", @"installation": @"/sync/installation",
+                 @"popups": @"/sync/popups", @"inbox": @"/sync/inbox" };
     });
     return map[source ?: @""];
 }
