@@ -30,6 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, readonly) NSArray<NSDictionary *> *allEvents;
 @property (nullable, readonly) WPSPSegmenterPresenceInfo *presenceInfo;
 @property (nonatomic, assign, readonly) long long lastAppOpenDate;
+/// The synced contact object (sdk-sync `contact` source), or nil. Consumed by `contact` segmentation
+/// criteria — a distinct namespace from installation/user. Injected after construction by
+/// forCurrentUser (readwrite so it can be set without changing the init signature / callers).
+@property (nonatomic, nullable) NSDictionary *contact;
 
 + (instancetype)forCurrentUser;
 - (instancetype)initWithInstallation:(NSDictionary *)installation allEvents:(NSArray<NSDictionary *> *)allEvents presenceInfo:(WPSPSegmenterPresenceInfo * _Nullable)presenceInfo lastAppOpenDate:(long long)lastAppOpenDate;
@@ -67,6 +71,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, readonly) NSDictionary *event;
 
 - (instancetype)initWithData:(WPSPSegmenterData *)data event:(NSDictionary *)event;
+
+@end
+
+@interface WPSPContactVisitor : WPSPBaseVisitor
 
 @end
 

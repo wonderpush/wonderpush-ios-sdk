@@ -16,6 +16,7 @@
 #import "WPJsonSyncInstallation.h"
 #import "WPConfiguration.h"
 #import "WonderPush_private.h"
+#import "WPSyncManager.h"
 
 @implementation WPSPSegmenterPresenceInfo
 
@@ -62,6 +63,9 @@
                                allEvents:events
                                presenceInfo:presenceInfo
                                lastAppOpenDate:(long long)(lastAppOpenDate.timeIntervalSince1970 * 1000)];
+    // Inject the synced contact object for `contact` segmentation criteria (nil when sync is off/absent).
+    id contact = [[WPSyncManager sharedManager] dataForSource:@"contact"];
+    if ([contact isKindOfClass:[NSDictionary class]]) data.contact = contact;
     return data;
 }
 
@@ -119,6 +123,14 @@
 
 - (id)visitFieldSource:(WPSPFieldSource *)dataSource {
     return [super visitFieldSource:dataSource withObject:self.event];
+}
+
+@end
+
+@implementation WPSPContactVisitor
+
+- (id)visitFieldSource:(WPSPFieldSource *)dataSource {
+    return [super visitFieldSource:dataSource withObject:(self.data.contact ?: @{})];
 }
 
 @end
@@ -409,6 +421,12 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
         if (_debug) WPLog(@"[%@] return %@ for installation", NSStringFromSelector(_cmd), [result boolValue] ? @"true" : @"false");
         return result;
     }
+    if ([node.context.dataSource isKindOfClass:WPSPContactSource.class]) {
+        WPSPContactVisitor *contactVisitor = [[WPSPContactVisitor alloc] initWithData:self.data];
+        id result = [node.child accept:contactVisitor];
+        if (_debug) WPLog(@"[%@] return %@ for contact", NSStringFromSelector(_cmd), [result boolValue] ? @"true" : @"false");
+        return result;
+    }
     WPLog(@"[%@] return false for unsupported %@", NSStringFromSelector(_cmd), NSStringFromClass(node.context.dataSource.class));
     return @NO;
 }
@@ -600,6 +618,10 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
 }
 
 - (nonnull id)visitUserSource:(nonnull WPSPUserSource *)dataSource {
+    return @[];
+}
+
+- (nonnull id)visitContactSource:(nonnull WPSPContactSource *)dataSource {
     return @[];
 }
 

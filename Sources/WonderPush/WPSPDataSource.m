@@ -64,6 +64,20 @@
 }
 @end
 
+@implementation WPSPContactSource
+- (instancetype)init {
+    return [super initWithParent:nil];
+}
+
+- (NSString *)name {
+    return @"contact";
+}
+
+- (id)accept:(id<WPSPDataSourceVisitor>)visitor {
+    return [visitor visitContactSource:self];
+}
+@end
+
 @implementation WPSPEventSource
 - (instancetype)init {
     return [super initWithParent:nil];

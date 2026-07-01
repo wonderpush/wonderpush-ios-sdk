@@ -60,6 +60,10 @@
     }];
 }
 
+- (id)dataForSource:(NSString *)source {
+    return [self.sync dataForSource:source];   // nil-safe: self.sync is nil until the stack is built
+}
+
 - (void)buildStackIfNeededWithIdentifiersProvider:(NSDictionary *(^)(void))identifiersProvider
                                            sender:(WPSyncAPIRequestSender)sender {
     if (self.stackBuilt) return;

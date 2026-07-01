@@ -9,6 +9,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class WPSPUserSource;
+@class WPSPContactSource;
 @class WPSPInstallationSource;
 @class WPSPEventSource;
 @class WPSPFieldSource;
@@ -20,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol WPSPDataSourceVisitor <NSObject>
 - (id) visitUserSource:(WPSPUserSource *)dataSource;
+- (id) visitContactSource:(WPSPContactSource *)dataSource;
 - (id) visitInstallationSource:(WPSPInstallationSource *)dataSource;
 - (id) visitEventSource:(WPSPEventSource *)dataSource;
 - (id) visitFieldSource:(WPSPFieldSource *)dataSource;

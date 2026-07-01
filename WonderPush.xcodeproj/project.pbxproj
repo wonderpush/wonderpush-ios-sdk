@@ -78,6 +78,7 @@
 		9942FD48246AA8F40002BEA0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9942FD46246AA8F40002BEA0 /* LaunchScreen.storyboard */; };
 		9942FD4B246AA8F40002BEA0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD4A246AA8F40002BEA0 /* main.m */; };
 		9942FD55246AA8F40002BEA0 /* WonderPushExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */; };
+		FACE00000000000000000084 /* WPSyncSegmentationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000083 /* WPSyncSegmentationTests.m */; };
 		FACE00000000000000000082 /* WPSyncIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000081 /* WPSyncIntegrationTests.m */; };
 		FACE0000000000000000007C /* WPSyncHookTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000007B /* WPSyncHookTests.m */; };
 		FACE00000000000000000076 /* WPSyncAPITransportTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000075 /* WPSyncAPITransportTests.m */; };
@@ -557,6 +558,7 @@
 		9942FD4A246AA8F40002BEA0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9942FD50246AA8F40002BEA0 /* WonderPushExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WonderPushExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WonderPushExampleTests.m; sourceTree = "<group>"; };
+		FACE00000000000000000083 /* WPSyncSegmentationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncSegmentationTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000081 /* WPSyncIntegrationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncIntegrationTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000007B /* WPSyncHookTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncHookTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000075 /* WPSyncAPITransportTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncAPITransportTests.m; sourceTree = "<group>"; };
@@ -973,6 +975,7 @@
 			isa = PBXGroup;
 			children = (
 				9942FD54246AA8F40002BEA0 /* WonderPushExampleTests.m */,
+				FACE00000000000000000083 /* WPSyncSegmentationTests.m */,
 				FACE00000000000000000081 /* WPSyncIntegrationTests.m */,
 				FACE0000000000000000007B /* WPSyncHookTests.m */,
 				FACE00000000000000000075 /* WPSyncAPITransportTests.m */,
@@ -2040,6 +2043,7 @@
 				99ED541624B3308F00EECDE0 /* WPSPParsingContextTests.m in Sources */,
 				9942FD7E246BF1420002BEA0 /* WPRemoteConfigTests.m in Sources */,
 				9942FD55246AA8F40002BEA0 /* WonderPushExampleTests.m in Sources */,
+				FACE00000000000000000084 /* WPSyncSegmentationTests.m in Sources */,
 				FACE00000000000000000082 /* WPSyncIntegrationTests.m in Sources */,
 				FACE0000000000000000007C /* WPSyncHookTests.m in Sources */,
 				FACE00000000000000000076 /* WPSyncAPITransportTests.m in Sources */,

@@ -29,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype) init;
 @end
 
+@interface WPSPContactSource : WPSPDataSource
+- (instancetype) init;
+@end
+
 @interface WPSPEventSource : WPSPDataSource
 - (instancetype) init;
 @end

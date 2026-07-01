@@ -29,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
                    identifiersProvider:(NSDictionary *(^)(void))identifiersProvider
                                 sender:(WPSyncAPIRequestSender)sender;
 
+/// The synced payload for a source under the current profile (nil if sync isn't assembled/enabled or
+/// nothing is stored). Used by the segmentation engine to read the synced contact.
+- (nullable id)dataForSource:(NSString *)source;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -35,6 +35,7 @@ SYNC_CLASSES=(
   WPSyncAPITransportTests
   WPSyncHookTests
   WPSyncIntegrationTests
+  WPSyncSegmentationTests
 )
 
 VERBOSE=0
