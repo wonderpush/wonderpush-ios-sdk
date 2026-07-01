@@ -81,7 +81,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 // reset messages data
 - (void)setMessageData:(NSArray<WPIAMMessageDefinition *> *)messages;
-// load messages from persistent storage
+// load messages from persistent storage (remote-config in-app campaigns merged with synced popups)
 - (void)loadMessagesFromRemoteConfigWithCompletion:(void (^ _Nullable)(BOOL success))completion;
+
+// Merge the remote-config in-app campaigns (already parsed) with the sdk-sync `popups` source
+// (issue .27): each non-tombstone, non-expired synced popup contributes its `data` Campaign, parsed
+// into a WPIAMMessageDefinition and appended AFTER the remote messages (remote first = precedence, no
+// dedupe — synced popups are individualized rules expected to be disjoint from the global config).
+// Mirrors the JS merge in inappmessaging/main.ts:284-298. `now` is server-adjusted ms (expiry). Pure
+// + side-effect free so it is unit-testable without the SDK singletons.
++ (NSArray<WPIAMMessageDefinition *> *)messagesByMergingRemoteMessages:(NSArray<WPIAMMessageDefinition *> *)remoteMessages
+                                                      withSyncedPopups:(nullable NSArray *)syncedPopups
+                                                                   now:(long long)now;
 @end
 NS_ASSUME_NONNULL_END

@@ -17,6 +17,8 @@
 #import <WonderPushCommon/WPLog.h>
 #import <math.h>
 
+NSString * const WPSyncSourceDataDidChangeNotification = @"WPSyncSourceDataDidChangeNotification";
+
 @interface WPSync ()
 @property (nonatomic, strong) WPSyncStateStore *stateStore;
 @property (nonatomic, strong) id<WPSyncFetching> fetcher;
@@ -148,6 +150,13 @@
             ? [WPSyncResponseBlock blockWithDictionary:blockDict] : nil;
         decision = [WPSyncProcessor processSourceBlock:block serverTime:serverTime state:state mode:mode];
         [self applyDecision:decision source:source userId:userId deviceId:deviceId];
+    }
+    // Notify consumers (the in-app engine) that this source's DATA changed, AFTER releasing the lock.
+    BOOL dataChanged = decision.nextState != nil
+        && (decision.hasApplyData || decision.hasApplyDelta || decision.clearState);
+    if (dataChanged) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:WPSyncSourceDataDidChangeNotification
+                                                            object:self userInfo:@{@"source": source}];
     }
     if (decision.triggerFetch != nil) {
         // Fire-and-forget, outside the lock; forward the head hint so the explicit request echoes known*.

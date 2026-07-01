@@ -33,6 +33,7 @@ SYNC_CLASSES=(
   WPSyncTests
   WPSyncContactSourceTests
   WPSyncPopupsStoreTests
+  WPSyncPopupsMergeTests
   WPSyncAPITransportTests
   WPSyncHookTests
   WPSyncIntegrationTests

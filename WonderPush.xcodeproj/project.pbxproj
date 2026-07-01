@@ -84,6 +84,7 @@
 		FACE00000000000000000076 /* WPSyncAPITransportTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000075 /* WPSyncAPITransportTests.m */; };
 		FACE00000000000000000070 /* WPSyncContactSourceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000006F /* WPSyncContactSourceTests.m */; };
 		FACE0000000000000000008E /* WPSyncPopupsStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000008D /* WPSyncPopupsStoreTests.m */; };
+		FACE00000000000000000090 /* WPSyncPopupsMergeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000008F /* WPSyncPopupsMergeTests.m */; };
 		FACE0000000000000000006A /* WPSyncTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000069 /* WPSyncTests.m */; };
 		FACE00000000000000000064 /* WPSyncFetcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000063 /* WPSyncFetcherTests.m */; };
 		FACE0000000000000000005E /* WPSyncOutgoingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000005D /* WPSyncOutgoingTests.m */; };
@@ -569,6 +570,7 @@
 		FACE00000000000000000075 /* WPSyncAPITransportTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncAPITransportTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000006F /* WPSyncContactSourceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncContactSourceTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000008D /* WPSyncPopupsStoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncPopupsStoreTests.m; sourceTree = "<group>"; };
+		FACE0000000000000000008F /* WPSyncPopupsMergeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncPopupsMergeTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000069 /* WPSyncTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000063 /* WPSyncFetcherTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncFetcherTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000005D /* WPSyncOutgoingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncOutgoingTests.m; sourceTree = "<group>"; };
@@ -991,6 +993,7 @@
 				FACE00000000000000000075 /* WPSyncAPITransportTests.m */,
 				FACE0000000000000000006F /* WPSyncContactSourceTests.m */,
 				FACE0000000000000000008D /* WPSyncPopupsStoreTests.m */,
+				FACE0000000000000000008F /* WPSyncPopupsMergeTests.m */,
 				FACE00000000000000000069 /* WPSyncTests.m */,
 				FACE00000000000000000063 /* WPSyncFetcherTests.m */,
 				FACE0000000000000000005D /* WPSyncOutgoingTests.m */,
@@ -2066,6 +2069,7 @@
 				FACE00000000000000000076 /* WPSyncAPITransportTests.m in Sources */,
 				FACE00000000000000000070 /* WPSyncContactSourceTests.m in Sources */,
 				FACE0000000000000000008E /* WPSyncPopupsStoreTests.m in Sources */,
+				FACE00000000000000000090 /* WPSyncPopupsMergeTests.m in Sources */,
 				FACE0000000000000000006A /* WPSyncTests.m in Sources */,
 				FACE00000000000000000064 /* WPSyncFetcherTests.m in Sources */,
 				FACE0000000000000000005E /* WPSyncOutgoingTests.m in Sources */,

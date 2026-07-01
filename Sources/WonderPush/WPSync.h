@@ -29,6 +29,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// Posted (best-effort, on the caller's thread) after a source's stored DATA changes as the result of
+/// applying a response (reset / delta / clear). userInfo carries @{@"source": <name>}. The in-app
+/// engine observes this for source "popups" to re-merge synced popups into its cache (issue .27).
+extern NSString * const WPSyncSourceDataDidChangeNotification;
+
 /// A source's optional data transforms. PURE functions: given the source's current stored data and a
 /// payload, return the new data. The orchestrator owns persistence — it folds the result into the
 /// source's state and saves once, under the response's captured profile + per-source lock — so the
