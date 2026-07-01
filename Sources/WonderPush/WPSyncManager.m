@@ -12,6 +12,7 @@
 #import "WPSyncKnobs.h"
 #import "WPSyncKnobsProvider.h"
 #import "WPSyncContactSource.h"
+#import "WPSyncPopupsSource.h"
 #import "WPSyncRequestObserver.h"
 #import "WPRemoteConfig.h"
 
@@ -79,6 +80,7 @@
     sync.knobsProvider = ^WPSyncKnobs *{ typeof(self) s = weakSelf; return s ? s.cachedKnobs : [WPSyncKnobs defaultKnobs]; };
 
     [sync registerSource:@"contact" plugin:[WPSyncContactSource new]];
+    [sync registerSource:@"popups" plugin:[WPSyncPopupsSource new]];
     self.sync = sync;
 }
 

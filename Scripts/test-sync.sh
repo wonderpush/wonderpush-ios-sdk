@@ -32,6 +32,7 @@ SYNC_CLASSES=(
   WPSyncFetcherTests
   WPSyncTests
   WPSyncContactSourceTests
+  WPSyncPopupsStoreTests
   WPSyncAPITransportTests
   WPSyncHookTests
   WPSyncIntegrationTests

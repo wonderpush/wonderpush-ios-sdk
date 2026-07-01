@@ -83,6 +83,7 @@
 		FACE0000000000000000007C /* WPSyncHookTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000007B /* WPSyncHookTests.m */; };
 		FACE00000000000000000076 /* WPSyncAPITransportTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000075 /* WPSyncAPITransportTests.m */; };
 		FACE00000000000000000070 /* WPSyncContactSourceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000006F /* WPSyncContactSourceTests.m */; };
+		FACE0000000000000000008E /* WPSyncPopupsStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000008D /* WPSyncPopupsStoreTests.m */; };
 		FACE0000000000000000006A /* WPSyncTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000069 /* WPSyncTests.m */; };
 		FACE00000000000000000064 /* WPSyncFetcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000063 /* WPSyncFetcherTests.m */; };
 		FACE0000000000000000005E /* WPSyncOutgoingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000005D /* WPSyncOutgoingTests.m */; };
@@ -108,6 +109,10 @@
 		FACE00000000000000000074 /* WPSyncAPITransport.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000073 /* WPSyncAPITransport.m */; };
 		FACE0000000000000000006C /* WPSyncContactSource.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000006B /* WPSyncContactSource.h */; };
 		FACE0000000000000000006E /* WPSyncContactSource.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000006D /* WPSyncContactSource.m */; };
+		FACE00000000000000000086 /* WPSyncPopupsStore.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000085 /* WPSyncPopupsStore.h */; };
+		FACE00000000000000000088 /* WPSyncPopupsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000087 /* WPSyncPopupsStore.m */; };
+		FACE0000000000000000008A /* WPSyncPopupsSource.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000089 /* WPSyncPopupsSource.h */; };
+		FACE0000000000000000008C /* WPSyncPopupsSource.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000008B /* WPSyncPopupsSource.m */; };
 		FACE00000000000000000066 /* WPSync.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000065 /* WPSync.h */; };
 		FACE00000000000000000068 /* WPSync.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000067 /* WPSync.m */; };
 		FACE00000000000000000060 /* WPSyncFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000005F /* WPSyncFetcher.h */; };
@@ -563,6 +568,7 @@
 		FACE0000000000000000007B /* WPSyncHookTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncHookTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000075 /* WPSyncAPITransportTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncAPITransportTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000006F /* WPSyncContactSourceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncContactSourceTests.m; sourceTree = "<group>"; };
+		FACE0000000000000000008D /* WPSyncPopupsStoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncPopupsStoreTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000069 /* WPSyncTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000063 /* WPSyncFetcherTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncFetcherTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000005D /* WPSyncOutgoingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncOutgoingTests.m; sourceTree = "<group>"; };
@@ -588,6 +594,10 @@
 		FACE00000000000000000073 /* WPSyncAPITransport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncAPITransport.m; sourceTree = "<group>"; };
 		FACE0000000000000000006B /* WPSyncContactSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSyncContactSource.h; sourceTree = "<group>"; };
 		FACE0000000000000000006D /* WPSyncContactSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncContactSource.m; sourceTree = "<group>"; };
+		FACE00000000000000000085 /* WPSyncPopupsStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSyncPopupsStore.h; sourceTree = "<group>"; };
+		FACE00000000000000000087 /* WPSyncPopupsStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncPopupsStore.m; sourceTree = "<group>"; };
+		FACE00000000000000000089 /* WPSyncPopupsSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSyncPopupsSource.h; sourceTree = "<group>"; };
+		FACE0000000000000000008B /* WPSyncPopupsSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncPopupsSource.m; sourceTree = "<group>"; };
 		FACE00000000000000000065 /* WPSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSync.h; sourceTree = "<group>"; };
 		FACE00000000000000000067 /* WPSync.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSync.m; sourceTree = "<group>"; };
 		FACE0000000000000000005F /* WPSyncFetcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPSyncFetcher.h; sourceTree = "<group>"; };
@@ -980,6 +990,7 @@
 				FACE0000000000000000007B /* WPSyncHookTests.m */,
 				FACE00000000000000000075 /* WPSyncAPITransportTests.m */,
 				FACE0000000000000000006F /* WPSyncContactSourceTests.m */,
+				FACE0000000000000000008D /* WPSyncPopupsStoreTests.m */,
 				FACE00000000000000000069 /* WPSyncTests.m */,
 				FACE00000000000000000063 /* WPSyncFetcherTests.m */,
 				FACE0000000000000000005D /* WPSyncOutgoingTests.m */,
@@ -1297,6 +1308,10 @@
 				FACE00000000000000000073 /* WPSyncAPITransport.m */,
 				FACE0000000000000000006B /* WPSyncContactSource.h */,
 				FACE0000000000000000006D /* WPSyncContactSource.m */,
+				FACE00000000000000000085 /* WPSyncPopupsStore.h */,
+				FACE00000000000000000087 /* WPSyncPopupsStore.m */,
+				FACE00000000000000000089 /* WPSyncPopupsSource.h */,
+				FACE0000000000000000008B /* WPSyncPopupsSource.m */,
 				FACE00000000000000000065 /* WPSync.h */,
 				FACE00000000000000000067 /* WPSync.m */,
 				FACE0000000000000000005F /* WPSyncFetcher.h */,
@@ -1590,6 +1605,8 @@
 				FACE00000000000000000078 /* WPSyncRequestObserver.h in Headers */,
 				FACE00000000000000000072 /* WPSyncAPITransport.h in Headers */,
 				FACE0000000000000000006C /* WPSyncContactSource.h in Headers */,
+				FACE00000000000000000086 /* WPSyncPopupsStore.h in Headers */,
+				FACE0000000000000000008A /* WPSyncPopupsSource.h in Headers */,
 				FACE00000000000000000066 /* WPSync.h in Headers */,
 				FACE00000000000000000060 /* WPSyncFetcher.h in Headers */,
 				FACE00000000000000000058 /* WPSyncOutgoing.h in Headers */,
@@ -2048,6 +2065,7 @@
 				FACE0000000000000000007C /* WPSyncHookTests.m in Sources */,
 				FACE00000000000000000076 /* WPSyncAPITransportTests.m in Sources */,
 				FACE00000000000000000070 /* WPSyncContactSourceTests.m in Sources */,
+				FACE0000000000000000008E /* WPSyncPopupsStoreTests.m in Sources */,
 				FACE0000000000000000006A /* WPSyncTests.m in Sources */,
 				FACE00000000000000000064 /* WPSyncFetcherTests.m in Sources */,
 				FACE0000000000000000005E /* WPSyncOutgoingTests.m in Sources */,
@@ -2145,6 +2163,8 @@
 				FACE0000000000000000007A /* WPSyncRequestObserver.m in Sources */,
 				FACE00000000000000000074 /* WPSyncAPITransport.m in Sources */,
 				FACE0000000000000000006E /* WPSyncContactSource.m in Sources */,
+				FACE00000000000000000088 /* WPSyncPopupsStore.m in Sources */,
+				FACE0000000000000000008C /* WPSyncPopupsSource.m in Sources */,
 				FACE00000000000000000068 /* WPSync.m in Sources */,
 				FACE00000000000000000062 /* WPSyncFetcher.m in Sources */,
 				FACE0000000000000000005A /* WPSyncOutgoing.m in Sources */,
