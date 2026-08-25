@@ -1522,6 +1522,12 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
                                                            sender:sender];
 }
 
++ (nullable NSDictionary *) syncedContact
+{
+    id data = [[WPSyncManager sharedManager] dataForSource:@"contact"];
+    return [data isKindOfClass:[NSDictionary class]] ? data : nil;
+}
+
 + (void) requestForUser:(NSString *)userId method:(NSString *)method resource:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
     if (![WonderPush isInitialized]) {

@@ -669,6 +669,20 @@ Lets you monitor push notification clicks.
  */
 + (bool) hasTag:(NSString *)tag;
 
+///--------------------------
+/// @name SDK-sync (contact)
+///--------------------------
+
+/**
+ Returns the synced contact object last received from the server through the SDK-sync channel, or
+ `nil` if sync isn't active yet or nothing has been synced for the current profile.
+
+ The shape of this object (contact id, attributes, etc.) is entirely server-defined — this method
+ makes no assumption about its keys and returns it as received. It may be an empty dictionary (`{}`)
+ when the profile has no synced contact data yet; that is a valid state, not an error.
+ */
++ (nullable NSDictionary *) syncedContact;
+
 ///----------------------------------
 /// @name Privacy and data management
 ///----------------------------------

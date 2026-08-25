@@ -62,7 +62,10 @@ static id _Nullable nWPSyncDenull(id _Nullable v) {
     NSString *m = [(method ?: @"") uppercaseString];
 
     for (NSString *suffix in opportunisticPathsByMethod[m]) {
-        if (nWPSyncPathMatchesSuffix(path, suffix)) { c.mode = @"opportunistic"; return c; }
+        if (nWPSyncPathMatchesSuffix(path, suffix)) {
+            c.mode = @"opportunistic";
+            return c;
+        }
     }
 
     if ([m isEqualToString:@"GET"]) {
