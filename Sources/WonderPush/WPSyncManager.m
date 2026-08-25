@@ -49,8 +49,8 @@
         if (!self2) return;
         WPRemoteConfig *effective = error ? nil : config;
         self2.cachedKnobs = [WPSyncKnobsProvider knobsFromRemoteConfig:effective];
-        // Master gate: only go live when the server explicitly enables sync (default off -> inert).
-        BOOL enabled = [effective.data[@"syncEnabled"] boolValue];
+        // Master gate: go live unless the server explicitly disables sync (default off -> active).
+        BOOL enabled = ![effective.data[@"syncDisabled"] boolValue];
         if (enabled && !self2.installed) {
             [WPSyncHook installObserver:self2.sync];
             self2.installed = YES;

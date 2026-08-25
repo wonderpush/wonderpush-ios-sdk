@@ -35,3 +35,5 @@
 {"id":"int-da2e59cd","kind":"field_change","created_at":"2026-07-01T08:33:28.769693Z","actor":"Stéphane JAIS","issue_id":"wonderpush-ios-sdk-i2x.27","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Closed"}}
 {"id":"int-fdcd976f","kind":"field_change","created_at":"2026-07-01T09:38:48.242795Z","actor":"Stéphane JAIS","issue_id":"wonderpush-ios-sdk-i2x.28","extra":{"field":"status","new_value":"in_progress","old_value":"open"}}
 {"id":"int-6b6c6031","kind":"field_change","created_at":"2026-07-01T09:44:59.245206Z","actor":"Stéphane JAIS","issue_id":"wonderpush-ios-sdk-i2x.28","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
+{"id":"int-0c778b42","kind":"field_change","created_at":"2026-08-25T13:12:42.280355Z","actor":"Stéphane JAIS","issue_id":"wonderpush-ios-sdk-i2x.29","extra":{"field":"status","new_value":"in_progress","old_value":"open"}}
+{"id":"int-788dd9df","kind":"field_change","created_at":"2026-08-25T13:14:58.5662Z","actor":"Stéphane JAIS","issue_id":"wonderpush-ios-sdk-i2x.29","extra":{"field":"status","new_value":"closed","old_value":"in_progress"}}
