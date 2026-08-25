@@ -17,10 +17,18 @@
 }
 @end
 
-/// Accepts both '/events' and '/v1/events'-prefixed forms. The leading '/' in each suffix enforces a
-/// path-segment boundary, so '/foo-inbox' does not match '/inbox'.
+/// `suffix` is always given with a leading '/' (e.g. "/events"), which both anchors the match to a
+/// path segment boundary (so '/foo-inbox' does not match '/inbox') and matches prefixed/full-URL forms
+/// like '/v1/events' or 'https://measurements-api.wonderpush.com/v1/events' via hasSuffix.
+///
+/// But WPRequest.setResource: (WonderPushCommon/WPRequest.m) unconditionally strips a leading '/' from
+/// whatever resource string it's given, so `path` here is the *bare* form ("events", "installation")
+/// for every request built through WPAPIClient — never "/events". Match that bare form as an exact
+/// comparison (still anchored: no accidental substring match, since it's a full-string comparison, not
+/// a suffix one) alongside the slash-prefixed forms.
 static BOOL nWPSyncPathMatchesSuffix(NSString *path, NSString *suffix) {
-    return [path isEqualToString:suffix] || [path hasSuffix:suffix];
+    NSString *bareSuffix = [suffix hasPrefix:@"/"] ? [suffix substringFromIndex:1] : suffix;
+    return [path isEqualToString:suffix] || [path isEqualToString:bareSuffix] || [path hasSuffix:suffix];
 }
 
 /// NSNull -> nil; otherwise pass through. Normalizes a VersionId from a response block.

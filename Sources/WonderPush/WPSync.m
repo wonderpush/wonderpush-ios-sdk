@@ -94,16 +94,27 @@ NSString * const WPSyncSourceDataDidChangeNotification = @"WPSyncSourceDataDidCh
 
 - (NSDictionary *)prepareOutgoingParamsForPath:(NSString *)path method:(NSString *)method {
     @try {
-        if (![WPSyncOutgoing shouldInjectForPath:path method:method]) return @{};
-        if (![self effectiveKnobs].opportunisticInjectionEnabled) return @{};
+        if (![WPSyncOutgoing shouldInjectForPath:path method:method]) {
+            WPLogDebug(@"WPSync: not injecting for path=%@ method=%@ (not classified opportunistic)", path, method);
+            return @{};
+        }
+        if (![self effectiveKnobs].opportunisticInjectionEnabled) {
+            WPLogDebug(@"WPSync: not injecting for path=%@ method=%@ (opportunisticInjectionEnabled=NO)", path, method);
+            return @{};
+        }
         NSDictionary *ids = [self currentValidIdentifiers];
-        if (ids == nil) return @{};
+        if (ids == nil) {
+            WPLogDebug(@"WPSync: not injecting for path=%@ method=%@ (no usable deviceId yet; identifiersProvider returned %@)", path, method, self.identifiersProvider());
+            return @{};
+        }
         NSString *userId = ids[@"userId"], *deviceId = ids[@"deviceId"];
         NSMutableDictionary<NSString *, WPSyncSourceState *> *statePerSource = [NSMutableDictionary new];
         for (NSString *source in [self registeredSources]) {
             statePerSource[source] = [self.stateStore loadSource:source userId:userId deviceId:deviceId];
         }
-        return [WPSyncOutgoing buildOutgoingParamsWithIdentifiers:ids statePerSource:statePerSource];
+        NSDictionary *result = [WPSyncOutgoing buildOutgoingParamsWithIdentifiers:ids statePerSource:statePerSource];
+        WPLogDebug(@"WPSync: injecting %lu params for path=%@ method=%@ (ids=%@): %@", (unsigned long)result.count, path, method, ids, result);
+        return result;
     } @catch (NSException *e) {
         WPLog(@"WPSync: prepareOutgoingParams failed, skipping injection: %@", e);
         return @{};   // best-effort: never break the host request

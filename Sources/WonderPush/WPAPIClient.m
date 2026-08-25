@@ -138,6 +138,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     // sdk-sync opportunistic injection (inert unless a sync observer is installed). Never overwrites
     // existing keys, and the observer only returns params for POST /events & PATCH /installation.
     id<WPSyncRequestObserver> syncObserver = [WPSyncHook observer];
+    if (!syncObserver) {
+        WPLogDebug(@"WPAPIClient: no sync observer installed, skipping opportunistic injection for %@ %@", request.method, request.resource);
+    }
     if (syncObserver) {
         NSDictionary *syncParams = [syncObserver prepareOutgoingParamsForPath:request.resource method:request.method];
         if (syncParams.count > 0) {

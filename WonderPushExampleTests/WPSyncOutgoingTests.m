@@ -37,6 +37,20 @@
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:nil method:@"POST"]);
 }
 
+/// WPRequest.setResource: (WonderPushCommon/WPRequest.m) unconditionally strips a leading '/' from any
+/// resource it's given, so every request WPAPIClient actually builds carries the *bare* form here
+/// ("events", "installation"), never "/events". Regression test for i2x.33: this bare form must
+/// classify as opportunistic too, and must still respect the path-segment boundary (no accidental
+/// substring matches).
+- (void)testShouldInjectForBarePathAsProducedByWPRequestResource {
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"events" method:@"POST"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"installation" method:@"PATCH"]);
+
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"events" method:@"GET"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"badevents" method:@"POST"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"installation2" method:@"PATCH"]);
+}
+
 #pragma mark - buildOutgoingParams: identifiers
 
 - (void)testIdentifiersEmittedUnderSyncKeysAndEmptySkipped {
