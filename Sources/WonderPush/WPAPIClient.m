@@ -277,7 +277,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
     [self checkMethod:request];
 
-    WPLogDebug(@"Performing request: %@", request);
+    // request.description prints request.params, the pristine pre-decoration params — log the actual
+    // (possibly sdk-sync-decorated) params separately so opportunistic injection is observable.
+    WPLogDebug(@"Performing request: %@ with decorated params: %@", request, params);
 
     if ([@"POST" isEqualToString:method]) {
         [self POST:request.resource parameters:[params copy] success:success failure:failure];
