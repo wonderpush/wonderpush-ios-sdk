@@ -1522,7 +1522,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
                                                            sender:sender];
 }
 
-+ (nullable NSDictionary *) syncedContact
++ (nullable NSDictionary *) _contact
 {
     id data = [[WPSyncManager sharedManager] dataForSource:@"contact"];
     return [data isKindOfClass:[NSDictionary class]] ? data : nil;

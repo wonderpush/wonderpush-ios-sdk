@@ -681,7 +681,7 @@ Lets you monitor push notification clicks.
  makes no assumption about its keys and returns it as received. It may be an empty dictionary (`{}`)
  when the profile has no synced contact data yet; that is a valid state, not an error.
  */
-+ (nullable NSDictionary *) syncedContact;
++ (nullable NSDictionary *) _contact;
 
 ///----------------------------------
 /// @name Privacy and data management
