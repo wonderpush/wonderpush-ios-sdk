@@ -477,6 +477,10 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         WPConfiguration.sharedConfiguration.maximumCollapsedLastBuiltinTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_COLLAPSED_LAST_BUILTIN_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_COLLAPSED_LAST_BUILTIN_TRACKED_EVENTS_COUNT]] integerValue];
         WPConfiguration.sharedConfiguration.maximumCollapsedLastCustomTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_COLLAPSED_LAST_CUSTOM_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_COLLAPSED_LAST_CUSTOM_TRACKED_EVENTS_COUNT]] integerValue];
         WPConfiguration.sharedConfiguration.maximumCollapsedOtherTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_COLLAPSED_OTHER_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_COLLAPSED_OTHER_TRACKED_EVENTS_COUNT]] integerValue];
+        // sdk-sync: also refresh right away, not just reactively on WPRemoteConfigUpdatedNotification —
+        // that notification only fires on an actual version bump, so a cached/unchanged config would
+        // otherwise never build the WPSyncManager stack or evaluate its gate on this run at all.
+        [self refreshSyncManager];
     }];
 }
 
