@@ -19,16 +19,21 @@
 #pragma mark - shouldInjectForPath
 
 - (void)testShouldInjectForPath {
-    // Opportunistic endpoints: POST /events and PATCH /installation (host-agnostic).
+    // Opportunistic endpoints: POST /events and POST/PUT/PATCH /installation, /user (host-agnostic).
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/events" method:@"POST"]);
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/v1/events" method:@"POST"]);
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/installation" method:@"PATCH"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/installation" method:@"POST"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/installation" method:@"PUT"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/user" method:@"POST"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/user" method:@"PUT"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/user" method:@"PATCH"]);
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"https://measurements-api.wonderpush.com/v1/events" method:@"POST"]);
 
     // Right path, WRONG method -> NO. Crucially the explicit GET /installation fetch is not injected.
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/installation" method:@"GET"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/user" method:@"GET"]);
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/events" method:@"GET"]);
-    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/installation" method:@"PUT"]);
 
     // Nested paths / other endpoints -> NO.
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/v1/events/123" method:@"POST"]);

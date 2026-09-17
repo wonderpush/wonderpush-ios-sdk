@@ -29,7 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WPSyncProcessor : NSObject
 
 /// Decide whether a response should run through the processor, and how.
-/// Opportunistic: POST /events, PATCH /installation. Explicit: GET on the 5 sync endpoints.
+/// Opportunistic: POST /events, POST/PUT/PATCH /installation, POST/PUT/PATCH /user.
+/// Explicit: GET on the 5 sync endpoints.
 + (WPSyncResponseClassification *)classifyResponsePath:(nullable NSString *)path
                                                 method:(nullable NSString *)method;
 

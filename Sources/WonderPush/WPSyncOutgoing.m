@@ -13,8 +13,9 @@
 
 + (BOOL)shouldInjectForPath:(NSString *)path method:(NSString *)method {
     // Inject iff the response would be classified opportunistic — i.e. POST /events or
-    // PATCH /installation (host-agnostic). Delegating to the classifier guarantees the inject set and
-    // the processed set are identical, and that a GET/PUT/DELETE on those suffixes is NOT injected.
+    // POST/PUT/PATCH /installation or /user (host-agnostic). Delegating to the classifier guarantees
+    // the inject set and the processed set are identical, and that a GET on those suffixes is NOT
+    // injected.
     return [[WPSyncProcessor classifyResponsePath:path method:method].mode isEqualToString:@"opportunistic"];
 }
 

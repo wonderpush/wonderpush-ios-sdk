@@ -7,10 +7,11 @@
 // Pure helpers for sdk-sync outgoing-param injection (issue .14).
 // Ported from wonderpush-javascript-sdk/src/wonderpush/sync-outgoing.ts. Spec: algorithm.md:84-91.
 //
-// The SDK piggybacks per-source sync state onto opportunistic API calls (POST /events and
-// PATCH /installation). This file builds the params dict; the request-layer hook that gathers the
-// current identifiers + registered-source state and merges the result onto the request lives with
-// the orchestrator (issue .18) and covers BOTH the SDK API and the Measurements API.
+// The SDK piggybacks per-source sync state onto opportunistic API calls (POST /events,
+// POST/PUT/PATCH /installation, and POST/PUT/PATCH /user). This file builds the params dict; the
+// request-layer hook that gathers the current identifiers + registered-source state and merges the
+// result onto the request lives with the orchestrator (issue .18) and covers BOTH the SDK API and
+// the Measurements API.
 //
 // Path matching is HOST-AGNOSTIC by suffix so it covers both `/v1/events` (SDK API) and
 // `https://measurements-api.wonderpush.com/v1/events` (Measurements API), per the spec.
@@ -24,8 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WPSyncOutgoing : NSObject
 
 /// Whether sync params may be injected onto this request — true exactly for the opportunistic
-/// endpoints (POST /events, PATCH /installation). Method matters: a GET /installation (the explicit
-/// fetch) must NOT get opportunistic injection. Mirrors WPSyncProcessor's classifier by delegating to it.
+/// endpoints (POST /events, POST/PUT/PATCH /installation, POST/PUT/PATCH /user). Method matters:
+/// a GET /installation (the explicit fetch) must NOT get opportunistic injection. Mirrors
+/// WPSyncProcessor's classifier by delegating to it.
 + (BOOL)shouldInjectForPath:(nullable NSString *)path method:(nullable NSString *)method;
 
 /// Build the params to inject. `identifiers` is a dict with optional keys userId/deviceId/

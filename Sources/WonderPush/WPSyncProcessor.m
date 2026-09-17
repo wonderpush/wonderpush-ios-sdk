@@ -46,7 +46,14 @@ static id _Nullable nWPSyncDenull(id _Nullable v) {
     static NSDictionary<NSString *, NSString *> *explicitSourceByPath;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        opportunisticPathsByMethod = @{ @"POST": @[@"/events"], @"PATCH": @[@"/installation"] };
+        // notiflex-sdk-api runs opportunistic sync injection on POST /v1/events and on
+        // POST/PUT/PATCH /v1/installation and /v1/user — so every method on installation/user is
+        // opportunistic, not just PATCH.
+        opportunisticPathsByMethod = @{
+            @"POST": @[@"/events", @"/installation", @"/user"],
+            @"PUT": @[@"/installation", @"/user"],
+            @"PATCH": @[@"/installation", @"/user"],
+        };
         // Explicit sync fetches: GET /v1/sync/{source}. The dedicated `/sync/` namespace keeps these
         // distinct from opportunistic resource paths — so GET /v1/installation (no /sync) classifies
         // as none, removing the old GET-vs-PATCH ambiguity on /installation.
