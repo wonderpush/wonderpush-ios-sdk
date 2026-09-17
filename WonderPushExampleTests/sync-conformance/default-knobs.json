@@ -1,0 +1,18 @@
+{
+  "generatedFrom": "wonderpush-javascript-sdk",
+  "spec": "algorithm.md",
+  "defaultKnobs": {
+    "weakSyncSignalDebounceMs": 5000,
+    "maxLastSyncDateAgeMs": "Infinity",
+    "maxLastReadDateAgeMs": "Infinity",
+    "maxPopupsEntries": 1000,
+    "maxInboxEntries": 1000,
+    "exponentialBackoffMinMs": 1000,
+    "exponentialBackoffMaxMs": 300000,
+    "exponentialBackoffRatio": 2,
+    "exponentialBackoffJitterRatio": 0.5,
+    "mutexTtlMs": 600000,
+    "opportunisticInjectionEnabled": true,
+    "minSourceFetchIntervalMs": 2000
+  }
+}

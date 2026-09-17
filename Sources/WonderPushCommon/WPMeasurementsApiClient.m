@@ -49,6 +49,11 @@ NS_ASSUME_NONNULL_END
     // Add the sdk version
     [requestBodyString appendFormat:@"&sdkVersion=%@",[SDK_VERSION stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet]];
 
+    // Reachability state, computed live by the WonderPush target (see reachabilityProvider).
+    NSString *reachability = self.reachabilityProvider ? self.reachabilityProvider() : nil;
+    if (reachability.length) {
+        [requestBodyString appendFormat:@"&_reachability=%@", [reachability stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet]];
+    }
 
     // Device ID
     if (self.deviceId && self.deviceId.length) {

@@ -301,6 +301,76 @@ id parseJson(NSString *input) {
     XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:[emptyData withInstallation:@{ @"custom": @{ @"date_foo": @"2020Z" } }]] parsedSegmentMatchesInstallation:parsedSegment]);
 }
 
+/// base + contact.attributes override, so we can express "installation data with this contact attribute".
+static WPSPSegmenterData * dataWithContactAttribute(NSString *key, id value) {
+    WPSPSegmenterData *d = [[WPSPSegmenterData alloc] initWithInstallation:@{} allEvents:@[] presenceInfo:nil lastAppOpenDate:0];
+    d.contact = @{ @"attributes": @{ key: value } };
+    return d;
+}
+
+- (void) testItShouldMatchContactAttributeDateEqWithoutNamingConvention {
+    // Unlike installation custom fields, contact attributes have no "date_" naming convention to
+    // signal a date. A `date` value node on the criterion is enough: the raw attribute value (string
+    // or number) is coerced to a timestamp before comparing, regardless of its field name.
+    WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @"contact": @{ @".attributes.subscribedAt": @{ @"eq": @{ @"date": @"2020-01-01T00:00:00.000Z" } } } }];
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @"2020-01-01T00:00:00.000Z")] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @1577836800000)] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @"2020-01-01")] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @"2029-09-09T09:09:09.009+09:09")] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @"not a date")] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", NSNull.null)] parsedSegmentMatchesInstallation:parsedSegment]);
+}
+
+- (void) testItShouldMatchContactAttributeDateComparisonWithoutNamingConvention {
+    WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @"contact": @{ @".attributes.subscribedAt": @{ @"gt": @{ @"date": @"2020-01-01T00:00:00.000Z" } } } }];
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @"2020-06-01")] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @1577836800001)] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @"2019-01-01")] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @1577836799999)] parsedSegmentMatchesInstallation:parsedSegment]);
+    // Non-date-parseable values never satisfy the comparison.
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @"not a date")] parsedSegmentMatchesInstallation:parsedSegment]);
+}
+
+- (void) testItShouldMatchContactAttributeDateAnyWithoutNamingConvention {
+    WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @"contact": @{ @".attributes.subscribedAt": @{ @"any": @[ @{ @"date": @"2020-01-01T00:00:00.000Z" } ] } } }];
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @"2020-01-01T00:00:00.000Z")] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @1577836800000)] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", @"2020-06-01")] parsedSegmentMatchesInstallation:parsedSegment]);
+}
+
+- (void) testItShouldMatchContactAttributeDateAllWithoutNamingConvention {
+    // `all` requires every listed date value to be found among the field's raw values, each coerced
+    // to a timestamp on its own (the field itself, e.g. a history of dates, has no naming convention).
+    WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @"contact": @{ @".attributes.dates": @{ @"all": @[ @{ @"date": @"2020-01-01" }, @{ @"date": @"2020-06-01" } ] } } }];
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"dates", @[@"2020-01-01T00:00:00.000Z", @"2020-06-01T00:00:00.000Z"])] parsedSegmentMatchesInstallation:parsedSegment]);
+    // Mixed representations (string and number) of the same instants still both count.
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"dates", @[@"2020-01-01", @1590969600000])] parsedSegmentMatchesInstallation:parsedSegment]);
+    // Extra unrelated values don't prevent a match.
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"dates", @[@"2020-01-01", @"2020-06-01", @"2021-01-01"])] parsedSegmentMatchesInstallation:parsedSegment]);
+    // Missing one of the two required dates → no match.
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"dates", @[@"2020-01-01"])] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"dates", @[])] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"dates", NSNull.null)] parsedSegmentMatchesInstallation:parsedSegment]);
+}
+
+- (void) testItShouldMatchContactAttributeRelativeDateGt {
+    // "-P1Y" resolves to "one year before now". Uses a wide margin around the real clock (no fake
+    // timers on this platform, like the Android port) so the test isn't flaky.
+    WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @"contact": @{ @".attributes.subscribedAt": @{ @"gt": @{ @"date": @"-P1Y" } } } }];
+    long long now = [WPUtil getServerDate];
+    long long twoYearsAgo = now - 2LL * 365 * 24 * 60 * 60 * 1000;
+    NSISO8601DateFormatter *isoFormatter = [NSISO8601DateFormatter new];
+    isoFormatter.formatOptions = NSISO8601DateFormatWithInternetDateTime | NSISO8601DateFormatWithFractionalSeconds;
+    NSString *nowISO = [isoFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:now / 1000.0]];
+    NSString *twoYearsAgoISO = [isoFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:twoYearsAgo / 1000.0]];
+    // More recent than a year ago (as a string and as a ms number) → matches.
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", nowISO)] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertTrue([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", [NSNumber numberWithLongLong:now])] parsedSegmentMatchesInstallation:parsedSegment]);
+    // Older than a year ago → no match.
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", twoYearsAgoISO)] parsedSegmentMatchesInstallation:parsedSegment]);
+    XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:dataWithContactAttribute(@"subscribedAt", [NSNumber numberWithLongLong:twoYearsAgo])] parsedSegmentMatchesInstallation:parsedSegment]);
+}
+
 - (void) testItShouldMatchFieldFooComparisonLong {
     WPSPASTCriterionNode *parsedSegment = [WPSPSegmenter parseInstallationSegment:@{ @".foo": @{ @"gt": [NSNumber numberWithLongLong:9223372036854775806LL] } }];
     XCTAssertFalse([[[WPSPSegmenter alloc] initWithData:emptyData] parsedSegmentMatchesInstallation:parsedSegment]);

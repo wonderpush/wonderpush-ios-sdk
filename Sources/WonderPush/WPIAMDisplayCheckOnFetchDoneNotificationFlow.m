@@ -19,6 +19,7 @@
 #import "WPIAMDisplayCheckOnFetchDoneNotificationFlow.h"
 #import "WPIAMDisplayExecutor.h"
 #import "WPRemoteConfig.h"
+#import "WPSync.h"   // WPSyncSourceDataDidChangeNotification
 
 extern NSString *const kWPIAMFetchIsDoneNotification;
 
@@ -37,6 +38,17 @@ extern NSString *const kWPIAMFetchIsDoneNotification;
                                              selector:@selector(fetchIsDone)
                                                  name:WPRemoteConfigUpdatedNotification
                                                object:nil];
+    // Also re-merge when the synced `popups` source changes (issue .27), so a popup synced between
+    // remote-config updates appears without waiting for the next config fetch.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(syncedPopupsChanged:)
+                                                 name:WPSyncSourceDataDidChangeNotification
+                                               object:nil];
+}
+
+- (void)syncedPopupsChanged:(NSNotification *)notification {
+    if (![notification.userInfo[@"source"] isEqual:@"popups"]) return;   // only the popups source feeds this cache
+    [self.messageCache loadMessagesFromRemoteConfigWithCompletion:nil];
 }
 
 - (void)fetchIsDone {

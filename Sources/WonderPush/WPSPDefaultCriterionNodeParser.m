@@ -28,6 +28,7 @@
         [self registerExactNameParserWithKey:@"geo" parser:[self.class parseGeo]];
         [self registerExactNameParserWithKey:@"subscriptionStatus" parser:[self.class parseSubscriptionStatus]];
         [self registerExactNameParserWithKey:@"user" parser:[self.class parseUser]];
+        [self registerExactNameParserWithKey:@"contact" parser:[self.class parseContact]];
         [self registerExactNameParserWithKey:@"installation" parser:[self.class parseInstallation]];
         [self registerExactNameParserWithKey:@"event" parser:[self.class parseEvent]];
         [self registerExactNameParserWithKey:@"eq" parser:[self.class parseEq]];
@@ -174,6 +175,20 @@
                     child:[[WPSPJoinCriterionNode alloc]
                            initWithContext:twoHopsContext
                            child:[context.parser parseCriterionWithContext:twoHopsContext input:checkedInputValue]]];
+        }
+        @throw [[WPSPBadInputException alloc] initWithReason:[NSString stringWithFormat:@"\"%@\" is not supported in this context", key]];
+    };
+}
+
++ (WPSPASTCriterionNodeParser) parseContact {
+    return CRITERION_NODE_PARSER_BLOCK {
+        WPSPDataSource *rootDataSource = context.dataSource.rootDataSource;
+        NSDictionary *checkedInputValue = [self ensureDictionary:input forKey:key];
+        WPSPParsingContext *newContext = [context withDataSource:[[WPSPContactSource alloc] initWithParent:nil]];
+        if ([rootDataSource isKindOfClass:WPSPContactSource.class]) {
+            return [context.parser parseCriterionWithContext:newContext input:checkedInputValue];
+        } else if ([rootDataSource isKindOfClass:WPSPInstallationSource.class]) {
+            return [[WPSPJoinCriterionNode alloc] initWithContext:newContext child:[context.parser parseCriterionWithContext:newContext input:checkedInputValue]];
         }
         @throw [[WPSPBadInputException alloc] initWithReason:[NSString stringWithFormat:@"\"%@\" is not supported in this context", key]];
     };

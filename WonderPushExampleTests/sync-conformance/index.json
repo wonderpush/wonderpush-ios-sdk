@@ -1,0 +1,47 @@
+{
+  "generatedFrom": "wonderpush-javascript-sdk",
+  "spec": "algorithm.md",
+  "files": {
+    "compareVersionId": {
+      "file": "compare-version-id.vectors.json",
+      "cases": 81
+    },
+    "acceptsResponse": {
+      "file": "accepts-response.vectors.json",
+      "cases": 9
+    },
+    "processSourceBlock": {
+      "file": "process-source-block.vectors.json",
+      "cases": 15
+    },
+    "classifyResponse": {
+      "file": "classify-response.vectors.json",
+      "cases": 7
+    },
+    "computeBackoffSleep": {
+      "file": "compute-backoff-sleep.vectors.json",
+      "cases": 7
+    },
+    "shouldDebounceWeakSignal": {
+      "file": "should-debounce-weak-signal.vectors.json",
+      "cases": 5
+    },
+    "shouldRateLimitSource": {
+      "file": "should-rate-limit-source.vectors.json",
+      "cases": 7
+    },
+    "mergeKnobs": {
+      "file": "merge-knobs.vectors.json",
+      "cases": 6
+    },
+    "isStateStale": {
+      "file": "is-state-stale.vectors.json",
+      "cases": 4
+    },
+    "contactStore": {
+      "file": "contact-store.vectors.json",
+      "cases": 6
+    }
+  },
+  "defaultKnobs": "default-knobs.json"
+}

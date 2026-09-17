@@ -1,0 +1,161 @@
+{
+  "generatedFrom": "wonderpush-javascript-sdk",
+  "spec": "algorithm.md",
+  "function": "acceptsResponse",
+  "signature": "acceptsResponse(response: {version, versionId, readDate, data?, delta?}, state: {lastVersion, lastVersionId, lastReadDate}) -> boolean",
+  "cases": [
+    {
+      "name": "higher version accepted",
+      "input": {
+        "response": {
+          "version": 101,
+          "versionId": "v100",
+          "readDate": 1000,
+          "data": {}
+        },
+        "state": {
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000
+        }
+      },
+      "expected": true
+    },
+    {
+      "name": "same version higher versionId accepted",
+      "input": {
+        "response": {
+          "version": 100,
+          "versionId": "v200",
+          "readDate": 1000,
+          "data": {}
+        },
+        "state": {
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000
+        }
+      },
+      "expected": true
+    },
+    {
+      "name": "same version+id higher readDate accepted",
+      "input": {
+        "response": {
+          "version": 100,
+          "versionId": "v100",
+          "readDate": 1001,
+          "data": {}
+        },
+        "state": {
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000
+        }
+      },
+      "expected": true
+    },
+    {
+      "name": "same tuple not accepted",
+      "input": {
+        "response": {
+          "version": 100,
+          "versionId": "v100",
+          "readDate": 1000,
+          "data": {}
+        },
+        "state": {
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000
+        }
+      },
+      "expected": false
+    },
+    {
+      "name": "lower version not accepted",
+      "input": {
+        "response": {
+          "version": 99,
+          "versionId": "v100",
+          "readDate": 9999,
+          "data": {}
+        },
+        "state": {
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000
+        }
+      },
+      "expected": false
+    },
+    {
+      "name": "empty-reset accepted (v0 + {} + newer readDate)",
+      "input": {
+        "response": {
+          "version": 0,
+          "versionId": null,
+          "readDate": 1001,
+          "data": {}
+        },
+        "state": {
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000
+        }
+      },
+      "expected": true
+    },
+    {
+      "name": "empty-reset stale readDate not accepted",
+      "input": {
+        "response": {
+          "version": 0,
+          "versionId": null,
+          "readDate": 1000,
+          "data": {}
+        },
+        "state": {
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000
+        }
+      },
+      "expected": false
+    },
+    {
+      "name": "empty-reset array payload accepted",
+      "input": {
+        "response": {
+          "version": 0,
+          "versionId": null,
+          "readDate": 2000,
+          "data": []
+        },
+        "state": {
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000
+        }
+      },
+      "expected": true
+    },
+    {
+      "name": "from empty state, any positive version accepted",
+      "input": {
+        "response": {
+          "version": 1,
+          "versionId": null,
+          "readDate": 1,
+          "data": {}
+        },
+        "state": {
+          "lastVersion": 0,
+          "lastVersionId": null,
+          "lastReadDate": 0
+        }
+      },
+      "expected": true
+    }
+  ]
+}

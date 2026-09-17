@@ -42,6 +42,8 @@
 #import "WPIAMWebView.h"
 #import "WPAnonymousAPIClient.h"
 #import "WPLiveActivityAPIClient.h"
+#import "WPSyncManager.h"
+#import "WPSyncRequestObserver.h"
 
 static UIApplicationState _previousApplicationState = UIApplicationStateInactive;
 NSString * const WPSubscriptionStatusChangedNotification = @"WPSubscriptionStatusChangedNotification";
@@ -170,6 +172,7 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
         [[NSNotificationCenter defaultCenter] addObserverForName:WPRemoteConfigUpdatedNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
             [self readConfigAndUpdateDisabledComponents];
+            [self refreshSyncManager];
         }];
 
         // Listen to measurements API client responses and look for _configVersion
@@ -182,6 +185,12 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
                     [WonderPush.remoteConfigManager declareVersion:configVersion];
                 } else if ([configVersion isKindOfClass:NSNumber.class]) {
                     [WonderPush.remoteConfigManager declareVersion:[configVersion stringValue]];
+                }
+                // sdk-sync incoming interception for the Measurements carrier (.25): this client only
+                // issues POST /events (countEvent). Inert unless a sync observer is installed.
+                id<WPSyncRequestObserver> syncObserver = [WPSyncHook observer];
+                if (syncObserver) {
+                    [syncObserver consumeIncomingResponseForPath:@"/events" method:@"POST" response:result];
                 }
             }
 
@@ -468,6 +477,10 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         WPConfiguration.sharedConfiguration.maximumCollapsedLastBuiltinTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_COLLAPSED_LAST_BUILTIN_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_COLLAPSED_LAST_BUILTIN_TRACKED_EVENTS_COUNT]] integerValue];
         WPConfiguration.sharedConfiguration.maximumCollapsedLastCustomTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_COLLAPSED_LAST_CUSTOM_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_COLLAPSED_LAST_CUSTOM_TRACKED_EVENTS_COUNT]] integerValue];
         WPConfiguration.sharedConfiguration.maximumCollapsedOtherTrackedEventsCount = [[WPNSUtil numberForKey:WP_REMOTE_CONFIG_TRACKED_EVENTS_COLLAPSED_OTHER_MAXIMUM_COUNT_KEY inDictionary:config.data defaultValue:[NSNumber numberWithInteger:DEFAULT_MAXIMUM_COLLAPSED_OTHER_TRACKED_EVENTS_COUNT]] integerValue];
+        // sdk-sync: also refresh right away, not just reactively on WPRemoteConfigUpdatedNotification —
+        // that notification only fires on an actual version bump, so a cached/unchanged config would
+        // otherwise never build the WPSyncManager stack or evaluate its gate on this run at all.
+        [self refreshSyncManager];
     }];
 }
 
@@ -1488,6 +1501,33 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
 
 #pragma mark - REST API Access
 
++ (void) refreshSyncManager
+{
+    WPRemoteConfigManager *manager = [self remoteConfigManager];
+    if (!manager) return;
+    NSDictionary *(^identifiersProvider)(void) = ^NSDictionary *{
+        NSMutableDictionary *ids = [NSMutableDictionary new];
+        NSString *userId = [WonderPush userId];                 if (userId.length) ids[@"userId"] = userId;
+        NSString *deviceId = [WonderPush deviceId];             if (deviceId.length) ids[@"deviceId"] = deviceId;
+        NSString *installationId = [WonderPush installationId]; if (installationId.length) ids[@"installationId"] = installationId;
+        return ids;
+    };
+    WPSyncAPIRequestSender sender = ^(NSString *userId, NSString *path, NSDictionary *params, WPSyncAPIResponseHandler handler) {
+        [WonderPush requestForUser:userId method:@"GET" resource:path params:params handler:^(WPResponse *response, NSError *error) {
+            handler(response.object, error);
+        }];
+    };
+    [[WPSyncManager sharedManager] refreshWithRemoteConfigManager:manager
+                                              identifiersProvider:identifiersProvider
+                                                           sender:sender];
+}
+
++ (nullable NSDictionary *) _contact
+{
+    id data = [[WPSyncManager sharedManager] dataForSource:@"contact"];
+    return [data isKindOfClass:[NSDictionary class]] ? data : nil;
+}
+
 + (void) requestForUser:(NSString *)userId method:(NSString *)method resource:(NSString *)resource params:(id)params handler:(void(^)(WPResponse *response, NSError *error))handler
 {
     if (![WonderPush isInitialized]) {
@@ -2119,6 +2159,9 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     if (!client) {
         client = [[WPMeasurementsApiClient alloc]
                   initWithClientId:clientId secret:clientSecret deviceId:[WPUtil deviceIdentifier]];
+        client.reachabilityProvider = ^NSString * _Nullable {
+            return [WPBaseAPIClient computeReachability];
+        };
         clients[clientId] = client;
     }
     return client;

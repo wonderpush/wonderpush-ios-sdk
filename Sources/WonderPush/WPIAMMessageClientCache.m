@@ -21,6 +21,8 @@
 #import "WPIAMMessageClientCache.h"
 #import "WonderPush_private.h"
 #import "WPSPSegmenter.h"
+#import "WPSyncManager.h"
+#import "WPUtil.h"
 #import <WonderPushCommon/WPNSUtil.h>
 
 @interface WPIAMMessageClientCache ()
@@ -237,9 +239,38 @@
         NSArray<WPIAMMessageDefinition *> *messagesFromStorage = [WPIAMFetchResponseParser
                                                                   parseAPIResponseDictionary:inAppConfig
                                                                   discardedMsgCount:&discardCount];
-        [self setMessageData:messagesFromStorage];
+        // Merge in the synced per-user popups (sdk-sync `popups` source). Best-effort + null-safe:
+        // dataForSource returns nil when sync is disabled/absent, and the merge tolerates that.
+        id syncedPopups = [[WPSyncManager sharedManager] dataForSource:@"popups"];
+        NSArray<WPIAMMessageDefinition *> *merged =
+            [WPIAMMessageClientCache messagesByMergingRemoteMessages:messagesFromStorage
+                                                    withSyncedPopups:([syncedPopups isKindOfClass:[NSArray class]] ? syncedPopups : nil)
+                                                                 now:[WPUtil getServerDate]];
+        [self setMessageData:merged];
         if (completion) completion(YES);
 
     }];
+}
+
++ (NSArray<WPIAMMessageDefinition *> *)messagesByMergingRemoteMessages:(NSArray<WPIAMMessageDefinition *> *)remoteMessages
+                                                      withSyncedPopups:(NSArray *)syncedPopups
+                                                                   now:(long long)now {
+    NSArray<WPIAMMessageDefinition *> *remote = remoteMessages ?: @[];
+    if (![syncedPopups isKindOfClass:[NSArray class]] || syncedPopups.count == 0) return remote;
+
+    NSMutableArray<WPIAMMessageDefinition *> *merged = [NSMutableArray arrayWithArray:remote];
+    for (id item in syncedPopups) {
+        if (![item isKindOfClass:[NSDictionary class]]) continue;
+        NSDictionary *popup = (NSDictionary *)item;
+        // Exclude soft-delete tombstones and expired items (mirrors JS main.ts:291).
+        if ([popup[@"status"] isEqual:@"deleted"]) continue;
+        id exp = popup[@"expirationDate"];
+        if ([exp isKindOfClass:[NSNumber class]] && [exp longLongValue] < now) continue;
+        id campaignDict = popup[@"data"];
+        if (![campaignDict isKindOfClass:[NSDictionary class]]) continue;
+        WPIAMMessageDefinition *def = [WPIAMFetchResponseParser convertToMessageDefinitionWithCampaignDict:campaignDict];
+        if (def) [merged addObject:def];   // remote first, synced appended (no dedupe)
+    }
+    return [merged copy];
 }
 @end

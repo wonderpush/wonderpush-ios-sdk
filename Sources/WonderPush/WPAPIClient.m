@@ -20,6 +20,7 @@
 #import <WonderPushCommon/WPNSUtil.h>
 #import "WPAPIClient.h"
 #import "WPConfiguration.h"
+#import "WPSyncRequestObserver.h"
 #import "WPRequestVault.h"
 #import "WonderPush_private.h"
 #import <WonderPushCommon/WPLog.h>
@@ -129,11 +130,39 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     [self.requestVault restoreQueue];
 }
 
++ (NSString *)computeReachability {
+    WPConfiguration *config = [WPConfiguration sharedConfiguration];
+    if (!config.deviceToken.length) {
+        return @"optOut";
+    }
+    BOOL subscribed = config.notificationEnabled && config.cachedOsNotificationEnabled;
+    return subscribed ? @"optIn" : @"softOptOut";
+}
+
 - (NSDictionary *)decorateRequestParams:(WPRequest *)request
 {
     NSDictionary *params = request.params;
     // Add the sdk version
     params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WPInstallationCoreProperties getSDKVersionNumber] toParameters:params];
+    // Always add the current reachability state, live (never lags behind the last synced installation).
+    params = [[self class] addParameterIfNotPresent:@"_reachability" value:[WPBaseAPIClient computeReachability] toParameters:params];
+    // sdk-sync opportunistic injection (inert unless a sync observer is installed). Never overwrites
+    // existing keys, and the observer only returns params for POST /events and POST/PUT/PATCH
+    // /installation & /user.
+    id<WPSyncRequestObserver> syncObserver = [WPSyncHook observer];
+    if (!syncObserver) {
+        WPLogDebug(@"WPAPIClient: no sync observer installed, skipping opportunistic injection for %@ %@", request.method, request.resource);
+    }
+    if (syncObserver) {
+        NSDictionary *syncParams = [syncObserver prepareOutgoingParamsForPath:request.resource method:request.method];
+        if (syncParams.count > 0) {
+            NSMutableDictionary *merged = params ? [params mutableCopy] : [NSMutableDictionary new];
+            for (NSString *key in syncParams) {
+                if (merged[key] == nil) merged[key] = syncParams[key];
+            }
+            params = merged;
+        }
+    }
     return params;
 }
 
@@ -155,6 +184,12 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
         NSTimeInterval timeRequestStop = NSDate.date.timeIntervalSince1970;
         if ([response isKindOfClass:[NSDictionary class]]) {
             NSDictionary *responseJSON = (NSDictionary *)response;
+
+            // sdk-sync incoming interception (inert unless a sync observer is installed; best-effort).
+            id<WPSyncRequestObserver> syncObserver = [WPSyncHook observer];
+            if (syncObserver) {
+                [syncObserver consumeIncomingResponseForPath:request.resource method:request.method response:responseJSON];
+            }
 
             NSError *wpError = [WPUtil errorFromJSON:responseJSON];
             if (wpError) {
@@ -257,7 +292,9 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
     [self checkMethod:request];
 
-    WPLogDebug(@"Performing request: %@", request);
+    // request.description prints request.params, the pristine pre-decoration params — log the actual
+    // (possibly sdk-sync-decorated) params separately so opportunistic injection is observable.
+    WPLogDebug(@"Performing request: %@ with decorated params: %@", request, params);
 
     if ([@"POST" isEqualToString:method]) {
         [self POST:request.resource parameters:[params copy] success:success failure:failure];

@@ -1,0 +1,35 @@
+//
+//  WPSyncPopupsSource.h
+//  WonderPush
+//
+//  Copyright © 2026 WonderPush. All rights reserved.
+//
+// The `popups` source plug-in (issue .23). Ported from sync-popups.js. Registered with the WPSync
+// orchestrator under the name "popups". It is a PURE transformer: given the source's current stored
+// list and a synced payload, it returns the new list (multi-object full-reset / delta-merge via
+// WPSyncPopupsStore). The orchestrator owns persistence — it folds the result into the source's state
+// and saves under the response's captured profile — so this plug-in is stateless and never touches
+// storage or the profile.
+//
+// Unlike the contact store, the popups transforms need `now` (to prune expired items / tombstones).
+// It is supplied by an injectable block (default: [WPUtil getServerDate], the server-adjusted clock —
+// the iOS equivalent of the JS reference's Time.getRealTime()), so expiry is deterministic in tests.
+//
+// The synced popup list is read via WPSync.dataForSource:@"popups" by the in-app message engine (.27).
+
+#import <Foundation/Foundation.h>
+#import "WPSync.h"   // WPSyncSourcePlugin
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface WPSyncPopupsSource : NSObject <WPSyncSourcePlugin>
+
+/// Uses the server-adjusted clock ([WPUtil getServerDate]) for expiry.
+- (instancetype)init;
+
+/// Inject the clock (server-adjusted ms) used for expiry pruning. For tests.
+- (instancetype)initWithNowProvider:(long long (^)(void))nowProvider NS_DESIGNATED_INITIALIZER;
+
+@end
+
+NS_ASSUME_NONNULL_END

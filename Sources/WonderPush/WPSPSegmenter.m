@@ -16,6 +16,7 @@
 #import "WPJsonSyncInstallation.h"
 #import "WPConfiguration.h"
 #import "WonderPush_private.h"
+#import "WPSyncManager.h"
 
 @implementation WPSPSegmenterPresenceInfo
 
@@ -62,6 +63,9 @@
                                allEvents:events
                                presenceInfo:presenceInfo
                                lastAppOpenDate:(long long)(lastAppOpenDate.timeIntervalSince1970 * 1000)];
+    // Inject the synced contact object for `contact` segmentation criteria (nil when sync is off/absent).
+    id contact = [[WPSyncManager sharedManager] dataForSource:@"contact"];
+    if ([contact isKindOfClass:[NSDictionary class]]) data.contact = contact;
     return data;
 }
 
@@ -98,6 +102,16 @@
     return NO;
 }
 
++ (id)coerceToDateValue:(WPSPParsingContext *)context input:(id)input {
+    @try {
+        WPSPASTValueNodeParser parseDate = [WPSPDefaultValueNodeParser parseDate];
+        WPSPASTValueNode *node = parseDate(context, @"value", input);
+        return node.value;
+    } @catch (id ignored) {
+        return input;
+    }
+}
+
 @end
 
 @implementation WPSPInstallationVisitor
@@ -119,6 +133,14 @@
 
 - (id)visitFieldSource:(WPSPFieldSource *)dataSource {
     return [super visitFieldSource:dataSource withObject:self.event];
+}
+
+@end
+
+@implementation WPSPContactVisitor
+
+- (id)visitFieldSource:(WPSPFieldSource *)dataSource {
+    return [super visitFieldSource:dataSource withObject:(self.data.contact ?: @{})];
 }
 
 @end
@@ -242,12 +264,14 @@
     for (WPSPASTValueNode *value in node.values) {
         BOOL found = NO;
         id actualValue = [value accept:self];
+        BOOL isDateComparison = [value isKindOfClass:WPSPDateValueNode.class] || [value isKindOfClass:WPSPRelativeDateValueNode.class];
         if (actualValue == nil || [[NSNull null] isEqual:actualValue]) {
             if (dataSourceValues.count == 0) {
                 found = YES;
             }
         } else {
-            for (id dataSourceValue in dataSourceValues) {
+            for (id rawDataSourceValue in dataSourceValues) {
+                id dataSourceValue = isDateComparison ? [WPSPSegmenter coerceToDateValue:node.context input:rawDataSourceValue] : rawDataSourceValue;
                 if ([actualValue isEqual:dataSourceValue]) {
                     found = true;
                     break;
@@ -270,13 +294,15 @@
     }
     for (WPSPASTValueNode *value in node.values) {
         id actualValue = [value accept:self];
+        BOOL isDateComparison = [value isKindOfClass:WPSPDateValueNode.class] || [value isKindOfClass:WPSPRelativeDateValueNode.class];
         if (actualValue == nil || [[NSNull null] isEqual:actualValue]) {
             if (dataSourceValues.count == 0) {
                 if (_debug) WPLog(@"[%@] return true for %@", NSStringFromSelector(_cmd), dataSourceValues);
                 return @YES;
             }
         }
-        for (id dataSourceValue in dataSourceValues) {
+        for (id rawDataSourceValue in dataSourceValues) {
+            id dataSourceValue = isDateComparison ? [WPSPSegmenter coerceToDateValue:node.context input:rawDataSourceValue] : rawDataSourceValue;
             if ([actualValue isEqual:dataSourceValue]) {
                 if (_debug) WPLog(@"[%@] return true for %@", NSStringFromSelector(_cmd), dataSourceValues);
                 return @YES;
@@ -319,7 +345,9 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
     }
     BOOL result = NO;
     id actualValue = [node.value accept:self];
-    for (WPSPASTValueNode *dataSourceValue in dataSourceValues) {
+    BOOL isDateComparison = [node.value isKindOfClass:WPSPDateValueNode.class] || [node.value isKindOfClass:WPSPRelativeDateValueNode.class];
+    for (id rawDataSourceValue in dataSourceValues) {
+        id dataSourceValue = isDateComparison ? [WPSPSegmenter coerceToDateValue:node.context input:rawDataSourceValue] : rawDataSourceValue;
         @try {
             NSComparisonResult comparison = compareObjectOrThrow(dataSourceValue, actualValue);
             if (node.comparator == WPSPComparatorGt) {
@@ -353,11 +381,13 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
         WPLog(@"[%@] Unexpected dataSourceValues: %@", NSStringFromSelector(_cmd), dataSourceValues);
     }
     id actualValue = [node.value accept:self];
+    BOOL isDateComparison = [node.value isKindOfClass:WPSPDateValueNode.class] || [node.value isKindOfClass:WPSPRelativeDateValueNode.class];
     BOOL result = NO;
     if (actualValue == nil || [[NSNull null] isEqual:actualValue]) {
         result = dataSourceValues.count == 0 ? YES : NO;
     } else {
-        for (id dataSourceValue in dataSourceValues) {
+        for (id rawDataSourceValue in dataSourceValues) {
+            id dataSourceValue = isDateComparison ? [WPSPSegmenter coerceToDateValue:node.context input:rawDataSourceValue] : rawDataSourceValue;
             if (!dataSourceValue || [dataSourceValue isKindOfClass:NSNull.class]) continue;
             if (([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue]) || ([dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue])) {
                 if ([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue] && [dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue]) {
@@ -407,6 +437,12 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
         WPSPInstallationVisitor *installationVisitor = [[WPSPInstallationVisitor alloc] initWithData:self.data];
         id result = [node.child accept:installationVisitor];
         if (_debug) WPLog(@"[%@] return %@ for installation", NSStringFromSelector(_cmd), [result boolValue] ? @"true" : @"false");
+        return result;
+    }
+    if ([node.context.dataSource isKindOfClass:WPSPContactSource.class]) {
+        WPSPContactVisitor *contactVisitor = [[WPSPContactVisitor alloc] initWithData:self.data];
+        id result = [node.child accept:contactVisitor];
+        if (_debug) WPLog(@"[%@] return %@ for contact", NSStringFromSelector(_cmd), [result boolValue] ? @"true" : @"false");
         return result;
     }
     WPLog(@"[%@] return false for unsupported %@", NSStringFromSelector(_cmd), NSStringFromClass(node.context.dataSource.class));
@@ -600,6 +636,10 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
 }
 
 - (nonnull id)visitUserSource:(nonnull WPSPUserSource *)dataSource {
+    return @[];
+}
+
+- (nonnull id)visitContactSource:(nonnull WPSPContactSource *)dataSource {
     return @[];
 }
 

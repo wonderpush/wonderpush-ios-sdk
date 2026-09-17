@@ -30,6 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, readonly) NSArray<NSDictionary *> *allEvents;
 @property (nullable, readonly) WPSPSegmenterPresenceInfo *presenceInfo;
 @property (nonatomic, assign, readonly) long long lastAppOpenDate;
+/// The synced contact object (sdk-sync `contact` source), or nil. Consumed by `contact` segmentation
+/// criteria — a distinct namespace from installation/user. Injected after construction by
+/// forCurrentUser (readwrite so it can be set without changing the init signature / callers).
+@property (nonatomic, nullable) NSDictionary *contact;
 
 + (instancetype)forCurrentUser;
 - (instancetype)initWithInstallation:(NSDictionary *)installation allEvents:(NSArray<NSDictionary *> *)allEvents presenceInfo:(WPSPSegmenterPresenceInfo * _Nullable)presenceInfo lastAppOpenDate:(long long)lastAppOpenDate;
@@ -45,6 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithData:(WPSPSegmenterData *)data;
 
 - (BOOL)parsedSegmentMatchesInstallation:(WPSPASTCriterionNode *)parsedInstallationSegment;
+
+/// Coerces a raw field value (number, ISO8601/RFC3339 string, or anything else) to a unix timestamp
+/// in ms, the same way WPSPDefaultValueNodeParser's "date" parser does for `date` value nodes. Lets
+/// any field be compared against an explicit date value regardless of how it was stored, without
+/// relying on a naming convention. Values that can't be parsed as dates are returned unchanged, so
+/// the comparison simply won't match.
++ (id)coerceToDateValue:(WPSPParsingContext *)context input:(id)input;
 
 @end
 
@@ -67,6 +78,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, readonly) NSDictionary *event;
 
 - (instancetype)initWithData:(WPSPSegmenterData *)data event:(NSDictionary *)event;
+
+@end
+
+@interface WPSPContactVisitor : WPSPBaseVisitor
 
 @end
 

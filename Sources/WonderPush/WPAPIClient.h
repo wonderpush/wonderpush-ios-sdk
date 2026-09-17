@@ -44,6 +44,13 @@ FOUNDATION_EXPORT NSString * const WPOperationFailingURLResponseDataErrorKey;
 - (NSDictionary *)decorateRequestParams:(WPRequest *)request;
 
 /**
+ Computes the current reachability state (optIn/softOptOut/optOut), live from the device token and
+ notification-enabled state (app toggle + last-known OS check) — mirrors the logic behind the
+ installation's synced subscriptionStatus, but evaluated at request time so it can't lag behind it.
+ */
++ (NSString *)computeReachability;
+
+/**
  Performs the given request in an authenticated manner, immediately. Upon network error, save this request and try again later,
  even after application restart.
 
