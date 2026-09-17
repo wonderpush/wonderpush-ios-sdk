@@ -50,6 +50,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)parsedSegmentMatchesInstallation:(WPSPASTCriterionNode *)parsedInstallationSegment;
 
+/// Coerces a raw field value (number, ISO8601/RFC3339 string, or anything else) to a unix timestamp
+/// in ms, the same way WPSPDefaultValueNodeParser's "date" parser does for `date` value nodes. Lets
+/// any field be compared against an explicit date value regardless of how it was stored, without
+/// relying on a naming convention. Values that can't be parsed as dates are returned unchanged, so
+/// the comparison simply won't match.
++ (id)coerceToDateValue:(WPSPParsingContext *)context input:(id)input;
+
 @end
 
 @interface WPSPBaseVisitor : NSObject <WPSPASTCriterionVisitor, WPSPASTValueVisitor, WPSPDataSourceVisitor>

@@ -102,6 +102,16 @@
     return NO;
 }
 
++ (id)coerceToDateValue:(WPSPParsingContext *)context input:(id)input {
+    @try {
+        WPSPASTValueNodeParser parseDate = [WPSPDefaultValueNodeParser parseDate];
+        WPSPASTValueNode *node = parseDate(context, @"value", input);
+        return node.value;
+    } @catch (id ignored) {
+        return input;
+    }
+}
+
 @end
 
 @implementation WPSPInstallationVisitor
@@ -254,12 +264,14 @@
     for (WPSPASTValueNode *value in node.values) {
         BOOL found = NO;
         id actualValue = [value accept:self];
+        BOOL isDateComparison = [value isKindOfClass:WPSPDateValueNode.class] || [value isKindOfClass:WPSPRelativeDateValueNode.class];
         if (actualValue == nil || [[NSNull null] isEqual:actualValue]) {
             if (dataSourceValues.count == 0) {
                 found = YES;
             }
         } else {
-            for (id dataSourceValue in dataSourceValues) {
+            for (id rawDataSourceValue in dataSourceValues) {
+                id dataSourceValue = isDateComparison ? [WPSPSegmenter coerceToDateValue:node.context input:rawDataSourceValue] : rawDataSourceValue;
                 if ([actualValue isEqual:dataSourceValue]) {
                     found = true;
                     break;
@@ -282,13 +294,15 @@
     }
     for (WPSPASTValueNode *value in node.values) {
         id actualValue = [value accept:self];
+        BOOL isDateComparison = [value isKindOfClass:WPSPDateValueNode.class] || [value isKindOfClass:WPSPRelativeDateValueNode.class];
         if (actualValue == nil || [[NSNull null] isEqual:actualValue]) {
             if (dataSourceValues.count == 0) {
                 if (_debug) WPLog(@"[%@] return true for %@", NSStringFromSelector(_cmd), dataSourceValues);
                 return @YES;
             }
         }
-        for (id dataSourceValue in dataSourceValues) {
+        for (id rawDataSourceValue in dataSourceValues) {
+            id dataSourceValue = isDateComparison ? [WPSPSegmenter coerceToDateValue:node.context input:rawDataSourceValue] : rawDataSourceValue;
             if ([actualValue isEqual:dataSourceValue]) {
                 if (_debug) WPLog(@"[%@] return true for %@", NSStringFromSelector(_cmd), dataSourceValues);
                 return @YES;
@@ -331,7 +345,9 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
     }
     BOOL result = NO;
     id actualValue = [node.value accept:self];
-    for (WPSPASTValueNode *dataSourceValue in dataSourceValues) {
+    BOOL isDateComparison = [node.value isKindOfClass:WPSPDateValueNode.class] || [node.value isKindOfClass:WPSPRelativeDateValueNode.class];
+    for (id rawDataSourceValue in dataSourceValues) {
+        id dataSourceValue = isDateComparison ? [WPSPSegmenter coerceToDateValue:node.context input:rawDataSourceValue] : rawDataSourceValue;
         @try {
             NSComparisonResult comparison = compareObjectOrThrow(dataSourceValue, actualValue);
             if (node.comparator == WPSPComparatorGt) {
@@ -365,11 +381,13 @@ NSComparisonResult compareObjectOrThrow(id a, id b) {
         WPLog(@"[%@] Unexpected dataSourceValues: %@", NSStringFromSelector(_cmd), dataSourceValues);
     }
     id actualValue = [node.value accept:self];
+    BOOL isDateComparison = [node.value isKindOfClass:WPSPDateValueNode.class] || [node.value isKindOfClass:WPSPRelativeDateValueNode.class];
     BOOL result = NO;
     if (actualValue == nil || [[NSNull null] isEqual:actualValue]) {
         result = dataSourceValues.count == 0 ? YES : NO;
     } else {
-        for (id dataSourceValue in dataSourceValues) {
+        for (id rawDataSourceValue in dataSourceValues) {
+            id dataSourceValue = isDateComparison ? [WPSPSegmenter coerceToDateValue:node.context input:rawDataSourceValue] : rawDataSourceValue;
             if (!dataSourceValue || [dataSourceValue isKindOfClass:NSNull.class]) continue;
             if (([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue]) || ([dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue])) {
                 if ([actualValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:actualValue] && [dataSourceValue isKindOfClass:NSNumber.class] && [WPJsonUtil isBoolNumber:dataSourceValue]) {
