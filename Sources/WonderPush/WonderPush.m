@@ -2159,6 +2159,9 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
     if (!client) {
         client = [[WPMeasurementsApiClient alloc]
                   initWithClientId:clientId secret:clientSecret deviceId:[WPUtil deviceIdentifier]];
+        client.reachabilityProvider = ^NSString * _Nullable {
+            return [WPBaseAPIClient computeReachability];
+        };
         clients[clientId] = client;
     }
     return client;

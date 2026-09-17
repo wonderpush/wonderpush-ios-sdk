@@ -48,3 +48,4 @@
 {"id":"int-e2a7146a","kind":"field_change","created_at":"2026-08-25T14:27:36.89622Z","actor":"Stéphane JAIS","issue_id":"wonderpush-ios-sdk-i2x.34","extra":{"field":"status","new_value":"in_progress","old_value":"open"}}
 {"id":"int-5690ef54","kind":"field_change","created_at":"2026-08-25T14:31:35.30125Z","actor":"Stéphane JAIS","issue_id":"wonderpush-ios-sdk-i2x.34","extra":{"field":"status","new_value":"closed","old_value":"in_progress"}}
 {"id":"int-d9d4af22","kind":"field_change","created_at":"2026-09-17T08:50:01.719443Z","actor":"Stéphane JAIS","issue_id":"wonderpush-ios-sdk-1ow","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Ported; all 304 tests pass"}}
+{"id":"int-20bbf395","kind":"field_change","created_at":"2026-09-17T09:05:46.512284Z","actor":"Stéphane JAIS","issue_id":"wonderpush-ios-sdk-y5e","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Ported; 308 tests pass (4 new)"}}

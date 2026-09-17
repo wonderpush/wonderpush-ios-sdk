@@ -130,11 +130,22 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
     [self.requestVault restoreQueue];
 }
 
++ (NSString *)computeReachability {
+    WPConfiguration *config = [WPConfiguration sharedConfiguration];
+    if (!config.deviceToken.length) {
+        return @"optOut";
+    }
+    BOOL subscribed = config.notificationEnabled && config.cachedOsNotificationEnabled;
+    return subscribed ? @"optIn" : @"softOptOut";
+}
+
 - (NSDictionary *)decorateRequestParams:(WPRequest *)request
 {
     NSDictionary *params = request.params;
     // Add the sdk version
     params = [[self class] addParameterIfNotPresent:@"sdkVersion" value:[WPInstallationCoreProperties getSDKVersionNumber] toParameters:params];
+    // Always add the current reachability state, live (never lags behind the last synced installation).
+    params = [[self class] addParameterIfNotPresent:@"_reachability" value:[WPBaseAPIClient computeReachability] toParameters:params];
     // sdk-sync opportunistic injection (inert unless a sync observer is installed). Never overwrites
     // existing keys, and the observer only returns params for POST /events and POST/PUT/PATCH
     // /installation & /user.

@@ -88,6 +88,7 @@
 		FACE0000000000000000006A /* WPSyncTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000069 /* WPSyncTests.m */; };
 		FACE00000000000000000064 /* WPSyncFetcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000063 /* WPSyncFetcherTests.m */; };
 		FACE0000000000000000005E /* WPSyncOutgoingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000005D /* WPSyncOutgoingTests.m */; };
+		FACE00000000000000000092 /* WPAPIClientReachabilityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000091 /* WPAPIClientReachabilityTests.m */; };
 		FACE0000000000000000005C /* WPSyncMutexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000005B /* WPSyncMutexTests.m */; };
 		FACE00000000000000000052 /* WPSyncKnobsProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000051 /* WPSyncKnobsProviderTests.m */; };
 		FACE0000000000000000004C /* WPSyncStateStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000004B /* WPSyncStateStoreTests.m */; };
@@ -574,6 +575,7 @@
 		FACE00000000000000000069 /* WPSyncTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000063 /* WPSyncFetcherTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncFetcherTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000005D /* WPSyncOutgoingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncOutgoingTests.m; sourceTree = "<group>"; };
+		FACE00000000000000000091 /* WPAPIClientReachabilityTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPAPIClientReachabilityTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000005B /* WPSyncMutexTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncMutexTests.m; sourceTree = "<group>"; };
 		FACE00000000000000000051 /* WPSyncKnobsProviderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncKnobsProviderTests.m; sourceTree = "<group>"; };
 		FACE0000000000000000004B /* WPSyncStateStoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPSyncStateStoreTests.m; sourceTree = "<group>"; };
@@ -997,6 +999,7 @@
 				FACE00000000000000000069 /* WPSyncTests.m */,
 				FACE00000000000000000063 /* WPSyncFetcherTests.m */,
 				FACE0000000000000000005D /* WPSyncOutgoingTests.m */,
+				FACE00000000000000000091 /* WPAPIClientReachabilityTests.m */,
 				FACE0000000000000000005B /* WPSyncMutexTests.m */,
 				FACE00000000000000000051 /* WPSyncKnobsProviderTests.m */,
 				FACE0000000000000000004B /* WPSyncStateStoreTests.m */,
@@ -2073,6 +2076,7 @@
 				FACE0000000000000000006A /* WPSyncTests.m in Sources */,
 				FACE00000000000000000064 /* WPSyncFetcherTests.m in Sources */,
 				FACE0000000000000000005E /* WPSyncOutgoingTests.m in Sources */,
+				FACE00000000000000000092 /* WPAPIClientReachabilityTests.m in Sources */,
 				FACE0000000000000000005C /* WPSyncMutexTests.m in Sources */,
 				FACE00000000000000000052 /* WPSyncKnobsProviderTests.m in Sources */,
 				FACE0000000000000000004C /* WPSyncStateStoreTests.m in Sources */,
