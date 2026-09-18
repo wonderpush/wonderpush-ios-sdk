@@ -34,6 +34,7 @@
     if (self.triggerFetch != nil) dict[@"triggerFetch"] = self.triggerFetch;
     if (self.fetchHint != nil) dict[@"fetchHint"] = [self.fetchHint toDictionary];
     if (self.continuePaging) dict[@"continuePaging"] = @YES;
+    if (self.syncAfterTime != nil) dict[@"syncAfterTime"] = self.syncAfterTime;
     return dict;
 }
 

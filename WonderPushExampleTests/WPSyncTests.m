@@ -55,6 +55,7 @@ static const long long kNow = 1000000;
     FakeFetching *_fetcher;
     WPSync *_sync;
     WPSyncKnobs *_knobs;
+    double _lastSchedulerDelayMs;
 }
 
 - (void)setUp {
@@ -68,6 +69,13 @@ static const long long kNow = 1000000;
     _sync.identifiersProvider = ^NSDictionary *{ return @{@"userId": @"alice", @"deviceId": @"D1", @"installationId": @"I1"}; };
     _sync.knobsProvider = ^WPSyncKnobs *{ typeof(self) s = ws; return s->_knobs; };
     _sync.nowProvider = ^long long{ return kNow; };
+    // Deterministic: run scheduled work synchronously and record the requested delay instead of
+    // actually sleeping.
+    _sync.scheduler = ^(double delayMs, dispatch_block_t block) {
+        typeof(self) s = ws;
+        if (s) s->_lastSchedulerDelayMs = delayMs;
+        block();
+    };
 }
 
 - (void)tearDown { [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:kSuite]; }
@@ -204,6 +212,60 @@ static const long long kNow = 1000000;
     [self save:s source:@"contact"];
     XCTAssertEqualObjects([_sync dataForSource:@"contact"], (@{@"firstName": @"Alice"}));
     XCTAssertNil([_sync dataForSource:@"user"]);
+}
+
+#pragma mark - syncAfterTime (CP-56 "Late identifier resolution")
+
+- (void)testSyncAfterTimeSchedulesAndFiresNonWeakExplicitFetchWithNoHint {
+    [_sync registerSource:@"contact" plugin:nil];
+    [_sync consumeIncomingResponseForPath:@"/events" method:@"POST" response:@{
+        @"_contactSync": @{@"syncAfterTime": @5000},
+    }];
+    XCTAssertEqualWithAccuracy(_lastSchedulerDelayMs, 5000.0, 0.001);
+    // The synchronous test scheduler fires immediately: the fetch already happened, non-weak, no hint.
+    XCTAssertEqual(_fetcher.callCount, 1);
+    XCTAssertEqualObjects(_fetcher.lastSource, @"contact");
+    XCTAssertFalse(_fetcher.lastWeak);
+    XCTAssertNil(_fetcher.lastHint);
+    // The due date is cleared once the scheduled fetch has fired.
+    XCTAssertEqual([self state:@"contact"].syncAfterTimeDueDate, 0LL);
+}
+
+- (void)testSyncAfterTimeIsAdditiveAlongsideARejectedStalePayload {
+    WPSyncSourceState *s = [WPSyncSourceState emptyState]; s.lastVersion = 100; s.lastVersionId = @"v100"; s.lastReadDate = 1000;
+    [self save:s source:@"contact"];
+    [_sync registerSource:@"contact" plugin:nil];
+    [_sync consumeIncomingResponseForPath:@"/events" method:@"POST" response:@{
+        // Stale payload (lower version) alongside syncAfterTime: the payload is dropped, but the
+        // extra explicit sync must still be scheduled.
+        @"_contactSync": @{@"syncAfterTime": @5000, @"version": @1, @"versionId": @"v1", @"readDate": @1, @"data": @{@"x": @1}},
+    }];
+    XCTAssertEqualWithAccuracy(_lastSchedulerDelayMs, 5000.0, 0.001);
+    XCTAssertEqual(_fetcher.callCount, 1);
+    XCTAssertFalse(_fetcher.lastWeak);
+}
+
+- (void)testSyncAfterTimeCoalescesRepeatedHintsToEarliestDueDate {
+    [_sync registerSource:@"contact" plugin:nil];
+    // First hint: due at kNow + 5000.
+    [_sync consumeIncomingResponseForPath:@"/events" method:@"POST" response:@{@"_contactSync": @{@"syncAfterTime": @5000}}];
+    XCTAssertEqual(_fetcher.callCount, 1);   // synchronous scheduler already fired + cleared the due date
+    // A later, larger hint must not push the (already-fired) due date later — it schedules its own
+    // fresh due date from "now", since nothing remains scheduled.
+    _fetcher.callCount = 0;
+    [_sync consumeIncomingResponseForPath:@"/events" method:@"POST" response:@{@"_contactSync": @{@"syncAfterTime": @9000}}];
+    XCTAssertEqualWithAccuracy(_lastSchedulerDelayMs, 9000.0, 0.001);
+    XCTAssertEqual(_fetcher.callCount, 1);
+}
+
+- (void)testSyncAfterTimeRearmsFromPersistedDueDateOnRegister {
+    WPSyncSourceState *s = [WPSyncSourceState emptyState]; s.syncAfterTimeDueDate = kNow + 3000;
+    [self save:s source:@"contact"];
+    [_sync registerSource:@"contact" plugin:nil];   // rearm-on-register, synchronous test scheduler fires it
+    XCTAssertEqualWithAccuracy(_lastSchedulerDelayMs, 3000.0, 0.001);
+    XCTAssertEqual(_fetcher.callCount, 1);
+    XCTAssertFalse(_fetcher.lastWeak);
+    XCTAssertEqual([self state:@"contact"].syncAfterTimeDueDate, 0LL);
 }
 
 @end

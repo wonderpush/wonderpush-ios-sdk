@@ -167,6 +167,16 @@ static id _Nullable orNil(id _Nullable v) { return (v == nil || v == [NSNull nul
     }
 }
 
+- (void)testVectorsCoalesceSyncAfterTimeDueDate {
+    for (NSDictionary *c in [self casesOf:@"coalesce-sync-after-time-due-date.vectors.json"]) {
+        NSDictionary *in = c[@"input"];
+        long long r = [WPSyncFetchPolicy coalesceSyncAfterTimeDueDateAtNow:[in[@"now"] longLongValue]
+                                                                    delayMs:[in[@"delayMs"] doubleValue]
+                                                            existingDueDate:[orNil(in[@"existingDueDate"]) longLongValue]];
+        XCTAssertEqual(r, [c[@"expected"] longLongValue], @"%@", c[@"name"]);
+    }
+}
+
 #pragma mark - knobs merge / staleness
 
 - (void)testVectorsMergeKnobs {

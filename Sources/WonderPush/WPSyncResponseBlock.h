@@ -46,6 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) id knownVersionId;   // NSNumber | NSString | NSNull
 @property (nonatomic, readonly, nullable) NSNumber *knownReadDate;
 
+/// Duration in MILLISECONDS (CP-56 — "Late identifier resolution"): the server asks for one
+/// additional explicit sync after this delay, e.g. because a Web/mobile install holds a Visitor ID
+/// but no Contact ID yet and the server is retrying that lookup under its own backoff. Carries no
+/// `meta` and confirms nothing about the source — see WPSyncProcessor and WPSyncDecision.syncAfterTime.
+@property (nonatomic, readonly, nullable) NSNumber *syncAfterTime;
+
 @end
 
 NS_ASSUME_NONNULL_END

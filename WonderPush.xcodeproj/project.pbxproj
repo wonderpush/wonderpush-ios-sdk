@@ -224,6 +224,7 @@
 		FACE00000000000000000042 /* process-source-block.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000041 /* process-source-block.vectors.json */; };
 		FACE00000000000000000044 /* should-debounce-weak-signal.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000043 /* should-debounce-weak-signal.vectors.json */; };
 		FACE00000000000000000046 /* should-rate-limit-source.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000045 /* should-rate-limit-source.vectors.json */; };
+		FACE00000000000000000094 /* coalesce-sync-after-time-due-date.vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000093 /* coalesce-sync-after-time-due-date.vectors.json */; };
 		9998CAA0221C74890028D955 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A189379F19C9E0D300F91DDD /* SystemConfiguration.framework */; };
 		9998CAA1221C74930028D955 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937WPAF19CAEC0700F91DDD /* CoreGraphics.framework */; };
 		9998CAA2221C74980028D955 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18937B119CB018F00F91DDD /* UIKit.framework */; };
@@ -719,6 +720,7 @@
 		FACE00000000000000000041 /* process-source-block.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/process-source-block.vectors.json"; sourceTree = "<group>"; };
 		FACE00000000000000000043 /* should-debounce-weak-signal.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/should-debounce-weak-signal.vectors.json"; sourceTree = "<group>"; };
 		FACE00000000000000000045 /* should-rate-limit-source.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/should-rate-limit-source.vectors.json"; sourceTree = "<group>"; };
+		FACE00000000000000000093 /* coalesce-sync-after-time-due-date.vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sync-conformance/coalesce-sync-after-time-due-date.vectors.json"; sourceTree = "<group>"; };
 		99885AED22156F92002CA269 /* WPNetworkReachabilityManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPNetworkReachabilityManager.h; sourceTree = "<group>"; };
 		99885AEE22156F92002CA269 /* WPNetworkReachabilityManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WPNetworkReachabilityManager.m; sourceTree = "<group>"; };
 		99885AF122157F98002CA269 /* WPRequestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WPRequestSerializer.h; sourceTree = "<group>"; };
@@ -1025,6 +1027,7 @@
 				FACE00000000000000000041 /* process-source-block.vectors.json */,
 				FACE00000000000000000043 /* should-debounce-weak-signal.vectors.json */,
 				FACE00000000000000000045 /* should-rate-limit-source.vectors.json */,
+				FACE00000000000000000093 /* coalesce-sync-after-time-due-date.vectors.json */,
 				995F14E924AA493600CC499E /* WPSPISO8601DurationTests.m */,
 				99EE9ACB24AF5BBB00EC2A28 /* WPSPGeohashTests.m */,
 				99ED541524B3308F00EECDE0 /* WPSPParsingContextTests.m */,
@@ -1948,6 +1951,7 @@
 				FACE00000000000000000042 /* process-source-block.vectors.json in Resources */,
 				FACE00000000000000000044 /* should-debounce-weak-signal.vectors.json in Resources */,
 				FACE00000000000000000046 /* should-rate-limit-source.vectors.json in Resources */,
+				FACE00000000000000000094 /* coalesce-sync-after-time-due-date.vectors.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

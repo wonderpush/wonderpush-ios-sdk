@@ -40,6 +40,17 @@ FOUNDATION_EXPORT NSString * _Nullable WPSyncExplicitPathForSource(NSString *sou
                                          rand:(double)rand
                                         knobs:(WPSyncKnobs *)knobs;
 
+/// Coalesce a freshly-received `syncAfterTime` hint (CP-56 — "Late identifier resolution") into the
+/// due date the SDK should schedule its one extra explicit sync for.
+///
+/// The server re-emits the hint on every opportunistic call until the explicit call lands (expected,
+/// not a bug) — so repeated hints must coalesce to the EARLIEST due time already scheduled, never
+/// pushed later by a subsequent hint. If nothing is scheduled yet (`existingDueDate` is 0), or the
+/// existing due date has already passed, the fresh hint wins.
++ (long long)coalesceSyncAfterTimeDueDateAtNow:(long long)now
+                                       delayMs:(double)delayMs
+                               existingDueDate:(long long)existingDueDate;
+
 /// Query params for an explicit fetch (algorithm.md:271-279): the 3 non-userId identifiers + the
 /// source's sync state at the top level (no `_<source>Sync.` prefix). `userId` is added elsewhere.
 /// `lastSyncMeta` is JSON-encoded; `lastSyncMeta`/`lastVersionId` omitted when nil. When `hint` is

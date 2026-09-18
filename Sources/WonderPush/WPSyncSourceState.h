@@ -35,6 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) long long lastFetchAttemptedDate;
 /// Local: consecutive failures, drives exponential backoff.
 @property (nonatomic, assign) NSInteger lastFetchUnsuccessfulAttemptCount;
+/// Local: due date (ms epoch) of the one extra explicit sync requested via `syncAfterTime`
+/// (CP-56 — "Late identifier resolution"). 0 means none scheduled. Never sent to the server;
+/// repeated hints coalesce to the earliest due time (see WPSyncFetchPolicy's coalesce helper).
+@property (nonatomic, assign) long long syncAfterTimeDueDate;
 /// Source-owned payload: NSDictionary (single-object), NSArray (multi-object), or nil.
 @property (nonatomic, strong, nullable) id data;
 

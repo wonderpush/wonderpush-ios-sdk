@@ -22,7 +22,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -45,7 +46,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -70,7 +72,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "explicit"
       },
@@ -97,7 +100,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -114,7 +118,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         }
       }
     },
@@ -142,7 +147,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -162,7 +168,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         }
       }
     },
@@ -190,7 +197,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -210,7 +218,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         }
       }
     },
@@ -238,7 +247,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -266,7 +276,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -285,7 +296,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         }
       }
     },
@@ -310,7 +322,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "explicit"
       },
@@ -327,7 +340,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         }
       }
     },
@@ -351,7 +365,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -378,7 +393,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -395,7 +411,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         }
       }
     },
@@ -420,7 +437,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -454,7 +472,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -479,7 +498,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -517,7 +537,8 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         },
         "mode": "opportunistic"
       },
@@ -537,8 +558,95 @@
           "lastFetchUnsuccessfulAttemptCount": 0,
           "data": {
             "firstName": "Alice"
-          }
+          },
+          "syncAfterTimeDueDate": 0
         }
+      }
+    },
+    {
+      "name": "syncAfterTime-only block is NOT empty -> no immediate fetch, delay surfaced",
+      "input": {
+        "block": {
+          "syncAfterTime": 30000
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 0,
+          "lastSyncMeta": null,
+          "lastVersion": 0,
+          "lastVersionId": null,
+          "lastReadDate": 0,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "syncAfterTimeDueDate": 0,
+          "data": null
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "syncAfterTime": 30000
+      }
+    },
+    {
+      "name": "syncAfterTime surfaced with no state mutation",
+      "input": {
+        "block": {
+          "syncAfterTime": 5000
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "syncAfterTimeDueDate": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "syncAfterTime": 5000
+      }
+    },
+    {
+      "name": "syncAfterTime survives a rejected stale payload in the same block",
+      "input": {
+        "block": {
+          "syncAfterTime": 5000,
+          "version": 50,
+          "versionId": "v50",
+          "readDate": 10,
+          "data": {
+            "x": 1
+          }
+        },
+        "serverTime": null,
+        "state": {
+          "lastSyncDate": 5000,
+          "lastSyncMeta": {
+            "m": 1
+          },
+          "lastVersion": 100,
+          "lastVersionId": "v100",
+          "lastReadDate": 1000,
+          "lastFetchAttemptedDate": 0,
+          "lastFetchUnsuccessfulAttemptCount": 0,
+          "syncAfterTimeDueDate": 0,
+          "data": {
+            "firstName": "Alice"
+          }
+        },
+        "mode": "opportunistic"
+      },
+      "expected": {
+        "syncAfterTime": 5000
       }
     }
   ]

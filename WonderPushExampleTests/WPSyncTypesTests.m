@@ -36,7 +36,7 @@
 
 - (void)testEmptyStateSerializesAllKeysWithNullForNullables {
     NSDictionary *d = [[WPSyncSourceState emptyState] toDictionary];
-    XCTAssertEqual(d.count, (NSUInteger)8);
+    XCTAssertEqual(d.count, (NSUInteger)9);
     XCTAssertEqualObjects(d[@"lastSyncMeta"], [NSNull null]);
     XCTAssertEqualObjects(d[@"lastVersionId"], [NSNull null]);
     XCTAssertEqualObjects(d[@"data"], [NSNull null]);
@@ -47,6 +47,7 @@
         @"lastSyncDate": @5000, @"lastSyncMeta": @{@"m": @1},
         @"lastVersion": @100, @"lastVersionId": @"v100", @"lastReadDate": @1000,
         @"lastFetchAttemptedDate": @0, @"lastFetchUnsuccessfulAttemptCount": @0,
+        @"syncAfterTimeDueDate": @0,
         @"data": @{@"firstName": @"Alice"},
     };
     WPSyncSourceState *s = [WPSyncSourceState stateWithDictionary:in];

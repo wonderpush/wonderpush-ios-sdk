@@ -12,7 +12,11 @@
     },
     "processSourceBlock": {
       "file": "process-source-block.vectors.json",
-      "cases": 15
+      "cases": 18
+    },
+    "coalesceSyncAfterTimeDueDate": {
+      "file": "coalesce-sync-after-time-due-date.vectors.json",
+      "cases": 7
     },
     "classifyResponse": {
       "file": "classify-response.vectors.json",

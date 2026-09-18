@@ -12,3 +12,13 @@ and committed there.
 
 Regenerate upstream with: GEN_CONFORMANCE=1 npx jest sync-conformance-gen (in wonderpush-javascript-sdk)
 A non-empty diff after re-vendoring means the reference behavior changed; update the spec + all SDK ports in lockstep.
+
+Patched 2026-09-18 for CP-56 "Late identifier resolution" (syncAfterTime), ported from
+wonderpush-javascript-sdk commit 93e49c7b2ac13fcacd262306b06ed378c527e929: added
+coalesce-sync-after-time-due-date.vectors.json (new file, 7 cases) and 3 new cases to
+process-source-block.vectors.json (18 total), plus the syncAfterTimeDueDate:0 field on every
+state/newState struct in that file. Hand-applied on top of the still-unreconciled 2026-07-01
+"/v1/sync/{source}" re-vendoring (see above) rather than a full regeneration from the JS repo's
+current HEAD, which also carries an unrelated accessToken-opportunistic-sync change (CP-56 ticket,
+different feature) not in scope here — classify-response.vectors.json and is-state-stale.vectors.json
+were deliberately left untouched.

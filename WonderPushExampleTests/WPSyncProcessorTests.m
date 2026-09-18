@@ -34,6 +34,7 @@ static NSDictionary *M(NSDictionary *base, NSDictionary *overrides) {
         @"lastSyncDate": @5000, @"lastSyncMeta": @{@"m": @1},
         @"lastVersion": @100, @"lastVersionId": @"v100", @"lastReadDate": @1000,
         @"lastFetchAttemptedDate": @0, @"lastFetchUnsuccessfulAttemptCount": @0,
+        @"syncAfterTimeDueDate": @0,
         @"data": @{@"firstName": @"Alice"},
     };
 }
@@ -166,6 +167,31 @@ static NSDictionary *M(NSDictionary *base, NSDictionary *overrides) {
            expects:@{@"applyData": @{@"x": @1},
                      @"newState": M(_base, @{@"lastVersion": @200, @"lastVersionId": @"v200", @"lastReadDate": @2000})}
               name:@"head hint vs just-updated version"];
+}
+
+#pragma mark - syncAfterTime (CP-56 "Late identifier resolution")
+
+- (void)testSyncAfterTimeOnlyBlockNotEmpty {
+    // A block carrying only syncAfterTime must NOT be misread as {} (which would trigger an immediate
+    // weak fetch instead of the requested delay).
+    NSDictionary *empty = @{
+        @"lastSyncDate": @0, @"lastSyncMeta": [NSNull null], @"lastVersion": @0, @"lastVersionId": [NSNull null],
+        @"lastReadDate": @0, @"lastFetchAttemptedDate": @0, @"lastFetchUnsuccessfulAttemptCount": @0,
+        @"syncAfterTimeDueDate": @0, @"data": [NSNull null],
+    };
+    [self runBlock:@{@"syncAfterTime": @30000} serverTime:[NSNull null] mode:@"opportunistic" state:empty
+           expects:@{@"syncAfterTime": @30000} name:@"syncAfterTime-only block is not empty"];
+}
+
+- (void)testSyncAfterTimeSurfacedWithNoStateMutation {
+    [self runBlock:@{@"syncAfterTime": @5000} serverTime:[NSNull null] mode:@"opportunistic" state:_base
+           expects:@{@"syncAfterTime": @5000} name:@"syncAfterTime surfaced with no state mutation"];
+}
+
+- (void)testSyncAfterTimeSurvivesRejectedStalePayload {
+    [self runBlock:@{@"syncAfterTime": @5000, @"version": @50, @"versionId": @"v50", @"readDate": @10, @"data": @{@"x": @1}}
+        serverTime:[NSNull null] mode:@"opportunistic" state:_base
+           expects:@{@"syncAfterTime": @5000} name:@"syncAfterTime survives a rejected stale payload"];
 }
 
 @end

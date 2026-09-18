@@ -52,6 +52,14 @@ static BOOL nWPSyncNonEmptyString(id value) {
     return capped * (1 + rand * knobs.exponentialBackoffJitterRatio);
 }
 
++ (long long)coalesceSyncAfterTimeDueDateAtNow:(long long)now
+                                       delayMs:(double)delayMs
+                               existingDueDate:(long long)existingDueDate {
+    long long candidate = now + (long long)MAX(0.0, delayMs);
+    if (existingDueDate > now && existingDueDate <= candidate) return existingDueDate;
+    return candidate;
+}
+
 + (NSDictionary *)buildExplicitFetchParamsWithIdentifiers:(NSDictionary *)identifiers
                                                     state:(WPSyncSourceState *)state
                                                      hint:(WPSyncFetchHint *)hint {

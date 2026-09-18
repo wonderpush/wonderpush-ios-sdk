@@ -36,7 +36,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         recognized = @[@"meta", @"version", @"versionId", @"readDate", @"data", @"delta",
-                       @"knownVersion", @"knownVersionId", @"knownReadDate"];
+                       @"knownVersion", @"knownVersionId", @"knownReadDate", @"syncAfterTime"];
     });
     for (NSString *key in recognized) {
         if ([self hasKey:key]) return NO;
@@ -53,6 +53,7 @@
 - (NSNumber *)readDate { return [self numberForKey:@"readDate"]; }
 - (NSNumber *)knownVersion { return [self numberForKey:@"knownVersion"]; }
 - (NSNumber *)knownReadDate { return [self numberForKey:@"knownReadDate"]; }
+- (NSNumber *)syncAfterTime { return [self numberForKey:@"syncAfterTime"]; }
 
 - (BOOL)hasVersionId { return [self hasKey:@"versionId"]; }
 - (id)versionId { return self.raw[@"versionId"]; }

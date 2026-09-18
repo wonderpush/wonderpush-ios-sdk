@@ -44,6 +44,7 @@ static long long WPSyncLongLong(NSDictionary *dict, NSString *key) {
     state.lastReadDate = WPSyncLongLong(dict, @"lastReadDate");
     state.lastFetchAttemptedDate = WPSyncLongLong(dict, @"lastFetchAttemptedDate");
     state.lastFetchUnsuccessfulAttemptCount = (NSInteger)WPSyncLongLong(dict, @"lastFetchUnsuccessfulAttemptCount");
+    state.syncAfterTimeDueDate = WPSyncLongLong(dict, @"syncAfterTimeDueDate");
     state.data = WPSyncValueOrNil(dict, @"data");
     return state;
 }
@@ -57,6 +58,7 @@ static long long WPSyncLongLong(NSDictionary *dict, NSString *key) {
         @"lastReadDate": @(self.lastReadDate),
         @"lastFetchAttemptedDate": @(self.lastFetchAttemptedDate),
         @"lastFetchUnsuccessfulAttemptCount": @(self.lastFetchUnsuccessfulAttemptCount),
+        @"syncAfterTimeDueDate": @(self.syncAfterTimeDueDate),
         @"data": self.data ?: [NSNull null],
     };
 }
@@ -89,6 +91,7 @@ static long long WPSyncLongLong(NSDictionary *dict, NSString *key) {
     copy.lastReadDate = self.lastReadDate;
     copy.lastFetchAttemptedDate = self.lastFetchAttemptedDate;
     copy.lastFetchUnsuccessfulAttemptCount = self.lastFetchUnsuccessfulAttemptCount;
+    copy.syncAfterTimeDueDate = self.syncAfterTimeDueDate;
     copy.data = self.data;
     return copy;
 }
@@ -102,6 +105,7 @@ static long long WPSyncLongLong(NSDictionary *dict, NSString *key) {
         && self.lastReadDate == other.lastReadDate
         && self.lastFetchAttemptedDate == other.lastFetchAttemptedDate
         && self.lastFetchUnsuccessfulAttemptCount == other.lastFetchUnsuccessfulAttemptCount
+        && self.syncAfterTimeDueDate == other.syncAfterTimeDueDate
         && WPSyncNilSafeEqual(self.lastSyncMeta, other.lastSyncMeta)
         && WPSyncNilSafeEqual(self.lastVersionId, other.lastVersionId)
         && WPSyncNilSafeEqual(self.data, other.data);
@@ -109,7 +113,7 @@ static long long WPSyncLongLong(NSDictionary *dict, NSString *key) {
 
 - (NSUInteger)hash {
     return (NSUInteger)(self.lastSyncDate ^ self.lastVersion ^ self.lastReadDate
-        ^ self.lastFetchAttemptedDate ^ self.lastFetchUnsuccessfulAttemptCount);
+        ^ self.lastFetchAttemptedDate ^ self.lastFetchUnsuccessfulAttemptCount ^ self.syncAfterTimeDueDate);
 }
 
 - (NSString *)description {

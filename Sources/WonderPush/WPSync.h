@@ -60,6 +60,11 @@ extern NSString * const WPSyncSourceDataDidChangeNotification;
 @property (nonatomic, copy) WPSyncKnobs *(^knobsProvider)(void);
 /// Current time in ms. Default: real wall clock.
 @property (nonatomic, copy) long long (^nowProvider)(void);
+/// Run `block` after `delayMs`, for the CP-56 "Late identifier resolution" syncAfterTime scheduling.
+/// Default: dispatch_after on a background queue. Overridable in tests. The block passed in is a
+/// cancellable dispatch_block_t (created internally); callers should not rely on the argument's
+/// identity beyond invoking it as scheduled.
+@property (nonatomic, copy) void (^scheduler)(double delayMs, dispatch_block_t block);
 
 - (void)registerSource:(NSString *)name plugin:(nullable id<WPSyncSourcePlugin>)plugin;
 - (NSArray<NSString *> *)registeredSources;

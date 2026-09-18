@@ -14,6 +14,7 @@
 #import "WPSyncResponseBlock.h"
 #import "WPSyncDecision.h"
 #import "WPSyncFetcher.h"   // WPSyncFetching
+#import "WPSyncFetchPolicy.h"
 #import <WonderPushCommon/WPLog.h>
 #import <math.h>
 
@@ -25,6 +26,10 @@ NSString * const WPSyncSourceDataDidChangeNotification = @"WPSyncSourceDataDidCh
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id> *sources;          // name -> plugin or NSNull
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSObject *> *procLocks; // name -> per-source lock
 @property (nonatomic, strong) NSLock *registryLock;
+// Live cancellable handles for the CP-56 "Late identifier resolution" syncAfterTime scheduling, keyed
+// by source name. Kept OUT of WPSyncSourceState: a live timer handle isn't persistable, only the due
+// date is (state.syncAfterTimeDueDate). Protected by registryLock.
+@property (nonatomic, strong) NSMutableDictionary<NSString *, dispatch_block_t> *syncAfterTimeTimers;
 @end
 
 @implementation WPSync
@@ -36,9 +41,15 @@ NSString * const WPSyncSourceDataDidChangeNotification = @"WPSyncSourceDataDidCh
         _sources = [NSMutableDictionary new];
         _procLocks = [NSMutableDictionary new];
         _registryLock = [NSLock new];
+        _syncAfterTimeTimers = [NSMutableDictionary new];
         _identifiersProvider = ^NSDictionary *{ return @{}; };
         _knobsProvider = ^WPSyncKnobs *{ return [WPSyncKnobs defaultKnobs]; };
         _nowProvider = ^long long{ return (long long)([[NSDate date] timeIntervalSince1970] * 1000.0); };
+        _scheduler = ^(double delayMs, dispatch_block_t block) {
+            if (delayMs <= 0) { block(); return; }
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayMs * NSEC_PER_MSEC)),
+                           dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block);
+        };
     }
     return self;
 }
@@ -50,6 +61,22 @@ NSString * const WPSyncSourceDataDidChangeNotification = @"WPSyncSourceDataDidCh
     self.sources[name] = plugin ?: (id)[NSNull null];
     if (!self.procLocks[name]) self.procLocks[name] = [NSObject new];
     [self.registryLock unlock];
+
+    // Rearm any syncAfterTime due date persisted from a previous session (CP-56 — "Late identifier
+    // resolution" must not lose the one scheduled extra explicit sync across app restarts).
+    // Best-effort: a missing deviceId at this point just means sync is a no-op for now.
+    @try {
+        NSDictionary *ids = [self currentValidIdentifiers];
+        if (ids == nil) return;
+        NSString *userId = ids[@"userId"], *deviceId = ids[@"deviceId"];
+        WPSyncSourceState *state = [self.stateStore loadSource:name userId:userId deviceId:deviceId];
+        if (state.syncAfterTimeDueDate > 0) {
+            [self armSyncAfterTimeTimerForSource:name dueDate:state.syncAfterTimeDueDate
+                                      identifiers:ids userId:userId deviceId:deviceId];
+        }
+    } @catch (NSException *e) {
+        WPLog(@"WPSync: registerSource syncAfterTime rearm failed for %@: %@", name, e);
+    }
 }
 
 - (NSArray<NSString *> *)registeredSources {
@@ -176,7 +203,91 @@ NSString * const WPSyncSourceDataDidChangeNotification = @"WPSyncSourceDataDidCh
                              weak:[decision.triggerFetch isEqualToString:@"weak"]
                              hint:decision.fetchHint completion:nil];
     }
+    if (decision.syncAfterTime != nil) {
+        // CP-56 "Late identifier resolution" — additive, never gated on the rest of this decision (in
+        // particular must still schedule even when the payload above was rejected as stale). Fire-and-
+        // forget, outside the lock, like the other triggers.
+        [self scheduleSyncAfterTime:source delayMs:[decision.syncAfterTime longLongValue]
+                         identifiers:ids userId:userId deviceId:deviceId];
+    }
     // decision.continuePaging (multi-object paging) is wired with the popups/inbox sources (.23/.24).
+}
+
+#pragma mark - syncAfterTime (CP-56 "Late identifier resolution")
+
+/// Schedule (or coalesce into an already-scheduled) the ONE extra explicit sync requested via
+/// `syncAfterTime`. Additive: never suppresses, postpones, or replaces any other sync trigger.
+/// Persists the due date so it survives a process restart; the in-memory timer is rearmed from that
+/// persisted value in registerSource.
+- (void)scheduleSyncAfterTime:(NSString *)source delayMs:(long long)delayMs
+                   identifiers:(NSDictionary *)ids userId:(NSString *)userId deviceId:(NSString *)deviceId {
+    @try {
+        long long dueDate;
+        @synchronized ([self procLockForSource:source]) {
+            WPSyncSourceState *state = [self.stateStore loadSource:source userId:userId deviceId:deviceId];
+            long long now = self.nowProvider();
+            dueDate = [WPSyncFetchPolicy coalesceSyncAfterTimeDueDateAtNow:now delayMs:(double)delayMs
+                                                             existingDueDate:state.syncAfterTimeDueDate];
+            if (dueDate != state.syncAfterTimeDueDate) {
+                state.syncAfterTimeDueDate = dueDate;
+                [self.stateStore saveState:state forSource:source userId:userId deviceId:deviceId];
+            }
+        }
+        [self armSyncAfterTimeTimerForSource:source dueDate:dueDate identifiers:ids userId:userId deviceId:deviceId];
+    } @catch (NSException *e) {
+        WPLog(@"WPSync: syncAfterTime scheduling failed for %@: %@", source, e);
+    }
+}
+
+/// (Re)arm the in-memory timer for a source's syncAfterTime due date, cancelling any previous timer
+/// for that source (repeated hints must not stack up parallel timers, or a superseded-but-still-live
+/// timer would fire a redundant extra fetch after an earlier-coalesced one already did).
+- (void)armSyncAfterTimeTimerForSource:(NSString *)source dueDate:(long long)dueDate
+                             identifiers:(NSDictionary *)ids userId:(NSString *)userId deviceId:(NSString *)deviceId {
+    [self.registryLock lock];
+    dispatch_block_t previous = self.syncAfterTimeTimers[source];
+    [self.syncAfterTimeTimers removeObjectForKey:source];
+    [self.registryLock unlock];
+    if (previous != nil) dispatch_block_cancel(previous);
+
+    if (dueDate <= 0) return;   // "nothing scheduled": only clears a pending timer
+
+    double delayMs = (double)(dueDate - self.nowProvider());
+    __weak typeof(self) weakSelf = self;
+    dispatch_block_t work = dispatch_block_create(0, ^{
+        typeof(self) self2 = weakSelf;
+        if (!self2) return;
+        [self2.registryLock lock];
+        [self2.syncAfterTimeTimers removeObjectForKey:source];
+        [self2.registryLock unlock];
+        [self2 fireSyncAfterTimeForSource:source expectedDueDate:dueDate identifiers:ids userId:userId deviceId:deviceId];
+    });
+    [self.registryLock lock];
+    self.syncAfterTimeTimers[source] = work;
+    [self.registryLock unlock];
+    self.scheduler(delayMs, work);
+}
+
+/// The scheduled extra explicit sync fires: clear the persisted due date (only if it's still the one
+/// we armed for — a newer, earlier hint may have coalesced to an earlier time and already fired and
+/// cleared it) and trigger a normal (non-weak, no hint) explicit fetch. Still subject to the
+/// per-source rate-limit floor via the fetcher's own gating — that's intentional (algorithm.md CP-56
+/// requirement).
+- (void)fireSyncAfterTimeForSource:(NSString *)source expectedDueDate:(long long)expectedDueDate
+                        identifiers:(NSDictionary *)ids userId:(NSString *)userId deviceId:(NSString *)deviceId {
+    @try {
+        @synchronized ([self procLockForSource:source]) {
+            WPSyncSourceState *state = [self.stateStore loadSource:source userId:userId deviceId:deviceId];
+            if (state.syncAfterTimeDueDate == expectedDueDate) {
+                state.syncAfterTimeDueDate = 0;
+                [self.stateStore saveState:state forSource:source userId:userId deviceId:deviceId];
+            }
+        }
+    } @catch (NSException *e) {
+        WPLog(@"WPSync: syncAfterTime firing failed to clear due date for %@: %@", source, e);
+    }
+    [self.fetcher fetchSource:source userId:userId deviceId:deviceId identifiers:ids
+                        knobs:[self effectiveKnobs] weak:NO hint:nil completion:nil];
 }
 
 /// Fold the decision's data transforms into the new state and persist once, under the captured
