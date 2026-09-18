@@ -21,4 +21,9 @@ state/newState struct in that file. Hand-applied on top of the still-unreconcile
 "/v1/sync/{source}" re-vendoring (see above) rather than a full regeneration from the JS repo's
 current HEAD, which also carries an unrelated accessToken-opportunistic-sync change (CP-56 ticket,
 different feature) not in scope here — classify-response.vectors.json and is-state-stale.vectors.json
-were deliberately left untouched.
+were deliberately left untouched at that time.
+
+Patched again 2026-09-18 for wonderpush-javascript-sdk commit 2a60757bb311f27abce6a1e3408026b727490a15
+("treat accessToken calls as opportunistic sync", CP-56): added 2 new cases to
+classify-response.vectors.json (9 total) for POST (/v1/)authentication/accessToken -> opportunistic.
+is-state-stale.vectors.json is still untouched/unreconciled (unrelated drift, still out of scope).

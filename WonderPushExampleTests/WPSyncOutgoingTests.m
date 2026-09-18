@@ -29,11 +29,15 @@
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/user" method:@"PUT"]);
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/user" method:@"PATCH"]);
     XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"https://measurements-api.wonderpush.com/v1/events" method:@"POST"]);
+    // CP-56 "Late identifier resolution": the accessToken response may carry a _contactSync block.
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/authentication/accessToken" method:@"POST"]);
+    XCTAssertTrue([WPSyncOutgoing shouldInjectForPath:@"/v1/authentication/accessToken" method:@"POST"]);
 
     // Right path, WRONG method -> NO. Crucially the explicit GET /installation fetch is not injected.
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/installation" method:@"GET"]);
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/user" method:@"GET"]);
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/events" method:@"GET"]);
+    XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/authentication/accessToken" method:@"GET"]);
 
     // Nested paths / other endpoints -> NO.
     XCTAssertFalse([WPSyncOutgoing shouldInjectForPath:@"/v1/events/123" method:@"POST"]);

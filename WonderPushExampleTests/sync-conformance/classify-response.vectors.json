@@ -35,6 +35,26 @@
       }
     },
     {
+      "name": "POST /authentication/accessToken opportunistic",
+      "input": {
+        "path": "/authentication/accessToken",
+        "method": "POST"
+      },
+      "expected": {
+        "mode": "opportunistic"
+      }
+    },
+    {
+      "name": "POST /v1/authentication/accessToken opportunistic",
+      "input": {
+        "path": "/v1/authentication/accessToken",
+        "method": "POST"
+      },
+      "expected": {
+        "mode": "opportunistic"
+      }
+    },
+    {
       "name": "GET /sync/contact explicit",
       "input": {
         "path": "/sync/contact",

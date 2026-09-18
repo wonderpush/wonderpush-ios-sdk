@@ -48,9 +48,11 @@ static id _Nullable nWPSyncDenull(id _Nullable v) {
     dispatch_once(&onceToken, ^{
         // notiflex-sdk-api runs opportunistic sync injection on POST /v1/events and on
         // POST/PUT/PATCH /v1/installation and /v1/user — so every method on installation/user is
-        // opportunistic, not just PATCH.
+        // opportunistic, not just PATCH. POST /v1/authentication/accessToken is opportunistic too
+        // (CP-56 "Late identifier resolution"): its response may carry a `_contactSync` block (e.g. a
+        // `syncAfterTime` hint) when the server can't resolve a visitorId to a contactId synchronously.
         opportunisticPathsByMethod = @{
-            @"POST": @[@"/events", @"/installation", @"/user"],
+            @"POST": @[@"/events", @"/installation", @"/user", @"/authentication/accessToken"],
             @"PUT": @[@"/installation", @"/user"],
             @"PATCH": @[@"/installation", @"/user"],
         };
@@ -120,7 +122,9 @@ static id _Nullable nWPSyncDenull(id _Nullable v) {
     // independent of everything else in the block, and must never touch
     // lastVersion/lastVersionId/lastReadDate/lastSyncMeta. The caller (fetch scheduling) owns
     // coalescing repeated hints to the earliest due time and enforcing the per-source rate-limit floor.
-    if (block.syncAfterTime != nil) decision.syncAfterTime = block.syncAfterTime;
+    if (block.syncAfterTime != nil) {
+        decision.syncAfterTime = block.syncAfterTime;
+    }
 
     // 3. meta is opaque — store + echo only, no acceptance gate.
     if (block.meta != nil) { next.lastSyncMeta = block.meta; stateChanged = YES; }

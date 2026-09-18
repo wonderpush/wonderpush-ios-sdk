@@ -20,7 +20,7 @@
     },
     "classifyResponse": {
       "file": "classify-response.vectors.json",
-      "cases": 7
+      "cases": 9
     },
     "computeBackoffSleep": {
       "file": "compute-backoff-sleep.vectors.json",

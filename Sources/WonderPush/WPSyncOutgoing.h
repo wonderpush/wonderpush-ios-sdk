@@ -8,7 +8,8 @@
 // Ported from wonderpush-javascript-sdk/src/wonderpush/sync-outgoing.ts. Spec: algorithm.md:84-91.
 //
 // The SDK piggybacks per-source sync state onto opportunistic API calls (POST /events,
-// POST/PUT/PATCH /installation, and POST/PUT/PATCH /user). This file builds the params dict; the
+// POST/PUT/PATCH /installation, POST/PUT/PATCH /user, and POST /authentication/accessToken). This
+// file builds the params dict; the
 // request-layer hook that gathers the current identifiers + registered-source state and merges the
 // result onto the request lives with the orchestrator (issue .18) and covers BOTH the SDK API and
 // the Measurements API.

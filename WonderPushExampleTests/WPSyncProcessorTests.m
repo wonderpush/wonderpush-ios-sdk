@@ -57,6 +57,9 @@ static NSDictionary *M(NSDictionary *base, NSDictionary *overrides) {
     [self assertClassifyPath:@"/user" method:@"POST" expects:@{@"mode": @"opportunistic"}];
     [self assertClassifyPath:@"/user" method:@"PUT" expects:@{@"mode": @"opportunistic"}];
     [self assertClassifyPath:@"/user" method:@"PATCH" expects:@{@"mode": @"opportunistic"}];
+    // CP-56 "Late identifier resolution": the accessToken response may carry a _contactSync block.
+    [self assertClassifyPath:@"/authentication/accessToken" method:@"POST" expects:@{@"mode": @"opportunistic"}];
+    [self assertClassifyPath:@"/v1/authentication/accessToken" method:@"POST" expects:@{@"mode": @"opportunistic"}];
     [self assertClassifyPath:@"/sync/contact" method:@"GET" expects:@{@"mode": @"explicit", @"explicitSource": @"contact"}];
     [self assertClassifyPath:@"/v1/sync/popups" method:@"GET" expects:@{@"mode": @"explicit", @"explicitSource": @"popups"}];
     // Explicit endpoints moved under /sync/ — GET /installation (no /sync) is now `none`, not explicit.
