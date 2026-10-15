@@ -8,7 +8,7 @@
     "file": "LICENSE.txt"
   },
   "platforms": {
-    "ios": "12.0"
+    "ios": "15.0"
   },
   "swift_versions": ["5.0"],
   "summary": "Push notification library by WonderPush",

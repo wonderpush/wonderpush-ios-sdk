@@ -6,6 +6,9 @@ import PackageDescription
 let package = Package(
     name: "WonderPush",
     defaultLocalization: "en",
+    platforms: [
+        .iOS(.v15),
+    ],
     products: [
         .library(
             name: "WonderPush",
