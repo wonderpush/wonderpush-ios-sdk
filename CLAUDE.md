@@ -53,12 +53,14 @@ bd close <id>         # Complete work
 
 ## Release / Deployment
 
-The full release procedure (version bump, tag, pod spec lint, appledoc, CocoaPods trunk, GitHub release, changelog, downstream Cordova/Flutter/React Native SDKs) is documented in Notion, under the Core Push team page:
+The full release procedure (version bump, tag, appledoc, GitHub release, changelog, downstream Cordova/Flutter/React Native SDKs) is documented in Notion, under the Core Push team page:
 https://app.notion.com/p/3fa449002dcb81309a97dcbe5173d7aa
 
 Original source: Trello card https://trello.com/c/RtJhx7Cx/6-wonderpush-ios-sdk
 
-Read the Notion page before releasing. Always confirm with the user before any outward-facing step (push, tag push, `pod trunk push`, GitHub release, gh-pages push).
+**We no longer publish to CocoaPods** (Trunk is becoming read-only), starting with v4.5.0: never run `pod spec lint` or `pod trunk push`. Distribution is via SPM and the GitHub release binaries.
+
+Read the Notion page before releasing. Always confirm with the user before any outward-facing step (push, tag push, GitHub release, gh-pages push).
 
 ## Build & Test
 
