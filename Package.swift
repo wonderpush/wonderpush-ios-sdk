@@ -48,6 +48,9 @@ let package = Package(
             path: "Sources/WonderPushExtension",
             resources: [
               .process("Resources/PrivacyInfo.xcprivacy")
+            ],
+            cSettings: [
+              .headerSearchPath("../WonderPushCommon/include")
             ]
         ),
     ]
