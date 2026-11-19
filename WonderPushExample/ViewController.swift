@@ -37,6 +37,14 @@ class ViewController: UIViewController {
         self.present(alert, animated: true)
     }
     
+    @IBAction func touchSubscribeToNotifications(_ sender: Any) {
+        WonderPush.subscribeToNotifications()
+    }
+
+    @IBAction func touchUnsubscribeFromNotifications(_ sender: Any) {
+        WonderPush.unsubscribeFromNotifications()
+    }
+
     @IBAction func touchGetIntfoo(_ sender: Any) {
         lblIntFoo.text = "\(WonderPush.getPropertyValue("int_foo"))"
     }

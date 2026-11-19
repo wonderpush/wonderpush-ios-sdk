@@ -33,3 +33,13 @@
 }
 
 @end
+
+// Recent iOS versions require adopting the UIScene lifecycle, and crash at launch otherwise.
+// This minimal scene delegate only holds the window, which UIKit creates from the storyboard
+// declared in the UIApplicationSceneManifest of Info.plist.
+@interface SceneDelegate : UIResponder <UIWindowSceneDelegate>
+@property (strong, nonatomic) UIWindow *window;
+@end
+
+@implementation SceneDelegate
+@end
