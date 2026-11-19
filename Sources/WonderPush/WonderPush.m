@@ -1314,6 +1314,10 @@ NSString * const WPEventFiredNotificationEventOccurrencesKey = @"WPEventFiredNot
         }
     }
 
+    // Report the opened URL next to `buttonLabel`, unless it is a wonderpush:// pseudo-URL (noop, broadcast, default)
+    if (targetUrl.length > 0 && ![targetUrl hasPrefix:WP_TARGET_URL_SDK_PREFIX]) {
+        notificationOpenedEventData[WP_TARGET_URL_KEY] = targetUrl;
+    }
     [self trackNotificationOpened:[notificationOpenedEventData copy]];
 
     if (_delegate && [_delegate respondsToSelector:@selector(onNotificationOpened:withButton:)]) {
