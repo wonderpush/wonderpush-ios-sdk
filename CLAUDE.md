@@ -63,7 +63,13 @@ Original source: Trello card https://trello.com/c/RtJhx7Cx/6-wonderpush-ios-sdk
 Notes from the 4.5.2 release (2026-11-20):
 - The version appears in 7 places (see the Notion step 1): `git grep -F "<old version>"` finds them, excluding `Podfile.lock`.
 - `./Scripts/generate-frameworks.sh` takes several minutes and produces `Build/Binaries.zip` (gitignored). Run it before the release commit.
-- appledoc is not installed. The source is checked out at `~/Work/Wonderpush/appledoc` (commit `3864971`) but fails to build on current Xcode (deployment target 10.7, then a linker error); docs for 4.5.2 are not yet published. Needs a fix, see the Trello card "Fix styles in iOS SDK appledoc".
+- appledoc is not installed. Build it from the checkout at `~/Work/Wonderpush/appledoc` (commit `3864971`) without modifying it, through the workspace scheme so the static library dependencies get built:
+  ```bash
+  cd ~/Work/Wonderpush/appledoc
+  xcodebuild -workspace appledoc.xcworkspace -scheme appledoc -configuration Release SYMROOT=/tmp/appledoc-build MACOSX_DEPLOYMENT_TARGET=12.0 ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO build
+  cd ~/Work/Wonderpush/wonderpush-ios-sdk && rm -Rf docs/ && PATH=/tmp/appledoc-build/Release:$PATH make appledoc
+  ```
+  (`-target appledoc` alone fails with `library 'DDMinizip' not found`; the original 10.7 deployment target is rejected by current Xcode.) Then follow the Notion gh-pages step: `docs/` is moved to `$VERSION/` (it contains `html/`, as in previous versions). The appledoc styles are still ugly, see the Trello card "Fix styles in iOS SDK appledoc".
 
 Read the Notion page before releasing. Always confirm with the user before any outward-facing step (push, tag push, GitHub release, gh-pages push).
 
