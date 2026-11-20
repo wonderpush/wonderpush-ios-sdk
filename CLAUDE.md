@@ -60,6 +60,11 @@ Original source: Trello card https://trello.com/c/RtJhx7Cx/6-wonderpush-ios-sdk
 
 **We no longer publish to CocoaPods** (Trunk is becoming read-only), starting with v4.5.0: never run `pod spec lint` or `pod trunk push`. Distribution is via SPM and the GitHub release binaries.
 
+Notes from the 4.5.2 release (2026-11-20):
+- The version appears in 7 places (see the Notion step 1): `git grep -F "<old version>"` finds them, excluding `Podfile.lock`.
+- `./Scripts/generate-frameworks.sh` takes several minutes and produces `Build/Binaries.zip` (gitignored). Run it before the release commit.
+- appledoc is not installed. The source is checked out at `~/Work/Wonderpush/appledoc` (commit `3864971`) but fails to build on current Xcode (deployment target 10.7, then a linker error); docs for 4.5.2 are not yet published. Needs a fix, see the Trello card "Fix styles in iOS SDK appledoc".
+
 Read the Notion page before releasing. Always confirm with the user before any outward-facing step (push, tag push, GitHub release, gh-pages push).
 
 ## Build & Test
