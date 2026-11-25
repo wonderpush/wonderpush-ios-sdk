@@ -671,7 +671,7 @@ NSString * const WPOperationFailingURLResponseErrorKey = @"WPOperationFailingURL
 
 - (NSDictionary *)decorateRequestParams:(WPRequest *)request {
     NSMutableDictionary *mutable = [super decorateRequestParams:request].mutableCopy;
-    NSString *accessToken = WPConfiguration.sharedConfiguration.accessToken;
+    NSString *accessToken = [WPConfiguration.sharedConfiguration getAccessTokenForUserId:request.userId];
     if (accessToken) mutable[@"accessToken"] = accessToken;
     return [NSDictionary dictionaryWithDictionary:mutable];
 }
