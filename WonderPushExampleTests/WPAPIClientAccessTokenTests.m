@@ -12,6 +12,7 @@
 #import <XCTest/XCTest.h>
 #import "WPAPIClient.h"
 #import "WPAnonymousAPIClient.h"
+#import "WPLiveActivityAPIClient.h"
 #import "WPConfiguration.h"
 
 static NSString * const TEST_USER_ID = @"WPAPIClientAccessTokenTests-user";
@@ -86,6 +87,19 @@ static NSString * const TEST_USER_ID = @"WPAPIClientAccessTokenTests-user";
 
 - (void)testAnonymousClientCurrentUserRequestUsesRequestUserId {
     NSDictionary *params = [[WPAnonymousAPIClient sharedClient] decorateRequestParams:[self requestForUserId:TEST_USER_ID]];
+    XCTAssertEqualObjects(params[@"userId"], TEST_USER_ID);
+}
+
+// WPLiveActivityAPIClient also identifies the user with a userId parameter: a Live Activity keeps the
+// user it was created with throughout its life-cycle, even after setUserId.
+
+- (void)testLiveActivityClientPreviousUserRequestUsesRequestUserId {
+    NSDictionary *params = [[WPLiveActivityAPIClient sharedClient] decorateRequestParams:[self requestForUserId:nil]];
+    XCTAssertEqualObjects(params[@"userId"], @"");
+}
+
+- (void)testLiveActivityClientCurrentUserRequestUsesRequestUserId {
+    NSDictionary *params = [[WPLiveActivityAPIClient sharedClient] decorateRequestParams:[self requestForUserId:TEST_USER_ID]];
     XCTAssertEqualObjects(params[@"userId"], TEST_USER_ID);
 }
 
