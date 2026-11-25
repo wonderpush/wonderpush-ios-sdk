@@ -165,5 +165,13 @@ class ViewController: UIViewController {
     @IBAction func touchTrackEventFoo(_ sender: Any) {
         WonderPush.trackEvent("foo")
     }
+    
+    @IBAction func touchSetUserId_toto(_ sender: Any) {
+        WonderPush.setUserId("toto")
+    }
+    
+    @IBAction func touchUnsetUserId(_ sender: Any) {
+        WonderPush.setUserId(nil)
+    }
 
 }
