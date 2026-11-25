@@ -11,6 +11,7 @@
 
 #import <XCTest/XCTest.h>
 #import "WPAPIClient.h"
+#import "WPAnonymousAPIClient.h"
 #import "WPConfiguration.h"
 
 static NSString * const TEST_USER_ID = @"WPAPIClientAccessTokenTests-user";
@@ -72,6 +73,20 @@ static NSString * const TEST_USER_ID = @"WPAPIClientAccessTokenTests-user";
     // A user without any known access token must not borrow the current user's
     NSDictionary *params = [[WPAPIClient sharedClient] decorateRequestParams:[self requestForUserId:@"WPAPIClientAccessTokenTests-unknown"]];
     XCTAssertNil(params[@"accessToken"]);
+}
+
+// WPAnonymousAPIClient identifies the user with a userId parameter instead of an accessToken,
+// and must likewise use the request's user rather than the current one.
+
+- (void)testAnonymousClientPreviousUserRequestUsesRequestUserId {
+    // A request issued for the anonymous user, executed after switching to TEST_USER_ID
+    NSDictionary *params = [[WPAnonymousAPIClient sharedClient] decorateRequestParams:[self requestForUserId:nil]];
+    XCTAssertEqualObjects(params[@"userId"], @"");
+}
+
+- (void)testAnonymousClientCurrentUserRequestUsesRequestUserId {
+    NSDictionary *params = [[WPAnonymousAPIClient sharedClient] decorateRequestParams:[self requestForUserId:TEST_USER_ID]];
+    XCTAssertEqualObjects(params[@"userId"], TEST_USER_ID);
 }
 
 @end
